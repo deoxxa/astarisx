@@ -5,14 +5,12 @@
 
 'use strict';
 var MyApp = MyApp || {};
-var IMVVM = IMVVM || {};
 
-MyApp.ApplicationViewModel = (function(IMVVM){
+MyApp.ApplicationViewModel = (function(){
 	
-	var ApplicationViewModel = function(stateChangedHandler){
+	var ApplicationViewModel = function(stateChangedHandler, extend){
 		
 		var raiseStateChanged = stateChangedHandler;
-		var extend = IMVVM.Utils.extend;
 
 		var DataContext = function (state, prevState) {
 
@@ -85,7 +83,7 @@ MyApp.ApplicationViewModel = (function(IMVVM){
 				//and pass returned state to appState arg of raiseStateChanged
 				//then more work will be done before returning with the new AppState
 				//pass in any initial appState as second arg
-				return raiseStateChanged({}, extend(args[0],{online: true }));
+				return raiseStateChanged({}, this.extend(args[0],{online: true }));
 			},
 			undo: function(){
 				if(this.canUndo){
@@ -97,4 +95,4 @@ MyApp.ApplicationViewModel = (function(IMVVM){
 		return DataContext;
 	};
 	return ApplicationViewModel;
-}(IMVVM));
+}());

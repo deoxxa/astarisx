@@ -5,13 +5,11 @@
 
 'use strict';
 var MyApp = MyApp || {};
-var IMVVM = IMVVM || {};
 
-MyApp.HobbiesViewModel = (function(Utils){ 
+MyApp.HobbiesViewModel = (function(){ 
 	
 	var HobbiesViewModel = function(stateChangedHandler){
 		
-		var extend = Utils.extend;
 		var raiseStateChanged = stateChangedHandler;
 		var appState = void 0;
 
@@ -84,7 +82,7 @@ MyApp.HobbiesViewModel = (function(Utils){
 
 		DataContext.prototype = {
 			select: function(value){
-				var nextState = extend(this);
+				var nextState = this.extend(this);
 				nextState.selected = this.collectionItems.filter(function(hobby){
 					return hobby === value;
 				})[0];
@@ -103,4 +101,4 @@ MyApp.HobbiesViewModel = (function(Utils){
 		return DataContext;
 	};
 	return HobbiesViewModel;
-}(IMVVM.Utils));
+}());

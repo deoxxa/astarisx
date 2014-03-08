@@ -24,7 +24,7 @@ MyApp.PersonModel = (function(IMVVM){
 			}
 
 			//Initialise defaults
-			var _id = state.id || IMVVM.Utils.uuid();
+			var _id = state.id || IMVVM.uuid();
 			var _age;
 			var _hobbies = state.hobbies || [];
 

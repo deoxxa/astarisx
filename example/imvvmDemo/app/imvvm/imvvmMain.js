@@ -6,7 +6,24 @@
 'use strict';
 var IMVVM = IMVVM || {};
 
-IMVVM.Main = (function(IMVVM, App){
+IMVVM.uuid = function () {
+	/*jshint bitwise:false */
+	var i, random;
+	var uuid = '';
+
+	for (i = 0; i < 32; i++) {
+		random = Math.random() * 16 | 0;
+		if (i === 8 || i === 12 || i === 16 || i === 20) {
+			uuid += '-';
+		}
+		uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
+			.toString(16);
+	}
+
+	return uuid;
+};
+
+IMVVM.Main = (function(App){
 	var Main = function(applicationNamespace, appDataContext, dataContexts, stateChangedHandler/*, restArgs*/) {
 
 		if(typeof stateChangedHandler !== 'function'){
@@ -15,13 +32,24 @@ IMVVM.Main = (function(IMVVM, App){
 
 		var restArgs = arguments.length >= 4 ? Array.prototype.slice.call(arguments).slice(4) : void 0;
 		
-		var extend = IMVVM.Utils.extend;
-		
 		var appDataContextName = applicationNamespace,
 			dataContextObjs = {},
 			dependents,
 			dependentProps,
 			dependencyKeys;
+
+		var extend = function () {
+			var newObj = {};
+			for (var i = 0; i < arguments.length; i++) {
+				var obj = arguments[i];
+				for (var key in obj) {
+					if (obj.hasOwnProperty(key)) {
+						newObj[key] = obj[key];
+					}
+				}
+			}
+			return newObj;
+		};
 
 		var dependencyStateChangedHandler = function(caller, processed, callerState){
 			/* "this" bound to nextState variable at initialisation */
@@ -154,10 +182,13 @@ IMVVM.Main = (function(IMVVM, App){
 		};
 
 		var ApplicationDataContext = appDataContext(raiseStateChangedHandler.bind(this, appDataContextName));
+		ApplicationDataContext.prototype.extend = extend;
 
 		//Initilise all the viewModels and store the data context Objects
 		dataContexts.forEach(function(dataContext){
+			
 			dataContextObjs[dataContext.name] = dataContext.viewModel(raiseStateChangedHandler.bind(this, dataContext.name));
+			dataContextObjs[dataContext.name].prototype.extend = extend;
 			
 			//Store dependent's data context names for later use in updateDependencies
 			//Only store names of viewModels and not of the Application model
@@ -180,4 +211,4 @@ IMVVM.Main = (function(IMVVM, App){
 		return new ApplicationDataContext().init(restArgs);
 	};
 	return Main;
-}(IMVVM, MyApp));
+}(MyApp));

@@ -5,25 +5,23 @@
 
 'use strict';
 var MyApp = MyApp || {};
-var IMVVM = IMVVM || {};
 
 /* PersonsViewModel*/
-MyApp.PersonsViewModel = (function(Utils, DataService, PersonModel){
+MyApp.PersonsViewModel = (function(DataService, PersonModel){
 	var PersonsViewModel = function(stateChangedHandler) {
 		
 		var Person;
 		var raiseStateChanged = stateChangedHandler;
 		var appState = void 0;
-		var extend = Utils.extend;
 
 		/* private methods */
-		function onStateChanged(dataContext) {
-			return function(oldState, newState){				
-				var nextState = Utils.extend(dataContext);
+		function onStateChanged(thisObj) {
+			return function(oldState, newState){
+				var nextState = thisObj.extend(thisObj);
 				var personNextState;
 				nextState.collection = nextState.collection.map(function(person){
 					if(person.id === oldState.id){
-						personNextState = extend(person, newState);
+						personNextState = thisObj.extend(person, newState);
 						nextState.selected = Person(personNextState);
 						return nextState.selected;
 					}
@@ -102,7 +100,7 @@ MyApp.PersonsViewModel = (function(Utils, DataService, PersonModel){
 
 		DataContext.prototype = {
 			select: function(id/*, callback*/){
-				var nextState = extend(this);
+				var nextState = this.extend(this);
 				nextState.collection = nextState.collection.map(function(person){
 					if(person.id === id){
 						nextState.selected = Person(person);
@@ -113,7 +111,7 @@ MyApp.PersonsViewModel = (function(Utils, DataService, PersonModel){
 				raiseStateChanged(appState, nextState);
 			},
 			addPerson: function(value){
-				var nextState = extend(this);
+				var nextState = this.extend(this);
 				var name;
 
 				if(value && value.length > 0){
@@ -130,7 +128,7 @@ MyApp.PersonsViewModel = (function(Utils, DataService, PersonModel){
 				}
 			},
 			deletePerson: function(uid){
-				var nextState = extend(this);
+				var nextState = this.extend(this);
 				
 				nextState.collection = nextState.collection.filter(function(person){
 					return person.id !== uid;
@@ -161,4 +159,4 @@ MyApp.PersonsViewModel = (function(Utils, DataService, PersonModel){
 		return DataContext;
 	};
 	return PersonsViewModel;
-}(IMVVM.Utils, MyApp.DataService, MyApp.PersonModel));
+}(MyApp.DataService, MyApp.PersonModel));
