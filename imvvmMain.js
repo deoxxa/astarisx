@@ -23,20 +23,22 @@ IMVVM.uuid = function () {
 	return uuid;
 };
 
-IMVVM.Main = (function(App){
-	var Main = function(applicationNamespace, appDataContext, dataContexts, stateChangedHandler/*, restArgs*/) {
+IMVVM.Main = (function(){
+	var Main = function(applicationNamespace, appDataContext, dataContexts, dependencies, stateChangedHandler/*, restArgs*/) {
 
 		if(typeof stateChangedHandler !== 'function'){
 			throw new TypeError();
 		}
+		
+		dependencies = dependencies || [];
 
-		var restArgs = arguments.length >= 4 ? Array.prototype.slice.call(arguments).slice(4) : void 0;
+		var restArgs = arguments.length >= 5 ? Array.prototype.slice.call(arguments).slice(5) : void 0;
 		
 		var appDataContextName = applicationNamespace,
 			dataContextObjs = {},
-			dependents,
-			dependentProps,
-			dependencyKeys;
+			subscribers,
+			watchedProps,
+			subscribersList;
 
 		var extend = function () {
 			var newObj = {};
@@ -56,38 +58,38 @@ IMVVM.Main = (function(App){
 			var nextState = this,
 				callerNextState = {},
 				props,
-				dependencies,
-				dependencyValue;
+				watchers,
+				watchedValue;
 
 			callerNextState[caller] = callerState;
 			callerNextState = extend(nextState, callerNextState);
 
-			//Update dependencies
+			//Update watchers
 			dataContexts.forEach(function(dataContext){				
 				//Only update if the PM has already been processed and it has
 				//a dependency on the caller data context
-				if(dataContext.name !== caller && ('dependsOn' in dataContext) &&
+				if(dataContext.name !== caller && ('watch' in dataContext) &&
 					processed.indexOf(dataContext.name) !== -1 &&
-					dataContext.dependencies.indexOf(caller) !== -1){
-					dependencies = {};
-					dataContext.dependsOn.forEach(function(dependency){
+					dataContext.watchers.indexOf(caller) !== -1){
+					watchers = {};
+					dataContext.watch.forEach(function(dependency){
 						props = dependency.property.split('.');
 						props.forEach(function(prop, idx){
 							if(idx === 0){
-								dependencyValue = callerNextState[prop];
+								watchedValue = callerNextState[prop];
 							} else {
-								dependencyValue = dependencyValue[prop];
+								watchedValue = watchedValue[prop];
 							}
 						});
 						if('alias' in dependency){
-							dependencies[dependency.alias] = dependencyValue;
+							watchers[dependency.alias] = watchedValue;
 						} else {
-							dependencies[props.slice(-1)[0]] = dependencyValue;
+							watchers[props.slice(-1)[0]] = watchedValue;
 						}
 					});
-					//Need to inject dependencies so that the state for this object can change
+					//Need to inject watchers so that the state for this object can change
 					//if required. Can't use appState as that is provided after the object is created
-					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], dependencies,
+					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], watchers,
 						dependencyStateChangedHandler.bind(nextState, dataContext.name, processed));
 				}
 			});
@@ -96,8 +98,8 @@ IMVVM.Main = (function(App){
 		var transitionState = function(nextState){
 			var processed = [],//stores datacontexts already processed
 				props,
-				dependencies,
-				dependencyValue,
+				watchers,
+				watchedValue,
 				initialize;
 
 			if(nextState === void 0){
@@ -105,35 +107,35 @@ IMVVM.Main = (function(App){
 				nextState = {};
 			}
 
-			//Update state and dependencies
+			//Update state and watchers
 			dataContexts.forEach(function(dataContext){
 				processed.push(dataContext.name);
-				if('dependsOn' in dataContext){
-					dependencies = {};
-					dataContext.dependsOn.forEach(function(dependency){
-						dependencyValue = {};
+				if('watch' in dataContext){
+					watchers = {};
+					dataContext.watch.forEach(function(dependency){
+						watchedValue = {};
 						props = dependency.property.split('.');
 						props.forEach(function(prop, idx){
 							if(idx === 0){
-								dependencyValue = nextState[prop];
+								watchedValue = nextState[prop];
 							} else {
-								dependencyValue = dependencyValue ? dependencyValue[prop] : void 0;
+								watchedValue = watchedValue ? watchedValue[prop] : void 0;
 							}
 						});
 						if('alias' in dependency){
-							dependencies[dependency.alias] = dependencyValue;
+							watchers[dependency.alias] = watchedValue;
 						} else {
-							dependencies[props.slice(-1)[0]] = dependencyValue;
+							watchers[props.slice(-1)[0]] = watchedValue;
 						}
 					});
 				}
-				//Need to inject dependencies so that the state for this object can change
+				//Need to inject watchers so that the state for this object can change
 				//if required. Can't use appState as that is provided after the object is created
 				if(initialize){
-					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], dependencies,
+					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], watchers,
 					dependencyStateChangedHandler.bind(nextState, dataContext.name, processed)).init(dataContext.initArgs);
 				} else {
-					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], dependencies,
+					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], watchers,
 					dependencyStateChangedHandler.bind(nextState, dataContext.name, processed));
 				}
 				
@@ -180,30 +182,37 @@ IMVVM.Main = (function(App){
 			//Provided for the main app to return from init() to the View
 			return appContext;
 		};
-
-		var ApplicationDataContext = appDataContext(raiseStateChangedHandler.bind(this, appDataContextName));
+		//Dependency Injection
+		var args = [raiseStateChangedHandler.bind(this, appDataContextName)];
+		args.push.apply(args, dependencies);
+		var ApplicationDataContext = appDataContext.apply(this, args);
 		ApplicationDataContext.prototype.extend = extend;
 
 		//Initilise all the viewModels and store the data context Objects
 		dataContexts.forEach(function(dataContext){
-			
-			dataContextObjs[dataContext.name] = dataContext.viewModel(raiseStateChangedHandler.bind(this, dataContext.name));
+			//Dependency Injection
+			args = [raiseStateChangedHandler.bind(this, dataContext.name)];
+			args.push.apply(args, dataContext.dependencies);
+
+			dataContextObjs[dataContext.name] = dataContext.viewModel.apply(this, args);
 			dataContextObjs[dataContext.name].prototype.extend = extend;
-			
+
 			//Store dependent's data context names for later use in updateDependencies
 			//Only store names of viewModels and not of the Application model
 			//because the latest Application Model props are always available to all PMs
-			if('dependsOn' in dataContext){
-				dependents = {};
-				for(var i = 0, len = dataContext.dependsOn.length; i < len; i++){
-					dependentProps = dataContext.dependsOn[i].property.split('.');
-					if(dependentProps.length > 1){
-						dependents[dependentProps[0]] = true;
+			if('watch' in dataContext){
+				subscribers = {};
+				for(var i = 0, len = dataContext.watch.length; i < len; i++){
+					watchedProps = dataContext.watch[i].property.split('.');
+					if(watchedProps.length > 1){
+						subscribers[watchedProps[0]] = true;
 					}
 				}
-				dependencyKeys = Object.keys(dependents);
-				if(dependencyKeys.length > 0){
-					dataContext.dependencies = dependencyKeys;
+				console.log('subscribers');
+				console.log(subscribers);
+				subscribersList = Object.keys(subscribers);
+				if(subscribersList.length > 0){
+					dataContext.watchers = subscribersList;
 				}
 			}
 		});
@@ -211,4 +220,4 @@ IMVVM.Main = (function(App){
 		return new ApplicationDataContext().init(restArgs);
 	};
 	return Main;
-}(MyApp));
+}());
