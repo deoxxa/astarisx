@@ -7,8 +7,7 @@
 var MyApp = MyApp || {};
 
 MyApp.ApplicationViewModel = (function(){
-	
-	var ApplicationViewModel = function(stateChangedHandler, extend){
+	var ApplicationViewModel = function(stateChangedHandler/*, injected dependencies */){
 		
 		var raiseStateChanged = stateChangedHandler;
 
@@ -16,9 +15,7 @@ MyApp.ApplicationViewModel = (function(){
 
 			state = state || {};
 			prevState = prevState || void 0;
-
 			
-			//var appDataContext = {};
 			var _busy = state.busy === void 0 ? false : state.busy;
 			var _online = state.online === void 0 ? false : state.online;
 

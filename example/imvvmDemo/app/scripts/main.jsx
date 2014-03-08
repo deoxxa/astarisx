@@ -17,7 +17,8 @@ var MyApp = MyApp || {};
 	React.renderComponent(<ApplicationView 
 		viewModel={App.ApplicationViewModel}
 		initArgs={{appName: 'IMVVM Demo'}}//Can be array, objects or whatever
-		dataContexts={App.DataContexts} />,
+		dataContexts={App.DataContexts} 
+		viewModelDependencies={[App.DataService]}/>,
 		document.getElementById('container'));
 
 }(MyApp));

@@ -7,8 +7,7 @@
 var MyApp = MyApp || {};
 
 MyApp.HobbiesViewModel = (function(){ 
-	
-	var HobbiesViewModel = function(stateChangedHandler){
+	var HobbiesViewModel = function(stateChangedHandler/*, injected dependencies */){
 		
 		var raiseStateChanged = stateChangedHandler;
 		var appState = void 0;

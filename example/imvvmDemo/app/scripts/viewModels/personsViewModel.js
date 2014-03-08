@@ -6,11 +6,9 @@
 'use strict';
 var MyApp = MyApp || {};
 
-/* PersonsViewModel*/
-MyApp.PersonsViewModel = (function(DataService, PersonModel){
-	var PersonsViewModel = function(stateChangedHandler) {
+MyApp.PersonsViewModel = (function(){
+	var PersonsViewModel = function(stateChangedHandler, DataService, PersonModel) {
 		
-		var Person;
 		var raiseStateChanged = stateChangedHandler;
 		var appState = void 0;
 
@@ -31,7 +29,7 @@ MyApp.PersonsViewModel = (function(DataService, PersonModel){
 			};
 		}
 
-		Person = PersonModel(onStateChanged);
+		var Person = PersonModel(onStateChanged);
 
 		var DataContext = function(state, dependencies/*, raiseDependencyStateChanged*/) {
 
@@ -159,4 +157,4 @@ MyApp.PersonsViewModel = (function(DataService, PersonModel){
 		return DataContext;
 	};
 	return PersonsViewModel;
-}(MyApp.DataService, MyApp.PersonModel));
+}());

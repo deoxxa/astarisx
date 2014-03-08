@@ -15,13 +15,14 @@ MyApp.DataContexts = (function(App){
 		viewModel: App.PersonsViewModel,
 		name: 'persons',
 		initArgs : [],
-		dependsOn: [{property: 'hobbies.selected', alias: 'selectedHobby'},
-			{property: 'online'}]
+		watch: [{property: 'hobbies.selected', alias: 'selectedHobby'},
+			{property: 'online'}],
+		dependencies: [App.DataService, App.PersonModel] //Array order specifies how they appear in args
 	}, {
 		viewModel: App.HobbiesViewModel,
 		name: 'hobbies',
 		initArgs : [],
-		dependsOn: [{property: 'persons.selected', alias: 'selectedPerson'},
+		watch: [{property: 'persons.selected', alias: 'selectedPerson'},
 			/*{property: 'persons.selected.id', alias: 'personId'},
 			{property: 'persons.selected.hobbies'}*/] //DI of sorts, but not real DI.
 													//it's how Models communicate and
