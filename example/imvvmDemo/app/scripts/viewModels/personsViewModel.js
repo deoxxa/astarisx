@@ -13,13 +13,13 @@ MyApp.PersonsViewModel = (function(){
 		var appState = void 0;
 
 		/* private methods */
-		function onStateChanged(thisObj) {
+		function handleModelStateChange(context) {
 			return function(oldState, newState){
-				var nextState = thisObj.extend(thisObj);
+				var nextState = context.extend(context);
 				var personNextState;
 				nextState.collection = nextState.collection.map(function(person){
 					if(person.id === oldState.id){
-						personNextState = thisObj.extend(person, newState);
+						personNextState = context.extend(person, newState);
 						nextState.selected = Person(personNextState);
 						return nextState.selected;
 					}
@@ -29,7 +29,7 @@ MyApp.PersonsViewModel = (function(){
 			};
 		}
 
-		var Person = PersonModel(onStateChanged);
+		var Person = PersonModel(handleModelStateChange);
 
 		var DataContext = function(state, dependencies/*, raiseDependencyStateChanged*/) {
 

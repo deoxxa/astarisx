@@ -9,10 +9,8 @@ var MyApp = MyApp || {};
 var IMVVM = IMVVM || {};
 
 MyApp.PersonModel = (function(IMVVM){
-	var Person = function (stateChangedHandler) {
+	var PersonModel = function (stateChangedHandler) {
 		var dataContext = function(state, withContext) {
-
-			var raiseStateChanged;
 
 			if(typeof state === 'boolean'){
 				withContext = state;
@@ -46,7 +44,7 @@ MyApp.PersonModel = (function(IMVVM){
 					configurable: true,
 					enumerable: false,
 					set: function(context){
-						raiseStateChanged = stateChangedHandler(context);
+						this.raiseStateChanged = stateChangedHandler(context);
 						delete this.context;
 					}
 				},
@@ -66,7 +64,7 @@ MyApp.PersonModel = (function(IMVVM){
 					set: function(newValue){
 						var nextState = {};
 						nextState.firstName = newValue.length === 0 ? void 0 : newValue;
-						raiseStateChanged(this, nextState);
+						this.raiseStateChanged(this, nextState);
 					}
 				},
 
@@ -77,7 +75,7 @@ MyApp.PersonModel = (function(IMVVM){
 					set: function(newValue){
 						var nextState = {};
 						nextState.lastName = newValue.length === 0 ? void 0 : newValue;
-						raiseStateChanged(this, nextState);
+						this.raiseStateChanged(this, nextState);
 					}
 				},
 				
@@ -100,7 +98,7 @@ MyApp.PersonModel = (function(IMVVM){
 						nextState.firstName = firstname.length === 0 ? void 0 : firstname;
 						nextState.lastName = lastname.length === 0 && !isSpace ? void 0 : lastname;
 
-						raiseStateChanged(this, nextState);
+						this.raiseStateChanged(this, nextState);
 					}
 				},
 
@@ -111,7 +109,7 @@ MyApp.PersonModel = (function(IMVVM){
 						return state.occupation;
 					},
 					set: function(newValue){
-						raiseStateChanged(this, {'occupation': newValue });
+						this.raiseStateChanged(this, {'occupation': newValue });
 					}
 				},
 				
@@ -122,7 +120,7 @@ MyApp.PersonModel = (function(IMVVM){
 						return state.dob;
 					},
 					set: function(newValue){
-						raiseStateChanged(this, {'dob': newValue });
+						this.raiseStateChanged(this, {'dob': newValue });
 					}
 				},
 
@@ -138,7 +136,7 @@ MyApp.PersonModel = (function(IMVVM){
 					enumerable: true,
 					get: function(){ return state.gender; },
 					set: function(newValue){
-						raiseStateChanged(this, {'gender': newValue});
+						this.raiseStateChanged(this, {'gender': newValue});
 					}
 				},
 
@@ -149,7 +147,7 @@ MyApp.PersonModel = (function(IMVVM){
 					//must ensure object is initialised before freeze
 					get: function(){ return _hobbies },
 					set: function(newArray){
-						raiseStateChanged(this, {'hobbies': newArray});
+						this.raiseStateChanged(this, {'hobbies': newArray});
 					}
 				},
 
@@ -160,12 +158,12 @@ MyApp.PersonModel = (function(IMVVM){
 				delete model.context;
 			}
 			Object.freeze(model.hobbies);
-			return Object.create(Person.prototype, model);
+			return Object.create(PersonModel.prototype, model);
 		};
 		return dataContext;
 	};
 	
-	Person.prototype = {
+	PersonModel.prototype = {
 		addHobby: function(value){
 			var arr;
 			if(this.hobbies.indexOf(value) === -1){
@@ -180,5 +178,5 @@ MyApp.PersonModel = (function(IMVVM){
 		}
 	};
 
-	return Person;
+	return PersonModel;
 }(IMVVM));

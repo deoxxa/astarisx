@@ -12,7 +12,7 @@ MyApp.HobbiesViewModel = (function(){
 		var raiseStateChanged = stateChangedHandler;
 		var appState = void 0;
 
-		var DataContext = function(state, dependencies, raiseDependencyStateChanged) {
+		var DataContext = function(state, dependencies, raiseWatchedStateChanged) {
 			
 			state = state || {};
 			dependencies = dependencies || {};
@@ -20,11 +20,11 @@ MyApp.HobbiesViewModel = (function(){
 			var _selected = state.selected;
 			var _selectedPerson = dependencies.selectedPerson ? dependencies.selectedPerson : {};
 			var _hobbies = dependencies.selectedPerson ? dependencies.selectedPerson.hobbies : [];
-			var dependencyStateChanged = false;
+			var watchedStateChanged = false;
 			//Reset selected item if a new Person is selected
 			if(state.selectedPerson && state.selectedPerson.id !== _selectedPerson.id && _selected !== void 0){
 				_selected = void 0;
-				dependencyStateChanged = true;
+				watchedStateChanged = true;
 			}
 
 			var dataContext = Object.create(DataContext.prototype, {
@@ -71,10 +71,10 @@ MyApp.HobbiesViewModel = (function(){
 			//Need to freeze arrays
 
 			//Call this at the end so that it is not called multiple times
-			if(dependencyStateChanged){
-				raiseDependencyStateChanged(dataContext);
+			if(watchedStateChanged){
+				raiseWatchedStateChanged(dataContext);
 				//check if I need to do this for memory leaks ???
-				raiseDependencyStateChanged = null;
+				raiseWatchedStateChanged = null;
 			}
 			return dataContext;
 		};

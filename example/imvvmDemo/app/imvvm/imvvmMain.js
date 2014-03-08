@@ -53,7 +53,7 @@ IMVVM.Main = (function(){
 			return newObj;
 		};
 
-		var dependencyStateChangedHandler = function(caller, processed, callerState){
+		var watchedStateChangedHandler = function(caller, processed, callerState){
 			/* "this" bound to nextState variable at initialisation */
 			var nextState = this,
 				callerNextState = {},
@@ -90,7 +90,7 @@ IMVVM.Main = (function(){
 					//Need to inject watchers so that the state for this object can change
 					//if required. Can't use appState as that is provided after the object is created
 					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], watchers,
-						dependencyStateChangedHandler.bind(nextState, dataContext.name, processed));
+						watchedStateChangedHandler.bind(nextState, dataContext.name, processed));
 				}
 			});
 		};
@@ -133,10 +133,10 @@ IMVVM.Main = (function(){
 				//if required. Can't use appState as that is provided after the object is created
 				if(initialize){
 					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], watchers,
-					dependencyStateChangedHandler.bind(nextState, dataContext.name, processed)).init(dataContext.initArgs);
+					watchedStateChangedHandler.bind(nextState, dataContext.name, processed)).init(dataContext.initArgs);
 				} else {
 					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], watchers,
-					dependencyStateChangedHandler.bind(nextState, dataContext.name, processed));
+					watchedStateChangedHandler.bind(nextState, dataContext.name, processed));
 				}
 				
 			});
@@ -194,7 +194,7 @@ IMVVM.Main = (function(){
 			args = [raiseStateChangedHandler.bind(this, dataContext.name)];
 			args.push.apply(args, dataContext.dependencies);
 
-			dataContextObjs[dataContext.name] = dataContext.viewModel.apply(this, args);
+			dataContextObjs[dataContext.name] = dataContext.viewModel.apply({appState: void 0, something:"Frank"}, args);
 			dataContextObjs[dataContext.name].prototype.extend = extend;
 
 			//Store dependent's data context names for later use in updateDependencies
@@ -208,8 +208,6 @@ IMVVM.Main = (function(){
 						subscribers[watchedProps[0]] = true;
 					}
 				}
-				console.log('subscribers');
-				console.log(subscribers);
 				subscribersList = Object.keys(subscribers);
 				if(subscribersList.length > 0){
 					dataContext.watchers = subscribersList;
