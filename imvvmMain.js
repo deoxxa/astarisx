@@ -124,7 +124,6 @@ IMVVM.Main = (function(IMVVM, App){
 			if(appState instanceof ApplicationDataContext && (newState === void 0 || typeof newState === 'function')) {
 				//This means previous state has been requested
 				//so set nextState to the previous state
-				console.log('in here');
 				nextState = extend(appState);
 				callback = newState;
 				newState = void 0;
