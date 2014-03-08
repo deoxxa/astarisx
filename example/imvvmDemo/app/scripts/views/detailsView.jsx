@@ -14,6 +14,9 @@ MyApp.DetailsView = (function(Utils, App){
 		render: function() {
 			var FormView = App.FormView;
 			var HobbyListView = App.HobbyListView;
+			if(!this.props.appContext.persons.selected){
+				return <div>There's nobody here!!</div>;
+			}
 			return (
 				<div>
 					<FormView appContext={this.props.appContext}/>

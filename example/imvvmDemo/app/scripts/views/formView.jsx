@@ -26,6 +26,7 @@ MyApp.FormView = (function(){
 		render: function() {
 			var app = this.props.appContext;
 			var current = this.props.appContext.persons.selected;
+
 			return (
 				<div key={current.id}>
 					<form className="form-horizontal" role="form">

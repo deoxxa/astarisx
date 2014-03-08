@@ -90,8 +90,11 @@ MyApp.HobbiesViewModel = (function(Utils){
 				})[0];
 				raiseStateChanged(appState, nextState);
 			},
-			addHobby: function(/*value*/){
-				this.selectedPerson.addHobby("test");
+			addHobby: function(value){
+				this.selectedPerson.addHobby(value);
+			},
+			deleteHobby: function(value){
+				this.selectedPerson.deleteHobby(value);
 			},
 			init: function(/*args*/){
 				return new DataContext();

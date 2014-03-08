@@ -24,7 +24,7 @@ MyApp.PersonsViewModel = (function(Utils, DataService, PersonModel){
 				nextState.collection = nextState.collection.map(function(person){
 					if(person.id === oldState.id){
 						personNextState = extend(person, newState);
-						nextState.selected = Person(personNextState, true);
+						nextState.selected = Person(personNextState);
 						return nextState.selected;
 					}
 					return person;
@@ -102,25 +102,58 @@ MyApp.PersonsViewModel = (function(Utils, DataService, PersonModel){
 
 		DataContext.prototype = {
 			select: function(id/*, callback*/){
-				var nextState = Utils.extend(this);
+				var nextState = extend(this);
 				nextState.collection = nextState.collection.map(function(person){
 					if(person.id === id){
-						nextState.selected = Person(person, true);
+						nextState.selected = Person(person);
 						return nextState.selected;
 					}
 					return person;
 				});
 				raiseStateChanged(appState, nextState);
 			},
+			addPerson: function(value){
+				var nextState = extend(this);
+				var name;
 
+				if(value && value.length > 0){
+					name = value.split(" ");
+					//Cannot initialize by passing in calculated prop value
+					//i.e. fullname
+					nextState.selected = Person({
+						firstName: name[0],
+						lastName: name.slice(1).join(" ")
+					}, true);
+					nextState.collection = nextState.collection.slice(0);
+					nextState.collection = nextState.collection.concat(nextState.selected);
+					raiseStateChanged(appState, nextState);
+				}
+			},
+			deletePerson: function(uid){
+				var nextState = extend(this);
+				
+				nextState.collection = nextState.collection.filter(function(person){
+					return person.id !== uid;
+				});
+				if(nextState.collection.length > 0){
+					if (nextState.selected.id === uid){
+						nextState.selected = Person(nextState.collection[0]);
+					} else {
+						nextState.selected = Person(nextState.selected);
+					}
+				} else {
+					nextState.selected = void 0;
+				}
+				raiseStateChanged(appState, nextState);
+			},
 			init: function(/*args*/){
 				var nextState = {};
 				nextState.collection = DataService.getData().map(function(state, idx){
 					if ( idx === 0 ){
-						nextState.selected = Person(state, true);
+						nextState.selected = Person(state);
 						return nextState.selected;
 					}
-					return Person(state);
+					return Person(state, false);
 				});
 				return new DataContext(nextState);
 			}

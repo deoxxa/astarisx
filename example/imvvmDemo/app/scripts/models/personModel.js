@@ -19,12 +19,14 @@ MyApp.PersonModel = (function(IMVVM){
 				state = {};
 			} else {
 				state = state || {};
-				withContext = withContext === void 0 ? false : withContext;				
+				//When creating an Object, withContext default is true
+				withContext = withContext === void 0 ? true : withContext;				
 			}
 
 			//Initialise defaults
 			var _id = state.id || IMVVM.Utils.uuid();
 			var _age;
+			var _hobbies = state.hobbies || [];
 
 			function _calculateAge(dob) { // dob is a date
 			    var ageDate = new Date(Date.now() - dob.getTime()); // miliseconds from epoch
@@ -145,7 +147,7 @@ MyApp.PersonModel = (function(IMVVM){
 					enumerable: true,
 					//Explicitly set array to immutable
 					//must ensure object is initialised before freeze
-					get: function(){ return Object.freeze(state.hobbies); },
+					get: function(){ return _hobbies },
 					set: function(newArray){
 						raiseStateChanged(this, {'hobbies': newArray});
 					}
@@ -157,6 +159,7 @@ MyApp.PersonModel = (function(IMVVM){
 				//Automaticalle deletes this property when not needed
 				delete model.context;
 			}
+			Object.freeze(model.hobbies);
 			return Object.create(Person.prototype, model);
 		};
 		return dataContext;
@@ -164,8 +167,16 @@ MyApp.PersonModel = (function(IMVVM){
 	
 	Person.prototype = {
 		addHobby: function(value){
-			var arr = this.hobbies.slice(0);
-			this.hobbies = arr.concat(value);
+			var arr;
+			if(this.hobbies.indexOf(value) === -1){
+				arr = this.hobbies.slice(0);
+				this.hobbies = arr.concat(value);
+			}
+		},
+		deleteHobby: function(value){
+			this.hobbies = this.hobbies.filter(function(hobby){
+				return hobby !== value;
+			});
 		}
 	};
 

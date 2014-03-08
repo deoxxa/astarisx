@@ -86,6 +86,11 @@ MyApp.ApplicationViewModel = (function(IMVVM){
 				//then more work will be done before returning with the new AppState
 				//pass in any initial appState as second arg
 				return raiseStateChanged({}, extend(args[0],{online: true }));
+			},
+			undo: function(){
+				if(this.canUndo){
+					raiseStateChanged(this.previousState);
+				}
 			}
 		};
 		

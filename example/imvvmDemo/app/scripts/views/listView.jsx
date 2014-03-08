@@ -9,15 +9,19 @@
 'use strict';
 var MyApp = MyApp || {};
 
-MyApp.ListView = (function(){
+MyApp.ListView = (function(App){
 	var ListView = React.createClass({
-		handleSelection: function(id, e){
-			this.props.appContext.persons.select(id);
+		handleSelection: function(uid, e){
+			this.props.appContext.persons.select(uid);
+		},
+		deletePerson: function(uid, e){
+			this.props.appContext.persons.deletePerson(uid);
 		},
 		render: function() {
 			var app = this.props.appContext;
 			var collection = this.props.appContext.persons.collection;
 			var current = this.props.appContext.persons.selected;
+			var DeleteButton = App.DeleteButtonControl;
 
 			var list = collection.map(function(person){
 				if(current.id === person.id){
@@ -28,6 +32,7 @@ MyApp.ListView = (function(){
 						href="#"
 						className="list-group-item active">
 						    {person.fullName}
+						    <DeleteButton funcDelete={this.deletePerson.bind(this, person.id)} />
 						</a>
 					);
 				}
@@ -37,6 +42,7 @@ MyApp.ListView = (function(){
 					href="#"
 					className="list-group-item">
 					    {person.fullName}
+					    <DeleteButton funcDelete={this.deletePerson.bind(this, person.id)} />
 					</a>
 				);
 			}.bind(this));
@@ -49,4 +55,4 @@ MyApp.ListView = (function(){
 		}
 	});
 	return ListView;
-}());
+}(MyApp));
