@@ -144,7 +144,7 @@ IMVVM.Main = (function(){
 			return nextState;
 		};
 
-		var raiseStateChangedHandler = function(callerDataContext, appState, newState, callback) {
+		var appStateChangedHandler = function(callerDataContext, appState, newState, callback) {
 			var appContext,
 				nextState = {};
 
@@ -183,7 +183,7 @@ IMVVM.Main = (function(){
 			return appContext;
 		};
 		//Dependency Injection
-		var args = [raiseStateChangedHandler.bind(this, appDataContextName)];
+		var args = [appStateChangedHandler.bind(this, appDataContextName)];
 		args.push.apply(args, dependencies);
 		var ApplicationDataContext = appDataContext.apply(this, args);
 		ApplicationDataContext.prototype.extend = extend;
@@ -191,7 +191,7 @@ IMVVM.Main = (function(){
 		//Initilise all the viewModels and store the data context Objects
 		dataContexts.forEach(function(dataContext){
 			//Dependency Injection
-			args = [raiseStateChangedHandler.bind(this, dataContext.name)];
+			args = [appStateChangedHandler.bind(this, dataContext.name)];
 			args.push.apply(args, dataContext.dependencies);
 
 			dataContextObjs[dataContext.name] = dataContext.viewModel.apply({appState: void 0, something:"Frank"}, args);

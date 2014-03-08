@@ -13,7 +13,7 @@ MyApp.PersonsViewModel = (function(){
 		var appState = void 0;
 
 		/* private methods */
-		function handleModelStateChange(context) {
+		function personStateChangedHandler(context) {
 			return function(oldState, newState){
 				var nextState = context.extend(context);
 				var personNextState;
@@ -29,7 +29,7 @@ MyApp.PersonsViewModel = (function(){
 			};
 		}
 
-		var Person = PersonModel(handleModelStateChange);
+		var Person = PersonModel(personStateChangedHandler);
 
 		var DataContext = function(state, dependencies/*, raiseDependencyStateChanged*/) {
 
