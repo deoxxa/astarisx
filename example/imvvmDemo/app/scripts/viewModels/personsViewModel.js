@@ -32,7 +32,7 @@ MyApp.PersonsViewModel = (function(){
 		var Person = PersonModel(personStateChangedHandler);
 
 		var DataContext = function(state, dependencies/*, raiseDependencyStateChanged*/) {
-
+			
 			state = state || {};
 			dependencies = dependencies || {};
 			

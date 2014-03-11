@@ -106,7 +106,6 @@ IMVVM.Main = (function(){
 				initialize = true;
 				nextState = {};
 			}
-
 			//Update state and watchers
 			dataContexts.forEach(function(dataContext){
 				processed.push(dataContext.name);
@@ -193,8 +192,7 @@ IMVVM.Main = (function(){
 			//Dependency Injection
 			args = [appStateChangedHandler.bind(this, dataContext.name)];
 			args.push.apply(args, dataContext.dependencies);
-
-			dataContextObjs[dataContext.name] = dataContext.viewModel.apply({appState: void 0, something:"Frank"}, args);
+			dataContextObjs[dataContext.name] = dataContext.viewModel.apply(this, args);
 			dataContextObjs[dataContext.name].prototype.extend = extend;
 
 			//Store dependent's data context names for later use in updateDependencies

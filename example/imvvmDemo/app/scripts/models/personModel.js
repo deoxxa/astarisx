@@ -11,6 +11,8 @@ var IMVVM = IMVVM || {};
 MyApp.PersonModel = (function(IMVVM){
 	var PersonModel = function (stateChangedHandler) {
 		var dataContext = function(state, withContext) {
+			
+			var raiseStateChanged;
 
 			if(typeof state === 'boolean'){
 				withContext = state;
@@ -44,7 +46,7 @@ MyApp.PersonModel = (function(IMVVM){
 					configurable: true,
 					enumerable: false,
 					set: function(context){
-						this.raiseStateChanged = stateChangedHandler(context);
+						raiseStateChanged = stateChangedHandler(context);
 						delete this.context;
 					}
 				},
@@ -64,7 +66,7 @@ MyApp.PersonModel = (function(IMVVM){
 					set: function(newValue){
 						var nextState = {};
 						nextState.firstName = newValue.length === 0 ? void 0 : newValue;
-						this.raiseStateChanged(this, nextState);
+						raiseStateChanged(this, nextState);
 					}
 				},
 
@@ -75,7 +77,7 @@ MyApp.PersonModel = (function(IMVVM){
 					set: function(newValue){
 						var nextState = {};
 						nextState.lastName = newValue.length === 0 ? void 0 : newValue;
-						this.raiseStateChanged(this, nextState);
+						raiseStateChanged(this, nextState);
 					}
 				},
 				
@@ -98,7 +100,7 @@ MyApp.PersonModel = (function(IMVVM){
 						nextState.firstName = firstname.length === 0 ? void 0 : firstname;
 						nextState.lastName = lastname.length === 0 && !isSpace ? void 0 : lastname;
 
-						this.raiseStateChanged(this, nextState);
+						raiseStateChanged(this, nextState);
 					}
 				},
 
@@ -109,7 +111,7 @@ MyApp.PersonModel = (function(IMVVM){
 						return state.occupation;
 					},
 					set: function(newValue){
-						this.raiseStateChanged(this, {'occupation': newValue });
+						raiseStateChanged(this, {'occupation': newValue });
 					}
 				},
 				
@@ -120,7 +122,7 @@ MyApp.PersonModel = (function(IMVVM){
 						return state.dob;
 					},
 					set: function(newValue){
-						this.raiseStateChanged(this, {'dob': newValue });
+						raiseStateChanged(this, {'dob': newValue });
 					}
 				},
 
@@ -136,7 +138,7 @@ MyApp.PersonModel = (function(IMVVM){
 					enumerable: true,
 					get: function(){ return state.gender; },
 					set: function(newValue){
-						this.raiseStateChanged(this, {'gender': newValue});
+						raiseStateChanged(this, {'gender': newValue});
 					}
 				},
 
@@ -147,7 +149,7 @@ MyApp.PersonModel = (function(IMVVM){
 					//must ensure object is initialised before freeze
 					get: function(){ return _hobbies },
 					set: function(newArray){
-						this.raiseStateChanged(this, {'hobbies': newArray});
+						raiseStateChanged(this, {'hobbies': newArray});
 					}
 				},
 
