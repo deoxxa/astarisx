@@ -1,6 +1,12 @@
 'use strict';
 
+var IMVVM = IMVVM || {};
+
 var IMVVMModelBase = function() {};
+var IMVVMModelInterface = {
+  raiseStateChanged: null,
+  initialiseState: null
+};
 
 var uuid = function () {
   /*jshint bitwise:false */
@@ -70,7 +76,7 @@ var IMVVMDataContext = {
         state = extend(state, this.originalSpec.initialiseState(state));
 
         var model = Object.create(this.prototype, descriptor);
-        
+
         Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,
@@ -97,7 +103,7 @@ var IMVVMDataContext = {
 
 mixInto(IMVVMModelBase, IMVVMDataContext.Mixin);
 
-var testSpec = {
+var PersonSpec = {
       
   addHobby: function(value){
     var arr;
@@ -106,17 +112,20 @@ var testSpec = {
       this.hobbies = arr.concat(value);
     }
   },
+  
   deleteHobby: function(value){
     this.hobbies = this.hobbies.filter(function(hobby){
       return hobby !== value;
     });
   },
+
   calculateAge: function(dob) { // dob is a date
       var DOB = new Date(dob);
       var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from epoch
       return Math.abs(ageDate.getFullYear() - 1970) + " years old";
   },
 
+  //May need to rename this - also in IMVVMModelInterface
   initialiseState: function(state){
     return { 
       id: state.id ? state.id : uuid(),
@@ -227,8 +236,8 @@ var testSpec = {
   hobbies: {
     configurable: false,
     enumerable: true,
-    //Explicitly set array to immutable
-    //must ensure object is initialised before freeze
+    //Must explicitly set array to immutable
+    //must ensure array is initialised before freeze
     get: function(){ return this.state.hobbies },
     set: function(newArray){
       this.raiseStateChanged(this.state, {'hobbies': newArray});
@@ -236,7 +245,7 @@ var testSpec = {
   },
 }
 
-var tempIMVVM = {
+var IMVVMCreateModel = {
   createModel: function(spec){
     var Constructor = function(){};
     Constructor.prototype = new IMVVMModelBase();
@@ -263,15 +272,13 @@ var tempIMVVM = {
     ConvenienceConstructor.type = Constructor;
     Constructor.prototype.type = Constructor;
 
-
-    Constructor.prototype.raiseStateChanged = null;
-    /*// Reduce time spent doing lookups by setting these on the prototype.
-    for (var methodName in ReactCompositeComponentInterface) {
+    // Reduce time spent doing lookups by setting these on the prototype.
+    for (var methodName in IMVVMModelInterface) {
       if (!Constructor.prototype[methodName]) {
         Constructor.prototype[methodName] = null;
       }
     }
-
+    /*
     if (__DEV__) {
       // In DEV the convenience constructor generates a proxy to another
       // instance around it to warn about access to properties on the
@@ -282,3 +289,5 @@ var tempIMVVM = {
     return ConvenienceConstructor;
   },
 };
+IMVVM.createModel = IMVVMCreateModel.createModel;
+

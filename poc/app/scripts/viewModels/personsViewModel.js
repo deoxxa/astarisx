@@ -5,8 +5,9 @@
 
 'use strict';
 var MyApp = MyApp || {};
+var IMVVM = IMVVM || {};
 
-var PersonModel = tempIMVVM.createModel(testSpec);
+var PersonModel = IMVVM.createModel(PersonSpec);
 
 MyApp.PersonsViewModel = (function(){
 	var PersonsViewModel = function(stateChangedHandler, DataService/*, PersonModel*/) {
