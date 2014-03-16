@@ -2,3 +2,8 @@
 example/imvvmDemo/node_modules/*
 
 example/imvvmDemo/.tmp/*
+
+poc/test/bower_components/*
+poc/.tmp/*
+poc/app/bower_components/*
+poc/node_modules/*
