@@ -1,6 +1,7 @@
 'use strict';
 
 var IMVVMModelBase = function() {};
+
 var uuid = function () {
   /*jshint bitwise:false */
   var i, random;
@@ -17,18 +18,19 @@ var uuid = function () {
 
   return uuid;
 };
+
 var extend = function () {
-      var newObj = {};
-      for (var i = 0; i < arguments.length; i++) {
-        var obj = arguments[i];
-        for (var key in obj) {
-          if (obj.hasOwnProperty(key)) {
-            newObj[key] = obj[key];
-          }
-        }
+  var newObj = {};
+  for (var i = 0; i < arguments.length; i++) {
+    var obj = arguments[i];
+    for (var key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        newObj[key] = obj[key];
       }
-      return newObj;
-    };
+    }
+  }
+  return newObj;
+};
 
 var mixInto = function(constructor, methodBag) {
   var methodName;
@@ -40,56 +42,22 @@ var mixInto = function(constructor, methodBag) {
   }
 };
 
-
-// var testSGH = function(oldState, newState){
-//        console.log('this');
-//        console.log(this);
-//        console.log('oldState');
-//        console.log(oldState);
-//        console.log('newState');
-//        console.log(newState);
-        
-//        //this.raiseStateChanged(/*appState, nextState*/);
-//      };
-
-var testSCH = function (context) {
-      console.log('Called TOP');
-
-  return function(oldState, newState){
-    console.log('Called');
-    // var nextState = context.extend(context);
-    // var personNextState;
-    // nextState.collection = nextState.collection.map(function(person){
-    //   if(person.id === oldState.id){
-    //     personNextState = context.extend(person, newState);
-    //     nextState.selected = Person(personNextState);
-    //     return nextState.selected;
-    //   }
-    //   return person;
-    // });
-    //raiseStateChanged(appState, nextState);
-  };
-}
-
-
 var IMVVMDataContext = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
-      this.prototype.raiseStateChanged = raiseStateChangeHandler;
-      var descriptor = {};
-      var k;
-      for(k in this.originalSpec){
-        if(this.originalSpec.hasOwnProperty(k)){
-          if('get' in this.originalSpec[k] || 'set' in this.originalSpec[k]){
-            //assume ii is a descriptor
-            descriptor[k] = this.originalSpec[k];
+      var key, descriptor = {};
+      for(key in this.originalSpec){
+        if(this.originalSpec.hasOwnProperty(key)){
+          if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
+            //assume it is a descriptor
+            descriptor[key] = this.originalSpec[key];
           } else {
-            this.prototype[k] = this.originalSpec[k];
+            this.prototype[key] = this.originalSpec[key];
           }
         }
       }
-      return function(state, withContext) {
-        
+
+      return function(state, withContext) {  
         if(typeof state === 'boolean'){
           withContext = state;
           state = {};
@@ -101,9 +69,9 @@ var IMVVMDataContext = {
 
         state = extend(state, this.originalSpec.initialiseState(state));
 
-        var retObj = Object.create(this.prototype, descriptor);
-
-        Object.defineProperty(retObj, 'state', {
+        var model = Object.create(this.prototype, descriptor);
+        
+        Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,
           writable: false,
@@ -111,26 +79,18 @@ var IMVVMDataContext = {
         });
         
         if(withContext){
-          Object.defineProperty(retObj, 'context', {
+          //This will self distruct
+          Object.defineProperty(model, 'context', {
             configurable: true,
             enumerable: true,
             set: function(context){
-              this.raiseStateChanged = this.raiseStateChanged(context);
+              this.raiseStateChanged = raiseStateChangeHandler(context);
               delete this.context;
             }
           });
         }
-
-        return retObj
+        return model;
       }.bind(this);
-
-
-    },
-
-    testFunc: function(oldState, nextState, callback){
-      console.log('raiseStateChanged');
-      console.log(this);
-      this.stateChangedHandler.apply(this, arguments);
     }
   }
 };
@@ -139,132 +99,141 @@ mixInto(IMVVMModelBase, IMVVMDataContext.Mixin);
 
 var testSpec = {
       
-      addPerson: function(){},
-      calculateAge: function(dob) { // dob is a date
-          var DOB = new Date(dob);
-          var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from epoch
-          return Math.abs(ageDate.getFullYear() - 1970) + " years old";
-      },
+  addHobby: function(value){
+    var arr;
+    if(this.hobbies.indexOf(value) === -1){
+      arr = this.hobbies.slice(0);
+      this.hobbies = arr.concat(value);
+    }
+  },
+  deleteHobby: function(value){
+    this.hobbies = this.hobbies.filter(function(hobby){
+      return hobby !== value;
+    });
+  },
+  calculateAge: function(dob) { // dob is a date
+      var DOB = new Date(dob);
+      var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from epoch
+      return Math.abs(ageDate.getFullYear() - 1970) + " years old";
+  },
 
-      initialiseState: function(state){
-        return { 
-          id: state.id ? state.id : uuid(),
-          age: this.calculateAge(state.dob) 
-        }
-      },
+  initialiseState: function(state){
+    return { 
+      id: state.id ? state.id : uuid(),
+      age: this.calculateAge(state.dob),
+      hobbies: state.hobbies || []
+    }
+  },
 
-      //immutable
-      id: {
-        configurable: false,
-        enumerable: true,
-        get: function(){
-          return this.state.id;
-        }
-      },
+  //immutable
+  id: {
+    configurable: false,
+    enumerable: true,
+    get: function(){
+      return this.state.id;
+    }
+  },
 
-      firstName: {
-        configurable: false,
-        enumerable: true,
-        get: function(){ return this.state.firstName; },
-        set: function(newValue){
-          var nextState = {};
-          nextState.firstName = newValue.length === 0 ? void 0 : newValue;
-          this.raiseStateChanged(this, nextState);
-        }
-      },
+  firstName: {
+    configurable: false,
+    enumerable: true,
+    get: function(){ return this.state.firstName; },
+    set: function(newValue){
+      var nextState = {};
+      nextState.firstName = newValue.length === 0 ? void 0 : newValue;
+      this.raiseStateChanged(this.state, nextState);
+    }
+  },
 
-      lastName: {
-        configurable: false,
-        enumerable: true,
-        get: function(){ return this.state.lastName; },
-        set: function(newValue){
-          var nextState = {};
-          nextState.lastName = newValue.length === 0 ? void 0 : newValue;
-          this.raiseStateChanged(this, nextState);
-        }
-      },
+  lastName: {
+    configurable: false,
+    enumerable: true,
+    get: function(){ return this.state.lastName; },
+    set: function(newValue){
+      var nextState = {};
+      nextState.lastName = newValue.length === 0 ? void 0 : newValue;
+      this.raiseStateChanged(this.state, nextState);
+    }
+  },
+  
+  fullName: {
+    configurable: false,
+    enumerable: false,
+    get: function(){            
+      if(this.lastName === void 0){
+        return this.firstName;
+      }
+      return this.firstName + " " + this.lastName; 
+    },
+    set: function(newValue){
+      var nextState = {};
+      var nameArr = newValue.split(" ");
+      var isSpace = newValue.slice(-1)[0] === " ";
+      var firstname = nameArr[0];
+      var lastname = nameArr.slice(1).join(" ");
       
-      fullName: {
-        configurable: false,
-        enumerable: false,
-        get: function(){            
-          if(this.lastName === void 0){
-            return this.firstName;
-          }
-          return this.firstName + " " + this.lastName; 
-        },
-        set: function(newValue){
-          var nextState = {};
-          var nameArr = newValue.split(" ");
-          var isSpace = newValue.slice(-1)[0] === " ";
-          var firstname = nameArr[0];
-          var lastname = nameArr.slice(1).join(" ");
-          
-          nextState.firstName = firstname.length === 0 ? void 0 : firstname;
-          nextState.lastName = lastname.length === 0 && !isSpace ? void 0 : lastname;
+      nextState.firstName = firstname.length === 0 ? void 0 : firstname;
+      nextState.lastName = lastname.length === 0 && !isSpace ? void 0 : lastname;
 
-          this.raiseStateChanged(this, nextState);
-        }
-      },
+      this.raiseStateChanged(this.state, nextState);
+    }
+  },
 
-      occupation: {
-        configurable: false,
-        enumerable: true,
-        get: function(){
-          return this.state.occupation;
-        },
-        set: function(newValue){
-          this.raiseStateChanged(this, {'occupation': newValue });
-        }
-      },
-      
-      dob: {
-        configurable: false,
-        enumerable: true,
-        get: function(){
-          return this.state.dob;
-        },
-        set: function(newValue){
-          var nextState = {};
-          console.log('this.state.dob');
-          console.log(newValue);
-          console.log(this.state.dob);
-          //Calculated field
-          if(newValue.length === 10){
-            nextState.age = this.calculateAge(newValue);
-          }
-          nextState.dob = newValue;
-          this.raiseStateChanged(this, nextState);
-        }
-      },
+  occupation: {
+    configurable: false,
+    enumerable: true,
+    get: function(){
+      return this.state.occupation;
+    },
+    set: function(newValue){
+      this.raiseStateChanged(this.state, {'occupation': newValue });
+    }
+  },
+  
+  dob: {
+    configurable: false,
+    enumerable: true,
+    get: function(){
+      return this.state.dob;
+    },
+    set: function(newValue){
+      var nextState = {};
+      if(newValue.length === 10){
+        nextState.age = this.calculateAge(newValue);
+      }
+      nextState.dob = newValue;
+      this.raiseStateChanged(this.state, nextState);
+    }
+  },
+  
+  //Calculated field -> dob
+  age: {
+    configurable: false,
+    enumerable: true,
+    get: function(){
+      return this.state.age;
+    }
+  },
+  
+  gender: {
+    configurable: false,
+    enumerable: true,
+    get: function(){ return this.state.gender; },
+    set: function(newValue){
+      this.raiseStateChanged(this.state, {'gender': newValue});
+    }
+  },
 
-      age: {
-        configurable: false,
-        enumerable: true,
-        get: function(){
-          return this.state.age;
-        }
-      },
-      
-      gender: {
-        configurable: false,
-        enumerable: true,
-        get: function(){ return this.state.gender; },
-        set: function(newValue){
-          this.raiseStateChanged(this, {'gender': newValue});
-        }
-      },
-
-      hobbies: {
-        configurable: false,
-        enumerable: true,
-        //Explicitly set array to immutable
-        //must ensure object is initialised before freeze
-        get: function(){ return this.state.hobbies },
-        set: function(newArray){
-          this.raiseStateChanged(this, {'hobbies': newArray});
-        }
-      },  
+  hobbies: {
+    configurable: false,
+    enumerable: true,
+    //Explicitly set array to immutable
+    //must ensure object is initialised before freeze
+    get: function(){ return this.state.hobbies },
+    set: function(newArray){
+      this.raiseStateChanged(this.state, {'hobbies': newArray});
+    }
+  },
 }
 
 var tempIMVVM = {
@@ -294,6 +263,8 @@ var tempIMVVM = {
     ConvenienceConstructor.type = Constructor;
     Constructor.prototype.type = Constructor;
 
+
+    Constructor.prototype.raiseStateChanged = null;
     /*// Reduce time spent doing lookups by setting these on the prototype.
     for (var methodName in ReactCompositeComponentInterface) {
       if (!Constructor.prototype[methodName]) {

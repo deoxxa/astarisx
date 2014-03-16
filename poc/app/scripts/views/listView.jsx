@@ -12,11 +12,6 @@ var MyApp = MyApp || {};
 MyApp.ListView = (function(App){
 	var ListView = React.createClass({
 		handleSelection: function(uid, e){
-
-			console.log('selected');
-			console.log(uid);
-			console.log(this.props.appContext.persons.select);
-
 			this.props.appContext.persons.select(uid);
 		},
 		deletePerson: function(uid, e){
@@ -29,8 +24,6 @@ MyApp.ListView = (function(App){
 			var DeleteButton = App.DeleteButtonControl;
 
 			var list = collection.map(function(person){
-				console.log('person');
-				console.log(person);
 				if(current.id === person.id){
 					return (
 						<a 

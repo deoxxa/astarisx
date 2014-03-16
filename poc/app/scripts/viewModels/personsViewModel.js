@@ -17,11 +17,6 @@ MyApp.PersonsViewModel = (function(){
 		/* private methods */
 		function personStateChangedHandler(context) {
 			return function(oldState, newState){
-
-
-
-
-
 				var nextState = context.extend(context);
 				var personNextState;
 				nextState.collection = nextState.collection.map(function(person){
@@ -158,11 +153,6 @@ MyApp.PersonsViewModel = (function(){
 					}
 					return Person(state, false);
 				});
-
-				console.log('nextState');
-				console.log(nextState);
-
-
 				return new DataContext(nextState);
 			}
 		};
