@@ -48,7 +48,7 @@ var mixInto = function(constructor, methodBag) {
   }
 };
 
-var IMVVMDataContext = {
+var IMVVMModel = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
       var key, descriptor = {};
@@ -101,9 +101,9 @@ var IMVVMDataContext = {
   }
 };
 
-mixInto(IMVVMModelBase, IMVVMDataContext.Mixin);
+mixInto(IMVVMModelBase, IMVVMModel.Mixin);
 
-var PersonSpec = {
+/*var PersonSpec = {
       
   addHobby: function(value){
     var arr;
@@ -243,7 +243,7 @@ var PersonSpec = {
       this.raiseStateChanged(this.state, {'hobbies': newArray});
     }
   },
-}
+}*/
 
 var IMVVMCreateModel = {
   createModel: function(spec){
@@ -289,5 +289,6 @@ var IMVVMCreateModel = {
     return ConvenienceConstructor;
   },
 };
+
 IMVVM.createModel = IMVVMCreateModel.createModel;
 

@@ -8,340 +8,147 @@
 var MyApp = MyApp || {};
 var IMVVM = IMVVM || {};
 
-var Model = {
-	Mixin: {
-		setStateChangedHandler: function(dataContext, stateChangedHandler){
-			return stateChangedHandler(dataContext);
-		},
-		construct: function(state, withContext){
-			
-			var raiseStateChanged = this.setStateChangedHandler;
-			this.state = state || {};
-			this.nextState = {};
-			if(typeof state === 'boolean'){
-				withContext = state;
-				state = {};
-			} else {
-				state = state || {};
-				//When creating an Object, withContext default is true
-				withContext = withContext === void 0 ? true : withContext;				
-			}
-
-			//Initialise defaults
-			var _id = state.id || IMVVM.uuid();
-			var _age;
-			var _hobbies = state.hobbies || [];
-
-			function _calculateAge(dob) { // dob is a date
-			    var ageDate = new Date(Date.now() - dob.getTime()); // miliseconds from epoch
-			    return Math.abs(ageDate.getFullYear() - 1970);
-			}
-			//Calculated field
-			if(state.dob && state.dob.length === 10){
-				_age = _calculateAge(new Date(state.dob)) + " years old";
-			}
-			var model = {
-
-				/*
-					This property will self distruct.
-					Once 'context' is set, it deletes itself!
-				*/
-				context: {
-					configurable: true,
-					enumerable: false,
-					set: function(context){
-						raiseStateChanged = stateChangedHandler(context);
-						delete this.context;
-					}
-				},
-
-				//immutable
-				id: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-					value: _id
-				},
-
-				firstName: {
-					configurable: false,
-					enumerable: true,
-					get: function(){ return state.firstName; },
-					set: function(newValue){
-						var nextState = {};
-						nextState.firstName = newValue.length === 0 ? void 0 : newValue;
-						raiseStateChanged(this, nextState);
-					}
-				},
-
-				lastName: {
-					configurable: false,
-					enumerable: true,
-					get: function(){ return state.lastName; },
-					set: function(newValue){
-						var nextState = {};
-						nextState.lastName = newValue.length === 0 ? void 0 : newValue;
-						raiseStateChanged(this, nextState);
-					}
-				},
-				
-				fullName: {
-					configurable: false,
-					enumerable: false,
-					get: function(){						
-						if(this.lastName === void 0){
-							return this.firstName;
-						}
-						return this.firstName + " " + this.lastName; 
-					},
-					set: function(newValue){
-						var nextState = {};
-						var nameArr = newValue.split(" ");
-						var isSpace = newValue.slice(-1)[0] === " ";
-						var firstname = nameArr[0];
-						var lastname = nameArr.slice(1).join(" ");
-						
-						nextState.firstName = firstname.length === 0 ? void 0 : firstname;
-						nextState.lastName = lastname.length === 0 && !isSpace ? void 0 : lastname;
-
-						raiseStateChanged(this, nextState);
-					}
-				},
-
-				occupation: {
-					configurable: false,
-					enumerable: true,
-					get: function(){
-						return state.occupation;
-					},
-					set: function(newValue){
-						raiseStateChanged(this, {'occupation': newValue });
-					}
-				},
-				
-				dob: {
-					configurable: false,
-					enumerable: true,
-					get: function(){
-						return state.dob;
-					},
-					set: function(newValue){
-						raiseStateChanged(this, {'dob': newValue });
-					}
-				},
-
-				age: {
-					configurable: false,
-					enumerable: false,
-					writable: false,
-					value: _age
-				},
-				
-				gender: {
-					configurable: false,
-					enumerable: true,
-					get: function(){ return state.gender; },
-					set: function(newValue){
-						raiseStateChanged(this, {'gender': newValue});
-					}
-				},
-
-				hobbies: {
-					configurable: false,
-					enumerable: true,
-					//Explicitly set array to immutable
-					//must ensure object is initialised before freeze
-					get: function(){ return _hobbies },
-					set: function(newArray){
-						raiseStateChanged(this, {'hobbies': newArray});
-					}
-				},
-
-			};
-
-			if(!withContext){
-				//Automaticalle deletes this property when not needed
-				delete model.context;
-			}
-			Object.freeze(model.hobbies);
-			return Object.create(construct.prototype, model);
-		}
-	}
-}
-
-
-
 MyApp.PersonModel = (function(IMVVM){
-	var PersonModel = function (stateChangedHandler) {
-		var dataContext = function(state, withContext) {
-			
-			var raiseStateChanged;
+	var PersonModel = IMVVM.createModel({
+	  addHobby: function(value){
+	    var arr;
+	    if(this.hobbies.indexOf(value) === -1){
+	      arr = this.hobbies.slice(0);
+	      this.hobbies = arr.concat(value);
+	    }
+	  },
+	  
+	  deleteHobby: function(value){
+	    this.hobbies = this.hobbies.filter(function(hobby){
+	      return hobby !== value;
+	    });
+	  },
 
-			if(typeof state === 'boolean'){
-				withContext = state;
-				state = {};
-			} else {
-				state = state || {};
-				//When creating an Object, withContext default is true
-				withContext = withContext === void 0 ? true : withContext;				
-			}
+	  calculateAge: function(dob) { // dob is a date
+	      var DOB = new Date(dob);
+	      var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from epoch
+	      return Math.abs(ageDate.getFullYear() - 1970) + " years old";
+	  },
 
-			//Initialise defaults
-			var _id = state.id || IMVVM.uuid();
-			var _age;
-			var _hobbies = state.hobbies || [];
+	  //May need to rename this - also in IMVVMModelInterface
+	  initialiseState: function(state){
+	    return { 
+	      id: state.id ? state.id : uuid(),
+	      age: this.calculateAge(state.dob),
+	      hobbies: state.hobbies || []
+	    }
+	  },
 
-			function _calculateAge(dob) { // dob is a date
-			    var ageDate = new Date(Date.now() - dob.getTime()); // miliseconds from epoch
-			    return Math.abs(ageDate.getFullYear() - 1970);
-			}
-			//Calculated field
-			if(state.dob && state.dob.length === 10){
-				_age = _calculateAge(new Date(state.dob)) + " years old";
-			}
-			var model = {
+	  //immutable
+	  id: {
+	    configurable: false,
+	    enumerable: true,
+	    get: function(){
+	      return this.state.id;
+	    }
+	  },
 
-				/*
-					This property will self distruct.
-					Once 'context' is set, it deletes itself!
-				*/
-				context: {
-					configurable: true,
-					enumerable: false,
-					set: function(context){
-						raiseStateChanged = stateChangedHandler(context);
-						delete this.context;
-					}
-				},
+	  firstName: {
+	    configurable: false,
+	    enumerable: true,
+	    get: function(){ return this.state.firstName; },
+	    set: function(newValue){
+	      var nextState = {};
+	      nextState.firstName = newValue.length === 0 ? void 0 : newValue;
+	      this.raiseStateChanged(this.state, nextState);
+	    }
+	  },
 
-				//immutable
-				id: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-					value: _id
-				},
+	  lastName: {
+	    configurable: false,
+	    enumerable: true,
+	    get: function(){ return this.state.lastName; },
+	    set: function(newValue){
+	      var nextState = {};
+	      nextState.lastName = newValue.length === 0 ? void 0 : newValue;
+	      this.raiseStateChanged(this.state, nextState);
+	    }
+	  },
+	  
+	  fullName: {
+	    configurable: false,
+	    enumerable: false,
+	    get: function(){            
+	      if(this.lastName === void 0){
+	        return this.firstName;
+	      }
+	      return this.firstName + " " + this.lastName; 
+	    },
+	    set: function(newValue){
+	      var nextState = {};
+	      var nameArr = newValue.split(" ");
+	      var isSpace = newValue.slice(-1)[0] === " ";
+	      var firstname = nameArr[0];
+	      var lastname = nameArr.slice(1).join(" ");
+	      
+	      nextState.firstName = firstname.length === 0 ? void 0 : firstname;
+	      nextState.lastName = lastname.length === 0 && !isSpace ? void 0 : lastname;
 
-				firstName: {
-					configurable: false,
-					enumerable: true,
-					get: function(){ return state.firstName; },
-					set: function(newValue){
-						var nextState = {};
-						nextState.firstName = newValue.length === 0 ? void 0 : newValue;
-						raiseStateChanged(this, nextState);
-					}
-				},
+	      this.raiseStateChanged(this.state, nextState);
+	    }
+	  },
 
-				lastName: {
-					configurable: false,
-					enumerable: true,
-					get: function(){ return state.lastName; },
-					set: function(newValue){
-						var nextState = {};
-						nextState.lastName = newValue.length === 0 ? void 0 : newValue;
-						raiseStateChanged(this, nextState);
-					}
-				},
-				
-				fullName: {
-					configurable: false,
-					enumerable: false,
-					get: function(){						
-						if(this.lastName === void 0){
-							return this.firstName;
-						}
-						return this.firstName + " " + this.lastName; 
-					},
-					set: function(newValue){
-						var nextState = {};
-						var nameArr = newValue.split(" ");
-						var isSpace = newValue.slice(-1)[0] === " ";
-						var firstname = nameArr[0];
-						var lastname = nameArr.slice(1).join(" ");
-						
-						nextState.firstName = firstname.length === 0 ? void 0 : firstname;
-						nextState.lastName = lastname.length === 0 && !isSpace ? void 0 : lastname;
+	  occupation: {
+	    configurable: false,
+	    enumerable: true,
+	    get: function(){
+	      return this.state.occupation;
+	    },
+	    set: function(newValue){
+	      this.raiseStateChanged(this.state, {'occupation': newValue });
+	    }
+	  },
+	  
+	  dob: {
+	    configurable: false,
+	    enumerable: true,
+	    get: function(){
+	      return this.state.dob;
+	    },
+	    set: function(newValue){
+	      var nextState = {};
+	      if(newValue.length === 10){
+	        nextState.age = this.calculateAge(newValue);
+	      }
+	      nextState.dob = newValue;
+	      this.raiseStateChanged(this.state, nextState);
+	    }
+	  },
+	  
+	  //Calculated field -> dob
+	  age: {
+	    configurable: false,
+	    enumerable: true,
+	    get: function(){
+	      return this.state.age;
+	    }
+	  },
+	  
+	  gender: {
+	    configurable: false,
+	    enumerable: true,
+	    get: function(){ return this.state.gender; },
+	    set: function(newValue){
+	      this.raiseStateChanged(this.state, {'gender': newValue});
+	    }
+	  },
 
-						raiseStateChanged(this, nextState);
-					}
-				},
-
-				occupation: {
-					configurable: false,
-					enumerable: true,
-					get: function(){
-						return state.occupation;
-					},
-					set: function(newValue){
-						raiseStateChanged(this, {'occupation': newValue });
-					}
-				},
-				
-				dob: {
-					configurable: false,
-					enumerable: true,
-					get: function(){
-						return state.dob;
-					},
-					set: function(newValue){
-						raiseStateChanged(this, {'dob': newValue });
-					}
-				},
-
-				age: {
-					configurable: false,
-					enumerable: false,
-					writable: false,
-					value: _age
-				},
-				
-				gender: {
-					configurable: false,
-					enumerable: true,
-					get: function(){ return state.gender; },
-					set: function(newValue){
-						raiseStateChanged(this, {'gender': newValue});
-					}
-				},
-
-				hobbies: {
-					configurable: false,
-					enumerable: true,
-					//Explicitly set array to immutable
-					//must ensure object is initialised before freeze
-					get: function(){ return _hobbies },
-					set: function(newArray){
-						raiseStateChanged(this, {'hobbies': newArray});
-					}
-				},
-
-			};
-
-			if(!withContext){
-				//Automaticalle deletes this property when not needed
-				delete model.context;
-			}
-			Object.freeze(model.hobbies);
-			return Object.create(PersonModel.prototype, model);
-		};
-		return dataContext;
-	};
-	
-	PersonModel.prototype = {
-		addHobby: function(value){
-			var arr;
-			if(this.hobbies.indexOf(value) === -1){
-				arr = this.hobbies.slice(0);
-				this.hobbies = arr.concat(value);
-			}
-		},
-		deleteHobby: function(value){
-			this.hobbies = this.hobbies.filter(function(hobby){
-				return hobby !== value;
-			});
-		}
-	};
+	  hobbies: {
+	    configurable: false,
+	    enumerable: true,
+	    //Must explicitly set array to immutable
+	    //must ensure array is initialised before freeze
+	    get: function(){ return this.state.hobbies },
+	    set: function(newArray){
+	      this.raiseStateChanged(this.state, {'hobbies': newArray});
+	    }
+	  },
+	});
 
 	return PersonModel;
 }(IMVVM));

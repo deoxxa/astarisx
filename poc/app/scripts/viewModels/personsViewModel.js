@@ -7,10 +7,10 @@
 var MyApp = MyApp || {};
 var IMVVM = IMVVM || {};
 
-var PersonModel = IMVVM.createModel(PersonSpec);
+//var PersonModel = IMVVM.createModel(PersonSpec);
 
 MyApp.PersonsViewModel = (function(){
-	var PersonsViewModel = function(stateChangedHandler, DataService/*, PersonModel*/) {
+	var PersonsViewModel = function(stateChangedHandler, DataService, PersonModel) {
 		
 		var raiseStateChanged = stateChangedHandler;
 		var appState = void 0;
