@@ -5,7 +5,7 @@
 
 'use strict';
 var IMVVM = IMVVM || {};
-
+IMVVM.version = 'IMVVM Ver 0.0.1';
 IMVVM.IMVVMMixin = {
 	stateChangedHandler: function(dataContext, callback){
 		this.setState({appContext: dataContext}, function(){
@@ -26,28 +26,9 @@ IMVVM.IMVVMMixin = {
 	},
 
 	getInitialState: function(){
-		var appDataContext = IMVVM.Main('IMVVM Ver 0.0.1', this.props.viewModel,
-			this.props.dataContexts, this.stateChangedHandler, this.props.initArgs);
+		var appDataContext = IMVVM.Main(IMVVM.version, this.props.viewModel, this.props.initArgs,
+			this.props.dataContexts, this.stateChangedHandler);
 		return {appContext: appDataContext};
 	}
 
-	/*
-
-	var myConfig = IMVVM.createConfig({
-		appName: 'fdfdf',
-		version: '0000',
-		dataContexts: [],
-		AppViewModel: XXX,
-		initArgs: {}
-	});
-
-	React.renderComponent(<ApplicationView config=myConfig />, document.getElementById('container'));
-
-	getInitialState: function(){
-		var appDataContext = IMVVM.Main(this.props.config.appName+this.props.config.version,
-			this.props.config.viewModel, this.props.config.dataContexts,
-			this.stateChangedHandler, this.props.config.initArgs);
-		return {appContext: appDataContext};
-	}
-	*/
 };

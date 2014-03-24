@@ -11,12 +11,12 @@ var MyApp = MyApp || {};
 
 /* Kick of the App*/
 (function(App){
-	//All Props required
-	var ApplicationView = App.ApplicationView;
 
+	var ApplicationView = App.ApplicationView;
+  //initArgs is Optional - passed to AppViewModel init
 	React.renderComponent(<ApplicationView 
 		viewModel={App.ApplicationViewModel} 
-		initArgs={{appName: 'IMVVM Demo'}}//Can be array, objects or whatever
+		initArgs={{appName: 'IMVVM Demo'}}
 		dataContexts={App.DataContexts} />,
 		document.getElementById('container'));
 

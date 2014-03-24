@@ -19,25 +19,21 @@ IMVVM.uuid = function () {
 		uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
 			.toString(16);
 	}
-
 	return uuid;
 };
 
 IMVVM.Main = (function(){
-	var Main = function(applicationNamespace, appDataContext, dataContexts, stateChangedHandler/*, restArgs*/) {
+	var Main = function(appNamespace, appViewModel, initArgs, dataContexts, stateChangedHandler) {
 
 		if(typeof stateChangedHandler !== 'function'){
 			throw new TypeError();
 		}
-
-		var restArgs = arguments.length >= 4 ? Array.prototype.slice.call(arguments).slice(5) : void 0;
 		
-		var appDataContextName = applicationNamespace,
+		var appDataContextName = appNamespace,
+			thisAppState = void 0,
 			dataContextObjs = {},
 			watchedProps,
 			watchList = {};
-
-		var thisAppState = void 0;
 
 		var extend = function () {
 			var newObj = {};
@@ -109,25 +105,6 @@ IMVVM.Main = (function(){
 					}					
 				}
 			}
-
-			/*//Update state and dependencies
-			dataContexts.forEach(function(dataContext){
-				dependencies = getDependencies(dataContext);
-				//Need to inject dependencies so that the state for this object can change
-				//if required. Can't use appState as that is provided after the object is created
-				if(initialize){
-					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], dependencies, prevState[dataContext.name]).init(dataContext.initArgs);
-				} else {
-					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], dependencies, prevState[dataContext.name]);
-				}
-				if(watchedDataContext){
-					if(processed && watchedDataContext.subscribers.indexOf(dataContext.name) !== -1){
-						dependencies = getDependencies(dataContextHash[watchedDataContext.name]);
-						nextState[watchedDataContext.name] = new dataContextObjs[watchedDataContext.name](nextState[watchedDataContext.name], dependencies, prevState[watchedDataContext.name]);
-					}
-					processed = processed ? processed : dataContext.name === watchedDataContext.name;
-				}
-			});*/
 			return nextState;
 		};
 
@@ -198,7 +175,7 @@ IMVVM.Main = (function(){
 			return appContext;
 		};
 
-		var ApplicationDataContext = appDataContext.call(this, appStateChangedHandler.bind(this, appDataContextName));
+		var ApplicationDataContext = appViewModel.call(this, appStateChangedHandler.bind(this, appDataContextName));
 
 		for(var dataContextName in dataContexts){
 			if(dataContexts.hasOwnProperty(dataContextName)){
@@ -217,7 +194,7 @@ IMVVM.Main = (function(){
 				}
 			}
 		}
-		return new ApplicationDataContext().init(restArgs);
+		return new ApplicationDataContext().init(initArgs);
 	};
 	return Main;
 }());

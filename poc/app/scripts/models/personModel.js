@@ -31,11 +31,14 @@ MyApp.PersonModel = (function(IMVVM){
 	  },
 
 	  //May need to rename this - also in IMVVMModelInterface
-	  initialiseState: function(state, prevState){
+	  getInitialState: function(state, prevState){
+	    var _hobbies = state.hobbies || [];
+      Object.freeze(_hobbies);
+
 	    return { 
 	      id: state.id ? state.id : uuid(),
 	      age: this.calculateAge(state.dob),
-	      hobbies: state.hobbies || []
+	      hobbies: _hobbies
 	    }
 	  },
 
@@ -53,7 +56,7 @@ MyApp.PersonModel = (function(IMVVM){
 	    set: function(newValue){
 	      var nextState = {};
 	      nextState.firstName = newValue.length === 0 ? void 0 : newValue;
-	      this.raiseStateChanged(nextState);
+	      this.setState(nextState);
 	    }
 	  },
 
@@ -63,7 +66,7 @@ MyApp.PersonModel = (function(IMVVM){
 	    set: function(newValue){
 	      var nextState = {};
 	      nextState.lastName = newValue.length === 0 ? void 0 : newValue;
-	      this.raiseStateChanged(nextState);
+	      this.setState(nextState);
 	    }
 	  },
 	  
@@ -85,7 +88,7 @@ MyApp.PersonModel = (function(IMVVM){
 	      nextState.firstName = firstname.length === 0 ? void 0 : firstname;
 	      nextState.lastName = lastname.length === 0 && !isSpace ? void 0 : lastname;
 
-	      this.raiseStateChanged(nextState);
+	      this.setState(nextState);
 	    }
 	  },
 
@@ -95,7 +98,7 @@ MyApp.PersonModel = (function(IMVVM){
 	      return this.state.occupation;
 	    },
 	    set: function(newValue){
-	      this.raiseStateChanged({'occupation': newValue });
+	      this.setState({'occupation': newValue });
 	    }
 	  },
 	  
@@ -110,7 +113,7 @@ MyApp.PersonModel = (function(IMVVM){
 	        nextState.age = this.calculateAge(newValue);
 	      }
 	      nextState.dob = newValue;
-	      this.raiseStateChanged(nextState);
+	      this.setState(nextState);
 	    }
 	  },
 	  
@@ -126,7 +129,7 @@ MyApp.PersonModel = (function(IMVVM){
 	    enumerable: true,
 	    get: function(){ return this.state.gender; },
 	    set: function(newValue){
-	      this.raiseStateChanged({'gender': newValue});
+	      this.setState({'gender': newValue});
 	    }
 	  },
 
@@ -136,7 +139,7 @@ MyApp.PersonModel = (function(IMVVM){
 	    //must ensure array is initialised before freeze
 	    get: function(){ return this.state.hobbies },
 	    set: function(newArray){
-	      this.raiseStateChanged({'hobbies': newArray});
+	      this.setState({'hobbies': newArray});
 	    }
 	  },
 	});

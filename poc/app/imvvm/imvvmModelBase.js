@@ -5,8 +5,11 @@ var IMVVM = IMVVM || {};
 var IMVVMBase = function() {};
 
 var IMVVMInterface = {
-  //raiseStateChanged: null,
-  initialiseState: null,
+  //setState: null,
+  //getInitialState: null,
+  // init: function(){
+  //   return this.DataContext();
+  // }
 };
 
 var uuid = function () {
@@ -72,12 +75,25 @@ var IMVVMModel = {
       }
 
       if(!Model){
-        proto.raiseStateChanged = raiseStateChangeHandler;
+        proto.setState = raiseStateChangeHandler;
       }
       proto.extend = extend;
       var dataContext = function(state, withContext, oldState) {
         if(ViewModel){
-          proto.DataContext = dataContext;          
+          proto.DataContext = dataContext;
+          if(!('init' in proto)){
+            proto.init = function(){
+              return this.DataContext();
+            }
+          }
+        }
+        if(AppViewModel){
+          proto.DataContext = proto.setState;
+          if(!('init' in proto)){
+            proto.init = function(){
+              return this.setState({});
+            }
+          }
         }
         var model = Object.create(proto, descriptor);
         if(Model){
@@ -107,8 +123,8 @@ var IMVVMModel = {
             withContext = true;
           }
           
-          if(originalSpec.initialiseState){
-            state = extend(state, originalSpec.initialiseState(state, oldState ? oldState.state: void 0));
+          if(originalSpec.getInitialState){
+            state = extend(state, originalSpec.getInitialState(state, oldState ? oldState.state: void 0));
           }
 
           if(withContext){
@@ -117,7 +133,7 @@ var IMVVMModel = {
               configurable: true,
               enumerable: true,
               set: function(context){
-                this.raiseStateChanged = raiseStateChangeHandler(context);
+                this.setState = raiseStateChangeHandler(context);
                 delete this.context;
               }
             });
@@ -135,8 +151,8 @@ var IMVVMModel = {
               });  
             }
 
-            if(originalSpec.initialiseState){
-              state = extend(state, originalSpec.initialiseState(state, oldState ? oldState.state: void 0));
+            if(originalSpec.getInitialState){
+              state = extend(state, originalSpec.getInitialState(state, oldState ? oldState.state: void 0));
             }
 
           } else { //Assume it is AppViewModel
@@ -148,8 +164,8 @@ var IMVVMModel = {
               value: withContext
             });
             //Do this after previousState is set so that it is included
-            if(originalSpec.initialiseState){
-              state = extend(state, originalSpec.initialiseState(state, withContext ? withContext.state: void 0));
+            if(originalSpec.getInitialState){
+              state = extend(state, originalSpec.getInitialState(state, withContext ? withContext.state: void 0));
             }
             //set this last
             //TODO - rework this, as __proto__ is deprecated
@@ -219,8 +235,10 @@ var IMVVMCreateClass = {
     for (var methodName in IMVVMInterface) {
       if (!Constructor.prototype[methodName]) {
         Constructor.prototype[methodName] = null;
+        //Constructor.prototype[methodName] = IMVVMInterface[methodName];
       }
     }
+
     /*
     if (__DEV__) {
       // In DEV the convenience constructor generates a proxy to another

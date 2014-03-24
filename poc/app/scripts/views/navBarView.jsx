@@ -16,6 +16,7 @@ MyApp.NavBarView = (function(IMVVM, App){
 			$(this.refs.menu.getDOMNode()).slideToggle();
 		},
 		undo: function(e){
+			e.preventDefault();
 			this.props.appContext.undo();
 		},
 		render: function(){

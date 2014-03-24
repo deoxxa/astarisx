@@ -5,87 +5,69 @@
 
 'use strict';
 var MyApp = MyApp || {};
+var IMVVM = IMVVM || {};
 
-
-MyApp.HobbiesViewModel = (function(){ 
-	var HobbiesViewModel = function(stateChangedHandler/*, injected dependencies */){
+MyApp.HobbiesViewModel = (function(App, IMVVM){
+  var HobbiesViewModel = IMVVM.createViewModel({
+  	select: function(value){
+			var nextState = extend(this);
+			nextState.selected = this.collectionItems.filter(function(hobby){
+				return hobby === value;
+			})[0];
+			this.setState(nextState);
+		},
 		
-		var raiseStateChanged = stateChangedHandler;
-		var appState = void 0;
+		addHobby: function(value){
+			this.state.dependencies.selectedPerson.addHobby(value);
+		},
+		
+		deleteHobby: function(value){
+			this.state.dependencies.selectedPerson.deleteHobby(value);
+		},
 
-		var DataContext = function(state, dependencies, raiseWatchedStateChanged) {
-			
-			state = state || {};
-			dependencies = dependencies || {};
-			
-			var _selected = state.selected;
-			var _selectedPerson = dependencies.selectedPerson ? dependencies.selectedPerson : {};
-			var _hobbies = dependencies.selectedPerson ? dependencies.selectedPerson.hobbies : [];
-			var watchedStateChanged = false;
-			//Reset selected item if a new Person is selected
-			if(state.selectedPerson && state.selectedPerson.id !== _selectedPerson.id && _selected !== void 0){
-				_selected = void 0;
-				watchedStateChanged = true;
+		// //Optional
+		// init: function(/*args*/){
+		// 	return this.DataContext();
+		// },
+		//When a dependency changes reset the selected hobby to undefined
+		resetSelected: function(state, prevState) {
+			prevState = prevState || {};
+    	if(prevState.dependencies &&
+    		state.dependencies.selectedPerson.id !== prevState.dependencies.selectedPerson.id &&
+    		state.selected !== void 0){
+					return void 0;
+    	}
+    	return state.selected;
+	  },
+
+		getInitialState: function(state, prevState){
+			return { 
+        //selected: state.selected || {},
+        selected: this.resetSelected(state, prevState),
+      }
+		},
+
+		collectionItems: { 
+			enumerable: false,
+			get: function(){
+				return this.selectedPerson.hobbies;
 			}
-
-			var dataContext = Object.create(DataContext.prototype, {
-
-				appContext : {
-					configurable: true,
-					enumerable: false,
-					set: function(context){
-						appState = context;
-						delete this.appContext;
-					}
-				},
-
-				collectionItems: { 
-					enumerable: false,
-					value: _hobbies
-				},
-				
-				selectedPerson: { 
-					enumerable: true, //only need to make deps enum === true if you need it in this PM...see reset above
-					value: _selectedPerson
-				},
-
-				selected: {
-					enumerable: true,
-					value: _selected
-				},
-
-			});
-
-			//Need to freeze arrays
-
-			//Call this at the end so that it is not called multiple times
-			if(watchedStateChanged){
-				raiseWatchedStateChanged(dataContext);
-				//check if I need to do this for memory leaks ???
-				raiseWatchedStateChanged = null;
+		},
+		
+		selectedPerson: { 
+			enumerable: false, //deps are always enum === false
+			get: function(){
+				return this.state.dependencies.selectedPerson;
 			}
-			return dataContext;
-		};
+		},
 
-		DataContext.prototype = {
-			select: function(value){
-				var nextState = extend(this);
-				nextState.selected = this.collectionItems.filter(function(hobby){
-					return hobby === value;
-				})[0];
-				raiseStateChanged(appState, nextState);
-			},
-			addHobby: function(value){
-				this.selectedPerson.addHobby(value);
-			},
-			deleteHobby: function(value){
-				this.selectedPerson.deleteHobby(value);
-			},
-			init: function(/*args*/){
-				return new DataContext();
-			},
-		};
-		return DataContext;
-	};
-	return HobbiesViewModel;
-}());
+		selected: {
+			enumerable: true,
+			get: function(){
+				return this.state.selected;
+			}
+		},
+  });
+  return HobbiesViewModel;
+
+}(MyApp, IMVVM));

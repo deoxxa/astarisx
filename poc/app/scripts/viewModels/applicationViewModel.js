@@ -14,7 +14,7 @@ MyApp.ApplicationViewModel = (function(IMVVM){
       /*
         default init function for AppViewModel:
         init: function(){
-          return this.raiseStateChanged({});
+          return this.setState({});
         }
 
         default init for ViewModels:
@@ -23,21 +23,19 @@ MyApp.ApplicationViewModel = (function(IMVVM){
         }
 
       */
-
-
       //Call transitionState with no params to initialize state 
-      //and pass returned state to appState arg of raiseStateChanged
+      //and pass returned state to appState arg of setState
       //then more work will be done before returning with the new AppState
       //pass in any initial appState as second arg
-      return this.raiseStateChanged(extend(args[0],{online: true }), true);
+      return this.DataContext(extend(args,{online: true }), true);
     },
     undo: function(){
       if(this.canUndo){
-        this.raiseStateChanged(this.previousState);
+        this.setState(this.previousState);
       }
     },
     // May need to rename this - also in IMVVMModelInterface
-    initialiseState: function(state){ //Optional
+    getInitialState: function(state){ //Optional
       return { 
         canUndo: !!state.previousState,
         online: typeof state.online === 'boolean' ? state.online : false,
