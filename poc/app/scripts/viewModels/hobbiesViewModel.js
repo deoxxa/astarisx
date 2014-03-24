@@ -40,30 +40,17 @@ MyApp.HobbiesViewModel = (function(){
 				},
 
 				collectionItems: { 
-					configurable: false,
 					enumerable: false,
-					writable: false, 
 					value: _hobbies
 				},
-
-				// selectedPersonId: { 
-				// 	configurable: false,
-				// 	enumerable: true, //only need to make deps enum === true if you need it in this PM...see reset above
-				// 	writable: false, 
-				// 	value: _selectedPerson.id
-				// },
 				
 				selectedPerson: { 
-					configurable: false,
 					enumerable: true, //only need to make deps enum === true if you need it in this PM...see reset above
-					writable: false, 
 					value: _selectedPerson
 				},
 
 				selected: {
-					configurable: false,
 					enumerable: true,
-					writable: false,
 					value: _selected
 				},
 
@@ -82,7 +69,7 @@ MyApp.HobbiesViewModel = (function(){
 
 		DataContext.prototype = {
 			select: function(value){
-				var nextState = this.extend(this);
+				var nextState = extend(this);
 				nextState.selected = this.collectionItems.filter(function(hobby){
 					return hobby === value;
 				})[0];

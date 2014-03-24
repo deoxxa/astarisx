@@ -9,6 +9,22 @@ var IMVVM = IMVVM || {};
 
 //var PersonModel = IMVVM.createModel(PersonSpec);
 
+/*
+		//inject descriptor
+		{ 
+			Person: {
+				args: [this.personStateChangeHandler],
+				const:function(args){
+					return App.PersonModel(args[0]);
+				},
+				prop: this.selected //This is where the context gets set - Probably should check if its an Array
+			}
+		},
+		//watch
+		watch: [{property: 'hobbies.selected', alias: 'selectedHobby'},
+			{property: 'online'}],
+*/
+
 MyApp.PersonsViewModel = (function(){
 	var PersonsViewModel = function(stateChangedHandler, DataService, PersonModel) {
 		
@@ -60,30 +76,22 @@ MyApp.PersonsViewModel = (function(){
 				},
 
 				collection: {
-					configurable: false,
 					enumerable: true, //This must be true to persist during state transition
-					writable: false, 
 					value: _collection
 				},
 
 				selected: {
-					configurable: false,
 					enumerable: true,
-					writable: false,
 					value: state.selected
 				},
 
 				selectedHobby: {
-					configurable: false,
 					enumerable: false, //not required to be true because it is dependent
-					writable: false,
 					value: dependencies.selectedHobby
 				},
 
 				imOnline: {
-					configurable: false,
 					enumerable: false, //not required to be true because it is dependent
-					writable: false,
 					value: dependencies.online
 				},
 			});

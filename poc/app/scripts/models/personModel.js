@@ -31,7 +31,7 @@ MyApp.PersonModel = (function(IMVVM){
 	  },
 
 	  //May need to rename this - also in IMVVMModelInterface
-	  initialiseState: function(state){
+	  initialiseState: function(state, prevState){
 	    return { 
 	      id: state.id ? state.id : uuid(),
 	      age: this.calculateAge(state.dob),
@@ -41,7 +41,6 @@ MyApp.PersonModel = (function(IMVVM){
 
 	  //immutable
 	  id: {
-	    configurable: false,
 	    enumerable: true,
 	    get: function(){
 	      return this.state.id;
@@ -49,29 +48,26 @@ MyApp.PersonModel = (function(IMVVM){
 	  },
 
 	  firstName: {
-	    configurable: false,
 	    enumerable: true,
 	    get: function(){ return this.state.firstName; },
 	    set: function(newValue){
 	      var nextState = {};
 	      nextState.firstName = newValue.length === 0 ? void 0 : newValue;
-	      this.raiseStateChanged(this.state, nextState);
+	      this.raiseStateChanged(nextState);
 	    }
 	  },
 
 	  lastName: {
-	    configurable: false,
 	    enumerable: true,
 	    get: function(){ return this.state.lastName; },
 	    set: function(newValue){
 	      var nextState = {};
 	      nextState.lastName = newValue.length === 0 ? void 0 : newValue;
-	      this.raiseStateChanged(this.state, nextState);
+	      this.raiseStateChanged(nextState);
 	    }
 	  },
 	  
 	  fullName: {
-	    configurable: false,
 	    enumerable: false,
 	    get: function(){            
 	      if(this.lastName === void 0){
@@ -89,23 +85,21 @@ MyApp.PersonModel = (function(IMVVM){
 	      nextState.firstName = firstname.length === 0 ? void 0 : firstname;
 	      nextState.lastName = lastname.length === 0 && !isSpace ? void 0 : lastname;
 
-	      this.raiseStateChanged(this.state, nextState);
+	      this.raiseStateChanged(nextState);
 	    }
 	  },
 
 	  occupation: {
-	    configurable: false,
 	    enumerable: true,
 	    get: function(){
 	      return this.state.occupation;
 	    },
 	    set: function(newValue){
-	      this.raiseStateChanged(this.state, {'occupation': newValue });
+	      this.raiseStateChanged({'occupation': newValue });
 	    }
 	  },
 	  
 	  dob: {
-	    configurable: false,
 	    enumerable: true,
 	    get: function(){
 	      return this.state.dob;
@@ -116,13 +110,12 @@ MyApp.PersonModel = (function(IMVVM){
 	        nextState.age = this.calculateAge(newValue);
 	      }
 	      nextState.dob = newValue;
-	      this.raiseStateChanged(this.state, nextState);
+	      this.raiseStateChanged(nextState);
 	    }
 	  },
 	  
 	  //Calculated field -> dob
 	  age: {
-	    configurable: false,
 	    enumerable: true,
 	    get: function(){
 	      return this.state.age;
@@ -130,22 +123,20 @@ MyApp.PersonModel = (function(IMVVM){
 	  },
 	  
 	  gender: {
-	    configurable: false,
 	    enumerable: true,
 	    get: function(){ return this.state.gender; },
 	    set: function(newValue){
-	      this.raiseStateChanged(this.state, {'gender': newValue});
+	      this.raiseStateChanged({'gender': newValue});
 	    }
 	  },
 
 	  hobbies: {
-	    configurable: false,
 	    enumerable: true,
 	    //Must explicitly set array to immutable
 	    //must ensure array is initialised before freeze
 	    get: function(){ return this.state.hobbies },
 	    set: function(newArray){
-	      this.raiseStateChanged(this.state, {'hobbies': newArray});
+	      this.raiseStateChanged({'hobbies': newArray});
 	    }
 	  },
 	});

@@ -5,91 +5,73 @@
 
 'use strict';
 var MyApp = MyApp || {};
+var IMVVM = IMVVM || {};
 
-MyApp.ApplicationViewModel = (function(){
-	var ApplicationViewModel = function(stateChangedHandler/*, injected dependencies */){
-		
-		var raiseStateChanged = stateChangedHandler;
+MyApp.ApplicationViewModel = (function(IMVVM){
+  var ApplicationViewModel = IMVVM.createAppViewModel({
+    init: function(args){ //optional
 
-		var DataContext = function (state, prevState) {
+      /*
+        default init function for AppViewModel:
+        init: function(){
+          return this.raiseStateChanged({});
+        }
 
-			state = state || {};
-			prevState = prevState || void 0;
-			
-			var _busy = state.busy === void 0 ? false : state.busy;
-			var _online = state.online === void 0 ? false : state.online;
+        default init for ViewModels:
+        init: function(){
+          return new DataContext();
+        }
 
-			var appDataContext = Object.create(DataContext.prototype, {
-				previousState: { 
-					configurable: false,
-					enumerable: false,
-					writable: false,
-					value: prevState
-				},
-				/* 
-					Does not need to be enumerable as the state for this is
-					stored and set in applicationDataContext which will never change
-				*/
-				appName: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-					value: state.appName
-				},
+      */
 
-				canUndo: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-					value: !!prevState
-				},
 
-				busy: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-					value: _busy
-				},
+      //Call transitionState with no params to initialize state 
+      //and pass returned state to appState arg of raiseStateChanged
+      //then more work will be done before returning with the new AppState
+      //pass in any initial appState as second arg
+      return this.raiseStateChanged(extend(args[0],{online: true }), true);
+    },
+    undo: function(){
+      if(this.canUndo){
+        this.raiseStateChanged(this.previousState);
+      }
+    },
+    // May need to rename this - also in IMVVMModelInterface
+    initialiseState: function(state){ //Optional
+      return { 
+        canUndo: !!state.previousState,
+        online: typeof state.online === 'boolean' ? state.online : false,
+        busy: typeof state.busy === 'boolean' ? state.busy : false
+      }
+    },
+    appName: {
+      enumerable: true,
+      get: function(){
+        return this.state.appName;
+      },
+    },
 
-				online: {
-					configurable: false,
-					enumerable: true,
-					writable: false,
-					value: _online
-				},
+    canUndo: {
+      enumerable: true,
+      get: function(){
+        return !!this.state.previousState;
+      },
+    },
 
-			});
-			//create the next appState data context
-			for(var k in state){
-				if(state.hasOwnProperty(k)){
-					if(Object.prototype.toString.call(state[k]) === '[object Object]' && 
-						('appContext' in state[k])){
-						appDataContext[k] = state[k];
-						appDataContext[k].appContext = appDataContext;
-						Object.freeze(appDataContext[k]);
-					}
-				}
-			}
+    busy: {
+      enumerable: true,
+      get: function(){
+        return this.state.busy;
+      }
+    },
 
-			return Object.freeze(appDataContext);
-		};
+    online: {
+      enumerable: true,
+      get: function(){
+        return this.state.online;
+      }
+    },
+  }); 
 
-		DataContext.prototype = {
-			init: function(args){
-				//Call transitionState with no params to initialize state 
-				//and pass returned state to appState arg of raiseStateChanged
-				//then more work will be done before returning with the new AppState
-				//pass in any initial appState as second arg
-				return raiseStateChanged({}, this.extend(args[0],{online: true }));
-			},
-			undo: function(){
-				if(this.canUndo){
-					raiseStateChanged(this.previousState);
-				}
-			}
-		};
-		
-		return DataContext;
-	};
-	return ApplicationViewModel;
-}());
+  return ApplicationViewModel;
+}(IMVVM));

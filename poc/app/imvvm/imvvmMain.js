@@ -24,21 +24,20 @@ IMVVM.uuid = function () {
 };
 
 IMVVM.Main = (function(){
-	var Main = function(applicationNamespace, appDataContext, dataContexts, dependencies, stateChangedHandler/*, restArgs*/) {
+	var Main = function(applicationNamespace, appDataContext, dataContexts, stateChangedHandler/*, restArgs*/) {
 
 		if(typeof stateChangedHandler !== 'function'){
 			throw new TypeError();
 		}
-		
-		dependencies = dependencies || [];
 
-		var restArgs = arguments.length >= 5 ? Array.prototype.slice.call(arguments).slice(5) : void 0;
+		var restArgs = arguments.length >= 4 ? Array.prototype.slice.call(arguments).slice(5) : void 0;
 		
 		var appDataContextName = applicationNamespace,
 			dataContextObjs = {},
-			subscribers,
 			watchedProps,
-			subscribersList;
+			watchList = {};
+
+		var thisAppState = void 0;
 
 		var extend = function () {
 			var newObj = {};
@@ -53,65 +52,24 @@ IMVVM.Main = (function(){
 			return newObj;
 		};
 
-		var watchedStateChangedHandler = function(caller, processed, callerState){
-			/* "this" bound to nextState variable at initialisation */
-			var nextState = this,
-				callerNextState = {},
+		var transitionState = function(nextState, prevState, watchedDataContext){
+			var processed = false,
 				props,
-				watchers,
-				watchedValue;
-
-			callerNextState[caller] = callerState;
-			callerNextState = extend(nextState, callerNextState);
-
-			//Update watchers
-			dataContexts.forEach(function(dataContext){				
-				//Only update if the PM has already been processed and it has
-				//a dependency on the caller data context
-				if(dataContext.name !== caller && ('watch' in dataContext) &&
-					processed.indexOf(dataContext.name) !== -1 &&
-					dataContext.watchers.indexOf(caller) !== -1){
-					watchers = {};
-					dataContext.watch.forEach(function(dependency){
-						props = dependency.property.split('.');
-						props.forEach(function(prop, idx){
-							if(idx === 0){
-								watchedValue = callerNextState[prop];
-							} else {
-								watchedValue = watchedValue[prop];
-							}
-						});
-						if('alias' in dependency){
-							watchers[dependency.alias] = watchedValue;
-						} else {
-							watchers[props.slice(-1)[0]] = watchedValue;
-						}
-					});
-					//Need to inject watchers so that the state for this object can change
-					//if required. Can't use appState as that is provided after the object is created
-					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], watchers,
-						watchedStateChangedHandler.bind(nextState, dataContext.name, processed));
-				}
-			});
-		};
-
-		var transitionState = function(nextState){
-			var processed = [],//stores datacontexts already processed
-				props,
-				watchers,
+				dependencies,
 				watchedValue,
 				initialize;
+
+			prevState = prevState || {};
 
 			if(nextState === void 0){
 				initialize = true;
 				nextState = {};
 			}
-			//Update state and watchers
+			//Update state and dependencies
 			dataContexts.forEach(function(dataContext){
-				processed.push(dataContext.name);
-				if('watch' in dataContext){
-					watchers = {};
-					dataContext.watch.forEach(function(dependency){
+				dependencies = {};
+				if('dependsOn' in dataContext){
+					dataContext.dependsOn.forEach(function(dependency){
 						watchedValue = {};
 						props = dependency.property.split('.');
 						props.forEach(function(prop, idx){
@@ -122,97 +80,164 @@ IMVVM.Main = (function(){
 							}
 						});
 						if('alias' in dependency){
-							watchers[dependency.alias] = watchedValue;
+							dependencies[dependency.alias] = watchedValue;
 						} else {
-							watchers[props.slice(-1)[0]] = watchedValue;
+							dependencies[props.slice(-1)[0]] = watchedValue;
 						}
 					});
 				}
-				//Need to inject watchers so that the state for this object can change
+				//Need to inject dependencies so that the state for this object can change
 				//if required. Can't use appState as that is provided after the object is created
 				if(initialize){
-					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], watchers,
-					watchedStateChangedHandler.bind(nextState, dataContext.name, processed)).init(dataContext.initArgs);
+					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], dependencies, prevState[dataContext.name]).init(dataContext.initArgs);
 				} else {
-					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], watchers,
-					watchedStateChangedHandler.bind(nextState, dataContext.name, processed));
+					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], dependencies, prevState[dataContext.name]);
 				}
-				
+
+				if(watchedDataContext){
+					if(processed && watchedDataContext.watchers.indexOf(dataContext.name) !== -1){
+						var dataContext2 = dataContexts.filter(function(dc){
+							return dc.name === watchedDataContext.name;
+						})[0];
+						dependencies = {};
+						if('dependsOn' in dataContext2){
+							dataContext2.dependsOn.forEach(function(dependency){
+								watchedValue = {};
+								props = dependency.property.split('.');
+								props.forEach(function(prop, idx){
+									if(idx === 0){
+										watchedValue = nextState[prop];
+									} else {
+										watchedValue = watchedValue ? watchedValue[prop] : void 0;
+									}
+								});
+								if('alias' in dependency){
+									dependencies[dependency.alias] = watchedValue;
+								} else {
+									dependencies[props.slice(-1)[0]] = watchedValue;
+								}
+							});
+						}
+						nextState[dataContext2.name] = new dataContextObjs[dataContext2.name](nextState[dataContext2.name], dependencies, prevState[dataContext2.name]);
+					}
+					processed = processed ? processed : dataContext.name === watchedDataContext.name;
+				}
 			});
 
 			return nextState;
 		};
 
-		var appStateChangedHandler = function(callerDataContext, appState, newState, callback) {
+		var appStateChangedHandler = function(callerDataContext, newState, callback) {
 			var appContext,
-				nextState = {};
+				nextState = {},
+				prevState = void 0;
+			var depArray = [];
 
+			if(callerDataContext in watchList){
+				var newkeys = Object.keys(newState);
+				var len = newkeys.length;
+				var t = [];
+				var temp = {};
+
+				//If newkeys.length === 1 do something
+
+				for(var i= 0;i<len;i++){
+					t = watchList[callerDataContext][newkeys[i]] ? t.concat(watchList[callerDataContext][newkeys[i]]) : t;
+				}
+				t.forEach(function(val){
+					temp[val] = true;
+				});
+				depArray = Object.keys(temp);
+			}
+			var testWatch = !!depArray.length;
+
+			//console.log(testWatch);
+
+			var AppViewModel = !!newState ? Object.getPrototypeOf(newState).constructor.classType === "AppViewModel" : false;
+			
 			//Check to see if appState is a ready made state object. If so
 			//pass it straight to the stateChangedHandler. If a callback was passed in
 			//it would be assigned to newState
-			if(appState instanceof ApplicationDataContext && (newState === void 0 || typeof newState === 'function')) {
+			if(AppViewModel) {
 				//This means previous state has been requested
 				//so set nextState to the previous state
-				nextState = extend(appState);
-				callback = newState;
-				newState = void 0;
+				nextState = extend(newState);
 				//revert the current appState to the previous state of the previous state
-				appState = appState.previousState;
-			} else if(callerDataContext !== appDataContextName){
-				nextState[callerDataContext] = newState;
-				nextState = extend(appState, nextState);
+				prevState = newState.previousState;
+
 			} else {
-				//appDataContextName is calling function
-				if(Object.keys(appState).length === 0){
-					nextState = extend(transitionState(), newState);
+				if(callerDataContext !== appDataContextName){
+					nextState[callerDataContext] = newState;
+					nextState = extend(thisAppState, nextState);
 				} else {
-					nextState = extend(appState, newState);	
+					//appDataContextName is calling function
+					if(typeof callback === 'boolean' && callback/*Object.keys(newState).length === 0*/){ //initialise State
+						nextState = extend(transitionState(), newState);
+					} else {
+						nextState = extend(thisAppState, newState);
+					}
 				}
+				prevState = thisAppState;
 			}
 
-			nextState = transitionState(nextState);
+			var tempp = {};
+			tempp.name = callerDataContext;
+			tempp.watchers = depArray;
+			// console.log('tempp.watchers');
+			// console.log(tempp.watchers);
+			nextState = transitionState(nextState, thisAppState, testWatch ? tempp: void 0);
 
-			//Create a new App state. Only pass in previous state if it is actually an ApplicationDataContext
-			appContext = new ApplicationDataContext(nextState, appState instanceof ApplicationDataContext ? appState : void 0);
+			//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
+			appContext = new ApplicationDataContext(nextState, prevState).state;
+			Object.freeze(appContext);
 
 			//All the work is done! -> Notify the View
 			stateChangedHandler(appContext, callback);
 
+			thisAppState = appContext;
 			//Provided for the main app to return from init() to the View
 			return appContext;
 		};
-		//Dependency Injection
-		var args = [appStateChangedHandler.bind(this, appDataContextName)];
-		args.push.apply(args, dependencies);
-		var ApplicationDataContext = appDataContext.apply(this, args);
-		ApplicationDataContext.prototype.extend = extend;
+
+		var ApplicationDataContext = appDataContext.call(this, appStateChangedHandler.bind(this, appDataContextName));
 
 		//Initilise all the viewModels and store the data context Objects
 		dataContexts.forEach(function(dataContext){
-			//Dependency Injection
-			args = [appStateChangedHandler.bind(this, dataContext.name)];
-			args.push.apply(args, dataContext.dependencies);
-			dataContextObjs[dataContext.name] = dataContext.viewModel.apply(this, args);
-			dataContextObjs[dataContext.name].prototype.extend = extend;
+
+			dataContextObjs[dataContext.name] = dataContext.viewModel.call(this, appStateChangedHandler.bind(this, dataContext.name));
 
 			//Store dependent's data context names for later use in updateDependencies
-			//Only store names of viewModels and not of the Application model
-			//because the latest Application Model props are always available to all PMs
-			if('watch' in dataContext){
-				subscribers = {};
-				for(var i = 0, len = dataContext.watch.length; i < len; i++){
-					watchedProps = dataContext.watch[i].property.split('.');
+			//Only store names of viewModels and not of the Application ViewModel
+			//because the latest Application ViewModel props are always available to all ViewModels
+			if('dependsOn' in dataContext){
+				//subscribers = {};
+				for(var i = 0, len = dataContext.dependsOn.length; i < len; i++){
+					watchedProps = dataContext.dependsOn[i].property.split('.');
 					if(watchedProps.length > 1){
-						subscribers[watchedProps[0]] = true;
+						//subscribers[watchedProps[0]] = true;
+
+						
+						watchList[watchedProps[0]] = watchList[watchedProps[0]] || {};
+						watchList[watchedProps[0]][watchedProps[1]] = watchList[watchedProps[0]][watchedProps[1]] || [];
+						if(watchList[watchedProps[0]][watchedProps[1]].indexOf(dataContext.name) === -1){
+							watchList[watchedProps[0]][watchedProps[1]].push(dataContext.name);
+						}
+						
+
+
+
+
 					}
 				}
-				subscribersList = Object.keys(subscribers);
-				if(subscribersList.length > 0){
-					dataContext.watchers = subscribersList;
-				}
+				// console.log('watchList');
+				// console.log(watchList);
+				// subscribersList = Object.keys(subscribers);
+				// if(subscribersList.length > 0){
+				// 	dataContext.watchers = subscribersList;
+				// }
 			}
+			//console.log(subscribersList);
 		});
-
 		return new ApplicationDataContext().init(restArgs);
 	};
 	return Main;
