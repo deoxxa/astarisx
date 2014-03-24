@@ -34,7 +34,6 @@ IMVVM.Main = (function(){
 		
 		var appDataContextName = applicationNamespace,
 			dataContextObjs = {},
-			dataContextHash = {},
 			watchedProps,
 			watchList = {};
 
@@ -91,7 +90,27 @@ IMVVM.Main = (function(){
 				return deps;
 			};
 
-			//Update state and dependencies
+			for(var dataContextName in dataContexts){
+				if(dataContexts.hasOwnProperty(dataContextName)){
+					dependencies = getDependencies(dataContexts[dataContextName]);
+					//Need to inject dependencies so that the state for this object can change
+					//if required. Can't use appState as that is provided after the object is created
+					if(initialize){
+						nextState[dataContextName] = new dataContextObjs[dataContextName](nextState[dataContextName], dependencies, prevState[dataContextName]).init(dataContexts[dataContextName].initArgs);
+					} else {
+						nextState[dataContextName] = new dataContextObjs[dataContextName](nextState[dataContextName], dependencies, prevState[dataContextName]);
+					}
+					if(watchedDataContext){
+						if(processed && watchedDataContext.subscribers.indexOf(dataContextName) !== -1){
+							dependencies = getDependencies(dataContexts[watchedDataContext.name]);
+							nextState[watchedDataContext.name] = new dataContextObjs[watchedDataContext.name](nextState[watchedDataContext.name], dependencies, prevState[watchedDataContext.name]);
+						}
+						processed = processed ? processed : dataContextName === watchedDataContext.name;
+					}					
+				}
+			}
+
+			/*//Update state and dependencies
 			dataContexts.forEach(function(dataContext){
 				dependencies = getDependencies(dataContext);
 				//Need to inject dependencies so that the state for this object can change
@@ -108,7 +127,7 @@ IMVVM.Main = (function(){
 					}
 					processed = processed ? processed : dataContext.name === watchedDataContext.name;
 				}
-			});
+			});*/
 			return nextState;
 		};
 
@@ -181,27 +200,23 @@ IMVVM.Main = (function(){
 
 		var ApplicationDataContext = appDataContext.call(this, appStateChangedHandler.bind(this, appDataContextName));
 
-		//Initilise all the viewModels and store the data context Objects
-		dataContexts.forEach(function(dataContext){
-			dataContextObjs[dataContext.name] = dataContext.viewModel.call(this, appStateChangedHandler.bind(this, dataContext.name));
-			//create a hash of dataContexts for quick access when required
-			dataContextHash[dataContext.name] = dataContext;
-			//Store dependent's data context names for later use in updateDependencies
-			//Only store names of viewModels and not of the Application ViewModel
-			//because the latest Application ViewModel props are always available to all ViewModels
-			if('dependsOn' in dataContext){
-				for(var i = 0, len = dataContext.dependsOn.length; i < len; i++){
-					watchedProps = dataContext.dependsOn[i].property.split('.');
-					if(watchedProps.length > 1){
-						watchList[watchedProps[0]] = watchList[watchedProps[0]] || {};
-						watchList[watchedProps[0]][watchedProps[1]] = watchList[watchedProps[0]][watchedProps[1]] || [];
-						if(watchList[watchedProps[0]][watchedProps[1]].indexOf(dataContext.name) === -1){
-							watchList[watchedProps[0]][watchedProps[1]].push(dataContext.name);
+		for(var dataContextName in dataContexts){
+			if(dataContexts.hasOwnProperty(dataContextName)){
+				dataContextObjs[dataContextName] = dataContexts[dataContextName].viewModel.call(this, appStateChangedHandler.bind(this, dataContextName));
+				if('dependsOn' in dataContexts[dataContextName]){
+					for(var i = 0, len = dataContexts[dataContextName].dependsOn.length; i < len; i++){
+						watchedProps = dataContexts[dataContextName].dependsOn[i].property.split('.');
+						if(watchedProps.length > 1){
+							watchList[watchedProps[0]] = watchList[watchedProps[0]] || {};
+							watchList[watchedProps[0]][watchedProps[1]] = watchList[watchedProps[0]][watchedProps[1]] || [];
+							if(watchList[watchedProps[0]][watchedProps[1]].indexOf(dataContextName) === -1){
+								watchList[watchedProps[0]][watchedProps[1]].push(dataContextName);
+							}
 						}
 					}
 				}
 			}
-		});
+		}
 		return new ApplicationDataContext().init(restArgs);
 	};
 	return Main;

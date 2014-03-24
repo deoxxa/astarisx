@@ -111,19 +111,6 @@ var IMVVMModel = {
             state = extend(state, originalSpec.initialiseState(state, oldState ? oldState.state: void 0));
           }
 
-          // if(typeof state === 'boolean'){
-          //   withContext = state;
-          //   state = {};
-          // } else {
-          //   state = state || {};
-          //   //When creating an Object, withContext default is true
-          //   withContext = withContext === void 0 ? true : withContext;
-
-          //   if(originalSpec.initialiseState){
-          //     state = extend(state, originalSpec.initialiseState(state, oldState ? oldState.state: void 0));
-          //   }
-          // }
-
           if(withContext){
             //This will self distruct
             Object.defineProperty(model, 'context', {
@@ -189,7 +176,6 @@ var IMVVMModel = {
           }.bind(model));
         }
 
-
         return model;
       }.bind(this);
       return dataContext;
@@ -203,8 +189,7 @@ var IMVVMCreateClass = {
   createClass: function(classType, spec){
 
     var Constructor = function(){};
-    Constructor.prototype = new IMVVMBase();
-
+    Constructor.prototype = new IMVVMBase();      
     Constructor.prototype.constructor = Constructor;
 
     var DescriptorConstructor = Constructor;
@@ -251,4 +236,3 @@ var IMVVMCreateClass = {
 IMVVM.createModel = IMVVMCreateClass.createClass.bind(this, 'Model');
 IMVVM.createViewModel = IMVVMCreateClass.createClass.bind(this, 'ViewModel');
 IMVVM.createAppViewModel = IMVVMCreateClass.createClass.bind(this, 'AppViewModel');
-
