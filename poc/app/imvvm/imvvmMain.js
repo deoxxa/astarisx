@@ -34,6 +34,7 @@ IMVVM.Main = (function(){
 		
 		var appDataContextName = applicationNamespace,
 			dataContextObjs = {},
+			dataContextHash = {},
 			watchedProps,
 			watchList = {};
 
@@ -51,12 +52,10 @@ IMVVM.Main = (function(){
 			}
 			return newObj;
 		};
-
+			
 		var transitionState = function(nextState, prevState, watchedDataContext){
 			var processed = false,
-				props,
 				dependencies,
-				watchedValue,
 				initialize;
 
 			prevState = prevState || {};
@@ -65,10 +64,14 @@ IMVVM.Main = (function(){
 				initialize = true;
 				nextState = {};
 			}
-			var getDependencies = function(obj){
-				var dep = {};
-				if('dependsOn' in obj){
-					obj.dependsOn.forEach(function(dependency){
+
+			var getDependencies = function(dataContext){
+				var deps = {},
+					props,
+					watchedValue;
+
+				if('dependsOn' in dataContext){
+					dataContext.dependsOn.forEach(function(dependency){
 						watchedValue = {};
 						props = dependency.property.split('.');
 						props.forEach(function(prop, idx){
@@ -79,14 +82,15 @@ IMVVM.Main = (function(){
 							}
 						});
 						if('alias' in dependency){
-							dep[dependency.alias] = watchedValue;
+							deps[dependency.alias] = watchedValue;
 						} else {
-							dep[props.slice(-1)[0]] = watchedValue;
+							deps[props.slice(-1)[0]] = watchedValue;
 						}
 					});
 				}
-				return dep;
+				return deps;
 			};
+
 			//Update state and dependencies
 			dataContexts.forEach(function(dataContext){
 				dependencies = getDependencies(dataContext);
@@ -97,14 +101,10 @@ IMVVM.Main = (function(){
 				} else {
 					nextState[dataContext.name] = new dataContextObjs[dataContext.name](nextState[dataContext.name], dependencies, prevState[dataContext.name]);
 				}
-
 				if(watchedDataContext){
 					if(processed && watchedDataContext.subscribers.indexOf(dataContext.name) !== -1){
-						var dataContext2 = dataContexts.filter(function(dc){
-							return dc.name === watchedDataContext.name;
-						})[0];
-						dependencies = getDependencies(dataContext2);
-						nextState[dataContext2.name] = new dataContextObjs[dataContext2.name](nextState[dataContext2.name], dependencies, prevState[dataContext2.name]);
+						dependencies = getDependencies(dataContextHash[watchedDataContext.name]);
+						nextState[watchedDataContext.name] = new dataContextObjs[watchedDataContext.name](nextState[watchedDataContext.name], dependencies, prevState[watchedDataContext.name]);
 					}
 					processed = processed ? processed : dataContext.name === watchedDataContext.name;
 				}
@@ -184,6 +184,8 @@ IMVVM.Main = (function(){
 		//Initilise all the viewModels and store the data context Objects
 		dataContexts.forEach(function(dataContext){
 			dataContextObjs[dataContext.name] = dataContext.viewModel.call(this, appStateChangedHandler.bind(this, dataContext.name));
+			//create a hash of dataContexts for quick access when required
+			dataContextHash[dataContext.name] = dataContext;
 			//Store dependent's data context names for later use in updateDependencies
 			//Only store names of viewModels and not of the Application ViewModel
 			//because the latest Application ViewModel props are always available to all ViewModels
