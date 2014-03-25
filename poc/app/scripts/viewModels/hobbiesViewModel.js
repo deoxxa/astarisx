@@ -42,7 +42,6 @@ MyApp.HobbiesViewModel = (function(App, IMVVM){
 		},
 
 		selected: {
-			enumerable: true,
 			get: function(){
 				return this.state.selected;
 			}

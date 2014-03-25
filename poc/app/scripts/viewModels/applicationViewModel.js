@@ -32,28 +32,24 @@ MyApp.ApplicationViewModel = (function(IMVVM){
       }
     },
     appName: {
-      enumerable: true,
       get: function(){
         return this.state.appName;
       },
     },
 
     canUndo: {
-      enumerable: true,
       get: function(){
         return !!this.state.previousState;
       },
     },
 
     busy: {
-      enumerable: true,
       get: function(){
         return this.state.busy;
       }
     },
 
     online: {
-      enumerable: true,
       get: function(){
         return this.state.online;
       }

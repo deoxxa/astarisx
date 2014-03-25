@@ -43,14 +43,12 @@ MyApp.PersonModel = (function(IMVVM){
 
 	  //immutable
 	  id: {
-	    enumerable: true,
 	    get: function(){
 	      return this.state.id;
 	    }
 	  },
 
 	  firstName: {
-	    enumerable: true,
 	    get: function(){ return this.state.firstName; },
 	    set: function(newValue){
 	      var nextState = {};
@@ -60,7 +58,6 @@ MyApp.PersonModel = (function(IMVVM){
 	  },
 
 	  lastName: {
-	    enumerable: true,
 	    get: function(){ return this.state.lastName; },
 	    set: function(newValue){
 	      var nextState = {};
@@ -70,7 +67,7 @@ MyApp.PersonModel = (function(IMVVM){
 	  },
 	  
 	  fullName: {
-	    enumerable: false,
+	    enumerable: false, //calculated fields should set enumerable to false
 	    get: function(){            
 	      if(this.lastName === void 0){
 	        return this.firstName;
@@ -92,7 +89,6 @@ MyApp.PersonModel = (function(IMVVM){
 	  },
 
 	  occupation: {
-	    enumerable: true,
 	    get: function(){
 	      return this.state.occupation;
 	    },
@@ -102,7 +98,6 @@ MyApp.PersonModel = (function(IMVVM){
 	  },
 	  
 	  dob: {
-	    enumerable: true,
 	    get: function(){
 	      return this.state.dob;
 	    },
@@ -118,14 +113,12 @@ MyApp.PersonModel = (function(IMVVM){
 	  
 	  //Calculated field -> dob
 	  age: {
-	    enumerable: true,
 	    get: function(){
 	      return this.state.age;
 	    }
 	  },
 	  
 	  gender: {
-	    enumerable: true,
 	    get: function(){ return this.state.gender; },
 	    set: function(newValue){
 	      this.setState({'gender': newValue});
@@ -133,9 +126,7 @@ MyApp.PersonModel = (function(IMVVM){
 	  },
 
 	  hobbies: {
-	    enumerable: true,
-	    //Must explicitly set array to immutable
-	    //must ensure array is initialised before freeze
+	    //Must explicitly freeze array Object to make immutable
 	    get: function(){ return this.state.hobbies },
 	    set: function(newArray){
 	      this.setState({'hobbies': newArray});

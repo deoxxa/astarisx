@@ -90,13 +90,11 @@ MyApp.PersonsViewModel = (function(App, IMVVM){
 			return App.PersonModel(this.personStateChangedHandler)(someState);
 		},
 		collection: {
-	    enumerable: true,
 	    //Must explicitly set array to immutable
 	    //must ensure array is initialised before freeze
 	    get: function(){ return this.state.collection },
 	  },
 		selected: {
-			enumerable: true,
 			get: function() { return this.state.selected; }
 		},
   });
