@@ -87,10 +87,14 @@ var IMVVMModel = {
           }
         }
         if(AppViewModel){
-          proto.DataContext = proto.setState;
+
+          //bind true
+          proto.DataContext = function(newState, callback, initialize){
+            return proto.setState(newState, callback, true);
+          }
           if(!('init' in proto)){
             proto.init = function(){
-              return this.setState({}, true);
+              return this.DataContext();
             }
           }
         }

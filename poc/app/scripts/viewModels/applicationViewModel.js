@@ -11,23 +11,12 @@ MyApp.ApplicationViewModel = (function(IMVVM){
   var ApplicationViewModel = IMVVM.createAppViewModel({
     init: function(args){ //optional
 
-      /*
-        default init function for AppViewModel:
-        init: function(){
-          return this.setState({});
-        }
 
-        default init for ViewModels:
-        init: function(){
-          return new DataContext();
-        }
-
-      */
       //Call transitionState with no params to initialize state 
       //and pass returned state to appState arg of setState
       //then more work will be done before returning with the new AppState
       //pass in any initial appState as second arg
-      return this.DataContext(extend(args,{online: true }), true);
+      return this.DataContext(extend(args,{online: true }));
     },
     undo: function(){
       if(this.canUndo){

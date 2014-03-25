@@ -108,7 +108,7 @@ IMVVM.Main = (function(){
 			return nextState;
 		};
 
-		var appStateChangedHandler = function(callerDataContext, newState, callback) {
+		var appStateChangedHandler = function(callerDataContext, newState, callback, initialize) {
 			var appContext,
 				nextState = {},
 				prevState = void 0,
@@ -151,7 +151,8 @@ IMVVM.Main = (function(){
 					nextState = extend(thisAppState.state, nextState);
 				} else {
 					//appDataContextName is calling function
-					if(typeof callback === 'boolean' && callback){ //initialise State
+					//if(typeof callback === 'boolean' && callback){ //initialise State
+					if(initialize) {
 						nextState = extend(transitionState(), newState);
 					} else {
 						nextState = extend(thisAppState.state, newState);
