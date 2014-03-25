@@ -20,7 +20,7 @@ MyApp.DataContexts = (function(App){
 		'hobbies': {
 			viewModel: App.HobbiesViewModel,
 			initArgs : [],
-			dependsOn: [{property: 'persons.selected', alias: 'selectedPerson'}]
+			dependsOn: [{property: 'persons.selected'}]
 		}
   };
   return dataContexts;

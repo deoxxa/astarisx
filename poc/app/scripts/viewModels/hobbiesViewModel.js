@@ -11,24 +11,24 @@ MyApp.HobbiesViewModel = (function(App, IMVVM){
   var HobbiesViewModel = IMVVM.createViewModel({
   	select: function(value){
 			var nextState = {};
-			nextState.selected = this.selectedPerson.hobbies.filter(function(hobby){
+			nextState.selected = this.persons_selected.hobbies.filter(function(hobby){
 				return hobby === value;
 			})[0];
 			this.setState(nextState);
 		},
 		
 		addHobby: function(value){
-			this.selectedPerson.addHobby(value);
+			this.persons_selected.addHobby(value);
 		},
 		
 		deleteHobby: function(value){
-			this.selectedPerson.deleteHobby(value);
+			this.persons_selected.deleteHobby(value);
 		},
 
 		//When a dependency changes reset the selected hobby to undefined
 		resetSelected: function(state, prevState) {
 
-      if(prevState && state.selectedPerson.id !== prevState.selectedPerson.id &&
+      if(prevState && state.persons_selected.id !== prevState.persons_selected.id &&
     		state.selected !== void 0){
 					return void 0;
     	}

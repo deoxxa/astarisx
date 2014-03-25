@@ -166,7 +166,7 @@ var IMVVMModel = {
             }.bind(model));
 
             state.__proto__ = model.__proto__;
-            return state;
+            return Object.freeze(state);
           } else { //Assume it is AppViewModel
 
             Object.defineProperty(state, 'previousState', {
@@ -191,7 +191,6 @@ var IMVVMModel = {
           writable: false,
           value: state
         });
-
         return model;
       }.bind(this);
       return dataContext;

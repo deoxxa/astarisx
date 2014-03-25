@@ -30,15 +30,14 @@ MyApp.PersonModel = (function(IMVVM){
 	      return Math.abs(ageDate.getFullYear() - 1970) + " years old";
 	  },
 
-	  //May need to rename this - also in IMVVMModelInterface
 	  getInitialState: function(state, prevState){
 	    var _hobbies = state.hobbies || [];
-      Object.freeze(_hobbies);
 
 	    return { 
 	      id: state.id ? state.id : uuid(),
 	      age: this.calculateAge(state.dob),
-	      hobbies: _hobbies
+	      hobbies: Object.freeze(_hobbies) //freeze arrays to make them immutable ->
+	      //do that here and not in prop get call otherwise everytime get() is called Object.freeze is called
 	    }
 	  },
 

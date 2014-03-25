@@ -79,7 +79,7 @@ IMVVM.Main = (function(){
 						if('alias' in dependency){
 							deps[dependency.alias] = watchedValue;
 						} else {
-							deps[props.slice(-1)[0]] = watchedValue;
+							deps[props.join('_')] = watchedValue;
 						}
 					});
 				}
@@ -161,7 +161,9 @@ IMVVM.Main = (function(){
 				prevState = thisAppState;
 				nextState = transitionState(nextState, thisAppState ? thisAppState.state : void 0, watchedDataContext);
 			}
-
+			if(prevState){
+				Object.freeze(prevState);
+			}
 			//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
 			thisAppState = new ApplicationDataContext(nextState, prevState);
 			appContext = Object.freeze(thisAppState.state);

@@ -16,7 +16,8 @@ MyApp.ApplicationView = (function(IMVVM, App){
 		
 		render: function(){
 			console.log('------------------------------------------ Current Application State ------------------------------------------')
-			console.log(this.state.appContext)
+
+			console.log(this.state.appContext);
 
 			var NavBar = App.NavBarView;
 			var Details = App.DetailsView;

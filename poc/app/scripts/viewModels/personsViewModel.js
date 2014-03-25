@@ -61,9 +61,15 @@ MyApp.PersonsViewModel = (function(App, IMVVM){
 					nextState.selected = this.Person(state);
 					return nextState.selected;
 				}
-				return this.Person(state, false);
+				return Object.freeze(this.Person(state, false));
 			}.bind(this));
 			return this.DataContext(nextState);
+		},
+		getInitialState: function(state) {
+			var _collection = state.collection || {};
+			return {
+				collection: Object.freeze(_collection) 
+			};
 		},
 		personStateChangedHandler: function(viewModel) {
 			return function(newState){
