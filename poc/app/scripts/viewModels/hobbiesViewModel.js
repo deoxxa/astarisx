@@ -10,13 +10,10 @@ var IMVVM = IMVVM || {};
 MyApp.HobbiesViewModel = (function(App, IMVVM){
   var HobbiesViewModel = IMVVM.createViewModel({
   	select: function(value){
-      console.log('in herer');
-      console.log(this);
-			var nextState = this.extend(this);
+			var nextState = {};
 			nextState.selected = this.personHobbies.filter(function(hobby){
 				return hobby === value;
 			})[0];
-      console.log(nextState);
 			this.setState(nextState);
 		},
 		
@@ -30,9 +27,8 @@ MyApp.HobbiesViewModel = (function(App, IMVVM){
 
 		//When a dependency changes reset the selected hobby to undefined
 		resetSelected: function(state, prevState) {
-			prevState = prevState || {};
-    	if(prevState.dependencies &&
-    		state.dependencies.selectedPerson.id !== prevState.dependencies.selectedPerson.id &&
+
+      if(prevState && state.selectedPerson.id !== prevState.selectedPerson.id &&
     		state.selected !== void 0){
 					return void 0;
     	}
@@ -44,20 +40,6 @@ MyApp.HobbiesViewModel = (function(App, IMVVM){
         selected: this.resetSelected(state, prevState),
       }
 		},
-
-		// collectionItems: { 
-		// 	enumerable: false,
-		// 	get: function(){
-		// 		return this.state.dependencies.hobbies;
-		// 	}
-		// },
-		
-		// selectedPerson: { 
-		// 	enumerable: false, //deps are always enum === false
-		// 	get: function(){
-		// 		return this.state.dependencies.selectedPerson;
-		// 	}
-		// },
 
 		selected: {
 			enumerable: true,

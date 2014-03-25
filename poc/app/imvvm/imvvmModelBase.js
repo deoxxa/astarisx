@@ -62,15 +62,6 @@ var IMVVMModel = {
       var ViewModel = this.classType === 'ViewModel';
       var AppViewModel = this.classType === 'AppViewModel';
       var originalSpec = this.originalSpec || {};
-
-      // Reduce time spent doing lookups by setting these on the prototype.
-    // for (var methodName in IMVVMInterface) {
-    //   if (!proto[methodName]) {
-    //     proto[methodName] = IMVVMInterface[methodName];
-    //   }
-    // }
-    //   console.log('this.prototype');
-    //   console.log(this.prototype);
       
       for(key in this.originalSpec){
         if(this.originalSpec.hasOwnProperty(key)){
@@ -132,7 +123,7 @@ var IMVVMModel = {
           }
           
           if(originalSpec.getInitialState){
-            state = extend(state, originalSpec.getInitialState(state, oldState ? oldState.state: void 0));
+            state = extend(state, originalSpec.getInitialState(state, oldState));
           }
 
           if(withContext){
@@ -150,11 +141,10 @@ var IMVVMModel = {
           state = state || {};
           if(ViewModel){
             state = extend(state, withContext);
+
             if(originalSpec.getInitialState){
-              state = extend(state, originalSpec.getInitialState(state, oldState ? oldState.state: void 0));
+              state = extend(state, originalSpec.getInitialState(state, oldState));
             }
-            // console.log('state');
-            // console.log(state);
           
             Object.defineProperty(model, 'state', {
               configurable: false,
@@ -162,6 +152,7 @@ var IMVVMModel = {
               writable: false,
               value: state
             });
+
             Object.keys(model).map(function(key){
               if(Object.prototype.toString.call(this[key]) === '[object Object]' &&
                 ('context' in this[key])){
@@ -189,8 +180,7 @@ var IMVVMModel = {
             state.__proto__ = model.__proto__;
           }
         }
-        // console.log('pre-model');
-        // console.log(model);
+
         Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,

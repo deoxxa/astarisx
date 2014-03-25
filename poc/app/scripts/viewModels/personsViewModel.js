@@ -10,8 +10,8 @@ var IMVVM = IMVVM || {};
 MyApp.PersonsViewModel = (function(App, IMVVM){
   var PersonsViewModel = IMVVM.createViewModel({
   	select: function(id/*, callback*/){
-			var nextState = /*{};//*/this.extend(this);
-			nextState.collection = nextState.collection.map(function(person){
+			var nextState = {};
+			nextState.collection = this.collection.map(function(person){
 				if(person.id === id){
 					nextState.selected = this.Person(person);
 					return nextState.selected;
@@ -22,7 +22,7 @@ MyApp.PersonsViewModel = (function(App, IMVVM){
 			this.setState(nextState);
 		},
 		addPerson: function(value){
-			var nextState = this.extend(this);
+			var nextState = {};
 			var name;
 
 			if(value && value.length > 0){
@@ -33,15 +33,14 @@ MyApp.PersonsViewModel = (function(App, IMVVM){
 					firstName: name[0],
 					lastName: name.slice(1).join(" ")
 				}, true);
-				nextState.collection = nextState.collection.slice(0);
+				nextState.collection = this.collection.slice(0);
 				nextState.collection = nextState.collection.concat(nextState.selected);
 				this.setState(nextState);
 			}
 		},
 		deletePerson: function(uid){
-			var nextState = this.extend(this);
-			
-			nextState.collection = nextState.collection.filter(function(person){
+			var nextState = {};
+			nextState.collection = this.collection.filter(function(person){
 				return person.id !== uid;
 			});
 			if(nextState.collection.length > 0){
@@ -66,19 +65,19 @@ MyApp.PersonsViewModel = (function(App, IMVVM){
 			}.bind(this));
 			return this.DataContext(nextState);
 		},
-		personStateChangedHandler: function(self) {
+		personStateChangedHandler: function(viewModel) {
 			return function(newState){
-				var nextState = self.extend(self);
+				var nextState = {};
 				var personNextState;
-				nextState.collection = nextState.collection.map(function(person){
+				nextState.collection = viewModel.collection.map(function(person){
 					if(person.id === this.state.id){
-						personNextState = self.extend(person, newState);
-						nextState.selected = self.Person(personNextState);
+						personNextState = viewModel.extend(person, newState);
+						nextState.selected = viewModel.Person(personNextState);
 						return nextState.selected;
 					}
 					return person;
 				}.bind(this));
-				self.setState(nextState);
+				viewModel.setState(nextState);
 			};
 		},
 		Person: function(someState){
@@ -94,17 +93,6 @@ MyApp.PersonsViewModel = (function(App, IMVVM){
 			enumerable: true,
 			get: function() { return this.state.selected; }
 		},
-
-		// imOnline: {
-		// 	enumerable: false, //not required to be true because it is dependent
-		// 	get: function() { return this.state.dependencies.online; }
-		// },
-
-		// selectedHobby: {
-		// 	enumerable: false, //not required to be true because it is dependent
-		// 	get: function() { return this.state.dependencies.selectedHobby; }
-		// },
-
   });
   return PersonsViewModel;
 }(MyApp, IMVVM));
