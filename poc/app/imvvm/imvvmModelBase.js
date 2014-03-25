@@ -4,6 +4,7 @@ var IMVVM = IMVVM || {};
 
 var IMVVMBase = function() {};
 
+/*uuid is up to implementation*/
 var uuid = function () {
   /*jshint bitwise:false */
   var i, random;
@@ -21,6 +22,7 @@ var uuid = function () {
   return uuid;
 };
 
+/*get extend and mixInto from React lib*/
 var extend = function () {
   var newObj = {};
   for (var i = 0; i < arguments.length; i++) {
@@ -162,13 +164,14 @@ var IMVVMModel = {
             state.__proto__ = model.__proto__;
             return Object.freeze(state);
           } else { //Assume it is AppViewModel
-
-            Object.defineProperty(state, 'previousState', {
-              configurable: false,
-              enumerable: true,
-              writable: false,
-              value: withContext
-            });
+            if(withContext){
+              Object.defineProperty(state, 'previousState', {
+                configurable: false,
+                enumerable: true,
+                writable: false,
+                value: withContext
+              });
+            }
             //Do this after previousState is set so that it is included
             if(originalSpec.getInitialState){
               state = extend(state, originalSpec.getInitialState(state, withContext ? withContext.state: void 0));

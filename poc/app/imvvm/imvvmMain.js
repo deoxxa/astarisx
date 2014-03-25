@@ -22,7 +22,7 @@ IMVVM.uuid = function () {
 	return uuid;
 };
 
-IMVVM.Main = function(appNamespace, appViewModel, initArgs, dataContexts, stateChangedHandler) {
+IMVVM.Main = function(appNamespace, appViewModel, initArgs, dataContexts, stateChangedHandler, noUndo) {
 
 	if(typeof stateChangedHandler !== 'function'){
 		throw new TypeError();
@@ -116,6 +116,7 @@ IMVVM.Main = function(appNamespace, appViewModel, initArgs, dataContexts, stateC
 			newStateKeysLen,
 			subscriberKeys;
 
+
 		if(callerDataContext in watchList){
 			newStateKeys = Object.keys(newState);
 			newStateKeysLen = newStateKeys.length;
@@ -164,7 +165,7 @@ IMVVM.Main = function(appNamespace, appViewModel, initArgs, dataContexts, stateC
 			Object.freeze(prevState);
 		}
 		//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
-		thisAppState = new ApplicationDataContext(nextState, prevState);
+		thisAppState = new ApplicationDataContext(nextState, noUndo ? void 0 : prevState);
 		appContext = Object.freeze(thisAppState.state);
 
 		//All the work is done! -> Notify the View

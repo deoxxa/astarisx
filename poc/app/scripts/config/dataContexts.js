@@ -7,7 +7,6 @@
 /*jshint newcap:false */
 
 'use strict';
-var MyApp = MyApp || {};
 
 var dataContexts = {
 	'persons': {

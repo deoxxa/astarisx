@@ -11,9 +11,10 @@
 
 //initArgs is Optional - passed to AppViewModel init
 React.renderComponent(<ApplicationView 
-	viewModel={ApplicationViewModel} 
+	viewModel={ApplicationViewModel}
 	initArgs={{appName: 'IMVVM Demo'}}
-	dataContexts={dataContexts} />,
+	dataContexts={dataContexts}
+  noUndo={false} />,
 	document.getElementById('container'));
 
 

@@ -27,7 +27,7 @@ IMVVM.IMVVMMixin = {
 
 	getInitialState: function(){
 		var appDataContext = IMVVM.Main(IMVVM.version, this.props.viewModel, this.props.initArgs,
-			this.props.dataContexts, this.stateChangedHandler);
+			this.props.dataContexts, this.stateChangedHandler, this.props.noUndo);
 		return {appContext: appDataContext};
 	}
 
