@@ -9,19 +9,16 @@
 'use strict';
 var MyApp = MyApp || {};
 
-MyApp.DataContexts = (function(App){
-  var dataContexts = {
-  	'persons': {
-  		viewModel: App.PersonsViewModel,
-			initArgs : [],
-			dependsOn: [{property: 'hobbies.selected', alias: 'selectedHobby'},
-                  {property: 'online', alias: 'imOnline'}]
-		},
-		'hobbies': {
-			viewModel: App.HobbiesViewModel,
-			initArgs : [],
-			dependsOn: [{property: 'persons.selected'}]
-		}
-  };
-  return dataContexts;
-}(MyApp));
+var dataContexts = {
+	'persons': {
+		viewModel: PersonsViewModel,
+		initArgs : [],
+		dependsOn: [{property: 'hobbies.selected', alias: 'selectedHobby'},
+                {property: 'online', alias: 'imOnline'}]
+	},
+	'hobbies': {
+		viewModel: HobbiesViewModel,
+		initArgs : [],
+		dependsOn: [{property: 'persons.selected'}]
+	}
+};

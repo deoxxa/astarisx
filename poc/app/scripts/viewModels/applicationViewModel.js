@@ -4,57 +4,47 @@
 /*jshint newcap:false */
 
 'use strict';
-var MyApp = MyApp || {};
-var IMVVM = IMVVM || {};
 
-MyApp.ApplicationViewModel = (function(IMVVM){
-  var ApplicationViewModel = IMVVM.createAppViewModel({
-    init: function(args){ //optional
+var ApplicationViewModel = IMVVM.createAppViewModel({
+  init: function(args){ //optional
+    return this.DataContext(extend(args,{online: true }));
+  },
 
+  undo: function(){
+    if(this.canUndo){
+      this.setState(this.previousState);
+    }
+  },
 
-      //Call transitionState with no params to initialize state 
-      //and pass returned state to appState arg of setState
-      //then more work will be done before returning with the new AppState
-      //pass in any initial appState as second arg
-      return this.DataContext(extend(args,{online: true }));
+  canUndo: {
+    get: function(){
+      return !!this.state.previousState;
     },
-    undo: function(){
-      if(this.canUndo){
-        this.setState(this.previousState);
-      }
-    },
-    // May need to rename this - also in IMVVMModelInterface
-    getInitialState: function(state){ //Optional
-      return { 
-        canUndo: !!state.previousState,
-        online: typeof state.online === 'boolean' ? state.online : false,
-        busy: typeof state.busy === 'boolean' ? state.busy : false
-      }
-    },
-    appName: {
-      get: function(){
-        return this.state.appName;
-      },
-    },
+  },
 
-    canUndo: {
-      get: function(){
-        return !!this.state.previousState;
-      },
+  // May need to rename this - also in IMVVMModelInterface
+  getInitialState: function(state){ //Optional
+    return { 
+      canUndo: !!state.previousState,
+      online: typeof state.online === 'boolean' ? state.online : false,
+      busy: typeof state.busy === 'boolean' ? state.busy : false
+    }
+  },
+  appName: {
+    get: function(){
+      return this.state.appName;
     },
+  },
 
-    busy: {
-      get: function(){
-        return this.state.busy;
-      }
-    },
+  busy: {
+    get: function(){
+      return this.state.busy;
+    }
+  },
 
-    online: {
-      get: function(){
-        return this.state.online;
-      }
-    },
-  }); 
-
-  return ApplicationViewModel;
-}(IMVVM));
+  online: {
+    get: function(){
+      return this.state.online;
+    }
+  },
+});

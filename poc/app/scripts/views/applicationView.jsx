@@ -8,37 +8,29 @@
 
 'use strict';
 
-var MyApp = MyApp || {};
+var ApplicationView = React.createClass({
+	
+	mixins: [IMVVM.IMVVMMixin],
+	
+	render: function(){
+		console.log('------------------------------------------ Current Application State ------------------------------------------')
+		console.log(this.state.appContext);
 
-MyApp.ApplicationView = (function(IMVVM, App){
-	var applicationView = React.createClass({
-		mixins: [IMVVM.IMVVMMixin],
-		
-		render: function(){
-			console.log('------------------------------------------ Current Application State ------------------------------------------')
-
-			console.log(this.state.appContext);
-
-			var NavBar = App.NavBarView;
-			var Details = App.DetailsView;
-			var SideBar = App.SideBarView;
-
-			return (
-				<div>
-					<NavBar appContext={this.state.appContext} />
-					<div className="container">
-						<div className="row">
-							<div className="col-md-4">
-								<SideBar appContext={this.state.appContext} />
-							</div>
-							<div className="col-md-8">
-								<Details appContext={this.state.appContext} />
-							</div>
+		return (
+			<div>
+				<NavBarView appContext={this.state.appContext} />
+				<div className="container">
+					<div className="row">
+						<div className="col-md-4">
+							<SideBarView appContext={this.state.appContext} />
+						</div>
+						<div className="col-md-8">
+							<DetailsView appContext={this.state.appContext} />
 						</div>
 					</div>
 				</div>
-			);		
-		}
-	});
-	return applicationView;
-}(IMVVM, MyApp));
+			</div>
+		);		
+	}
+});
+

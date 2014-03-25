@@ -8,26 +8,17 @@
 
 'use strict';
 
-var MyApp = MyApp || {};
+var SideBarView = React.createClass({
+	addPerson: function(value){
+		this.props.appContext.persons.addPerson(value);
+	},
 
-MyApp.SideBarView = (function(IMVVM, App){
-	var sideBarView = React.createClass({
-		addPerson: function(value){
-			this.props.appContext.persons.addPerson(value);
-		},
-
-		render: function(){
-
-			var ListView = App.ListView;
-			var AddControl = App.InputAddControl;
-
-			return (
-				<div>
-					<AddControl placeholder="Full Name" funcAdd={this.addPerson} />
-					<ListView appContext={this.props.appContext} />
-				</div>
-			);		
-		}		
-	});
-	return sideBarView;
-}(IMVVM, MyApp));
+	render: function(){
+		return (
+			<div>
+				<AddControl placeholder="Full Name" funcAdd={this.addPerson} />
+				<ListView appContext={this.props.appContext} />
+			</div>
+		);		
+	}		
+});

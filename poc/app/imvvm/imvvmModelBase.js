@@ -4,14 +4,6 @@ var IMVVM = IMVVM || {};
 
 var IMVVMBase = function() {};
 
-var IMVVMInterface = {
-  //setState: null,
-  //getInitialState: null,
-  init: function(){
-    return this.DataContext();
-  }
-};
-
 var uuid = function () {
   /*jshint bitwise:false */
   var i, random;
@@ -91,8 +83,6 @@ var IMVVMModel = {
           }
         }
         if(AppViewModel){
-
-          //bind true
           proto.DataContext = function(newState, callback, initialize){
             return proto.setState(newState, callback, true);
           }
