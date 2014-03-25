@@ -91,12 +91,21 @@ IMVVM.Main = (function(){
 					dependencies = getDependencies(dataContexts[dataContextName]);
 					//Need to inject dependencies so that the state for this object can change
 					//if required. Can't use appState as that is provided after the object is created
+					
+
 					if(initialize){
 						nextState[dataContextName] = new dataContextObjs[dataContextName](nextState[dataContextName], dependencies, prevState[dataContextName]).init(dataContexts[dataContextName].initArgs);
+						// console.log('nextState inside transitionState');
+						// console.log(nextState);
 					} else {
 						nextState[dataContextName] = new dataContextObjs[dataContextName](nextState[dataContextName], dependencies, prevState[dataContextName]);
 					}
+
+
+
 					if(watchedDataContext){
+						// console.log('watchedDataContext.name');
+						// console.log(watchedDataContext.name);
 						if(processed && watchedDataContext.subscribers.indexOf(dataContextName) !== -1){
 							dependencies = getDependencies(dataContexts[watchedDataContext.name]);
 							nextState[watchedDataContext.name] = new dataContextObjs[watchedDataContext.name](nextState[watchedDataContext.name], dependencies, prevState[watchedDataContext.name]);
@@ -105,17 +114,22 @@ IMVVM.Main = (function(){
 					}					
 				}
 			}
+			// console.log('Return nextState inside transitionState');
+			// console.log(nextState);
 			return nextState;
 		};
 
 		var appStateChangedHandler = function(callerDataContext, newState, callback) {
-			var //appContext,
+			var appContext,
 				nextState = {},
 				prevState = void 0,
 				watchedDataContext = void 0,
 				newStateKeys,
 				newStateKeysLen,
 				subscriberKeys;
+
+				// console.log('newState');
+				// console.log(newState);
 
 			if(callerDataContext in watchList){
 				newStateKeys = Object.keys(newState);
@@ -140,36 +154,53 @@ IMVVM.Main = (function(){
 			//pass it straight to the stateChangedHandler. If a callback was passed in
 			//it would be assigned to newState
 			if(AppViewModel) {
+				// console.log('!!!!!!!!');
 				//This means previous state has been requested
 				//so set nextState to the previous state
-				nextState = extend(newState);
+				nextState = extend(newState.state);
 				//revert the current appState to the previous state of the previous state
-				prevState = newState.previousState;
+				prevState = newState.state.previousState;
 			} else {
 				if(callerDataContext !== appDataContextName){
+					// console.log('thisAppState');
+					// console.log(thisAppState);
+
+					// console.log('1');
+
 					nextState[callerDataContext] = newState;
-					nextState = extend(thisAppState, nextState);
+					//nextState[callerDataContext] = extend(thisAppState.state[callerDataContext].state, newState);
+					// console.log(nextState);
+					nextState = extend(thisAppState.state, nextState);
 				} else {
 					//appDataContextName is calling function
 					if(typeof callback === 'boolean' && callback){ //initialise State
+						// console.log('A');
+						// console.log(newState);
 						nextState = extend(transitionState(), newState);
+														// console.log('nextState after A');
+				// console.log(nextState);
 					} else {
-						nextState = extend(thisAppState, newState);
+						// console.log('B');
+						nextState = extend(thisAppState.state, newState);
 					}
 				}
+				// console.log('C');
+				// console.log('passing in nextState');
+				// console.log(nextState);
 				prevState = thisAppState;
 				nextState = transitionState(nextState, prevState, watchedDataContext);
+				// console.log('nextState');
+				// console.log(nextState);
 			}
 
 			//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
-			thisAppState = new ApplicationDataContext(nextState, prevState).state;
-			Object.freeze(thisAppState);
+			thisAppState = new ApplicationDataContext(nextState, prevState);
+			appContext = Object.freeze(thisAppState.state);
 
 			//All the work is done! -> Notify the View
-			stateChangedHandler(thisAppState, callback);
-
+			stateChangedHandler(appContext, callback);
 			//Provided for the main app to return from init() to the View
-			return thisAppState;
+			return appContext;
 		};
 
 		var ApplicationDataContext = appViewModel.call(this, appStateChangedHandler.bind(this, appDataContextName));

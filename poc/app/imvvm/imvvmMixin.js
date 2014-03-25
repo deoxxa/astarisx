@@ -5,7 +5,7 @@
 
 'use strict';
 var IMVVM = IMVVM || {};
-IMVVM.version = 'IMVVM Ver 0.0.1';
+IMVVM.version = 'IMVVM v.0.0.1';
 IMVVM.IMVVMMixin = {
 	stateChangedHandler: function(dataContext, callback){
 		this.setState({appContext: dataContext}, function(){

@@ -22,7 +22,7 @@ MyApp.HobbyListView = (function(App){
 		},
 		render: function() {
 			var app = this.props.appContext;
-			var collection = this.props.appContext.hobbies.collectionItems;
+			var collection = this.props.appContext.hobbies.personHobbies;
 			var current = this.props.appContext.hobbies.selected;
 			var AddControl = App.InputAddControl;
 			var DeleteButton = App.DeleteButtonControl;

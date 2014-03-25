@@ -10,7 +10,7 @@ var IMVVM = IMVVM || {};
 MyApp.PersonsViewModel = (function(App, IMVVM){
   var PersonsViewModel = IMVVM.createViewModel({
   	select: function(id/*, callback*/){
-			var nextState = this.extend(this);
+			var nextState = /*{};//*/this.extend(this);
 			nextState.collection = nextState.collection.map(function(person){
 				if(person.id === id){
 					nextState.selected = this.Person(person);
@@ -18,6 +18,7 @@ MyApp.PersonsViewModel = (function(App, IMVVM){
 				}
 				return person;
 			}.bind(this));
+
 			this.setState(nextState);
 		},
 		addPerson: function(value){
@@ -63,7 +64,6 @@ MyApp.PersonsViewModel = (function(App, IMVVM){
 				}
 				return this.Person(state, false);
 			}.bind(this));
-
 			return this.DataContext(nextState);
 		},
 		personStateChangedHandler: function(self) {
@@ -95,15 +95,15 @@ MyApp.PersonsViewModel = (function(App, IMVVM){
 			get: function() { return this.state.selected; }
 		},
 
-		imOnline: {
-			enumerable: false, //not required to be true because it is dependent
-			get: function() { return this.state.dependencies.online; }
-		},
+		// imOnline: {
+		// 	enumerable: false, //not required to be true because it is dependent
+		// 	get: function() { return this.state.dependencies.online; }
+		// },
 
-		selectedHobby: {
-			enumerable: false, //not required to be true because it is dependent
-			get: function() { return this.state.dependencies.selectedHobby; }
-		},
+		// selectedHobby: {
+		// 	enumerable: false, //not required to be true because it is dependent
+		// 	get: function() { return this.state.dependencies.selectedHobby; }
+		// },
 
   });
   return PersonsViewModel;

@@ -7,9 +7,9 @@ var IMVVMBase = function() {};
 var IMVVMInterface = {
   //setState: null,
   //getInitialState: null,
-  // init: function(){
-  //   return this.DataContext();
-  // }
+  init: function(){
+    return this.DataContext();
+  }
 };
 
 var uuid = function () {
@@ -63,6 +63,15 @@ var IMVVMModel = {
       var AppViewModel = this.classType === 'AppViewModel';
       var originalSpec = this.originalSpec || {};
 
+      // Reduce time spent doing lookups by setting these on the prototype.
+    // for (var methodName in IMVVMInterface) {
+    //   if (!proto[methodName]) {
+    //     proto[methodName] = IMVVMInterface[methodName];
+    //   }
+    // }
+    //   console.log('this.prototype');
+    //   console.log(this.prototype);
+      
       for(key in this.originalSpec){
         if(this.originalSpec.hasOwnProperty(key)){
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
@@ -73,7 +82,6 @@ var IMVVMModel = {
           }
         }
       }
-
       if(!Model){
         proto.setState = raiseStateChangeHandler;
       }
@@ -91,7 +99,7 @@ var IMVVMModel = {
           proto.DataContext = proto.setState;
           if(!('init' in proto)){
             proto.init = function(){
-              return this.setState({});
+              return this.setState({}, true);
             }
           }
         }
@@ -141,20 +149,29 @@ var IMVVMModel = {
         } else {
           state = state || {};
           if(ViewModel){
-
-            if(!('dependencies' in state)){
-              Object.defineProperty(state, 'dependencies', {
-                configurable: false,
-                enumerable: true,
-                writable: false,
-                value: withContext
-              });  
-            }
-
+            state = extend(state, withContext);
             if(originalSpec.getInitialState){
               state = extend(state, originalSpec.getInitialState(state, oldState ? oldState.state: void 0));
             }
+            // console.log('state');
+            // console.log(state);
+          
+            Object.defineProperty(model, 'state', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: state
+            });
+            Object.keys(model).map(function(key){
+              if(Object.prototype.toString.call(this[key]) === '[object Object]' &&
+                ('context' in this[key])){
+                this[key].context = this; 
+                Object.freeze(this[key]);
+              }
+            }.bind(model));
 
+            state.__proto__ = model.__proto__;
+            return state;
           } else { //Assume it is AppViewModel
 
             Object.defineProperty(state, 'previousState', {
@@ -172,25 +189,14 @@ var IMVVMModel = {
             state.__proto__ = model.__proto__;
           }
         }
-
+        // console.log('pre-model');
+        // console.log(model);
         Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,
           writable: false,
           value: state
         });
-        
-        if(ViewModel){
-          //specify the model 'context' for notifications
-          //Only need to check objects
-          Object.keys(model).map(function(key){
-            if(Object.prototype.toString.call(this[key]) === '[object Object]' &&
-              ('context' in this[key])){
-              this[key].context = this; 
-              Object.freeze(this[key]);
-            }
-          }.bind(model));
-        }
 
         return model;
       }.bind(this);
@@ -201,7 +207,7 @@ var IMVVMModel = {
 
 mixInto(IMVVMBase, IMVVMModel.Mixin);
 
-var IMVVMCreateClass = {
+var IMVVMClass = {
   createClass: function(classType, spec){
 
     var Constructor = function(){};
@@ -231,13 +237,13 @@ var IMVVMCreateClass = {
     ConvenienceConstructor.classType = classType;
     Constructor.prototype.classType = classType;
 
-    // Reduce time spent doing lookups by setting these on the prototype.
+/*    // Reduce time spent doing lookups by setting these on the prototype.
     for (var methodName in IMVVMInterface) {
       if (!Constructor.prototype[methodName]) {
         Constructor.prototype[methodName] = null;
-        //Constructor.prototype[methodName] = IMVVMInterface[methodName];
       }
     }
+*/
 
     /*
     if (__DEV__) {
@@ -251,6 +257,6 @@ var IMVVMCreateClass = {
   },
 };
 
-IMVVM.createModel = IMVVMCreateClass.createClass.bind(this, 'Model');
-IMVVM.createViewModel = IMVVMCreateClass.createClass.bind(this, 'ViewModel');
-IMVVM.createAppViewModel = IMVVMCreateClass.createClass.bind(this, 'AppViewModel');
+IMVVM.createModel = IMVVMClass.createClass.bind(this, 'Model');
+IMVVM.createViewModel = IMVVMClass.createClass.bind(this, 'ViewModel');
+IMVVM.createAppViewModel = IMVVMClass.createClass.bind(this, 'AppViewModel');
