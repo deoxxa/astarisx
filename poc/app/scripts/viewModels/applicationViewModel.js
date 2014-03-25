@@ -6,6 +6,15 @@
 'use strict';
 
 var ApplicationViewModel = IMVVM.createAppViewModel({
+  
+  getInitialState: function(state){ //Optional
+    return { 
+      canUndo: !!state.previousState,
+      online: typeof state.online === 'boolean' ? state.online : false,
+      busy: typeof state.busy === 'boolean' ? state.busy : false
+    }
+  },
+
   init: function(args){ //optional
     return this.DataContext(extend(args,{online: true }));
   },
@@ -22,14 +31,6 @@ var ApplicationViewModel = IMVVM.createAppViewModel({
     },
   },
 
-  // May need to rename this - also in IMVVMModelInterface
-  getInitialState: function(state){ //Optional
-    return { 
-      canUndo: !!state.previousState,
-      online: typeof state.online === 'boolean' ? state.online : false,
-      busy: typeof state.busy === 'boolean' ? state.busy : false
-    }
-  },
   appName: {
     get: function(){
       return this.state.appName;

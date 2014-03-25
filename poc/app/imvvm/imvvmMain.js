@@ -116,7 +116,6 @@ IMVVM.Main = function(appNamespace, appViewModel, initArgs, dataContexts, stateC
 			newStateKeysLen,
 			subscriberKeys;
 
-
 		if(callerDataContext in watchList){
 			newStateKeys = Object.keys(newState);
 			newStateKeysLen = newStateKeys.length;

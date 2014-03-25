@@ -10,6 +10,7 @@
 /* Kick of the App*/
 
 //initArgs is Optional - passed to AppViewModel init
+//noUndo is optional - default is false
 React.renderComponent(<ApplicationView 
 	viewModel={ApplicationViewModel}
 	initArgs={{appName: 'IMVVM Demo'}}

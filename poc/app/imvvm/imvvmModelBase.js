@@ -164,7 +164,7 @@ var IMVVMModel = {
             state.__proto__ = model.__proto__;
             return Object.freeze(state);
           } else { //Assume it is AppViewModel
-            if(withContext){
+            if(!!withContext){
               Object.defineProperty(state, 'previousState', {
                 configurable: false,
                 enumerable: true,
