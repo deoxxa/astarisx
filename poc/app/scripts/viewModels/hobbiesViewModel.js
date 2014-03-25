@@ -11,7 +11,7 @@ MyApp.HobbiesViewModel = (function(App, IMVVM){
   var HobbiesViewModel = IMVVM.createViewModel({
   	select: function(value){
 			var nextState = {};
-			nextState.selected = this.personHobbies.filter(function(hobby){
+			nextState.selected = this.selectedPerson.hobbies.filter(function(hobby){
 				return hobby === value;
 			})[0];
 			this.setState(nextState);
