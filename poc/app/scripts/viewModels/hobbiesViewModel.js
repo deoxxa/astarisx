@@ -25,10 +25,6 @@ MyApp.HobbiesViewModel = (function(App, IMVVM){
 			this.state.dependencies.selectedPerson.deleteHobby(value);
 		},
 
-		// //Optional
-		// init: function(/*args*/){
-		// 	return this.DataContext();
-		// },
 		//When a dependency changes reset the selected hobby to undefined
 		resetSelected: function(state, prevState) {
 			prevState = prevState || {};

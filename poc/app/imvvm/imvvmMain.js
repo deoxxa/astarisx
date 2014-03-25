@@ -109,7 +109,7 @@ IMVVM.Main = (function(){
 		};
 
 		var appStateChangedHandler = function(callerDataContext, newState, callback) {
-			var appContext,
+			var //appContext,
 				nextState = {},
 				prevState = void 0,
 				watchedDataContext = void 0,
@@ -145,7 +145,6 @@ IMVVM.Main = (function(){
 				nextState = extend(newState);
 				//revert the current appState to the previous state of the previous state
 				prevState = newState.previousState;
-
 			} else {
 				if(callerDataContext !== appDataContextName){
 					nextState[callerDataContext] = newState;
@@ -159,20 +158,18 @@ IMVVM.Main = (function(){
 					}
 				}
 				prevState = thisAppState;
+				nextState = transitionState(nextState, prevState, watchedDataContext);
 			}
 
-			nextState = transitionState(nextState, thisAppState, watchedDataContext);
-
 			//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
-			appContext = new ApplicationDataContext(nextState, prevState).state;
-			Object.freeze(appContext);
+			thisAppState = new ApplicationDataContext(nextState, prevState).state;
+			Object.freeze(thisAppState);
 
 			//All the work is done! -> Notify the View
-			stateChangedHandler(appContext, callback);
+			stateChangedHandler(thisAppState, callback);
 
-			thisAppState = appContext;
 			//Provided for the main app to return from init() to the View
-			return appContext;
+			return thisAppState;
 		};
 
 		var ApplicationDataContext = appViewModel.call(this, appStateChangedHandler.bind(this, appDataContextName));

@@ -15,7 +15,7 @@ MyApp.ApplicationView = (function(IMVVM, App){
 		mixins: [IMVVM.IMVVMMixin],
 		
 		render: function(){
-			console.log('------------------------------------ Current Application State ------------------------------------')
+			console.log('------------------------------------------ Current Application State ------------------------------------------')
 			console.log(this.state.appContext)
 
 			var NavBar = App.NavBarView;
