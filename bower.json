@@ -1,0 +1,30 @@
+{
+  "name": "imvvm",
+  "version": "0.1.0-alpha",
+  "homepage": "https://github.com/entrendipity/imvvm",
+  "authors": [
+    "Frank Panetta <entrendipity[at]gmail.com>"
+  ],
+  "description": "Immutable MVVM for React",
+  "main": "main.js",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "react",
+    "mvc",
+    "mvvm",
+    "node",
+    "immutable"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
