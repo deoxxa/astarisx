@@ -4,3 +4,5 @@ example/app/bower_components/*
 node_modules/*
 example/node_modules/*
 compress.js
+
+steps.txt
