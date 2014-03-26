@@ -23,5 +23,7 @@
   },
   "main": "main.js",
   "devDependencies": {
+    "browserify": "^3.33.0",
+    "yuicompressor": "^2.4.8"
   }
 }

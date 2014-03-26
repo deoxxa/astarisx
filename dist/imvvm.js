@@ -412,8 +412,8 @@ module.exports = imvvmBase;
 'use strict';
 
 var core = _dereq_('./core');
-
 var NAMESPACE = '__IMVVM__';
+
 var mixin = {
 	stateChangedHandler: function(dataContext, callback){
 		this.setState({appContext: dataContext}, function(){
