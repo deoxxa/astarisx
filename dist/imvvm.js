@@ -173,7 +173,7 @@ exports.getInitialState = function(appNamespace, appViewModel, initArgs, dataCon
 	}
 	return new ApplicationDataContext().init(initArgs);
 };
-},{"./utils":6}],3:[function(_dereq_,module,exports){
+},{"./utils":9}],3:[function(_dereq_,module,exports){
 'use strict'
 
 var base = _dereq_('./imvvmBase');
@@ -187,149 +187,49 @@ var IMVVM = {
 };
 
 module.exports = IMVVM;
-},{"./imvvmBase":4,"./mixin":5}],4:[function(_dereq_,module,exports){
+},{"./imvvmBase":5,"./mixin":8}],4:[function(_dereq_,module,exports){
 'use strict';
 
 var utils = _dereq_('./utils');
 var extend = utils.extend;
-var mixInto = utils.mixInto;
+var getDescriptor = utils.getDescriptor;
 
-var IMVVMBase = function() {};
-
-var IMVVMModel = {
+var IMVVMAppViewModel = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
-      var key, descriptor = {};
-      var proto = this.prototype;
-      var Model = this.classType === 'Model';
-      var ViewModel = this.classType === 'ViewModel';
-      var AppViewModel = this.classType === 'AppViewModel';
-      var originalSpec = this.originalSpec || {};
-      
-      for(key in this.originalSpec){
-        if(this.originalSpec.hasOwnProperty(key)){
-          if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
-            //assume it is a descriptor
-            if(!('enumerable' in this.originalSpec[key])){
-              //default enumerable to true
-              this.originalSpec[key].enumerable = true;
-            }
-            descriptor[key] = this.originalSpec[key];
-          } else {
-            proto[key] = this.originalSpec[key];
+      var desc = getDescriptor.call(this);
+      desc.proto.setState = raiseStateChangeHandler;
+
+      var dataContext = function(state, previousState, oldState) {
+        state = state || {};
+        if(!!previousState){
+          Object.defineProperty(state, 'previousState', {
+            configurable: false,
+            enumerable: true,
+            writable: false,
+            value: previousState
+          });
+        }
+        //Do this after previousState is set so that it is included
+        if(desc.originalSpec.getInitialState){
+          state = extend(state, desc.originalSpec.getInitialState(state, previousState ? previousState.state: void 0));
+        }
+
+        desc.proto.DataContext = function(newState, callback, initialize){
+          return desc.proto.setState(newState, callback, true);
+        }
+
+        if(!('init' in desc.proto)){
+          desc.proto.init = function(){
+            return this.DataContext();
           }
         }
-      }
-      if(!Model){
-        proto.setState = raiseStateChangeHandler;
-      }
-      proto.extend = extend;
-      var dataContext = function(state, withContext, oldState) {
-        if(ViewModel){
-          proto.DataContext = dataContext;
-          if(!('init' in proto)){
-            proto.init = function(){
-              return this.DataContext();
-            }
-          }
-        }
-        if(AppViewModel){
-          proto.DataContext = function(newState, callback, initialize){
-            return proto.setState(newState, callback, true);
-          }
-          if(!('init' in proto)){
-            proto.init = function(){
-              return this.DataContext();
-            }
-          }
-        }
-        var model = Object.create(proto, descriptor);
-        if(Model){
-          var argCount = arguments.length;
-          var lastIsBoolean = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
-          if(argCount === 1){
-            if(lastIsBoolean){
-              withContext = state;
-              state = {};
-            } else {
-              //state = state || {};
-              withContext = true;
-            }
-          } else if(argCount === 2){
-            if(!lastIsBoolean){
-              oldState = withContext;
-              withContext = true;
-            }
-          } else if(argCount === 3){
-            if(lastIsBoolean){
-              var temp = withContext;
-              withContext = oldState;
-              oldState = temp;
-            } 
-          } else {
-            state = {};
-            withContext = true;
-          }
-          
-          if(originalSpec.getInitialState){
-            state = extend(state, originalSpec.getInitialState(state, oldState));
-          }
-
-          if(withContext){
-            //This will self distruct
-            Object.defineProperty(model, 'context', {
-              configurable: true,
-              enumerable: true,
-              set: function(context){
-                this.setState = raiseStateChangeHandler(context);
-                delete this.context;
-              }
-            });
-          }
-        } else {
-          state = state || {};
-          if(ViewModel){
-            state = extend(state, withContext);
-
-            if(originalSpec.getInitialState){
-              state = extend(state, originalSpec.getInitialState(state, oldState));
-            }
-          
-            Object.defineProperty(model, 'state', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: state
-            });
-
-            Object.keys(model).map(function(key){
-              if(Object.prototype.toString.call(this[key]) === '[object Object]' &&
-                ('context' in this[key])){
-                this[key].context = this; 
-                Object.freeze(this[key]);
-              }
-            }.bind(model));
-
-            state.__proto__ = model.__proto__;
-            return Object.freeze(state);
-          } else { //Assume it is AppViewModel
-            if(!!withContext){
-              Object.defineProperty(state, 'previousState', {
-                configurable: false,
-                enumerable: true,
-                writable: false,
-                value: withContext
-              });
-            }
-            //Do this after previousState is set so that it is included
-            if(originalSpec.getInitialState){
-              state = extend(state, originalSpec.getInitialState(state, withContext ? withContext.state: void 0));
-            }
-            //set this last
-            //TODO - rework this, as __proto__ is deprecated
-            state.__proto__ = model.__proto__;
-          }
-        }
+        
+        var model = Object.create(desc.proto, desc.descriptor);
+       
+        //set this last
+        //TODO - rework this, as __proto__ is deprecated
+        state.__proto__ = model.__proto__;
 
         Object.defineProperty(model, 'state', {
           configurable: false,
@@ -338,19 +238,38 @@ var IMVVMModel = {
           value: state
         });
         return model;
-      }.bind(this);
+      };
       return dataContext;
     }
   }
 };
 
-mixInto(IMVVMBase, IMVVMModel.Mixin);
+module.exports = IMVVMAppViewModel;
+
+},{"./utils":9}],5:[function(_dereq_,module,exports){
+'use strict';
+
+var utils = _dereq_('./utils');
+var extend = utils.extend;
+var mixInto = utils.mixInto;
+
+var model = _dereq_('./imvvmModel');
+var viewModel = _dereq_('./imvvmViewModel');
+var appViewModel = _dereq_('./imvvmAppViewModel');
+
+var ModelBase = function() {};
+var ViewModelBase = function() {};
+var AppViewModelBase = function() {};
+
+mixInto(ModelBase, model.Mixin);
+mixInto(ViewModelBase, viewModel.Mixin);
+mixInto(AppViewModelBase, appViewModel.Mixin);
 
 var IMVVMClass = {
-  createClass: function(classType, spec){
+  createClass: function(ctor, classType, spec){
 
     var Constructor = function(){};
-    Constructor.prototype = new IMVVMBase();      
+    Constructor.prototype = new ctor();      
     Constructor.prototype.constructor = Constructor;
 
     var DescriptorConstructor = Constructor;
@@ -395,15 +314,145 @@ var IMVVMClass = {
     return ConvenienceConstructor;
   },
 };
-var imvvmBase = {
-  createModel: IMVVMClass.createClass.bind(this, 'Model'),
-  createViewModel: IMVVMClass.createClass.bind(this, 'ViewModel'),
-  createAppViewModel: IMVVMClass.createClass.bind(this, 'AppViewModel')
+var IMVVMConstructors = {
+  createModel: IMVVMClass.createClass.bind(this, ModelBase, 'Model'),
+  createViewModel: IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel'),
+  createAppViewModel: IMVVMClass.createClass.bind(this, AppViewModelBase, 'AppViewModel')
 };
 
-module.exports = imvvmBase;
+module.exports = IMVVMConstructors;
 
-},{"./utils":6}],5:[function(_dereq_,module,exports){
+},{"./imvvmAppViewModel":4,"./imvvmModel":6,"./imvvmViewModel":7,"./utils":9}],6:[function(_dereq_,module,exports){
+'use strict';
+
+var utils = _dereq_('./utils');
+var extend = utils.extend;
+var getDescriptor = utils.getDescriptor;
+
+var IMVVMModel = {
+  Mixin: {
+    construct: function(raiseStateChangeHandler){
+      var desc = getDescriptor.call(this);
+      var dataContext = function(state, withContext, oldState) {
+        
+        var model = Object.create(desc.proto, desc.descriptor);
+        var argCount = arguments.length;
+        var lastIsBoolean = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
+        if(argCount === 1){
+          if(lastIsBoolean){
+            withContext = state;
+            state = {};
+          } else {
+            //state = state || {};
+            withContext = true;
+          }
+        } else if(argCount === 2){
+          if(!lastIsBoolean){
+            oldState = withContext;
+            withContext = true;
+          }
+        } else if(argCount === 3){
+          if(lastIsBoolean){
+            var temp = withContext;
+            withContext = oldState;
+            oldState = temp;
+          } 
+        } else {
+          state = {};
+          withContext = true;
+        }
+        
+        if(desc.originalSpec.getInitialState){
+          state = extend(state, desc.originalSpec.getInitialState(state, oldState));
+        }
+
+        if(withContext){
+          //This will self distruct
+          Object.defineProperty(model, 'context', {
+            configurable: true,
+            enumerable: true,
+            set: function(context){
+              this.setState = raiseStateChangeHandler(context);
+              delete this.context;
+            }
+          });
+        }
+
+        Object.defineProperty(model, 'state', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: state
+        });
+        return model;
+      };
+      return dataContext;
+    }
+  }
+};
+
+
+module.exports = IMVVMModel;
+
+},{"./utils":9}],7:[function(_dereq_,module,exports){
+'use strict';
+
+var utils = _dereq_('./utils');
+var extend = utils.extend;
+var getDescriptor = utils.getDescriptor;
+
+var IMVVMViewModel = {
+  Mixin: {
+    construct: function(raiseStateChangeHandler){
+      var desc = getDescriptor.call(this);
+      desc.proto.setState = raiseStateChangeHandler;
+
+      var dataContext = function(state, dependencies, oldState) {
+
+        state = state || {};
+        state = extend(state, dependencies);
+
+        if(desc.originalSpec.getInitialState){
+          state = extend(state, desc.originalSpec.getInitialState(state, oldState));
+        }
+      
+        desc.proto.DataContext = dataContext;
+
+        if(!('init' in desc.proto)){
+          desc.proto.init = function(){
+            return this.DataContext();
+          }
+        }
+        
+        var model = Object.create(desc.proto, desc.descriptor);
+
+        Object.defineProperty(model, 'state', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: state
+        });
+
+        Object.keys(model).map(function(key){
+          if(Object.prototype.toString.call(this[key]) === '[object Object]' &&
+            ('context' in this[key])){
+            this[key].context = this; 
+            Object.freeze(this[key]);
+          }
+        }.bind(model));
+
+        state.__proto__ = model.__proto__;
+        return Object.freeze(state);
+
+      };
+      return dataContext;
+    }
+  }
+};
+
+module.exports = IMVVMViewModel;
+
+},{"./utils":9}],8:[function(_dereq_,module,exports){
 /*jshint quotmark:false */
 /*jshint white:false */
 /*jshint trailing:false */
@@ -442,10 +491,35 @@ var mixin = {
 };
 
 module.exports = mixin;
-},{"./core":2}],6:[function(_dereq_,module,exports){
+},{"./core":2}],9:[function(_dereq_,module,exports){
 'use strict';
 
 var utils = {
+  getDescriptor: function(){
+    var descriptor = {};
+    var proto = this.prototype;
+    //var originalSpec = this.originalSpec || {};
+    for(var key in this.originalSpec){
+      if(this.originalSpec.hasOwnProperty(key)){
+        if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
+          //assume it is a descriptor
+          if(!('enumerable' in this.originalSpec[key])){
+            //default enumerable to true
+            this.originalSpec[key].enumerable = true;
+          }
+          descriptor[key] = this.originalSpec[key];
+        } else {
+          proto[key] = this.originalSpec[key];
+        }
+      }
+    }
+    proto.extend = utils.extend;
+    return { 
+      descriptor: descriptor,
+      proto: proto,
+      originalSpec: this.originalSpec || {}
+    }
+  },
   extend: function () {
     var newObj = {};
     for (var i = 0; i < arguments.length; i++) {
