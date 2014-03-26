@@ -13,11 +13,13 @@
     "node"
   ],
   "keywords": [
+    "imvvm",
     "react",
     "mvc",
     "mvvm",
     "node",
-    "immutable"
+    "immutable",
+    "presentation model"
   ],
   "license": "MIT",
   "ignore": [
