@@ -1,0 +1,63 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>IPM with React</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+        <!-- build:css styles/vendor.css -->
+        <!-- bower:css -->
+        <!-- endbower -->
+        <!-- endbuild -->
+        <!-- build:css(.tmp) styles/main.css -->
+        <link rel="stylesheet" href="bower_components/twitter/dist/css/bootstrap.css">
+        <link rel="stylesheet" href="styles/main.css">
+        <!-- endbuild -->
+    </head>
+    <body>
+        <!--[if lt IE 10]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div id='container'>
+
+        </div>
+
+        <!-- build:js scripts/vendor.js -->
+        <!-- bower:js -->
+        <script src="bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="bower_components/react/react.js"></script>
+        <script src="bower_components/react/JSXTransformer.js"></script>
+        <!-- endbower -->
+        <!-- endbuild -->
+
+
+        <!-- build:js scripts/main.js -->
+        <script type="text/jsx" src="services/dataservice.js"></script>
+        <!-- <script type="text/jsx" src="imvvm/imvvmMain.js"></script>
+        <script type="text/jsx" src="imvvm/imvvmMixin.js"></script>
+        <script type="text/jsx" src="imvvm/imvvmModelBase.js"></script> -->
+        <script type="text/jsx" src="imvvm/imvvm.js"></script>
+        <script type="text/jsx" src="scripts/models/personModel.js"></script>
+        <script type="text/jsx" src="scripts/viewModels/hobbiesViewModel.js"></script>
+        <script type="text/jsx" src="scripts/viewModels/personsViewModel.js"></script>
+        <script type="text/jsx" src="scripts/viewModels/applicationViewModel.js"></script>
+        <script type="text/jsx" src="scripts/controls/addControl.jsx"></script>
+        <script type="text/jsx" src="scripts/controls/deleteButton.jsx"></script>
+        <script type="text/jsx" src="scripts/views/navBarView.jsx"></script>
+        <script type="text/jsx" src="scripts/views/listView.jsx"></script>
+        <script type="text/jsx" src="scripts/views/hobbyListView.jsx"></script>
+        <script type="text/jsx" src="scripts/views/formView.jsx"></script>
+        <script type="text/jsx" src="scripts/views/sideBarView.jsx"></script>
+        <script type="text/jsx" src="scripts/views/detailsView.jsx"></script>
+        <script type="text/jsx" src="scripts/views/applicationView.jsx"></script>
+        <script type="text/jsx" src="scripts/config/dataContexts.js"></script>
+        <script type="text/jsx" src="scripts/main.jsx"></script>
+        <!-- endbuild -->
+</body>
+</html>

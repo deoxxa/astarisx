@@ -1,9 +1,6 @@
 
-example/imvvmDemo/node_modules/*
-
-example/imvvmDemo/.tmp/*
-
-poc/test/bower_components/*
-poc/.tmp/*
-poc/app/bower_components/*
-poc/node_modules/*
+example/test/bower_components/*
+example/.tmp/*
+example/app/bower_components/*
+node_modules/*
+example/node_modules/*
