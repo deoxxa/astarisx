@@ -5,9 +5,9 @@
 
 'use strict';
 
-var imvvm = require('./imvvmMain');
-
+var core = require('./core');
 var NAMESPACE = '__IMVVM__';
+
 var mixin = {
 	stateChangedHandler: function(dataContext, callback){
 		this.setState({appContext: dataContext}, function(){
@@ -28,7 +28,7 @@ var mixin = {
 	},
 
 	getInitialState: function(){
-		var appDataContext = imvvm.Main(NAMESPACE, this.props.viewModel, this.props.initArgs,
+		var appDataContext = core.getInitialState(NAMESPACE, this.props.viewModel, this.props.initArgs,
 			this.props.dataContexts, this.stateChangedHandler, this.props.noUndo);
 		return {appContext: appDataContext};
 	}

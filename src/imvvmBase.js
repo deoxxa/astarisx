@@ -6,31 +6,6 @@ var mixInto = utils.mixInto;
 
 var IMVVMBase = function() {};
 
-/*get extend and mixInto from React lib*/
-// var extend = function () {
-//   var newObj = {};
-//   for (var i = 0; i < arguments.length; i++) {
-//     var obj = arguments[i];
-//     for (var key in obj) {
-//       if (obj.hasOwnProperty(key)) {
-//         newObj[key] = obj[key];
-//       }
-//     }
-//   }
-//   return newObj;
-// };
-
-// var mixInto = function(constructor, methodBag) {
-//   var methodName;
-//   for (methodName in methodBag) {
-//     if (!methodBag.hasOwnProperty(methodName)) {
-//       continue;
-//     }
-//     constructor.prototype[methodName] = methodBag[methodName];
-//   }
-// };
-
-
 var IMVVMModel = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
@@ -230,10 +205,10 @@ var IMVVMClass = {
     return ConvenienceConstructor;
   },
 };
-var IMVVM = {
+var imvvmBase = {
   createModel: IMVVMClass.createClass.bind(this, 'Model'),
   createViewModel: IMVVMClass.createClass.bind(this, 'ViewModel'),
   createAppViewModel: IMVVMClass.createClass.bind(this, 'AppViewModel')
 };
 
-module.exports = IMVVM;
+module.exports = imvvmBase;

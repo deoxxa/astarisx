@@ -9,7 +9,7 @@
 'use strict';
 
 var ApplicationView = React.createClass({
-	mixins: [IMVVM.imvvmMixin],
+	mixins: [IMVVM.mixin],
 	
 	render: function(){
 

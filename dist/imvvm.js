@@ -4,21 +4,7 @@
 var IMVVM = _dereq_('./src/imvvm.js');
 
 module.exports = IMVVM;
-},{"./src/imvvm.js":2}],2:[function(_dereq_,module,exports){
-'use strict'
-
-var base = _dereq_('./imvvmModelBase');
-var mixin = _dereq_('./imvvmMixin');
-
-var IMVVM = {
-    createModel: base.createModel,
-    createViewModel: base.createViewModel,
-    createAppViewModel: base.createAppViewModel,
-    imvvmMixin: mixin
-};
-
-module.exports = IMVVM;
-},{"./imvvmMixin":4,"./imvvmModelBase":5}],3:[function(_dereq_,module,exports){
+},{"./src/imvvm.js":3}],2:[function(_dereq_,module,exports){
 /*jshint quotmark:false */
 /*jshint white:false */
 /*jshint trailing:false */
@@ -28,7 +14,7 @@ module.exports = IMVVM;
 var utils = _dereq_('./utils');
 var extend = utils.extend;
 
-exports.Main = function(appNamespace, appViewModel, initArgs, dataContexts, stateChangedHandler, noUndo) {
+exports.getInitialState = function(appNamespace, appViewModel, initArgs, dataContexts, stateChangedHandler, noUndo) {
 
 	if(typeof stateChangedHandler !== 'function'){
 		throw new TypeError();
@@ -39,19 +25,6 @@ exports.Main = function(appNamespace, appViewModel, initArgs, dataContexts, stat
 		dataContextObjs = {},
 		watchedProps,
 		watchList = {};
-
-	// var extend = function () {
-	// 	var newObj = {};
-	// 	for (var i = 0; i < arguments.length; i++) {
-	// 		var obj = arguments[i];
-	// 		for (var key in obj) {
-	// 			if (obj.hasOwnProperty(key)) {
-	// 				newObj[key] = obj[key];
-	// 			}
-	// 		}
-	// 	}
-	// 	return newObj;
-	// };
 		
 	var transitionState = function(nextState, prevState, watchedDataContext){
 		var processed = false,
@@ -200,46 +173,21 @@ exports.Main = function(appNamespace, appViewModel, initArgs, dataContexts, stat
 	}
 	return new ApplicationDataContext().init(initArgs);
 };
-},{"./utils":6}],4:[function(_dereq_,module,exports){
-/*jshint quotmark:false */
-/*jshint white:false */
-/*jshint trailing:false */
-/*jshint newcap:false */
+},{"./utils":6}],3:[function(_dereq_,module,exports){
+'use strict'
 
-'use strict';
+var base = _dereq_('./imvvmBase');
+var mixin = _dereq_('./mixin');
 
-var imvvm = _dereq_('./imvvmMain');
-
-var NAMESPACE = '__IMVVM__';
-var mixin = {
-	stateChangedHandler: function(dataContext, callback){
-		this.setState({appContext: dataContext}, function(){
-			//send all state back to caller
-			//useful if you need to know what other parts of the app
-			//were impacted by your changes. You can also use the returned
-			//information to display things external to your ApplicationModel
-			//Allows you to have multiple Application ViewModels in the one app and
-			//still share the state with other presentation models that may be interested
-			if(typeof callback === 'function'){
-				if(this.state !== null && ('appContext' in this.state)){
-					callback(this.state.appContext);
-				} else {
-					callback(void 0);
-				}
-			}
-		}.bind(this));
-	},
-
-	getInitialState: function(){
-		var appDataContext = imvvm.Main(NAMESPACE, this.props.viewModel, this.props.initArgs,
-			this.props.dataContexts, this.stateChangedHandler, this.props.noUndo);
-		return {appContext: appDataContext};
-	}
-
+var IMVVM = {
+    createModel: base.createModel,
+    createViewModel: base.createViewModel,
+    createAppViewModel: base.createAppViewModel,
+    mixin: mixin
 };
 
-module.exports = mixin;
-},{"./imvvmMain":3}],5:[function(_dereq_,module,exports){
+module.exports = IMVVM;
+},{"./imvvmBase":4,"./mixin":5}],4:[function(_dereq_,module,exports){
 'use strict';
 
 var utils = _dereq_('./utils');
@@ -247,31 +195,6 @@ var extend = utils.extend;
 var mixInto = utils.mixInto;
 
 var IMVVMBase = function() {};
-
-/*get extend and mixInto from React lib*/
-// var extend = function () {
-//   var newObj = {};
-//   for (var i = 0; i < arguments.length; i++) {
-//     var obj = arguments[i];
-//     for (var key in obj) {
-//       if (obj.hasOwnProperty(key)) {
-//         newObj[key] = obj[key];
-//       }
-//     }
-//   }
-//   return newObj;
-// };
-
-// var mixInto = function(constructor, methodBag) {
-//   var methodName;
-//   for (methodName in methodBag) {
-//     if (!methodBag.hasOwnProperty(methodName)) {
-//       continue;
-//     }
-//     constructor.prototype[methodName] = methodBag[methodName];
-//   }
-// };
-
 
 var IMVVMModel = {
   Mixin: {
@@ -472,15 +395,54 @@ var IMVVMClass = {
     return ConvenienceConstructor;
   },
 };
-var IMVVM = {
+var imvvmBase = {
   createModel: IMVVMClass.createClass.bind(this, 'Model'),
   createViewModel: IMVVMClass.createClass.bind(this, 'ViewModel'),
   createAppViewModel: IMVVMClass.createClass.bind(this, 'AppViewModel')
 };
 
-module.exports = IMVVM;
+module.exports = imvvmBase;
 
-},{"./utils":6}],6:[function(_dereq_,module,exports){
+},{"./utils":6}],5:[function(_dereq_,module,exports){
+/*jshint quotmark:false */
+/*jshint white:false */
+/*jshint trailing:false */
+/*jshint newcap:false */
+
+'use strict';
+
+var core = _dereq_('./core');
+
+var NAMESPACE = '__IMVVM__';
+var mixin = {
+	stateChangedHandler: function(dataContext, callback){
+		this.setState({appContext: dataContext}, function(){
+			//send all state back to caller
+			//useful if you need to know what other parts of the app
+			//were impacted by your changes. You can also use the returned
+			//information to display things external to your ApplicationModel
+			//Allows you to have multiple Application ViewModels in the one app and
+			//still share the state with other presentation models that may be interested
+			if(typeof callback === 'function'){
+				if(this.state !== null && ('appContext' in this.state)){
+					callback(this.state.appContext);
+				} else {
+					callback(void 0);
+				}
+			}
+		}.bind(this));
+	},
+
+	getInitialState: function(){
+		var appDataContext = core.getInitialState(NAMESPACE, this.props.viewModel, this.props.initArgs,
+			this.props.dataContexts, this.stateChangedHandler, this.props.noUndo);
+		return {appContext: appDataContext};
+	}
+
+};
+
+module.exports = mixin;
+},{"./core":2}],6:[function(_dereq_,module,exports){
 'use strict';
 
 var utils = {

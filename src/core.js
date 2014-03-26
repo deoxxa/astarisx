@@ -7,7 +7,7 @@
 var utils = require('./utils');
 var extend = utils.extend;
 
-exports.Main = function(appNamespace, appViewModel, initArgs, dataContexts, stateChangedHandler, noUndo) {
+exports.getInitialState = function(appNamespace, appViewModel, initArgs, dataContexts, stateChangedHandler, noUndo) {
 
 	if(typeof stateChangedHandler !== 'function'){
 		throw new TypeError();
@@ -18,19 +18,6 @@ exports.Main = function(appNamespace, appViewModel, initArgs, dataContexts, stat
 		dataContextObjs = {},
 		watchedProps,
 		watchList = {};
-
-	// var extend = function () {
-	// 	var newObj = {};
-	// 	for (var i = 0; i < arguments.length; i++) {
-	// 		var obj = arguments[i];
-	// 		for (var key in obj) {
-	// 			if (obj.hasOwnProperty(key)) {
-	// 				newObj[key] = obj[key];
-	// 			}
-	// 		}
-	// 	}
-	// 	return newObj;
-	// };
 		
 	var transitionState = function(nextState, prevState, watchedDataContext){
 		var processed = false,

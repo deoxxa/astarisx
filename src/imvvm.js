@@ -1,13 +1,13 @@
 'use strict'
 
-var base = require('./imvvmModelBase');
-var mixin = require('./imvvmMixin');
+var base = require('./imvvmBase');
+var mixin = require('./mixin');
 
 var IMVVM = {
     createModel: base.createModel,
     createViewModel: base.createViewModel,
     createAppViewModel: base.createAppViewModel,
-    imvvmMixin: mixin
+    mixin: mixin
 };
 
 module.exports = IMVVM;
