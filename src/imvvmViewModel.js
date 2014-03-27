@@ -42,6 +42,9 @@ var IMVVMViewModel = {
             this[key].context = this; 
             Object.freeze(this[key]);
           }
+          if(Object.prototype.toString.call(this[key]) === '[object Array]'){
+            Object.freeze(this[key]);
+          }
         }.bind(model));
 
         state.__proto__ = model.__proto__;

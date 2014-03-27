@@ -15,7 +15,6 @@ var ApplicationView = React.createClass({
 
 		console.log('------------------------------------------ Current Application State ------------------------------------------')
 		console.log(this.state.appContext);
-
 		return (
 			<div>
 				<NavBarView appContext={this.state.appContext} />

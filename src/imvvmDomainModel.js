@@ -4,7 +4,7 @@ var utils = require('./utils');
 var extend = utils.extend;
 var getDescriptor = utils.getDescriptor;
 
-var IMVVMAppViewModel = {
+var IMVVMDomainModel = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
       var desc = getDescriptor.call(this);
@@ -12,6 +12,7 @@ var IMVVMAppViewModel = {
 
       var dataContext = function(state, previousState, oldState) {
         state = state || {};
+        
         if(!!previousState){
           Object.defineProperty(state, 'previousState', {
             configurable: false,
@@ -35,8 +36,8 @@ var IMVVMAppViewModel = {
           }
         }
         
-        var model = Object.create(desc.proto, desc.descriptor);
-       
+        var model = Object.create(desc.proto, desc.descriptor); 
+
         //set this last
         //TODO - rework this, as __proto__ is deprecated
         state.__proto__ = model.__proto__;
@@ -54,4 +55,4 @@ var IMVVMAppViewModel = {
   }
 };
 
-module.exports = IMVVMAppViewModel;
+module.exports = IMVVMDomainModel;

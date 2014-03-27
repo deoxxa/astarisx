@@ -2,26 +2,27 @@
 /*jshint white:false */
 /*jshint trailing:false */
 /*jshint newcap:false */
+/* global IMVVM */
 
 'use strict';
-var uuid = function () {
-  /*jshint bitwise:false */
-  var i, random;
-  var uuid = '';
-
-  for (i = 0; i < 32; i++) {
-    random = Math.random() * 16 | 0;
-    if (i === 8 || i === 12 || i === 16 || i === 20) {
-      uuid += '-';
-    }
-    uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
-      .toString(16);
-  }
-  return uuid;
-};
 
 var PersonModel = IMVVM.createModel({
   
+  uuid: function () {
+    /*jshint bitwise:false */
+    var i, random;
+    var uuid = '';
+
+    for (i = 0; i < 32; i++) {
+      random = Math.random() * 16 | 0;
+      if (i === 8 || i === 12 || i === 16 || i === 20) {
+        uuid += '-';
+      }
+      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
+        .toString(16);
+    }
+    return uuid;
+  },
   addHobby: function(value){
     var arr;
     if(this.hobbies.indexOf(value) === -1){
@@ -36,21 +37,21 @@ var PersonModel = IMVVM.createModel({
     });
   },
 
-  calculateAge: function(dob) { // dob is a date
-      var DOB = new Date(dob);
-      var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from epoch
-      return Math.abs(ageDate.getFullYear() - 1970) + " years old";
+  calculateAge: function(dob){ // dob is a date
+    var DOB = new Date(dob);
+    var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from epoch
+    return Math.abs(ageDate.getFullYear() - 1970) + " years old";
   },
 
-  getInitialState: function(state, prevState){
+  getInitialState: function(state/*, prevState*/){
     var _hobbies = state.hobbies || [];
 
     return { 
-      id: state.id ? state.id : uuid(),
+      id: state.id ? state.id : this.uuid(),
       age: this.calculateAge(state.dob),
       hobbies: Object.freeze(_hobbies) //freeze arrays to make them immutable ->
       //do that here and not in prop get call otherwise everytime get() is called Object.freeze is called
-    }
+    };
   },
 
   id: {
@@ -124,7 +125,7 @@ var PersonModel = IMVVM.createModel({
   
   //Calculated field -> dob
   age: {
-  	enumerable: false,
+    enumerable: false,
     get: function(){
       return this.state.age;
     }
@@ -139,7 +140,7 @@ var PersonModel = IMVVM.createModel({
 
   hobbies: {
     //Must explicitly freeze array Object to make immutable
-    get: function(){ return this.state.hobbies },
+    get: function(){ return this.state.hobbies; },
     set: function(newArray){
       this.setState({'hobbies': newArray});
     }

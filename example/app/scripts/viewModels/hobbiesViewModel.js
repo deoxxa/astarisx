@@ -2,6 +2,8 @@
 /*jshint white:false */
 /*jshint trailing:false */
 /*jshint newcap:false */
+/*jshint camelcase:false */
+/* global IMVVM */
 
 'use strict';
 
@@ -16,6 +18,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
 	
 	addHobby: function(value){
 		this.persons_selected.addHobby(value);
+    //this.appState.busy = true;
 	},
 	
 	deleteHobby: function(value){

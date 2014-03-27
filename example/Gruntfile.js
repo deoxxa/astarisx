@@ -1,3 +1,4 @@
+/*jshint indent:4 */
 // Generated on 2014-02-25 using generator-webapp 0.4.7
 'use strict';
 

@@ -2,6 +2,8 @@
 /*jshint white:false */
 /*jshint trailing:false */
 /*jshint newcap:false */
+/*jshint camelcase:false */
+/* global IMVVM */
 
 'use strict';
 
@@ -57,16 +59,11 @@ var PersonsViewModel = IMVVM.createViewModel({
 				nextState.selected = this.Person(state);
 				return nextState.selected;
 			}
-			return Object.freeze(this.Person(state, false));
+			return this.Person(state, false);
 		}.bind(this));
 		return this.DataContext(nextState);
 	},
-	getInitialState: function(state) {
-		var _collection = state.collection || {};
-		return {
-			collection: Object.freeze(_collection) 
-		};
-	},
+
 	personStateChangedHandler: function(viewModel) {
 		return function(newState){
 			var nextState = {};
@@ -82,13 +79,13 @@ var PersonsViewModel = IMVVM.createViewModel({
 			viewModel.setState(nextState);
 		};
 	},
-	Person: function(someState){
-		return PersonModel(this.personStateChangedHandler)(someState);
+	Person: function(someState, withContext, oldState){
+		return PersonModel(this.personStateChangedHandler)(someState, withContext, oldState);
 	},
 	collection: {
     //Must explicitly set array to immutable
     //must ensure array is initialised before freeze
-    get: function(){ return this.state.collection },
+    get: function(){ return this.state.collection; },
   },
 	selected: {
 		get: function() { return this.state.selected; }

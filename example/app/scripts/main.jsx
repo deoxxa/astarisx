@@ -12,9 +12,9 @@
 //initArgs is Optional - passed to AppViewModel init
 //noUndo is optional - default is false
 React.renderComponent(<ApplicationView 
-	viewModel={ApplicationViewModel}
-	initArgs={{appName: 'IMVVM Demo'}}
-	dataContexts={dataContexts}
+	domainModel={DomainModel}
+	init={{appName: 'IMVVM Demo'}}
+	domain={domainObjects}
   noUndo={false} />,
 	document.getElementById('container'));
 

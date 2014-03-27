@@ -7,15 +7,14 @@
 var utils = require('./utils');
 var extend = utils.extend;
 
-exports.getInitialState = function(appNamespace, appViewModel, initArgs, dataContexts, stateChangedHandler, noUndo) {
+exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, stateChangedHandler, noUndo) {
 
 	if(typeof stateChangedHandler !== 'function'){
 		throw new TypeError();
 	}
 	
-	var appDataContextName = appNamespace,
-		thisAppState = void 0,
-		dataContextObjs = {},
+	var thisAppState = void 0,
+		dataContexts = {},
 		watchedProps,
 		watchList = {};
 		
@@ -57,29 +56,29 @@ exports.getInitialState = function(appNamespace, appViewModel, initArgs, dataCon
 			return deps;
 		};
 
-		for(var dataContextName in dataContexts){
-			if(dataContexts.hasOwnProperty(dataContextName)){
-				dependencies = getDependencies(dataContexts[dataContextName]);
+		for(var dataContext in domain){
+			if(domain.hasOwnProperty(dataContext)){
+				dependencies = getDependencies(domain[dataContext]);
 				//Need to inject dependencies so that the state for this object can change
 				//if required. Can't use appState as that is provided after the object is created
 				if(initialize){
-					nextState[dataContextName] = new dataContextObjs[dataContextName](nextState[dataContextName], dependencies, prevState[dataContextName]).init(dataContexts[dataContextName].initArgs);
+					nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies, prevState[dataContext]).init(domain[dataContext].initArgs);
 				} else {
-					nextState[dataContextName] = new dataContextObjs[dataContextName](nextState[dataContextName], dependencies, prevState[dataContextName]);
+					nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies, prevState[dataContext]);
 				}
 				if(watchedDataContext){
-					if(processed && watchedDataContext.subscribers.indexOf(dataContextName) !== -1){
-						dependencies = getDependencies(dataContexts[watchedDataContext.name]);
-						nextState[watchedDataContext.name] = new dataContextObjs[watchedDataContext.name](nextState[watchedDataContext.name], dependencies, prevState[watchedDataContext.name]);
+					if(processed && watchedDataContext.subscribers.indexOf(dataContext) !== -1){
+						dependencies = getDependencies(domain[watchedDataContext.name]);
+						nextState[watchedDataContext.name] = new dataContexts[watchedDataContext.name](nextState[watchedDataContext.name], dependencies, prevState[watchedDataContext.name]);
 					}
-					processed = processed ? processed : dataContextName === watchedDataContext.name;
+					processed = processed ? processed : dataContext === watchedDataContext.name;
 				}					
 			}
 		}
 		return nextState;
 	};
 
-	var appStateChangedHandler = function(callerDataContext, newState, callback, initialize) {
+	var appStateChangedHandler = function(caller, newState, callback, initialize) {
 		var appContext,
 			nextState = {},
 			prevState = void 0,
@@ -88,41 +87,40 @@ exports.getInitialState = function(appNamespace, appViewModel, initArgs, dataCon
 			newStateKeysLen,
 			subscriberKeys;
 
-		if(callerDataContext in watchList){
+		if(caller in watchList){
 			newStateKeys = Object.keys(newState);
 			newStateKeysLen = newStateKeys.length;
 			subscriberKeys = {};
 
 			for(var i= 0; i < newStateKeysLen; i++){
-				if(watchList[callerDataContext][newStateKeys[i]]){
-					subscriberKeys[watchList[callerDataContext][newStateKeys[i]]] = true;
+				if(watchList[caller][newStateKeys[i]]){
+					subscriberKeys[watchList[caller][newStateKeys[i]]] = true;
 				}
 			}
 			watchedDataContext = {};
-			watchedDataContext.name = callerDataContext;
+			watchedDataContext.name = caller;
 			watchedDataContext.subscribers = Object.keys(subscriberKeys);
 			//If there are no subscriber reset watchedDataContext
 			watchedDataContext = !!watchedDataContext.subscribers.length ? watchedDataContext : void 0;
 		}
 
-		var AppViewModel = !!newState ? Object.getPrototypeOf(newState).constructor.classType === "AppViewModel" : false;
+		var DomainModel = !!newState ? Object.getPrototypeOf(newState).constructor.classType === "DomainModel" : false;
 		
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangedHandler. If a callback was passed in
 		//it would be assigned to newState
-		if(AppViewModel) {
+		if(DomainModel) {
 			//This means previous state has been requested
 			//so set nextState to the previous state
 			nextState = extend(newState.state);
 			//revert the current appState to the previous state of the previous state
 			prevState = newState.state.previousState;
 		} else {
-			if(callerDataContext !== appDataContextName){
-				nextState[callerDataContext] = newState;
+			if(caller !== appNamespace){
+				nextState[caller] = newState;
 				nextState = extend(thisAppState.state, nextState);
 			} else {
-				//appDataContextName is calling function
-				//if(typeof callback === 'boolean' && callback){ //initialise State
+				//appDataContext is calling function
 				if(initialize) {
 					nextState = extend(transitionState(), newState);
 				} else {
@@ -140,24 +138,24 @@ exports.getInitialState = function(appNamespace, appViewModel, initArgs, dataCon
 		appContext = Object.freeze(thisAppState.state);
 
 		//All the work is done! -> Notify the View
-		stateChangedHandler(appContext, callback);
+		stateChangedHandler(appContext, caller, callback);
 		//Provided for the main app to return from init() to the View
 		return appContext;
 	};
 
-	var ApplicationDataContext = appViewModel.call(this, appStateChangedHandler.bind(this, appDataContextName));
+	var ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
 
-	for(var dataContextName in dataContexts){
-		if(dataContexts.hasOwnProperty(dataContextName)){
-			dataContextObjs[dataContextName] = dataContexts[dataContextName].viewModel.call(this, appStateChangedHandler.bind(this, dataContextName));
-			if('dependsOn' in dataContexts[dataContextName]){
-				for(var i = 0, len = dataContexts[dataContextName].dependsOn.length; i < len; i++){
-					watchedProps = dataContexts[dataContextName].dependsOn[i].property.split('.');
+	for(var dataContext in domain){
+		if(domain.hasOwnProperty(dataContext)){
+			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
+			if('dependsOn' in domain[dataContext]){
+				for(var i = 0, len = domain[dataContext].dependsOn.length; i < len; i++){
+					watchedProps = domain[dataContext].dependsOn[i].property.split('.');
 					if(watchedProps.length > 1){
 						watchList[watchedProps[0]] = watchList[watchedProps[0]] || {};
 						watchList[watchedProps[0]][watchedProps[1]] = watchList[watchedProps[0]][watchedProps[1]] || [];
-						if(watchList[watchedProps[0]][watchedProps[1]].indexOf(dataContextName) === -1){
-							watchList[watchedProps[0]][watchedProps[1]].push(dataContextName);
+						if(watchList[watchedProps[0]][watchedProps[1]].indexOf(dataContext) === -1){
+							watchList[watchedProps[0]][watchedProps[1]].push(dataContext);
 						}
 					}
 				}

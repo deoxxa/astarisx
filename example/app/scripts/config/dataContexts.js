@@ -5,10 +5,12 @@
 /*jshint white:false */
 /*jshint trailing:false */
 /*jshint newcap:false */
+/* global AppViewModel, PersonsViewModel, HobbiesViewModel */
 
 'use strict';
 
-var dataContexts = {
+var domainObjects = {
+	/*jshint camelcase:false */
 	'persons': {
 		viewModel: PersonsViewModel,
 		initArgs : [],
@@ -18,6 +20,10 @@ var dataContexts = {
 	'hobbies': {
 		viewModel: HobbiesViewModel,
 		initArgs : [],
-		dependsOn: [{property: 'persons.selected'}]
+		dependsOn: [{property: 'persons.selected'},
+								{property: 'myAppState.appState', alias: 'appState'}]
+	},
+	'myAppState': {
+		viewModel: AppViewModel
 	}
 };
