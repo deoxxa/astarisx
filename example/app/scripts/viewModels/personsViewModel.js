@@ -79,8 +79,8 @@ var PersonsViewModel = IMVVM.createViewModel({
 			viewModel.setState(nextState);
 		};
 	},
-	Person: function(someState, withContext, oldState){
-		return PersonModel(this.personStateChangedHandler)(someState, withContext, oldState);
+	Person: function(){
+		return PersonModel(this.personStateChangedHandler).apply(this, arguments);
 	},
 	collection: {
     //Must explicitly set array to immutable
