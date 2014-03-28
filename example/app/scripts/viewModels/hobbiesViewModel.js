@@ -13,7 +13,8 @@ var HobbiesViewModel = IMVVM.createViewModel({
 	},
 	
 	addHobby: function(value){
-		this.persons_selected.addHobby(value);
+		//this.persons_selected.addHobby(value);
+    this.appState.busy = true;
 	},
 	
 	deleteHobby: function(value){
@@ -30,13 +31,22 @@ var HobbiesViewModel = IMVVM.createViewModel({
     }
   	return nextState.selected;
   },
-
+  appState:  {
+    get: function(){
+      this.state.appState;
+    }
+  },
 	getInitialState: function(nextState, prevState){
+    console.log(nextState);
 		return { 
       selected: this.resetSelected(nextState, prevState),
     }
 	},
-
+  // busy: {
+  //   get: function(){
+  //     this.state.appState;
+  //   }
+  //},
 	selected: {
 		get: function(){
 			return this.state.selected;

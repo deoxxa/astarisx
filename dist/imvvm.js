@@ -16,6 +16,7 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 	}
 	
 	var thisAppState = void 0,
+		protectedState = {},
 		dataContexts = {},
 		watchedProps,
 		watchList = {};
@@ -114,20 +115,31 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		if(DomainModel) {
 			//This means previous state has been requested
 			//so set nextState to the previous state
+			protectedState = extend(newState.previousProtectedState);
+			delete newState.state.previousProtectedState;
 			nextState = extend(newState.state);
 			//revert the current appState to the previous state of the previous state
+			console.log('newState');
+			console.log(newState);
+
+			//previous protected state is in newState
+			//maybe can assign then delete
 			prevState = newState.state.previousState;
 		} else {
 			if(caller !== appNamespace){
 				nextState[caller] = newState;
-				nextState = extend(thisAppState.state, nextState);
+				nextState = extend(thisAppState.state, protectedState, nextState);
 			} else {
 				//appDataContext is calling function
 				if(initialize) {
 					nextState = extend(transitionState(), newState);
 				} else {
-					nextState = extend(thisAppState.state, newState);
+					nextState = extend(thisAppState.state, protectedState, newState);
 				}
+			}
+			/* NEED TO CHECK THIS */
+			if(prevState){
+				delete prevState.previousProtectedState;
 			}
 			prevState = thisAppState;
 			nextState = transitionState(nextState, thisAppState ? thisAppState.state : void 0, watchedDataContext);
@@ -135,8 +147,22 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		if(prevState){
 			Object.freeze(prevState);
 		}
+		console.log('prevState');
+		console.log(prevState);
 		//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
-		thisAppState = new ApplicationDataContext(nextState, noUndo ? void 0 : prevState);
+		thisAppState = new ApplicationDataContext(nextState, noUndo ? void 0 : prevState, protectedState);
+
+		console.log('thisAppState');
+		console.log(thisAppState);
+		//remove private ViewModels from Domain
+		for(var dataContext in domain){
+			if(domain.hasOwnProperty(dataContext)){
+				if(domain[dataContext].protected){
+					protectedState[dataContext] = extend(thisAppState.state[dataContext]);
+					delete thisAppState.state[dataContext];
+				}
+			}
+		};
 		appContext = Object.freeze(thisAppState.state);
 
 		//All the work is done! -> Notify the View
@@ -256,7 +282,7 @@ var IMVVMDomainModel = {
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
 
-      var dataContext = function(state, previousState) {
+      var dataContext = function(state, previousState, previousProtectedState) {
         state = state || {};
         
         if(!!previousState){
@@ -269,6 +295,8 @@ var IMVVMDomainModel = {
         } else {
           previousState = {};
         }
+
+
         //Do this after previousState is set so that it is included
         if(desc.originalSpec.getInitialState){
           state = extend(state, desc.originalSpec.getInitialState(state, previousState ? previousState.state: void 0));
@@ -289,6 +317,14 @@ var IMVVMDomainModel = {
         //set this last
         //TODO - rework this, as __proto__ is deprecated
         state.__proto__ = model.__proto__;
+
+        //May need to extend this so that it is recognised by getInitialState above
+        Object.defineProperty(model, 'previousProtectedState', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: previousProtectedState
+        });
 
         Object.defineProperty(model, 'state', {
           configurable: false,
@@ -420,7 +456,7 @@ var IMVVMViewModel = {
           value: nextState
         });
 
-        Object.keys(model).map(function(key){
+        Object.keys(model).forEach(function(key){
           if(Object.prototype.toString.call(this[key]) === '[object Object]' &&
             ('context' in this[key])){
             this[key].context = this; 

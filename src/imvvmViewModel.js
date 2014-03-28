@@ -36,7 +36,7 @@ var IMVVMViewModel = {
           value: nextState
         });
 
-        Object.keys(model).map(function(key){
+        Object.keys(model).forEach(function(key){
           if(Object.prototype.toString.call(this[key]) === '[object Object]' &&
             ('context' in this[key])){
             this[key].context = this; 

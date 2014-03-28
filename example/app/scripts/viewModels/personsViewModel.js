@@ -1,14 +1,10 @@
-/*jshint quotmark:false */
-/*jshint white:false */
-/*jshint trailing:false */
-/*jshint newcap:false */
 /*jshint camelcase:false */
 /* global IMVVM */
 
 'use strict';
 
 var PersonsViewModel = IMVVM.createViewModel({
-	
+
 	select: function(id/*, callback*/){
 		var nextState = {};
 		nextState.collection = this.collection.map(function(person){
@@ -58,12 +54,12 @@ var PersonsViewModel = IMVVM.createViewModel({
 
 	init: function(/*args*/){
 		var nextState = {};
-		nextState.collection = DataService.getData().map(function(state, idx){
-			if ( idx === 0 ){
-				nextState.selected = this.Person(state);
+		nextState.collection = DataService.getData().map(function(person, idx){
+			if (idx === 0){
+				nextState.selected = this.Person(person);
 				return nextState.selected;
 			}
-			return this.Person(state, false);
+			return this.Person(person, false);
 		}.bind(this));
 		return this.DataContext(nextState);
 	},

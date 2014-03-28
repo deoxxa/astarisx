@@ -1,4 +1,7 @@
+
 /* global IMVVM */
+
+'use strict';
 
 var DomainModel = IMVVM.createDomainModel({
   

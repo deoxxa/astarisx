@@ -1,3 +1,7 @@
+/*jshint camelcase:false */
+/* global IMVVM */
+
+'use strict';
 
 var AppViewModel = IMVVM.createViewModel({
 
