@@ -1,7 +1,3 @@
-/*jshint quotmark:false */
-/*jshint white:false */
-/*jshint trailing:false */
-/*jshint newcap:false */
 /*jshint camelcase:false */
 /* global IMVVM */
 
@@ -18,7 +14,6 @@ var HobbiesViewModel = IMVVM.createViewModel({
 	
 	addHobby: function(value){
 		this.persons_selected.addHobby(value);
-    //this.appState.busy = true;
 	},
 	
 	deleteHobby: function(value){
@@ -26,19 +21,19 @@ var HobbiesViewModel = IMVVM.createViewModel({
 	},
 
 	//When a dependency changes reset the selected hobby to undefined
-	resetSelected: function(state, prevState) {
-    if(prevState && prevState.persons_selected && state.persons_selected){
-      if(state.persons_selected.id !== prevState.persons_selected.id &&
-    		state.selected !== void 0){
+	resetSelected: function(nextState, prevState) {
+    if(prevState && prevState.persons_selected && nextState.persons_selected){
+      if(nextState.persons_selected.id !== prevState.persons_selected.id &&
+    		nextState.selected !== void 0){
   				return void 0;
     	}
     }
-  	return state.selected;
+  	return nextState.selected;
   },
 
-	getInitialState: function(state, prevState){
+	getInitialState: function(nextState, prevState){
 		return { 
-      selected: this.resetSelected(state, prevState),
+      selected: this.resetSelected(nextState, prevState),
     }
 	},
 

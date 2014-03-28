@@ -1,4 +1,3 @@
-'use strict';
 
 var model = require('./imvvmModel');
 var viewModel = require('./imvvmViewModel');

@@ -1,9 +1,3 @@
-/*jshint quotmark:false */
-/*jshint white:false */
-/*jshint trailing:false */
-/*jshint newcap:false */
-
-'use strict';
 
 var core = require('./core');
 var NAMESPACE = '__IMVVM__';
@@ -34,8 +28,8 @@ var mixin = {
   },
 
 	getInitialState: function(){
-		var appDataContext = core.getInitialState(NAMESPACE, this.props.domainModel, this.props.init,
-			this.props.domain, this.stateChangedHandler, this.props.noUndo);
+		var appDataContext = core.getInitialState(NAMESPACE, this.props.domainModel, this.props.initArgs,
+			this.props.domain, this.stateChangedHandler, this.props.disableUndo);
 		return {appContext: appDataContext};
 	}
 

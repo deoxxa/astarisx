@@ -1,4 +1,3 @@
-'use strict';
 
 var utils = require('./utils');
 var extend = utils.extend;
@@ -8,36 +7,37 @@ var IMVVMModel = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
       var desc = getDescriptor.call(this);
-      var dataContext = function(state, withContext, oldState) {
+      var dataContext = function(nextState, prevState, withContext) {
         var model = Object.create(desc.proto, desc.descriptor);
         var argCount = arguments.length;
         var lastIsBoolean = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
+
         if(argCount === 1){
           if(lastIsBoolean){
-            withContext = state;
-            state = {};
+            withContext = nextState;
+            nextState = {};
+            prevState = {};
           } else {
-            //state = state || {};
             withContext = true;
           }
-        } else if(argCount === 2){
-          if(!lastIsBoolean){
-            oldState = withContext;
-            withContext = true;
-          }
+        } else if(argCount === 2 && lastIsBoolean){
+            if(lastIsBoolean){
+              withContext = prevState;
+              prevState = {};              
+            } else {
+              nextState = extend(prevState, nextState);
+            }
         } else if(argCount === 3){
-          if(lastIsBoolean){
-            var temp = withContext;
-            withContext = oldState;
-            oldState = temp;
-          } 
+          nextState = extend(prevState, nextState);
         } else {
-          state = {};
+          //defaults
+          nextState = {};
+          prevState = {};
           withContext = true;
         }
-        
+        //Initialize any props
         if(desc.originalSpec.getInitialState){
-          state = extend(state, desc.originalSpec.getInitialState(state, oldState));
+          nextState = extend(nextState, desc.originalSpec.getInitialState(nextState, prevState));
         }
 
         if(withContext){
@@ -46,7 +46,10 @@ var IMVVMModel = {
             configurable: true,
             enumerable: true,
             set: function(context){
-              this.setState = raiseStateChangeHandler(context);
+              this.setState = function(nextState, callback){ //callback may be useful for DB updates
+                return raiseStateChangeHandler.bind(context)
+                  .call(context, extend(this.state, nextState), this.state, callback);
+              }.bind(this);
               delete this.context;
             }
           });
@@ -56,7 +59,7 @@ var IMVVMModel = {
           configurable: false,
           enumerable: false,
           writable: false,
-          value: state
+          value: nextState
         });
         if(!withContext){
           Object.freeze(model);

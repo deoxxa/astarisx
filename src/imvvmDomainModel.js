@@ -1,4 +1,3 @@
-'use strict';
 
 var utils = require('./utils');
 var extend = utils.extend;
@@ -10,7 +9,7 @@ var IMVVMDomainModel = {
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
 
-      var dataContext = function(state, previousState, oldState) {
+      var dataContext = function(state, previousState) {
         state = state || {};
         
         if(!!previousState){
@@ -20,14 +19,16 @@ var IMVVMDomainModel = {
             writable: false,
             value: previousState
           });
+        } else {
+          previousState = {};
         }
         //Do this after previousState is set so that it is included
         if(desc.originalSpec.getInitialState){
           state = extend(state, desc.originalSpec.getInitialState(state, previousState ? previousState.state: void 0));
         }
 
-        desc.proto.DataContext = function(newState, callback, initialize){
-          return desc.proto.setState(newState, callback, true);
+        desc.proto.DataContext = function(initState, callback){
+          return desc.proto.setState(initState, callback, true);
         }
 
         if(!('init' in desc.proto)){

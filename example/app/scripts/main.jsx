@@ -13,9 +13,9 @@
 //noUndo is optional - default is false
 React.renderComponent(<ApplicationView 
 	domainModel={DomainModel}
-	init={{appName: 'IMVVM Demo'}}
+	initArgs={{appName: 'IMVVM Demo'}}
 	domain={domainObjects}
-  noUndo={false} />,
+  disableUndo={false} />,
 	document.getElementById('container'));
 
 

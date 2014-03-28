@@ -1,4 +1,3 @@
-'use strict';
 
 var utils = require('./utils');
 var extend = utils.extend;
@@ -10,13 +9,14 @@ var IMVVMViewModel = {
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
 
-      var dataContext = function(state, dependencies, oldState) {
+      var dataContext = function(nextState, dependencies, prevState) {
 
-        state = state || {};
-        state = extend(state, dependencies);
+        prevState = prevState || {};
+        //nextState has already been extended with prevState in core
+        nextState = extend(nextState, dependencies);
 
         if(desc.originalSpec.getInitialState){
-          state = extend(state, desc.originalSpec.getInitialState(state, oldState));
+          nextState = extend(nextState, desc.originalSpec.getInitialState(nextState, prevState));
         }
       
         desc.proto.DataContext = dataContext;
@@ -33,7 +33,7 @@ var IMVVMViewModel = {
           configurable: false,
           enumerable: false,
           writable: false,
-          value: state
+          value: nextState
         });
 
         Object.keys(model).map(function(key){
@@ -47,8 +47,8 @@ var IMVVMViewModel = {
           }
         }.bind(model));
 
-        state.__proto__ = model.__proto__;
-        return Object.freeze(state);
+        nextState.__proto__ = model.__proto__;
+        return Object.freeze(nextState);
 
       };
       return dataContext;

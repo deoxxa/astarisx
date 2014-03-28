@@ -43,14 +43,11 @@ var PersonModel = IMVVM.createModel({
     return Math.abs(ageDate.getFullYear() - 1970) + " years old";
   },
 
-  getInitialState: function(state/*, prevState*/){
-    var _hobbies = state.hobbies || [];
-
+  getInitialState: function(nextState/*, prevState*/){
+    
     return { 
-      id: state.id ? state.id : this.uuid(),
-      age: this.calculateAge(state.dob),
-      hobbies: Object.freeze(_hobbies) //freeze arrays to make them immutable ->
-      //do that here and not in prop get call otherwise everytime get() is called Object.freeze is called
+      id: nextState.id ? nextState.id : this.uuid(),
+      age: this.calculateAge(nextState.dob),
     };
   },
 
@@ -139,8 +136,7 @@ var PersonModel = IMVVM.createModel({
   },
 
   hobbies: {
-    //Must explicitly freeze array Object to make immutable
-    get: function(){ return this.state.hobbies; },
+    get: function(){ return this.state.hobbies ? this.state.hobbies : []; },
     set: function(newArray){
       this.setState({'hobbies': newArray});
     }

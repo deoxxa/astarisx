@@ -1,17 +1,11 @@
-/*jshint quotmark:false */
-/*jshint white:false */
-/*jshint trailing:false */
-/*jshint newcap:false */
 /* global IMVVM */
-
-'use strict';
 
 var DomainModel = IMVVM.createDomainModel({
   
-getInitialState: function(state){ //Optional
+getInitialState: function(nextState, prevState){ //Optional
     return { 
-      canUndo: !!state.previousState,
-      online: typeof state.online === 'boolean' ? state.online : false,
+      canUndo: !!nextState.previousState,
+      online: typeof nextState.online === 'boolean' ? nextState.online : false,
     }
   },
 

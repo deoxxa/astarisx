@@ -8,6 +8,7 @@
 'use strict';
 
 var PersonsViewModel = IMVVM.createViewModel({
+	
 	select: function(id/*, callback*/){
 		var nextState = {};
 		nextState.collection = this.collection.map(function(person){
@@ -20,6 +21,7 @@ var PersonsViewModel = IMVVM.createViewModel({
 
 		this.setState(nextState);
 	},
+
 	addPerson: function(value){
 		var nextState = {};
 		var name;
@@ -31,12 +33,13 @@ var PersonsViewModel = IMVVM.createViewModel({
 			nextState.selected = this.Person({
 				firstName: name[0],
 				lastName: name.slice(1).join(" ")
-			}, true);
+			});
 			nextState.collection = this.collection.slice(0);
 			nextState.collection = nextState.collection.concat(nextState.selected);
 			this.setState(nextState);
 		}
 	},
+
 	deletePerson: function(uid){
 		var nextState = {};
 		nextState.collection = this.collection.filter(function(person){
@@ -52,6 +55,7 @@ var PersonsViewModel = IMVVM.createViewModel({
 		}
 		this.setState(nextState);
 	},
+
 	init: function(/*args*/){
 		var nextState = {};
 		nextState.collection = DataService.getData().map(function(state, idx){
@@ -64,30 +68,28 @@ var PersonsViewModel = IMVVM.createViewModel({
 		return this.DataContext(nextState);
 	},
 
-	personStateChangedHandler: function(viewModel) {
-		return function(newState){
-			var nextState = {};
-			var personNextState;
-			nextState.collection = viewModel.collection.map(function(person){
-				if(person.id === this.state.id){
-					personNextState = viewModel.extend(person, newState);
-					nextState.selected = viewModel.Person(personNextState);
-					return nextState.selected;
-				}
-				return person;
-			}.bind(this));
-			viewModel.setState(nextState);
-		};
+	personStateChangedHandler: function(nextState, prevState/*, callback*/){
+		var persons = {};
+		persons.collection = this.collection.map(function(person){
+			if(person.id === prevState.id){
+				persons.selected = this.Person(nextState);
+				return persons.selected;
+			}
+			return person;
+		}.bind(this));
+		this.setState(persons);
 	},
+
 	Person: function(){
 		return PersonModel(this.personStateChangedHandler).apply(this, arguments);
 	},
+
 	collection: {
-    //Must explicitly set array to immutable
-    //must ensure array is initialised before freeze
     get: function(){ return this.state.collection; },
   },
+
 	selected: {
 		get: function() { return this.state.selected; }
 	},
+
 });

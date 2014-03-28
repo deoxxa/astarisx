@@ -5,12 +5,7 @@ var IMVVM = _dereq_('./src/imvvm.js');
 
 module.exports = IMVVM;
 },{"./src/imvvm.js":3}],2:[function(_dereq_,module,exports){
-/*jshint quotmark:false */
-/*jshint white:false */
-/*jshint trailing:false */
-/*jshint newcap:false */
 
-'use strict';
 var utils = _dereq_('./utils');
 var extend = utils.extend;
 
@@ -172,7 +167,6 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 	return new ApplicationDataContext().init(initArgs);
 };
 },{"./utils":8}],3:[function(_dereq_,module,exports){
-'use strict';
 
 var model = _dereq_('./imvvmModel');
 var viewModel = _dereq_('./imvvmViewModel');
@@ -251,7 +245,6 @@ var IMVVM = {
 module.exports = IMVVM;
 
 },{"./imvvmDomainModel":4,"./imvvmModel":5,"./imvvmViewModel":6,"./mixin":7,"./utils":8}],4:[function(_dereq_,module,exports){
-'use strict';
 
 var utils = _dereq_('./utils');
 var extend = utils.extend;
@@ -263,7 +256,7 @@ var IMVVMDomainModel = {
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
 
-      var dataContext = function(state, previousState, oldState) {
+      var dataContext = function(state, previousState) {
         state = state || {};
         
         if(!!previousState){
@@ -273,14 +266,16 @@ var IMVVMDomainModel = {
             writable: false,
             value: previousState
           });
+        } else {
+          previousState = {};
         }
         //Do this after previousState is set so that it is included
         if(desc.originalSpec.getInitialState){
           state = extend(state, desc.originalSpec.getInitialState(state, previousState ? previousState.state: void 0));
         }
 
-        desc.proto.DataContext = function(newState, callback, initialize){
-          return desc.proto.setState(newState, callback, true);
+        desc.proto.DataContext = function(initState, callback){
+          return desc.proto.setState(initState, callback, true);
         }
 
         if(!('init' in desc.proto)){
@@ -311,7 +306,6 @@ var IMVVMDomainModel = {
 module.exports = IMVVMDomainModel;
 
 },{"./utils":8}],5:[function(_dereq_,module,exports){
-'use strict';
 
 var utils = _dereq_('./utils');
 var extend = utils.extend;
@@ -321,36 +315,37 @@ var IMVVMModel = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
       var desc = getDescriptor.call(this);
-      var dataContext = function(state, withContext, oldState) {
+      var dataContext = function(nextState, prevState, withContext) {
         var model = Object.create(desc.proto, desc.descriptor);
         var argCount = arguments.length;
         var lastIsBoolean = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
+
         if(argCount === 1){
           if(lastIsBoolean){
-            withContext = state;
-            state = {};
+            withContext = nextState;
+            nextState = {};
+            prevState = {};
           } else {
-            //state = state || {};
             withContext = true;
           }
-        } else if(argCount === 2){
-          if(!lastIsBoolean){
-            oldState = withContext;
-            withContext = true;
-          }
+        } else if(argCount === 2 && lastIsBoolean){
+            if(lastIsBoolean){
+              withContext = prevState;
+              prevState = {};              
+            } else {
+              nextState = extend(prevState, nextState);
+            }
         } else if(argCount === 3){
-          if(lastIsBoolean){
-            var temp = withContext;
-            withContext = oldState;
-            oldState = temp;
-          } 
+          nextState = extend(prevState, nextState);
         } else {
-          state = {};
+          //defaults
+          nextState = {};
+          prevState = {};
           withContext = true;
         }
-        
+        //Initialize any props
         if(desc.originalSpec.getInitialState){
-          state = extend(state, desc.originalSpec.getInitialState(state, oldState));
+          nextState = extend(nextState, desc.originalSpec.getInitialState(nextState, prevState));
         }
 
         if(withContext){
@@ -359,7 +354,10 @@ var IMVVMModel = {
             configurable: true,
             enumerable: true,
             set: function(context){
-              this.setState = raiseStateChangeHandler(context);
+              this.setState = function(nextState, callback){ //callback may be useful for DB updates
+                return raiseStateChangeHandler.bind(context)
+                  .call(context, extend(this.state, nextState), this.state, callback);
+              }.bind(this);
               delete this.context;
             }
           });
@@ -369,7 +367,7 @@ var IMVVMModel = {
           configurable: false,
           enumerable: false,
           writable: false,
-          value: state
+          value: nextState
         });
         if(!withContext){
           Object.freeze(model);
@@ -384,7 +382,6 @@ var IMVVMModel = {
 module.exports = IMVVMModel;
 
 },{"./utils":8}],6:[function(_dereq_,module,exports){
-'use strict';
 
 var utils = _dereq_('./utils');
 var extend = utils.extend;
@@ -396,13 +393,14 @@ var IMVVMViewModel = {
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
 
-      var dataContext = function(state, dependencies, oldState) {
+      var dataContext = function(nextState, dependencies, prevState) {
 
-        state = state || {};
-        state = extend(state, dependencies);
+        prevState = prevState || {};
+        //nextState has already been extended with prevState in core
+        nextState = extend(nextState, dependencies);
 
         if(desc.originalSpec.getInitialState){
-          state = extend(state, desc.originalSpec.getInitialState(state, oldState));
+          nextState = extend(nextState, desc.originalSpec.getInitialState(nextState, prevState));
         }
       
         desc.proto.DataContext = dataContext;
@@ -419,7 +417,7 @@ var IMVVMViewModel = {
           configurable: false,
           enumerable: false,
           writable: false,
-          value: state
+          value: nextState
         });
 
         Object.keys(model).map(function(key){
@@ -433,8 +431,8 @@ var IMVVMViewModel = {
           }
         }.bind(model));
 
-        state.__proto__ = model.__proto__;
-        return Object.freeze(state);
+        nextState.__proto__ = model.__proto__;
+        return Object.freeze(nextState);
 
       };
       return dataContext;
@@ -445,12 +443,6 @@ var IMVVMViewModel = {
 module.exports = IMVVMViewModel;
 
 },{"./utils":8}],7:[function(_dereq_,module,exports){
-/*jshint quotmark:false */
-/*jshint white:false */
-/*jshint trailing:false */
-/*jshint newcap:false */
-
-'use strict';
 
 var core = _dereq_('./core');
 var NAMESPACE = '__IMVVM__';
@@ -481,8 +473,8 @@ var mixin = {
   },
 
 	getInitialState: function(){
-		var appDataContext = core.getInitialState(NAMESPACE, this.props.domainModel, this.props.init,
-			this.props.domain, this.stateChangedHandler, this.props.noUndo);
+		var appDataContext = core.getInitialState(NAMESPACE, this.props.domainModel, this.props.initArgs,
+			this.props.domain, this.stateChangedHandler, this.props.disableUndo);
 		return {appContext: appDataContext};
 	}
 
@@ -490,7 +482,6 @@ var mixin = {
 
 module.exports = mixin;
 },{"./core":2}],8:[function(_dereq_,module,exports){
-'use strict';
 
 var utils = {
   getDescriptor: function(){
