@@ -27,7 +27,7 @@ var IMVVMDomainModel = {
         
         var model = Object.create(desc.proto, desc.descriptor);
 
-        if(desc.originalSpec.getInitialState){          //NEED to check -vv
+        if(desc.originalSpec.getInitialState){
           nextState = extend(nextState, desc.originalSpec.getInitialState.call(model, nextState, previousState));
         }
 

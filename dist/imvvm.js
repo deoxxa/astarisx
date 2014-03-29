@@ -145,6 +145,7 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
 		thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo, initialize);
 		appContext = thisAppState.state;
+		
 		if(!initialize && !disableUndo){
 			appContext.previousState = thisAppState.previousState;
 		}
@@ -284,7 +285,7 @@ var IMVVMDomainModel = {
         
         var model = Object.create(desc.proto, desc.descriptor);
 
-        if(desc.originalSpec.getInitialState){          //NEED to check -vv
+        if(desc.originalSpec.getInitialState){
           nextState = extend(nextState, desc.originalSpec.getInitialState.call(model, nextState, previousState));
         }
 
@@ -336,17 +337,22 @@ var IMVVMModel = {
             nextState = {};
             prevState = {};
           } else {
+            //assume prevState is same as nextState
+            prevState = nextState;
             withContext = true;
           }
         } else if(argCount === 2 && lastIsBoolean){
             if(lastIsBoolean){
               withContext = prevState;
-              prevState = {};              
+              prevState = nextState;              
             } else {
-              nextState = extend(prevState, nextState);
+              //No need to do this this sould already be done
+              //on passed in nextState do nothing
+              //nextState = extend(prevState, nextState);
             }
         } else if(argCount === 3){
-          nextState = extend(prevState, nextState);
+          //as above - do nothing
+          //nextState = extend(prevState, nextState);
         } else {
           //defaults
           nextState = {};
@@ -441,6 +447,7 @@ var IMVVMViewModel = {
           }
         }.bind(model));
 
+        //TODO - rework this, as __proto__ is deprecated
         nextState.__proto__ = model.__proto__;
         return Object.freeze(nextState);
 

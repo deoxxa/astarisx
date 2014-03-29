@@ -47,6 +47,7 @@ var IMVVMViewModel = {
           }
         }.bind(model));
 
+        //TODO - rework this, as __proto__ is deprecated
         nextState.__proto__ = model.__proto__;
         return Object.freeze(nextState);
 
