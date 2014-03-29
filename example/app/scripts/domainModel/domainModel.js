@@ -7,7 +7,6 @@ var DomainModel = IMVVM.createDomainModel({
   
 getInitialState: function(nextState, prevState){ //Optional
     return { 
-      canUndo: !!nextState.previousState,
       online: typeof nextState.online === 'boolean' ? nextState.online : false,
     }
   },
@@ -19,15 +18,7 @@ getInitialState: function(nextState, prevState){ //Optional
   },
 
   undo: function(){
-    if(this.canUndo){
-      this.setState(this.previousState);
-    }
-  },
-
-  canUndo: {
-    get: function(){
-      return !!this.state.previousState;
-    },
+    this.setState(this.previousState);
   },
 
   appName: {

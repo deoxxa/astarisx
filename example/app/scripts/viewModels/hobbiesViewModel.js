@@ -13,8 +13,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
 	},
 	
 	addHobby: function(value){
-		//this.persons_selected.addHobby(value);
-    this.appState.busy = true;
+		this.persons_selected.addHobby(value);
 	},
 	
 	deleteHobby: function(value){
@@ -37,7 +36,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
     }
   },
 	getInitialState: function(nextState, prevState){
-    console.log(nextState);
+    //console.log(nextState);
 		return { 
       selected: this.resetSelected(nextState, prevState),
     }

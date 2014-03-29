@@ -2,13 +2,13 @@
 var utils = require('./utils');
 var extend = utils.extend;
 
-exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, stateChangedHandler, noUndo) {
+exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, stateChangedHandler, disableUndo) {
 
 	if(typeof stateChangedHandler !== 'function'){
 		throw new TypeError();
 	}
 	
-	var thisAppState = void 0,
+	var thisAppState = {},
 		dataContexts = {},
 		watchedProps,
 		watchList = {};
@@ -76,46 +76,44 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 	var appStateChangedHandler = function(caller, newState, callback, initialize) {
 		var appContext,
 			nextState = {},
-			prevState = void 0,
+			prevState = {},
 			watchedDataContext = void 0,
 			newStateKeys,
 			newStateKeysLen,
 			subscriberKeys;
 
-		if(caller in watchList){
-			newStateKeys = Object.keys(newState);
-			newStateKeysLen = newStateKeys.length;
-			subscriberKeys = {};
-
-			for(var i= 0; i < newStateKeysLen; i++){
-				if(watchList[caller][newStateKeys[i]]){
-					subscriberKeys[watchList[caller][newStateKeys[i]]] = true;
-				}
-			}
-			watchedDataContext = {};
-			watchedDataContext.name = caller;
-			watchedDataContext.subscribers = Object.keys(subscriberKeys);
-			//If there are no subscriber reset watchedDataContext
-			watchedDataContext = !!watchedDataContext.subscribers.length ? watchedDataContext : void 0;
+		if(!initialize && (newState === void 0 || Object.keys(newState).length === 0)){
+			return;
 		}
-
 		var DomainModel = !!newState ? Object.getPrototypeOf(newState).constructor.classType === "DomainModel" : false;
-		
+
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangedHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(DomainModel) {
 			//This means previous state has been requested
 			//so set nextState to the previous state
-			nextState = extend(newState.state);
+			nextState = extend(newState);
 			//revert the current appState to the previous state of the previous state
-			console.log('newState');
-			console.log(newState);
-
-			//previous internal state is in newState
-			//maybe can assign then delete
-			prevState = newState.state.previousState;
+			prevState = newState.previousState;
 		} else {
+			if(caller in watchList){
+				newStateKeys = Object.keys(newState);
+				newStateKeysLen = newStateKeys.length;
+				subscriberKeys = {};
+
+				for(var i= 0; i < newStateKeysLen; i++){
+					if(watchList[caller][newStateKeys[i]]){
+						subscriberKeys[watchList[caller][newStateKeys[i]]] = true;
+					}
+				}
+				watchedDataContext = {};
+				watchedDataContext.name = caller;
+				watchedDataContext.subscribers = Object.keys(subscriberKeys);
+				//If there are no subscriber reset watchedDataContext
+				watchedDataContext = !!watchedDataContext.subscribers.length ? watchedDataContext : void 0;
+			}
+
 			if(caller !== appNamespace){
 				nextState[caller] = newState;
 				nextState = extend(thisAppState.state, nextState);
@@ -127,17 +125,27 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 					nextState = extend(thisAppState.state, newState);
 				}
 			}
-			prevState = thisAppState;
-			nextState = transitionState(nextState, thisAppState ? thisAppState.state : void 0, watchedDataContext);
+			prevState = thisAppState.state;
+			nextState = transitionState(nextState, thisAppState.state, watchedDataContext);
 		}
-		
-		if(prevState){
-			Object.freeze(prevState);
-		}
+		prevState = prevState || {};
+		Object.freeze(prevState);
 
 		//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
-		thisAppState = new ApplicationDataContext(nextState, noUndo ? void 0 : prevState);
-		appContext = Object.freeze(thisAppState.state);
+		thisAppState = new ApplicationDataContext(nextState, prevState);
+
+		console.log('thisAppState');
+		console.log(thisAppState);
+
+		// if(disableUndo && 'previousState' in thisAppState.state){
+		// 	console.log('deleting previousState');
+		// 	thisAppState.state.previousState.previousState = null;
+		// 	delete thisAppState.state.previousState.previousState;
+		// }
+		appContext = {};
+		appContext = thisAppState.state;
+		appContext.previousState = thisAppState.previousState;
+		Object.freeze(appContext);
 		//All the work is done! -> Notify the View
 		stateChangedHandler(appContext, caller, callback);
 		//Provided for the main app to return from init() to the View

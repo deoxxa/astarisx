@@ -11,23 +11,7 @@ var IMVVMDomainModel = {
 
       var dataContext = function(state, previousState) {
         state = state || {};
-        
-        if(!!previousState){
-          Object.defineProperty(state, 'previousState', {
-            configurable: false,
-            enumerable: true,
-            writable: false,
-            value: previousState
-          });
-        } else {
-          previousState = {};
-        }
-
-
-        //Do this after previousState is set so that it is included
-        if(desc.originalSpec.getInitialState){
-          state = extend(state, desc.originalSpec.getInitialState(state, previousState ? previousState.state: void 0));
-        }
+        previousState = previousState || {};
 
         desc.proto.DataContext = function(initState, callback){
           return desc.proto.setState(initState, callback, true);
@@ -40,8 +24,18 @@ var IMVVMDomainModel = {
         }
         
         var model = Object.create(desc.proto, desc.descriptor); 
+        
+        Object.defineProperty(model, 'previousState', {
+          configurable: true,
+          enumerable: true,
+          writable: false,
+          value: previousState
+        });
 
-        //set this last
+        if(desc.originalSpec.getInitialState){
+          state = extend(state, desc.originalSpec.getInitialState(state, previousState));
+        }
+
         //TODO - rework this, as __proto__ is deprecated
         state.__proto__ = model.__proto__;
 
