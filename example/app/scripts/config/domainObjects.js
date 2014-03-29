@@ -24,7 +24,6 @@ var domainObjects = {
 								{property: 'myAppState.appState', alias: 'appState'}]
 	},
 	'myAppState': {
-		viewModel: AppViewModel,
-		protected: true
+		viewModel: AppViewModel
 	}
 };

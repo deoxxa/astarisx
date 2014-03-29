@@ -9,7 +9,7 @@ var IMVVMDomainModel = {
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
 
-      var dataContext = function(state, previousState, previousProtectedState) {
+      var dataContext = function(state, previousState) {
         state = state || {};
         
         if(!!previousState){
@@ -44,14 +44,6 @@ var IMVVMDomainModel = {
         //set this last
         //TODO - rework this, as __proto__ is deprecated
         state.__proto__ = model.__proto__;
-
-        //May need to extend this so that it is recognised by getInitialState above
-        Object.defineProperty(model, 'previousProtectedState', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: previousProtectedState
-        });
 
         Object.defineProperty(model, 'state', {
           configurable: false,

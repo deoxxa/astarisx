@@ -9,7 +9,6 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 	}
 	
 	var thisAppState = void 0,
-		protectedState = {},
 		dataContexts = {},
 		watchedProps,
 		watchList = {};
@@ -108,56 +107,37 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		if(DomainModel) {
 			//This means previous state has been requested
 			//so set nextState to the previous state
-			protectedState = extend(newState.previousProtectedState);
-			delete newState.state.previousProtectedState;
 			nextState = extend(newState.state);
 			//revert the current appState to the previous state of the previous state
 			console.log('newState');
 			console.log(newState);
 
-			//previous protected state is in newState
+			//previous internal state is in newState
 			//maybe can assign then delete
 			prevState = newState.state.previousState;
 		} else {
 			if(caller !== appNamespace){
 				nextState[caller] = newState;
-				nextState = extend(thisAppState.state, protectedState, nextState);
+				nextState = extend(thisAppState.state, nextState);
 			} else {
 				//appDataContext is calling function
 				if(initialize) {
 					nextState = extend(transitionState(), newState);
 				} else {
-					nextState = extend(thisAppState.state, protectedState, newState);
+					nextState = extend(thisAppState.state, newState);
 				}
-			}
-			/* NEED TO CHECK THIS */
-			if(prevState){
-				delete prevState.previousProtectedState;
 			}
 			prevState = thisAppState;
 			nextState = transitionState(nextState, thisAppState ? thisAppState.state : void 0, watchedDataContext);
 		}
+		
 		if(prevState){
 			Object.freeze(prevState);
 		}
-		console.log('prevState');
-		console.log(prevState);
+
 		//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
-		thisAppState = new ApplicationDataContext(nextState, noUndo ? void 0 : prevState, protectedState);
-
-		console.log('thisAppState');
-		console.log(thisAppState);
-		//remove private ViewModels from Domain
-		for(var dataContext in domain){
-			if(domain.hasOwnProperty(dataContext)){
-				if(domain[dataContext].protected){
-					protectedState[dataContext] = extend(thisAppState.state[dataContext]);
-					delete thisAppState.state[dataContext];
-				}
-			}
-		};
+		thisAppState = new ApplicationDataContext(nextState, noUndo ? void 0 : prevState);
 		appContext = Object.freeze(thisAppState.state);
-
 		//All the work is done! -> Notify the View
 		stateChangedHandler(appContext, caller, callback);
 		//Provided for the main app to return from init() to the View
