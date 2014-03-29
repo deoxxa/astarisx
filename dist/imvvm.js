@@ -331,7 +331,12 @@ var IMVVMModel = {
         var argCount = arguments.length;
         var lastIsBoolean = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
 
-        if(argCount === 1){
+        if(argCount === 0){
+          //defaults
+          nextState = {};
+          prevState = {};
+          withContext = true;
+        } else if(argCount === 1){
           if(lastIsBoolean){
             withContext = nextState;
             nextState = {};
@@ -341,24 +346,15 @@ var IMVVMModel = {
             prevState = nextState;
             withContext = true;
           }
-        } else if(argCount === 2 && lastIsBoolean){
-            if(lastIsBoolean){
-              withContext = prevState;
-              prevState = nextState;              
-            } else {
-              //No need to do this this sould already be done
-              //on passed in nextState do nothing
-              //nextState = extend(prevState, nextState);
-            }
-        } else if(argCount === 3){
-          //as above - do nothing
-          //nextState = extend(prevState, nextState);
-        } else {
-          //defaults
-          nextState = {};
-          prevState = {};
-          withContext = true;
+        } else if(argCount === 2){
+          if(lastIsBoolean){
+            withContext = prevState;
+            prevState = nextState;              
+          } else {
+            withContext = true;
+          }
         }
+
         //Initialize any props
         if(desc.originalSpec.getInitialState){
           nextState = extend(nextState, desc.originalSpec.getInitialState.call(model, nextState, prevState));
