@@ -9,12 +9,14 @@ var IMVVMDomainModel = {
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
 
-      var dataContext = function(state, previousState) {
-        state = state || {};
+      var dataContext = function(nextState, previousState, disableUndo, initialize) {
+        nextState = nextState || {};
         previousState = previousState || {};
 
-        desc.proto.DataContext = function(initState, callback){
-          return desc.proto.setState(initState, callback, true);
+        if(!('DataContext' in desc.proto)){
+          desc.proto.DataContext = function(initState, callback){
+            return desc.proto.setState(initState, callback, true);
+          }
         }
 
         if(!('init' in desc.proto)){
@@ -23,27 +25,29 @@ var IMVVMDomainModel = {
           }
         }
         
-        var model = Object.create(desc.proto, desc.descriptor); 
-        
-        Object.defineProperty(model, 'previousState', {
-          configurable: true,
-          enumerable: true,
-          writable: false,
-          value: previousState
-        });
+        var model = Object.create(desc.proto, desc.descriptor);
 
-        if(desc.originalSpec.getInitialState){
-          state = extend(state, desc.originalSpec.getInitialState(state, previousState));
+        if(desc.originalSpec.getInitialState){          //NEED to check -vv
+          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model, nextState, previousState));
+        }
+
+        if(!initialize && !disableUndo){          
+          Object.defineProperty(model, 'previousState', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: previousState
+          });
         }
 
         //TODO - rework this, as __proto__ is deprecated
-        state.__proto__ = model.__proto__;
+        nextState.__proto__ = model.__proto__;
 
         Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,
           writable: false,
-          value: state
+          value: nextState
         });
         return model;
       };

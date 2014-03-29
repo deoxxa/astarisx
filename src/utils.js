@@ -18,7 +18,9 @@ var utils = {
         }
       }
     }
-    proto.extend = utils.extend;
+    if(!('extend' in proto)){
+      proto.extend = utils.extend;      
+    }
     return { 
       descriptor: descriptor,
       proto: proto,

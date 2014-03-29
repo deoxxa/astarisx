@@ -15,10 +15,6 @@ var IMVVMViewModel = {
         //nextState has already been extended with prevState in core
         nextState = extend(nextState, dependencies);
 
-        if(desc.originalSpec.getInitialState){
-          nextState = extend(nextState, desc.originalSpec.getInitialState(nextState, prevState));
-        }
-      
         desc.proto.DataContext = dataContext;
 
         if(!('init' in desc.proto)){
@@ -28,6 +24,10 @@ var IMVVMViewModel = {
         }
         
         var model = Object.create(desc.proto, desc.descriptor);
+
+        if(desc.originalSpec.getInitialState){
+          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model, nextState, prevState));
+        }
 
         Object.defineProperty(model, 'state', {
           configurable: false,

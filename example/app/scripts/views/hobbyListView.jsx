@@ -20,7 +20,7 @@ var HobbyListView = React.createClass({
 	},
 	render: function() {
 		var app = this.props.appContext;
-		var collection = this.props.appContext.hobbies.persons_selected.hobbies;
+		var collection = this.props.appContext.hobbies.persons$selected.hobbies;
 		var current = this.props.appContext.hobbies.selected;
 
 		var list = collection.map(function(hobby){

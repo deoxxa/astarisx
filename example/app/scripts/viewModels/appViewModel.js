@@ -15,7 +15,7 @@ var AppViewModel = IMVVM.createViewModel({
 
   getInitialState: function(nextState, prevState){
     return {
-      busy: !nextState.appState || nextState.appState.busy === void 0 ? false : nextState.appState.busy
+      busy: !nextState.appState || nextState.appState.busy === void(0) ? false : nextState.appState.busy
     }
   },
 

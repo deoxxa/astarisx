@@ -12,6 +12,8 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		dataContexts = {},
 		watchedProps,
 		watchList = {};
+
+	disableUndo === void(0) ? false : disableUndo;
 		
 	var transitionState = function(nextState, prevState, watchedDataContext){
 		var processed = false,
@@ -20,7 +22,7 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 
 		prevState = prevState || {};
 
-		if(nextState === void 0){
+		if(nextState === void(0)){
 			initialize = true;
 			nextState = {};
 		}
@@ -38,13 +40,13 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 						if(idx === 0){
 							watchedValue = nextState[prop];
 						} else {
-							watchedValue = watchedValue ? watchedValue[prop] : void 0;
+							watchedValue = watchedValue ? watchedValue[prop] : void(0);
 						}
 					});
 					if('alias' in dependency){
 						deps[dependency.alias] = watchedValue;
 					} else {
-						deps[props.join('_')] = watchedValue;
+						deps[props.join('$')] = watchedValue;
 					}
 				});
 			}
@@ -74,15 +76,17 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 	};
 
 	var appStateChangedHandler = function(caller, newState, callback, initialize) {
-		var appContext,
+		var appContext = {},
 			nextState = {},
 			prevState = {},
-			watchedDataContext = void 0,
+			watchedDataContext = void(0),
 			newStateKeys,
 			newStateKeysLen,
 			subscriberKeys;
 
-		if(!initialize && (newState === void 0 || Object.keys(newState).length === 0)){
+		initialize === void(0) ? false : initialize;
+
+		if(!initialize && (newState === void(0) || newState === null || Object.keys(newState).length === 0)){
 			return;
 		}
 		var DomainModel = !!newState ? Object.getPrototypeOf(newState).constructor.classType === "DomainModel" : false;
@@ -111,7 +115,7 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 				watchedDataContext.name = caller;
 				watchedDataContext.subscribers = Object.keys(subscriberKeys);
 				//If there are no subscriber reset watchedDataContext
-				watchedDataContext = !!watchedDataContext.subscribers.length ? watchedDataContext : void 0;
+				watchedDataContext = !!watchedDataContext.subscribers.length ? watchedDataContext : void(0);
 			}
 
 			if(caller !== appNamespace){
@@ -132,19 +136,12 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		Object.freeze(prevState);
 
 		//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
-		thisAppState = new ApplicationDataContext(nextState, prevState);
-
-		console.log('thisAppState');
-		console.log(thisAppState);
-
-		// if(disableUndo && 'previousState' in thisAppState.state){
-		// 	console.log('deleting previousState');
-		// 	thisAppState.state.previousState.previousState = null;
-		// 	delete thisAppState.state.previousState.previousState;
-		// }
-		appContext = {};
+		thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo, initialize);
 		appContext = thisAppState.state;
-		appContext.previousState = thisAppState.previousState;
+		
+		if(!initialize && !disableUndo){
+			appContext.previousState = thisAppState.previousState;
+		}
 		Object.freeze(appContext);
 		//All the work is done! -> Notify the View
 		stateChangedHandler(appContext, caller, callback);

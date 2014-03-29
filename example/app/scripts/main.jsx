@@ -15,7 +15,7 @@ React.renderComponent(<ApplicationView
 	domainModel={DomainModel}
 	initArgs={{appName: 'IMVVM Demo'}}
 	domain={domainObjects}
-  disableUndo={true} />,
+  disableUndo={false} />,
 	document.getElementById('container'));
 
 

@@ -19,6 +19,8 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		dataContexts = {},
 		watchedProps,
 		watchList = {};
+
+	disableUndo === void(0) ? false : disableUndo;
 		
 	var transitionState = function(nextState, prevState, watchedDataContext){
 		var processed = false,
@@ -27,7 +29,7 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 
 		prevState = prevState || {};
 
-		if(nextState === void 0){
+		if(nextState === void(0)){
 			initialize = true;
 			nextState = {};
 		}
@@ -45,13 +47,13 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 						if(idx === 0){
 							watchedValue = nextState[prop];
 						} else {
-							watchedValue = watchedValue ? watchedValue[prop] : void 0;
+							watchedValue = watchedValue ? watchedValue[prop] : void(0);
 						}
 					});
 					if('alias' in dependency){
 						deps[dependency.alias] = watchedValue;
 					} else {
-						deps[props.join('_')] = watchedValue;
+						deps[props.join('$')] = watchedValue;
 					}
 				});
 			}
@@ -81,15 +83,17 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 	};
 
 	var appStateChangedHandler = function(caller, newState, callback, initialize) {
-		var appContext,
+		var appContext = {},
 			nextState = {},
 			prevState = {},
-			watchedDataContext = void 0,
+			watchedDataContext = void(0),
 			newStateKeys,
 			newStateKeysLen,
 			subscriberKeys;
 
-		if(!initialize && (newState === void 0 || Object.keys(newState).length === 0)){
+		initialize === void(0) ? false : initialize;
+
+		if(!initialize && (newState === void(0) || newState === null || Object.keys(newState).length === 0)){
 			return;
 		}
 		var DomainModel = !!newState ? Object.getPrototypeOf(newState).constructor.classType === "DomainModel" : false;
@@ -118,7 +122,7 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 				watchedDataContext.name = caller;
 				watchedDataContext.subscribers = Object.keys(subscriberKeys);
 				//If there are no subscriber reset watchedDataContext
-				watchedDataContext = !!watchedDataContext.subscribers.length ? watchedDataContext : void 0;
+				watchedDataContext = !!watchedDataContext.subscribers.length ? watchedDataContext : void(0);
 			}
 
 			if(caller !== appNamespace){
@@ -139,19 +143,11 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		Object.freeze(prevState);
 
 		//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
-		thisAppState = new ApplicationDataContext(nextState, prevState);
-
-		console.log('thisAppState');
-		console.log(thisAppState);
-
-		// if(disableUndo && 'previousState' in thisAppState.state){
-		// 	console.log('deleting previousState');
-		// 	thisAppState.state.previousState.previousState = null;
-		// 	delete thisAppState.state.previousState.previousState;
-		// }
-		appContext = {};
+		thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo, initialize);
 		appContext = thisAppState.state;
-		appContext.previousState = thisAppState.previousState;
+		if(!initialize && !disableUndo){
+			appContext.previousState = thisAppState.previousState;
+		}
 		Object.freeze(appContext);
 		//All the work is done! -> Notify the View
 		stateChangedHandler(appContext, caller, callback);
@@ -270,13 +266,14 @@ var IMVVMDomainModel = {
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
 
-      var dataContext = function(state, previousState) {
-        state = state || {};
+      var dataContext = function(nextState, previousState, disableUndo, initialize) {
+        nextState = nextState || {};
         previousState = previousState || {};
 
-
-        desc.proto.DataContext = function(initState, callback){
-          return desc.proto.setState(initState, callback, true);
+        if(!('DataContext' in desc.proto)){
+          desc.proto.DataContext = function(initState, callback){
+            return desc.proto.setState(initState, callback, true);
+          }
         }
 
         if(!('init' in desc.proto)){
@@ -285,27 +282,29 @@ var IMVVMDomainModel = {
           }
         }
         
-        var model = Object.create(desc.proto, desc.descriptor); 
-        
-        Object.defineProperty(model, 'previousState', {
-          configurable: true,
-          enumerable: true,
-          writable: false,
-          value: previousState
-        });
+        var model = Object.create(desc.proto, desc.descriptor);
 
-        if(desc.originalSpec.getInitialState){
-          state = extend(state, desc.originalSpec.getInitialState(state, previousState));
+        if(desc.originalSpec.getInitialState){          //NEED to check -vv
+          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model, nextState, previousState));
         }
-        //set this last
+
+        if(!initialize && !disableUndo){          
+          Object.defineProperty(model, 'previousState', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: previousState
+          });
+        }
+
         //TODO - rework this, as __proto__ is deprecated
-        state.__proto__ = model.__proto__;
+        nextState.__proto__ = model.__proto__;
 
         Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,
           writable: false,
-          value: state
+          value: nextState
         });
         return model;
       };
@@ -356,7 +355,7 @@ var IMVVMModel = {
         }
         //Initialize any props
         if(desc.originalSpec.getInitialState){
-          nextState = extend(nextState, desc.originalSpec.getInitialState(nextState, prevState));
+          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model, nextState, prevState));
         }
 
         if(withContext){
@@ -410,10 +409,6 @@ var IMVVMViewModel = {
         //nextState has already been extended with prevState in core
         nextState = extend(nextState, dependencies);
 
-        if(desc.originalSpec.getInitialState){
-          nextState = extend(nextState, desc.originalSpec.getInitialState(nextState, prevState));
-        }
-      
         desc.proto.DataContext = dataContext;
 
         if(!('init' in desc.proto)){
@@ -423,6 +418,10 @@ var IMVVMViewModel = {
         }
         
         var model = Object.create(desc.proto, desc.descriptor);
+
+        if(desc.originalSpec.getInitialState){
+          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model, nextState, prevState));
+        }
 
         Object.defineProperty(model, 'state', {
           configurable: false,
@@ -469,14 +468,14 @@ var mixin = {
 	    //still share the state with other presentation models that may be interested
 	    if(typeof callback === 'function'){
       	if(this.state === null || !('appContext' in this.state)){
-          callback(void 0);
+          callback(void(0));
         } else {
 					if(caller in this.state.appContext){
 					  callback(this.state.appContext[caller]);
 					} else if(caller === NAMESPACE) {
 					  callback(this.state.appContext);
 					} else {
-					  callback(void 0);
+					  callback(void(0));
 					}
 				}
 			}
@@ -513,7 +512,9 @@ var utils = {
         }
       }
     }
-    proto.extend = utils.extend;
+    if(!('extend' in proto)){
+      proto.extend = utils.extend;      
+    }
     return { 
       descriptor: descriptor,
       proto: proto,

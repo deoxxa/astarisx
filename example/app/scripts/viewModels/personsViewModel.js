@@ -41,7 +41,7 @@ var PersonsViewModel = IMVVM.createViewModel({
 		nextState.collection = this.collection.filter(function(person){
 			return person.id !== uid;
 		});
-		nextState.selected = void 0;
+		nextState.selected = void(0);
 		if(nextState.collection.length > 0){
 			if (this.selected.id === uid){
 				nextState.selected = this.Person(nextState.collection[0]);

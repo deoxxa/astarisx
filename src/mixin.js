@@ -13,14 +13,14 @@ var mixin = {
 	    //still share the state with other presentation models that may be interested
 	    if(typeof callback === 'function'){
       	if(this.state === null || !('appContext' in this.state)){
-          callback(void 0);
+          callback(void(0));
         } else {
 					if(caller in this.state.appContext){
 					  callback(this.state.appContext[caller]);
 					} else if(caller === NAMESPACE) {
 					  callback(this.state.appContext);
 					} else {
-					  callback(void 0);
+					  callback(void(0));
 					}
 				}
 			}

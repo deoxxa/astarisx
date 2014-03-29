@@ -41,7 +41,6 @@ var PersonModel = IMVVM.createModel({
   },
 
   getInitialState: function(nextState/*, prevState*/){
-    
     return { 
       id: nextState.id ? nextState.id : this.uuid(),
       age: this.calculateAge(nextState.dob),
@@ -58,7 +57,7 @@ var PersonModel = IMVVM.createModel({
     get: function(){ return this.state.firstName; },
     set: function(newValue){
       var nextState = {};
-      nextState.firstName = newValue.length === 0 ? void 0 : newValue;
+      nextState.firstName = newValue.length === 0 ? void(0) : newValue;
       this.setState(nextState);
     }
   },
@@ -67,7 +66,7 @@ var PersonModel = IMVVM.createModel({
     get: function(){ return this.state.lastName; },
     set: function(newValue){
       var nextState = {};
-      nextState.lastName = newValue.length === 0 ? void 0 : newValue;
+      nextState.lastName = newValue.length === 0 ? void(0) : newValue;
       this.setState(nextState);
     }
   },
@@ -75,7 +74,7 @@ var PersonModel = IMVVM.createModel({
   fullName: {
     enumerable: false, //calculated fields should set enumerable to false
     get: function(){            
-      if(this.lastName === void 0){
+      if(this.lastName === void(0)){
         return this.firstName;
       }
       return this.firstName + " " + this.lastName; 
@@ -87,8 +86,8 @@ var PersonModel = IMVVM.createModel({
       var firstname = nameArr[0];
       var lastname = nameArr.slice(1).join(" ");
       
-      nextState.firstName = firstname.length === 0 ? void 0 : firstname;
-      nextState.lastName = lastname.length === 0 && !isSpace ? void 0 : lastname;
+      nextState.firstName = firstname.length === 0 ? void(0) : firstname;
+      nextState.lastName = lastname.length === 0 && !isSpace ? void(0) : lastname;
 
       this.setState(nextState);
     }
