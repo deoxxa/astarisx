@@ -77,7 +77,7 @@ var PersonsViewModel = IMVVM.createViewModel({
 	},
 
 	Person: function(){
-		return PersonModel(this.personStateChangedHandler).apply(this, arguments);
+		return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
 	},
 
 	collection: {

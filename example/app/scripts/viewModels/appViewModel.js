@@ -9,7 +9,7 @@ var AppViewModel = IMVVM.createViewModel({
   },
 
   AppState: function(){
-    return AppModel(this.appStateChangedHandler).apply(this, arguments);
+    return new AppModel(this.appStateChangedHandler).apply(this, arguments);
   },
 
   getInitialState: function(nextState, prevState){
