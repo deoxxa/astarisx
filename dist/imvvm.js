@@ -330,7 +330,7 @@ var IMVVMModel = {
       var dataContext = function(nextState, prevState, withContext) {
         var model = Object.create(desc.proto, desc.descriptor);
         var argCount = arguments.length;
-        var lastIsBoolean = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
+        var lastArgIsBool = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
 
         if(argCount === 0){
           //defaults
@@ -338,7 +338,7 @@ var IMVVMModel = {
           prevState = {};
           withContext = true;
         } else if(argCount === 1){
-          if(lastIsBoolean){
+          if(lastArgIsBool){
             withContext = nextState;
             nextState = {};
             prevState = {};
@@ -348,7 +348,7 @@ var IMVVMModel = {
             withContext = true;
           }
         } else if(argCount === 2){
-          if(lastIsBoolean){
+          if(lastArgIsBool){
             withContext = prevState;
             prevState = nextState;              
           } else {
