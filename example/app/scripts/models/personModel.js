@@ -1,4 +1,4 @@
-
+/*jshint unused: false */
 /* global IMVVM */
 
 'use strict';
@@ -37,11 +37,11 @@ var PersonModel = IMVVM.createModel({
   calculateAge: function(dob){ // dob is a date
     var DOB = new Date(dob);
     var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from epoch
-    return Math.abs(ageDate.getFullYear() - 1970) + " years old";
+    return Math.abs(ageDate.getFullYear() - 1970) + ' years old';
   },
 
   getInitialState: function(nextState/*, prevState*/){
-    return { 
+    return {
       id: nextState.id ? nextState.id : this.uuid(),
       age: this.calculateAge(nextState.dob),
     };
@@ -73,18 +73,18 @@ var PersonModel = IMVVM.createModel({
   
   fullName: {
     enumerable: false, //calculated fields should set enumerable to false
-    get: function(){            
+    get: function(){
       if(this.lastName === void(0)){
         return this.firstName;
       }
-      return this.firstName + " " + this.lastName; 
+      return this.firstName + ' ' + this.lastName;
     },
     set: function(newValue){
       var nextState = {};
-      var nameArr = newValue.split(" ");
-      var isSpace = newValue.slice(-1)[0] === " ";
+      var nameArr = newValue.split(' ');
+      var isSpace = newValue.slice(-1)[0] === ' ';
       var firstname = nameArr[0];
-      var lastname = nameArr.slice(1).join(" ");
+      var lastname = nameArr.slice(1).join(' ');
       
       nextState.firstName = firstname.length === 0 ? void(0) : firstname;
       nextState.lastName = lastname.length === 0 && !isSpace ? void(0) : lastname;

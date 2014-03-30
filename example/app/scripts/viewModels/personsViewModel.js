@@ -1,5 +1,5 @@
-/*jshint camelcase:false */
-/* global IMVVM */
+/*jshint unused: false */
+/* global IMVVM, DataService, PersonModel */
 
 'use strict';
 
@@ -23,12 +23,12 @@ var PersonsViewModel = IMVVM.createViewModel({
 		var name;
 
 		if(value && value.length > 0){
-			name = value.split(" ");
+			name = value.split(' ');
 			//Cannot initialize by passing in calculated prop value
 			//i.e. fullname
 			nextState.selected = this.Person({
 				firstName: name[0],
-				lastName: name.slice(1).join(" ")
+				lastName: name.slice(1).join(' ')
 			});
 			nextState.collection = this.collection.slice(0);
 			nextState.collection = nextState.collection.concat(nextState.selected);

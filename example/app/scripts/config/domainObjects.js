@@ -1,3 +1,4 @@
+/*jshint unused: false */
 /* global AppViewModel, PersonsViewModel, HobbiesViewModel */
 
 'use strict';
