@@ -8,6 +8,7 @@ var DomainModel = IMVVM.createDomainModel({
 getInitialState: function(nextState, prevState){ //Optional
     return { 
       online: typeof nextState.online === 'boolean' ? nextState.online : false,
+      busy: nextState.busy === void(0) ? false : nextState.busy
     }
   },
 
@@ -21,15 +22,7 @@ getInitialState: function(nextState, prevState){ //Optional
     this.setState(this.previousState);
   },
 
-  appName: {
-    get: function(){
-      return this.state.appName;
-    },
-  },
-
-  online: {
-    get: function(){
-      return this.state.online;
-    }
-  },
+  setBusyTo: function(val){
+    this.setState({busy: val});
+  }
 });
