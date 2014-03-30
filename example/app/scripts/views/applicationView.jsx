@@ -14,18 +14,18 @@ var ApplicationView = React.createClass({
 	render: function(){
 
 		console.log('------------------------------------------ Current Application State ------------------------------------------')
-		console.log(this.state.appContext);
+		console.log(this.state.applicationDataContext);
 		
 		return (
 			<div>
-				<NavBarView appContext={this.state.appContext} />
+				<NavBarView appContext={this.state.applicationDataContext} />
 				<div className="container">
 					<div className="row">
 						<div className="col-md-4">
-							<SideBarView appContext={this.state.appContext} />
+							<SideBarView appContext={this.state.applicationDataContext} />
 						</div>
 						<div className="col-md-8">
-							<DetailsView appContext={this.state.appContext} />
+							<DetailsView appContext={this.state.applicationDataContext} />
 						</div>
 					</div>
 				</div>

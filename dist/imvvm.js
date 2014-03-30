@@ -15,7 +15,8 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		throw new TypeError();
 	}
 	
-	var thisAppState = {},
+	var ApplicationDataContext,
+		thisAppState = {},
 		dataContexts = {},
 		watchedProps,
 		watchList = {};
@@ -156,8 +157,7 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		return appContext;
 	};
 
-	var ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-
+	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
@@ -175,7 +175,7 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 			}
 		}
 	}
-	return new ApplicationDataContext().init(initArgs);
+	return new ApplicationDataContext().init(initArgs); 
 };
 },{"./utils":8}],3:[function(_dereq_,module,exports){
 
@@ -270,7 +270,7 @@ var IMVVMDomainModel = {
       var dataContext = function(nextState, previousState, disableUndo, initialize) {
         nextState = nextState || {};
         previousState = previousState || {};
-
+        
         if(!('DataContext' in desc.proto)){
           desc.proto.DataContext = function(initState, callback){
             return desc.proto.setState(initState, callback, true);
@@ -326,6 +326,7 @@ var IMVVMModel = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
       var desc = getDescriptor.call(this);
+
       var dataContext = function(nextState, prevState, withContext) {
         var model = Object.create(desc.proto, desc.descriptor);
         var argCount = arguments.length;
@@ -462,7 +463,7 @@ var NAMESPACE = '__IMVVM__';
 
 var mixin = {
 	stateChangedHandler: function(dataContext, caller, callback){
-  	this.setState({appContext: dataContext}, function(){
+  	this.setState({applicationDataContext: dataContext}, function(){
 	    //send all state back to caller
 	    //useful if you need to know what other parts of the app
 	    //were impacted by your changes. You can also use the returned
@@ -470,13 +471,13 @@ var mixin = {
 	    //Allows you to have multiple Application ViewModels in the one app and
 	    //still share the state with other presentation models that may be interested
 	    if(typeof callback === 'function'){
-      	if(this.state === null || !('appContext' in this.state)){
+      	if(this.state === null || !('applicationDataContext' in this.state)){
           callback(void(0));
         } else {
-					if(caller in this.state.appContext){
-					  callback(this.state.appContext[caller]);
+					if(caller in this.state.applicationDataContext){
+					  callback(this.state.applicationDataContext[caller]);
 					} else if(caller === NAMESPACE) {
-					  callback(this.state.appContext);
+					  callback(this.state.applicationDataContext);
 					} else {
 					  callback(void(0));
 					}
@@ -488,7 +489,7 @@ var mixin = {
 	getInitialState: function(){
 		var appDataContext = core.getInitialState(NAMESPACE, this.props.domainModel, this.props.initArgs,
 			this.props.domain, this.stateChangedHandler, this.props.disableUndo);
-		return {appContext: appDataContext};
+		return {applicationDataContext: appDataContext};
 	}
 
 };

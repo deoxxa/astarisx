@@ -12,7 +12,7 @@ var IMVVMDomainModel = {
       var dataContext = function(nextState, previousState, disableUndo, initialize) {
         nextState = nextState || {};
         previousState = previousState || {};
-
+        
         if(!('DataContext' in desc.proto)){
           desc.proto.DataContext = function(initState, callback){
             return desc.proto.setState(initState, callback, true);

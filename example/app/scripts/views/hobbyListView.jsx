@@ -22,6 +22,7 @@ var HobbyListView = React.createClass({
 		var app = this.props.appContext;
 		var collection = this.props.appContext.hobbies.persons$selected.hobbies;
 		var current = this.props.appContext.hobbies.selected;
+		var display;
 
 		var list = collection.map(function(hobby){
 			if(current === hobby){
@@ -48,13 +49,17 @@ var HobbyListView = React.createClass({
 			);
 		}.bind(this));
 
+		display = this.props.appContext.hobbies.appIsBusy ? "Im Busy! Go away..." : (
+			<div className="list-group">
+			  {list}
+			</div>
+		);
+
 		return (
 			<div>
 				<AddControl placeholder="What do you like doing in your spare time?"
 					funcAdd={this.addHobby} />
-				<div className="list-group">
-				  {list}
-				</div>
+				{display}
 			</div>
 		);
 	}

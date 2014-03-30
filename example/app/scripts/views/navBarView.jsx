@@ -14,9 +14,17 @@ var NavBarView = React.createClass({
 	},
 	undo: function(e){
 		e.preventDefault();
+		e.stopPropagation();
 		this.props.appContext.undo();
 	},
+	toggleBusyState: function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		this.props.appContext.myAppState.appState.busy = !this.props.appContext.myAppState.appState.busy;
+	},
 	render: function(){
+		var busyBtnTxt = this.props.appContext.myAppState.appState.busy ? "Stop Now" : "Get Busy";
+
 		return (
 			<nav className="navbar navbar-default" role="navigation">
 			  <div className="container-fluid">
@@ -36,8 +44,10 @@ var NavBarView = React.createClass({
 			    <div ref="menu" className="collapse navbar-collapse">
 			      <form className="navbar-form navbar-left" role="search">
 			        <button onClick={this.undo} className="btn btn-default">
-			        	<span className="glyphicon glyphicon-repeat">
-			        	</span>
+			        Undo
+			        </button>
+			        <button onClick={this.toggleBusyState} className="btn btn-default">
+			        	{busyBtnTxt}
 			        </button>
 			      </form>
 			    </div>

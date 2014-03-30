@@ -8,7 +8,8 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		throw new TypeError();
 	}
 	
-	var thisAppState = {},
+	var ApplicationDataContext,
+		thisAppState = {},
 		dataContexts = {},
 		watchedProps,
 		watchList = {};
@@ -149,8 +150,7 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		return appContext;
 	};
 
-	var ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-
+	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
@@ -168,5 +168,5 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 			}
 		}
 	}
-	return new ApplicationDataContext().init(initArgs);
+	return new ApplicationDataContext().init(initArgs); 
 };

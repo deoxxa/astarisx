@@ -30,11 +30,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
     }
   	return nextState.selected;
   },
-  appState:  {
-    get: function(){
-      this.state.appState;
-    }
-  },
+  
 	getInitialState: function(nextState, prevState){
     return { 
       selected: this.resetSelected(nextState, prevState),
