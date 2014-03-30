@@ -39,7 +39,7 @@ var IMVVMModel = {
 
         //Initialize any props
         if(desc.originalSpec.getInitialState){
-          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model, nextState, prevState));
+          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model, nextState, ('state' in prevState) ? prevState.state : prevState));
         }
 
         if(withContext){

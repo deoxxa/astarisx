@@ -40,7 +40,7 @@ var PersonModel = IMVVM.createModel({
     return Math.abs(ageDate.getFullYear() - 1970) + ' years old';
   },
 
-  getInitialState: function(nextState/*, prevState*/){
+  getInitialState: function(nextState, prevState){
     return {
       id: nextState.id ? nextState.id : this.uuid(),
       age: this.calculateAge(nextState.dob),
