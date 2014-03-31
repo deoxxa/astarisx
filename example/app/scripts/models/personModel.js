@@ -40,16 +40,15 @@ var PersonModel = IMVVM.createModel({
     return Math.abs(ageDate.getFullYear() - 1970) + ' years old';
   },
 
-  getInitialState: function(nextState, prevState){
+  getInitialCalculatedState: function(nextState, prevState){
     return {
-      id: nextState.id ? nextState.id : this.uuid(),
       age: this.calculateAge(nextState.dob),
     };
   },
 
   id: {
     get: function(){
-      return this.state.id;
+      return this.state.id ? this.state.id : this.uuid();
     }
   },
 
@@ -73,6 +72,8 @@ var PersonModel = IMVVM.createModel({
   
   fullName: {
     enumerable: false, //calculated fields should set enumerable to false
+    //calculated: true, //Only set this if you getInitialCalculatedState
+                      //otherwise you must set enumerable to false - one or the other
     get: function(){
       if(this.lastName === void(0)){
         return this.firstName;
@@ -118,7 +119,7 @@ var PersonModel = IMVVM.createModel({
   
   //Calculated field -> dob
   age: {
-    enumerable: false,
+    calculated: true,
     get: function(){
       return this.state.age;
     }

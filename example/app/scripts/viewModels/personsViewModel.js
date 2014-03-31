@@ -6,6 +6,7 @@
 var PersonsViewModel = IMVVM.createViewModel({
 
   select: function(id){
+    console.log(this);
     var nextState = {};
     nextState.collection = this.collection.map(function(person){
       if(person.id === id){
@@ -52,7 +53,7 @@ var PersonsViewModel = IMVVM.createViewModel({
     this.setState(nextState);
   },
 
-  init: function(){
+  getInitialState: function(){
     var nextState = {};
     nextState.collection = DataService.getData().map(function(person, idx){
       if (idx === 0){
@@ -61,7 +62,7 @@ var PersonsViewModel = IMVVM.createViewModel({
       }
       return this.Person(person, false);
     }.bind(this));
-    return this.DataContext(nextState);
+    return nextState;
   },
 
   personStateChangedHandler: function(nextState, prevState/*, callback*/){

@@ -3,16 +3,26 @@ var utils = {
   getDescriptor: function(){
     var descriptor = {};
     var proto = this.prototype;
+    var calcFlds = [];
+
     //var originalSpec = this.originalSpec || {};
     for(var key in this.originalSpec){
       if(this.originalSpec.hasOwnProperty(key)){
         if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
           //assume it is a descriptor
-          if(!('enumerable' in this.originalSpec[key])){
+          if('calculated' in this.originalSpec[key]){
+            //default enumerable to true
+            descriptor[key] = utils.extend(this.originalSpec[key]);
+            descriptor[key].enumerable = !this.originalSpec[key].calculated;
+            delete descriptor[key].calculated;
+            calcFlds.push(key);
+          } else if(!('enumerable' in this.originalSpec[key])){
             //default enumerable to true
             this.originalSpec[key].enumerable = true;
+            descriptor[key] = this.originalSpec[key];
+          } else {
+            descriptor[key] = this.originalSpec[key];            
           }
-          descriptor[key] = this.originalSpec[key];
         } else {
           proto[key] = this.originalSpec[key];
         }
@@ -24,7 +34,8 @@ var utils = {
     return { 
       descriptor: descriptor,
       proto: proto,
-      originalSpec: this.originalSpec || {}
+      originalSpec: this.originalSpec || {},
+      calculatedFields: calcFlds
     }
   },
   extend: function () {

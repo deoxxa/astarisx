@@ -5,25 +5,41 @@
 'use strict';
 
 var DomainModel = IMVVM.createDomainModel({
-  
-  getInitialState: function(nextState, prevState){ //Optional
-    return {
-      online: typeof nextState.online === 'boolean' ? nextState.online : false,
-      busy: nextState.busy === void(0) ? false : nextState.busy
-    };
-  },
 
-  init: function(args){ //optional
-    var nextState = {};
-    nextState.online = true;
-    return this.DataContext(this.extend(args,nextState));
+  getInitialState: function(){ //optional
+    return {
+      online: true, 
+      busy: false
+    };
   },
 
   undo: function(){
     this.setState(this.previousState);
   },
 
-  setBusyTo: function(val){
-    this.setState({busy: val});
+  busy: {
+    get: function(){
+      return this.state.busy;
+    },
+    set: function(newValue){
+      this.setState({'busy': newValue });
+    }
+  },
+
+  dataContexts: function(){
+    return {
+      hobbies: {
+        viewModel: HobbiesViewModel,
+        initArgs : [],
+        dependsOn: [{property: 'persons.selected'},
+                    {property: 'busy', alias: 'appIsBusy'}]
+      },
+      persons: {
+        viewModel: PersonsViewModel,
+        initArgs : [],
+        dependsOn: [{property: 'hobbies.selected', alias: 'selectedHobby'},
+                    {property: 'online', alias: 'imOnline'}]
+      }
+    }
   }
 });

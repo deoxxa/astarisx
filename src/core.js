@@ -2,7 +2,7 @@
 var utils = require('./utils');
 var extend = utils.extend;
 
-exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, stateChangedHandler, disableUndo) {
+exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, disableUndo) {
 
 	if(typeof stateChangedHandler !== 'function'){
 		throw new TypeError();
@@ -12,7 +12,8 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 		thisAppState = {},
 		dataContexts = {},
 		watchedProps,
-		watchList = {};
+		watchList = {},
+		domain;
 
 	disableUndo === void(0) ? false : disableUndo;
 		
@@ -60,14 +61,17 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 				//Need to inject dependencies so that the state for this object can change
 				//if required. Can't use appState as that is provided after the object is created
 				if(initialize){
-					nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies, prevState[dataContext]).init(domain[dataContext].initArgs);
+					nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies,
+						prevState[dataContext]).getInitialState();
 				} else {
-					nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies, prevState[dataContext]);
+					nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies,
+						prevState[dataContext]);
 				}
 				if(watchedDataContext){
 					if(processed && watchedDataContext.subscribers.indexOf(dataContext) !== -1){
 						dependencies = getDependencies(domain[watchedDataContext.name]);
-						nextState[watchedDataContext.name] = new dataContexts[watchedDataContext.name](nextState[watchedDataContext.name], dependencies, prevState[watchedDataContext.name]);
+						nextState[watchedDataContext.name] = new dataContexts[watchedDataContext.name](nextState[watchedDataContext.name],
+							dependencies, prevState[watchedDataContext.name]);
 					}
 					processed = processed ? processed : dataContext === watchedDataContext.name;
 				}					
@@ -77,8 +81,7 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 	};
 
 	var appStateChangedHandler = function(caller, newState, callback, initialize) {
-		var appContext = {},
-			nextState = {},
+		var nextState = {},
 			prevState = {},
 			watchedDataContext = void(0),
 			newStateKeys,
@@ -121,36 +124,36 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 
 			if(caller !== appNamespace){
 				nextState[caller] = newState;
-				nextState = extend(thisAppState.state, nextState);
+				nextState = extend(thisAppState, nextState);
 			} else {
 				//appDataContext is calling function
 				if(initialize) {
 					nextState = extend(transitionState(), newState);
 				} else {
-					nextState = extend(thisAppState.state, newState);
+					nextState = extend(thisAppState, newState);
 				}
 			}
-			prevState = thisAppState.state;
-			nextState = transitionState(nextState, thisAppState.state, watchedDataContext);
+			prevState = thisAppState;
+			nextState = transitionState(nextState, thisAppState, watchedDataContext);
 		}
 		prevState = prevState || {};
 		Object.freeze(prevState);
 
 		//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
 		thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo, initialize);
-		appContext = thisAppState.state;
+		Object.freeze(thisAppState);
 		
-		if(!initialize && !disableUndo){
-			appContext.previousState = thisAppState.previousState;
-		}
-		Object.freeze(appContext);
 		//All the work is done! -> Notify the View
-		stateChangedHandler(appContext, caller, callback);
+		stateChangedHandler(thisAppState, caller, callback);
 		//Provided for the main app to return from init() to the View
-		return appContext;
+		
+		//return appContext;
+		return thisAppState;
 	};
 
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
+	var applicationDataContext = new ApplicationDataContext({}, {}, disableUndo, true);
+	domain = applicationDataContext.dataContexts();
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
@@ -168,5 +171,5 @@ exports.getInitialState = function(appNamespace, domainModel, initArgs, domain, 
 			}
 		}
 	}
-	return new ApplicationDataContext().init(initArgs); 
+	return applicationDataContext.getInitialState(); 
 };

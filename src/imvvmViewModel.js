@@ -10,23 +10,54 @@ var IMVVMViewModel = {
       desc.proto.setState = raiseStateChangeHandler;
 
       var dataContext = function(nextState, dependencies, prevState) {
-
-        prevState = prevState || {};
+        var initFunc;
+        var calcFld;
         //nextState has already been extended with prevState in core
         nextState = extend(nextState, dependencies);
+        prevState = prevState || {};
+        prevState = ('state' in prevState) ? prevState.state : prevState;
 
-        desc.proto.DataContext = dataContext;
-
-        if(!('init' in desc.proto)){
-          desc.proto.init = function(){
-            return this.DataContext();
+        if(!('getInitialState' in desc.proto)){
+          desc.proto.getInitialState = function(){
+            return dataContext();
+          }
+        } else {
+          initFunc = desc.proto.getInitialState;
+          desc.proto.getInitialState = function(){
+            return dataContext(initFunc.call(this));
           }
         }
         
         var model = Object.create(desc.proto, desc.descriptor);
 
-        if(desc.originalSpec.getInitialState){
-          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model, nextState, prevState));
+        Object.defineProperty(model, 'state', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: nextState
+        });
+        //Need to have state prop in model before can extend model to get correct state
+        nextState = extend(nextState, model);
+
+        //runs everytime to initialize calculated state but will not run the calc func
+        //if the prop has already been initialized
+        if(!!desc.originalSpec.getInitialCalculatedState){
+          for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
+            if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
+              calcFld = {}
+              calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
+                call(model, nextState, prevState)[desc.calculatedFields[i]];
+              if(calcFld[desc.calculatedFields[i]] !== void(0)){
+                nextState = extend(nextState,calcFld);                
+              }
+            }
+          };
+        }
+
+        //runs everytime
+        if(desc.originalSpec.validateState){
+          nextState = extend(nextState,
+            desc.originalSpec.validateState.call(model, nextState, prevState));
         }
 
         Object.defineProperty(model, 'state', {
@@ -46,9 +77,20 @@ var IMVVMViewModel = {
           }
         }.bind(model));
 
-        //TODO - rework this, as __proto__ is deprecated
-        nextState.__proto__ = model.__proto__;
-        return Object.freeze(nextState);
+        //Add dependencies to model
+        for(var dep in dependencies){
+          if(dependencies.hasOwnProperty(dep)){
+            Object.defineProperty(model, dep, {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: dependencies[dep]
+            });
+          }
+        }
+
+        Object.freeze(nextState);
+        return model;
 
       };
       return dataContext;

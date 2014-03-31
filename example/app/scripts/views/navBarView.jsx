@@ -20,7 +20,7 @@ var NavBarView = React.createClass({
 	toggleBusyState: function(e){
 		e.preventDefault();
 		e.stopPropagation();
-		this.props.appContext.setBusyTo(!this.props.appContext.busy);
+		this.props.appContext.busy = !this.props.appContext.busy;
 	},
 	render: function(){
 		var busyBtnTxt = this.props.appContext.busy ? "Stop Now" : "Get Busy";

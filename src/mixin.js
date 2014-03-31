@@ -28,8 +28,8 @@ var mixin = {
   },
 
 	getInitialState: function(){
-		var appDataContext = core.getInitialState(NAMESPACE, this.props.domainModel, this.props.initArgs,
-			this.props.domain, this.stateChangedHandler, this.props.disableUndo);
+		var appDataContext = core.getInitialState(NAMESPACE, this.props.domainModel,
+			this.stateChangedHandler, this.props.disableUndo);
 		return {applicationDataContext: appDataContext};
 	}
 

@@ -7,11 +7,11 @@ var IMVVMModel = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
       var desc = getDescriptor.call(this);
-
       var dataContext = function(nextState, prevState, withContext) {
         var model = Object.create(desc.proto, desc.descriptor);
         var argCount = arguments.length;
         var lastArgIsBool = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
+        var calcFld;
 
         if(argCount === 0){
           //defaults
@@ -36,10 +36,37 @@ var IMVVMModel = {
             withContext = true;
           }
         }
+        nextState = ('state' in nextState) ? nextState.state : nextState;
+        prevState = ('state' in prevState) ? prevState.state : prevState;
 
-        //Initialize any props
-        if(desc.originalSpec.getInitialState){
-          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model, nextState, ('state' in prevState) ? prevState.state : prevState));
+        Object.defineProperty(model, 'state', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: nextState
+        });
+        //Need to have state prop in model before can extend model to get correct state
+        nextState = extend(nextState, model);
+        
+        //runs everytime to initialize calculated state but will not run the calc func
+        //if the prop has already been initialized
+        if(!!desc.originalSpec.getInitialCalculatedState){
+          for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
+            if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
+              calcFld = {}
+              calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
+                call(model, nextState, prevState)[desc.calculatedFields[i]];
+              if(calcFld[desc.calculatedFields[i]] !== void(0)){
+                nextState = extend(nextState,calcFld);                
+              }
+            }
+          };
+        }
+
+        //runs everytime
+        if(desc.originalSpec.validateState){
+          nextState = extend(nextState,
+            desc.originalSpec.validateState.call(model, nextState, prevState));
         }
 
         if(withContext){
@@ -63,6 +90,7 @@ var IMVVMModel = {
           writable: false,
           value: nextState
         });
+
         if(!withContext){
           Object.freeze(model);
         }
