@@ -1,6 +1,6 @@
 /*jshint unused: vars */
 /*jshint unused: false */
-/* global IMVVM */
+/* global IMVVM, HobbiesViewModel, PersonsViewModel */
 
 'use strict';
 
@@ -8,7 +8,7 @@ var DomainModel = IMVVM.createDomainModel({
 
   getInitialState: function(){ //optional
     return {
-      online: true, 
+      online: true,
       busy: false
     };
   },
@@ -38,6 +38,6 @@ var DomainModel = IMVVM.createDomainModel({
         dependsOn: [{property: 'hobbies.selected', alias: 'selectedHobby'},
                     {property: 'online', alias: 'imOnline'}]
       }
-    }
+    };
   }
 });
