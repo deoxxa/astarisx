@@ -286,7 +286,7 @@ var IMVVMDomainModel = {
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
 
-      var DataContext = function(initState, callback){
+      var initialize = function(initState, callback){
         return desc.proto.setState(initState, callback, true);
       }
 
@@ -298,12 +298,12 @@ var IMVVMDomainModel = {
 
         if(!('getInitialState' in desc.proto)){
           desc.proto.getInitialState = function(){
-            return DataContext();
+            return initialize();
           }
         } else {
           initFunc = desc.proto.getInitialState;
           desc.proto.getInitialState = function(){
-            return DataContext(initFunc.call(this));
+            return initialize(initFunc.call(this));
           }
         }
 
