@@ -641,8 +641,14 @@ var utils = {
             delete descriptor[key].calculated;
             calcFlds.push(key);
           } else if(!('enumerable' in this.originalSpec[key])){
-            //default enumerable to true
-            this.originalSpec[key].enumerable = true;
+            if('adapter' in this.originalSpec[key]){
+              //default enumerable to true
+              this.originalSpec[key].enumerable = !this.originalSpec[key].adapter;
+              delete this.originalSpec[key].adapter;
+            } else {
+              //default enumerable to true
+              this.originalSpec[key].enumerable = true;
+            }
             descriptor[key] = this.originalSpec[key];
           } else {
             descriptor[key] = this.originalSpec[key];            

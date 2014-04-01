@@ -300,7 +300,7 @@ var FormView = React.createClass({
 ```
 
 ##Running the example
-The example application is a good starting place to figure out how to do things. So to get it running, navigate to the ``./example`` and run the following commands.
+The example application is a good starting place to figuring out how things work. So to get it running, navigate to the ``./example`` directory and run the following commands.
 
   ```
   $ npm install
@@ -309,6 +309,8 @@ The example application is a good starting place to figure out how to do things.
   ```
 
 ## API
+
+
 
 ## Browser Support
 Most ECMAScript 5 compliant browsers. 
