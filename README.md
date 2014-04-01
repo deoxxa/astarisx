@@ -300,13 +300,11 @@ var FormView = React.createClass({
 ```
 
 ##Running the example
-__Do the following Within the ``example`` directory__
+The example application is a good starting place to figure out how to do things. So to get it running, navigate to the ``./example`` and run the following commands.
 
   ```
   $ npm install
-
   $ bower install
-
   $ grunt serve
   ```
 
