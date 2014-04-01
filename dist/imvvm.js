@@ -20,7 +20,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		dataContexts = {},
 		watchedProps,
 		watchList = {},
-		domain;
+		domain,
+		reprocessing = false;
 
 	disableUndo === void(0) ? false : disableUndo;
 		
@@ -93,7 +94,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			watchedDataContext = void(0),
 			newStateKeys,
 			newStateKeysLen,
-			subscriberKeys;
+			subscriberKeys,
+			rollback = false;
 
 		initialize === void(0) ? false : initialize;
 
@@ -111,6 +113,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			nextState = extend(newState);
 			//revert the current appState to the previous state of the previous state
 			prevState = newState.previousState;
+			rollback = true;
 		} else {
 			if(caller in watchList){
 				newStateKeys = Object.keys(newState);
@@ -131,35 +134,48 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 			if(caller !== appNamespace){
 				nextState[caller] = newState;
-				nextState = extend(thisAppState, nextState);
+				nextState = extend(thisAppState.state, nextState);
 			} else {
 				//appDataContext is calling function
 				if(initialize) {
 					nextState = extend(transitionState(), newState);
 				} else {
-					nextState = extend(thisAppState, newState);
+					nextState = extend(thisAppState.state, newState);
 				}
 			}
-			prevState = thisAppState;
-			nextState = transitionState(nextState, thisAppState, watchedDataContext);
+			prevState = reprocessing ? thisAppState.previousState : thisAppState;
+			nextState = transitionState(nextState, thisAppState.state, watchedDataContext);
 		}
 		prevState = prevState || {};
 		Object.freeze(prevState);
 
-		//Create a new App state context. Only pass in previous state if it is actually an ApplicationDataContext
-		thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo, initialize);
-		Object.freeze(thisAppState);
-		
+		//Create a new App state context.
+		thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo);
+		if(!!thisAppState.validateState && !rollback && !reprocessing) {
+				var validationObj = thisAppState.validateState(thisAppState.state, thisAppState.previousState);
+				var validationKeys = Object.keys(validationObj);
+				for (var keyIdx = validationKeys.length - 1; keyIdx >= 0; keyIdx--) {
+					if(Object.prototype.toString.call(validationObj[validationKeys[keyIdx]]) !== '[object Object]' && 
+						Object.prototype.toString.call(validationObj[validationKeys[keyIdx]]) !== '[object Array]' &&
+						validationObj[validationKeys[keyIdx]] !== thisAppState.state[validationKeys[keyIdx]]){
+						reprocessing = true;
+						thisAppState.setState(extend(thisAppState.state, validationObj));
+						reprocessing = false;
+						break;
+					}
+				};
+		}	
 		//All the work is done! -> Notify the View
-		stateChangedHandler(thisAppState, caller, callback);
 		//Provided for the main app to return from init() to the View
-		
-		//return appContext;
-		return thisAppState;
+		if(!reprocessing){
+			Object.freeze(thisAppState);
+			stateChangedHandler(thisAppState, caller, callback);
+			return thisAppState;
+		}
 	};
 
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	var applicationDataContext = new ApplicationDataContext({}, {}, disableUndo, true);
+	var applicationDataContext = new ApplicationDataContext({}, {}, disableUndo);
 	domain = applicationDataContext.dataContexts();
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
@@ -274,7 +290,7 @@ var IMVVMDomainModel = {
         return desc.proto.setState(initState, callback, true);
       }
 
-      var dataContext = function(nextState, prevState, disableUndo, initialize) {
+      var dataContext = function(nextState, prevState, disableUndo) {
         var initFunc;
         var calcFld;
         nextState = nextState || {};
@@ -290,7 +306,7 @@ var IMVVMDomainModel = {
             return DataContext(initFunc.call(this));
           }
         }
-        
+
         var model = Object.create(desc.proto, desc.descriptor);
         
         Object.defineProperty(model, 'state', {
@@ -317,20 +333,13 @@ var IMVVMDomainModel = {
           };
         }
 
-        if(!initialize){
-          //runs everytime after initialized
-          if(desc.originalSpec.validateState){
-            nextState = extend(nextState,
-              desc.originalSpec.validateState.call(model, nextState, prevState));
-          }
-          if(!disableUndo && !!Object.keys(prevState).length){          
-            Object.defineProperty(nextState, 'previousState', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: prevState
-            });
-          }
+        if(!disableUndo && !!Object.keys(prevState).length){       
+          Object.defineProperty(nextState, 'previousState', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: prevState
+          });
         }
 
         Object.defineProperty(nextState, 'state', {
@@ -544,7 +553,7 @@ var IMVVMViewModel = {
 
         //Add dependencies to model
         for(var dep in dependencies){
-          if(dependencies.hasOwnProperty(dep)){
+          if(dependencies.hasOwnProperty(dep) && dep[0] !== '_'){
             Object.defineProperty(model, dep, {
               configurable: false,
               enumerable: false,

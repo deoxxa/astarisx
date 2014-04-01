@@ -8,9 +8,20 @@ var DomainModel = IMVVM.createDomainModel({
 
   getInitialState: function(){ //optional
     return {
-      online: true,
+      online: true
+    };
+  },
+  getInitialCalculatedState: function(nextState, prevState){
+    return {
       busy: false
     };
+  },
+  validateState: function(nextState, prevState){
+    if(!!nextState.hobbies.selected){
+      return {busy: true};
+    } else {
+      return {busy: false};
+    }
   },
 
   undo: function(){
@@ -18,11 +29,21 @@ var DomainModel = IMVVM.createDomainModel({
   },
 
   busy: {
+    calculated: true,
     get: function(){
       return this.state.busy;
     },
+    // set: function(newValue){
+    //   this.setState({'busy': newValue });
+    // }
+  },
+
+  online: {
+    get: function(){
+      return this.state.online;
+    },
     set: function(newValue){
-      this.setState({'busy': newValue });
+      this.setState({'online': newValue });
     }
   },
 
@@ -30,12 +51,12 @@ var DomainModel = IMVVM.createDomainModel({
     return {
       hobbies: {
         viewModel: HobbiesViewModel,
-        dependsOn: [{property: 'persons.selected'},
-                    {property: 'busy', alias: 'appIsBusy'}]
+        dependsOn: [{property: 'persons.selected', alias: '_selectedPerson'},
+                    {property: 'busy', alias: '_busy'}]
       },
       persons: {
         viewModel: PersonsViewModel,
-        dependsOn: [{property: 'hobbies.selected', alias: 'selectedHobby'},
+        dependsOn: [{property: 'hobbies.selected'},
                     {property: 'online', alias: 'imOnline'}]
       }
     };

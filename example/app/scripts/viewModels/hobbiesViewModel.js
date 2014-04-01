@@ -6,24 +6,24 @@
 var HobbiesViewModel = IMVVM.createViewModel({
   select: function(value){
     var nextState = {};
-    nextState.selected = this.persons$selected.hobbies.filter(function(hobby){
+    nextState.selected = this.hobbies.filter(function(hobby){
       return hobby === value;
     })[0];
     this.setState(nextState);
   },
   
   addHobby: function(value){
-    this.persons$selected.addHobby(value);
+    this.state._selectedPerson.addHobby(value);
   },
   
   deleteHobby: function(value){
-    this.persons$selected.deleteHobby(value);
+    this.state._selectedPerson.deleteHobby(value);
   },
 
   //When a dependency changes reset the selected hobby to undefined
   resetSelected: function(nextState, prevState) {
-    if(prevState.persons$selected && nextState.persons$selected){
-      if(nextState.persons$selected.id !== prevState.persons$selected.id &&
+    if(prevState._selectedPerson && nextState._selectedPerson){
+      if(nextState._selectedPerson.id !== prevState._selectedPerson.id &&
         nextState.selected !== void(0)){
         return void(0);
       }
@@ -31,10 +31,23 @@ var HobbiesViewModel = IMVVM.createViewModel({
     return nextState.selected;
   },
 
+  hobbies: {
+    enumerable: false,
+    get: function(){
+      return this.state._selectedPerson.hobbies;
+    }
+  },
+
   validateState: function(nextState, prevState){
     return {
       selected: this.resetSelected(nextState, prevState),
     };
+  },
+
+  busyText: {
+    get: function(){
+      return this.state._busy ? 'Im Busy! Go away...' : 'Not doing too much.';
+    }
   },
 
   selected: {

@@ -17,14 +17,14 @@ var NavBarView = React.createClass({
 		e.stopPropagation();
 		this.props.appContext.undo();
 	},
-	toggleBusyState: function(e){
+	toggleOnlineState: function(e){
 		e.preventDefault();
 		e.stopPropagation();
-		this.props.appContext.busy = !this.props.appContext.busy;
+		this.props.appContext.online = !this.props.appContext.online;
 	},
 	render: function(){
-		var busyBtnTxt = this.props.appContext.busy ? "Stop Now" : "Get Busy";
-
+		var onlineBtnTxt = this.props.appContext.online ? "Go offline" : "Go online";
+		var onlineBtnClass = this.props.appContext.online ? "btn btn-success": "btn btn-danger";
 		return (
 			<nav className="navbar navbar-default" role="navigation">
 			  <div className="container-fluid">
@@ -46,8 +46,8 @@ var NavBarView = React.createClass({
 			        <button onClick={this.undo} className="btn btn-default">
 			        Undo
 			        </button>
-			        <button onClick={this.toggleBusyState} className="btn btn-default">
-			        	{busyBtnTxt}
+			        <button onClick={this.toggleOnlineState} className={onlineBtnClass}>
+			        	{onlineBtnTxt}
 			        </button>
 			      </form>
 			    </div>

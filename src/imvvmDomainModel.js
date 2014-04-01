@@ -13,7 +13,7 @@ var IMVVMDomainModel = {
         return desc.proto.setState(initState, callback, true);
       }
 
-      var dataContext = function(nextState, prevState, disableUndo, initialize) {
+      var dataContext = function(nextState, prevState, disableUndo) {
         var initFunc;
         var calcFld;
         nextState = nextState || {};
@@ -29,7 +29,7 @@ var IMVVMDomainModel = {
             return DataContext(initFunc.call(this));
           }
         }
-        
+
         var model = Object.create(desc.proto, desc.descriptor);
         
         Object.defineProperty(model, 'state', {
@@ -56,20 +56,13 @@ var IMVVMDomainModel = {
           };
         }
 
-        if(!initialize){
-          //runs everytime after initialized
-          if(desc.originalSpec.validateState){
-            nextState = extend(nextState,
-              desc.originalSpec.validateState.call(model, nextState, prevState));
-          }
-          if(!disableUndo && !!Object.keys(prevState).length){          
-            Object.defineProperty(nextState, 'previousState', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: prevState
-            });
-          }
+        if(!disableUndo && !!Object.keys(prevState).length){       
+          Object.defineProperty(nextState, 'previousState', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: prevState
+          });
         }
 
         Object.defineProperty(nextState, 'state', {

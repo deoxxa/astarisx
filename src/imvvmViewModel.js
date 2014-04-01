@@ -79,7 +79,7 @@ var IMVVMViewModel = {
 
         //Add dependencies to model
         for(var dep in dependencies){
-          if(dependencies.hasOwnProperty(dep)){
+          if(dependencies.hasOwnProperty(dep) && dep[0] !== '_'){
             Object.defineProperty(model, dep, {
               configurable: false,
               enumerable: false,

@@ -19,6 +19,7 @@ var ListView = React.createClass({
 		var app = this.props.appContext;
 		var collection = this.props.appContext.persons.collection;
 		var current = this.props.appContext.persons.selected;
+		var selectedHobby = !!this.props.appContext.persons.hobbies$selected ? " is " + this.props.appContext.persons.hobbies$selected : "";
 
 		var list = collection.map(function(person){
 			if(current.id === person.id){
@@ -28,7 +29,7 @@ var ListView = React.createClass({
 					key={person.id}
 					href="#"
 					className="list-group-item active">
-					    {person.fullName}
+					    {this.props.appContext.persons.imOnline ? "" : "Offline -> "} {person.fullName + selectedHobby}
 					    <DeleteButton funcDelete={this.deletePerson.bind(this, person.id)} />
 					</a>
 				);
@@ -38,7 +39,7 @@ var ListView = React.createClass({
 				key={person.id}
 				href="#"
 				className="list-group-item">
-				    {person.fullName}
+				    {this.props.appContext.persons.imOnline ? "" : "Offline -> "} {person.fullName}
 				    <DeleteButton funcDelete={this.deletePerson.bind(this, person.id)} />
 				</a>
 			);
