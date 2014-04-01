@@ -2,7 +2,35 @@ IMVVM
 =====
 
 Immutable MVVM for React
+## Introduction
+## Usage
 
+IMVVM can be loaded as:
+
+-   standalone
+
+    ```javscript
+     <script type="text/javascript" src="imvvm.min.js"></script>
+    ```
+
+    this exposes IMVVM as a global variable.
+
+-   a Node.js and CommonJS module available from NPM as the ``imvvm`` package
+
+    ```
+    $ npm install imvvm
+    ```
+
+-   a RequireJS module
+
+    ```
+    require(['./imvvm.min.js'], function (IMVVM) {
+        // Do something with IMVVM
+    });
+    ```
+## Getting Started
+## API
+## Browser Support
 ## Author
 
 Frank Panetta  - [Follow @fattenap](https://twitter.com/intent/follow?screen_name=fattenap)
