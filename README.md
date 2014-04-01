@@ -301,15 +301,14 @@ var FormView = React.createClass({
 
 ##Running the example
 __Do the following Within the ``example`` directory__
-1. ```
-    $ npm install
-    ```
-2. ```
-    $ bower install
+
   ```
-3. ```
-    $ grunt serve
-    ```
+  $ npm install
+
+  $ bower install
+
+  $ grunt serve
+  ```
 
 ## API
 
