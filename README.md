@@ -7,13 +7,11 @@ Immutable MVVM for React
 
 IMVVM can be loaded as:
 
--   standalone
+-   standalone. ``IMVVM`` is exposed as a global variable
 
     ```javscript
      <script src="imvvm.min.js"></script>
     ```
-
-    IMVVM is exposed as a global variable.
 
 -   a Node.js module
 
