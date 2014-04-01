@@ -41,7 +41,7 @@ var NavBarView = React.createClass({
 			      <a className="navbar-brand" href="#">IMVVM Demo has {this.props.appContext.personCount} people</a>
 			    </div>
 
-			    <div ref="menu" className="collapse navbar-collapse">
+			    <div ref="menu" className="collapse navbar-collapse pull-right">
 			      <form className="navbar-form navbar-left" role="search">
 			        <button onClick={this.undo} className="btn btn-default">
 			        Undo
