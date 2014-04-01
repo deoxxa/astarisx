@@ -32,6 +32,12 @@ var DomainModel = IMVVM.createDomainModel({
     this.setState(this.previousState);
   },
 
+  personCount: {
+    get: function(){
+      return this.persons ? this.persons.collection.length : 0;
+    }
+  },
+
   busy: {
     calculated: true,
     get: function(){
@@ -47,7 +53,9 @@ var DomainModel = IMVVM.createDomainModel({
       this.setState({'online': newValue });
     }
   },
-
+  //dataContext keys define the dataContext names that will appear in
+  //the View. viewModel refer to the ViewModels and 
+  //dependsOn will enable props to be transfered to other ViewModels.
   //if alias is supplied that prop name will appear in ViewModel state
   //otherwise it will appear concatenated by '$' i.e. hobbies$selected
   //if you would like dependency prop to not appear in the View, supply

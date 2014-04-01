@@ -6,7 +6,6 @@
 var PersonsViewModel = IMVVM.createViewModel({
 
   select: function(id){
-    console.log(this);
     var nextState = {};
     nextState.collection = this.collection.map(function(person){
       if(person.id === id){

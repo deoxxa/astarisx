@@ -38,7 +38,7 @@ var NavBarView = React.createClass({
 			        <span className="icon-bar"></span>
 			        <span className="icon-bar"></span>
 			      </button>
-			      <a className="navbar-brand" href="#">IMVVM Demo Application</a>
+			      <a className="navbar-brand" href="#">IMVVM Demo has {this.props.appContext.personCount} people</a>
 			    </div>
 
 			    <div ref="menu" className="collapse navbar-collapse">
@@ -51,6 +51,7 @@ var NavBarView = React.createClass({
 			        </button>
 			      </form>
 			    </div>
+
 			  </div>
 			</nav>
 		);		
