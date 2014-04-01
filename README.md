@@ -10,15 +10,21 @@ IMVVM can be loaded as:
 -   standalone
 
     ```javscript
-     <script type="text/javascript" src="imvvm.min.js"></script>
+     <script src="imvvm.min.js"></script>
     ```
 
-    this exposes IMVVM as a global variable.
+    IMVVM is exposed as a global variable.
 
--   a Node.js and CommonJS module available from NPM as the ``imvvm`` package
+-   a Node.js module
 
     ```
     $ npm install imvvm
+    ```
+
+-   a Bower module
+
+    ```
+    $ bower install imvvm
     ```
 
 -   a RequireJS module
@@ -29,6 +35,10 @@ IMVVM can be loaded as:
     });
     ```
 ## Getting Started
+### Creating a Model
+### Creating a ViewModel
+### Creating a DomainModel
+### Hooking up the View
 ## API
 ## Browser Support
 ## Author
