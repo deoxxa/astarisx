@@ -32,7 +32,9 @@ IMVVM can be loaded as:
         // Do something with IMVVM
     });
     ```
+
 ## Getting Started
+
 ### Create a Model
 
   ```javascript
@@ -88,7 +90,6 @@ IMVVM can be loaded as:
 
   });
   ```
-
 
 ### Create a ViewModel
 
@@ -180,6 +181,7 @@ IMVVM can be loaded as:
   });
 
   ```
+
 ### Create a DomainModel
   ```javascript
   var DomainModel = IMVVM.createDomainModel({
@@ -213,6 +215,7 @@ IMVVM can be loaded as:
     }
   });
   ```
+
 ### Hook up the View
   ```javascript
   var ApplicationView = React.createClass({
@@ -230,11 +233,13 @@ IMVVM can be loaded as:
     }
   });
   ```
+
 ### Render the View
   ```javascript
   React.renderComponent(<ApplicationView domainModel={DomainModel}/>, document.getElementById('container'));
 
   ```
+
 __Example of a FormView__
 ```javascript
 var FormView = React.createClass({
