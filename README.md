@@ -35,60 +35,268 @@ IMVVM can be loaded as:
 ## Getting Started
 ### Create a Model
 
-```javascript
-var PersonModel = IMVVM.createModel({
-  
-  uuid: function () {
-    var i, random;
-    var uuid = '';
+  ```javascript
+  var PersonModel = IMVVM.createModel({
+    
+    uuid: function () {
+      var i, random;
+      var uuid = '';
 
-    for (i = 0; i < 32; i++) {
-      random = Math.random() * 16 | 0;
-      if (i === 8 || i === 12 || i === 16 || i === 20) {
-        uuid += '-';
+      for (i = 0; i < 32; i++) {
+        random = Math.random() * 16 | 0;
+        if (i === 8 || i === 12 || i === 16 || i === 20) {
+          uuid += '-';
+        }
+        uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
+          .toString(16);
       }
-      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
-        .toString(16);
-    }
-    return uuid;
-  },
+      return uuid;
+    },
 
-  id: {
-    get: function(){
-      return this.state.id ? this.state.id : this.uuid();
-    }
-  },
+    id: {
+      get: function(){
+        return this.state.id ? this.state.id : this.uuid();
+      }
+    },
 
-  firstName: {
-    get: function(){ return this.state.firstName; },
-    set: function(newValue){
-      this.setState({'firstName': newValue});
-    }
-  },
+    name: {
+      get: function(){
+        return this.state.firstName;
+      },
+      set: function(newValue){
+        this.setState({'name': newValue});
+      }
+    },
 
-  lastName: {
-    get: function(){ return this.state.lastName; },
-    set: function(newValue){
-      this.setState({'lastName': newValue});
-    }
-  },
-  
-  gender: {
-    get: function(){ return this.state.gender; },
-    set: function(newValue){
-      this.setState({'gender': newValue});
-    }
-  },
+    dob: {
+      get: function(){
+        return this.state.dob;
+      },
+      set: function(newValue){
+        this.setState({'dob': newValue});
+      }
+    },
 
-});
-```
+    gender: {
+      get: function(){
+        return this.state.gender;
+      },
+      set: function(newValue){
+        this.setState({'gender': newValue});
+      }
+    },
+
+  });
+  ```
 
 
 ### Create a ViewModel
+
+  ```javascript
+  var PersonsViewModel = IMVVM.createViewModel({
+
+    select: function(id){
+      var nextState = {};
+      nextState.collection = this.collection.map(function(person){
+        if(person.id === id){
+          nextState.selected = this.Person(person);
+          return nextState.selected;
+        }
+        return person;
+      }.bind(this));
+
+      this.setState(nextState);
+    },
+
+    addPerson: function(value){
+      var nextState = {};
+
+      if(value && value.length > 0){
+        nextState.selected = this.Person({
+          name: value
+        });
+        nextState.collection = this.collection.slice(0);
+        nextState.collection = nextState.collection.concat(nextState.selected);
+        this.setState(nextState);
+      }
+    },
+
+    deletePerson: function(uid){
+      var nextState = {};
+      nextState.collection = this.collection.filter(function(person){
+        return person.id !== uid;
+      });
+      nextState.selected = void(0);
+      if(nextState.collection.length > 0){
+        if (this.selected.id === uid){
+          nextState.selected = this.Person(nextState.collection[0]);
+        } else {
+          nextState.selected = this.Person(this.selected);
+        }
+      }
+      this.setState(nextState);
+    },
+    
+    getInitialState: function(){
+      var nextState = {};
+      nextState.collection = DataService.getData().map(function(person, idx){
+        if (idx === 0){
+          nextState.selected = this.Person(person);
+          return nextState.selected;
+        }
+        return this.Person(person, false);
+      }.bind(this));
+      return nextState;
+    },
+
+    personStateChangedHandler: function(nextState, prevState/*, callback*/){
+      var persons = {};
+      persons.collection = this.collection.map(function(person){
+        if(person.id === prevState.id){
+          persons.selected = this.Person(nextState, person);
+          return persons.selected;
+        }
+        return person;
+      }.bind(this));
+      this.setState(persons);
+    },
+
+    Person: function(){
+      return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
+    },
+
+    collection: {
+      get: function(){
+        return this.state.collection;
+      },
+    },
+
+    selected: {
+      get: function() {
+        return this.state.selected;
+      }
+    },
+
+  });
+
+  ```
 ### Create a DomainModel
+  ```javascript
+  var DomainModel = IMVVM.createDomainModel({
+
+    getInitialState: function(){
+      return {
+        online: true
+      };
+    },
+
+    undo: function(){
+      this.setState(this.previousState);
+    },
+
+    online: {
+      get: function(){
+        return this.state.online;
+      },
+      set: function(newValue){
+        this.setState({'online': newValue });
+      }
+    },
+
+    dataContexts: function(){
+      return {
+        persons: {
+          viewModel: PersonsViewModel,
+          dependsOn: [{property: 'online', alias: 'imOnline'}]
+        }
+      };
+    }
+  });
+  ```
 ### Hook up the View
+  ```javascript
+  var ApplicationView = React.createClass({
+
+    mixins: [IMVVM.mixin],
+    
+    render: function(){
+      return (
+        <div>
+          <NavBarView appContext={this.state.applicationDataContext} />
+          <SideBarView appContext={this.state.applicationDataContext} />
+          <DetailsView appContext={this.state.applicationDataContext} />
+        </div>
+      );    
+    }
+  });
+  ```
+### Render the View
+  ```javascript
+  React.renderComponent(<ApplicationView domainModel={DomainModel}/>, document.getElementById('container'));
+
+  ```
+__Example of a FormView__
+```javascript
+var FormView = React.createClass({
+  updateName: function(e){
+    this.props.appContext.persons.selected.name = e.target.value;
+  },
+  updateGender: function(e){
+    this.props.appContext.persons.selected.gender = e.target.value;
+  },
+  updateDOB: function(e){
+    this.props.appContext.persons.selected.dob = e.target.value;
+  },
+  render: function() {
+    var app = this.props.appContext;
+    var current = this.props.appContext.persons.selected;
+
+    return (
+      <div key={current.id}>
+        <form className="form-horizontal" role="form">
+          <div className="form-group">
+              <label className="col-md-2 control-label">Name</label>
+              <div className="col-md-3">
+                <input className="form-control" type="text" value={current.name}
+                onChange={this.updateName} />
+            </div>
+          </div>
+          <div className="form-group">
+              <label className="col-md-2 control-label">Gender</label>
+              <div className="col-md-3">
+                <div className="radio">
+                <label>
+                  <input type="radio" onChange={this.updateGender} value="male" checked={current.gender === 'male'} />
+                  Male
+                </label>
+              </div>
+              <div className="radio">
+                <label>
+                  <input type="radio" onChange={this.updateGender} value="female" checked={current.gender === 'female'} />
+                  Female
+                </label>
+              </div>
+            </div>
+          </div>
+          <div className="form-group">
+              <label className="col-md-2 control-label">Birthday</label>
+              <div className="col-md-3">
+                <input className="form-control" type="text" 
+                placeholder="yyyy-mm-dd"
+                value={current.dob}
+                onChange={this.updateDOB} />
+            </div>
+          </div>
+        </form>
+      </div>
+    );
+  }
+});
+```
 ## API
 ## Browser Support
+Most ECMAScript 5 compliant browsers. 
+__IE8 and below are not supported__
 ## Author
 
 Frank Panetta  - [Follow @fattenap](https://twitter.com/intent/follow?screen_name=fattenap)
