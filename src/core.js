@@ -144,8 +144,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 		//Create a new App state context.
 		thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo);
-		if(!!thisAppState.validateState && !rollback && !reprocessing) {
-				var validationObj = thisAppState.validateState(thisAppState.state, thisAppState.previousState);
+		if(!!thisAppState.getValidState && !rollback && !reprocessing) {
+				var validationObj = thisAppState.getValidState(thisAppState.state, thisAppState.previousState);
 				var validationKeys = Object.keys(validationObj);
 				for (var keyIdx = validationKeys.length - 1; keyIdx >= 0; keyIdx--) {
 					if(Object.prototype.toString.call(validationObj[validationKeys[keyIdx]]) !== '[object Object]' && 
@@ -162,6 +162,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//Provided for the main app to return from init() to the View
 		if(!reprocessing){
 			Object.freeze(thisAppState);
+			Object.freeze(thisAppState.state);
 			stateChangedHandler(thisAppState, caller, callback);
 			return thisAppState;
 		}

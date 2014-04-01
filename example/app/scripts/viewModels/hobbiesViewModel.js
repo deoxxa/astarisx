@@ -39,7 +39,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
   
   //runs everytime transition to state occurs
-  validateState: function(nextState, prevState){
+  getValidState: function(nextState, prevState){
     return {
       selected: this.resetSelected(nextState, prevState),
     };

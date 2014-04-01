@@ -15,7 +15,19 @@ var ApplicationView = React.createClass({
 
     console.log('------------------------------------------ Current Application State ------------------------------------------')
     console.log(this.state.applicationDataContext);
-    
+
+    /*console.log(Object.isFrozen(this.state.applicationDataContext.previousState || {}));
+    console.log(Object.isFrozen(this.state.applicationDataContext));
+    console.log(Object.isFrozen(this.state.applicationDataContext.state));
+    console.log(Object.isFrozen(this.state.applicationDataContext.persons));
+    console.log(Object.isFrozen(this.state.applicationDataContext.persons.collection));
+    console.log(Object.isFrozen(this.state.applicationDataContext.persons.selected));
+    console.log(Object.isFrozen(this.state.applicationDataContext.persons.selected.hobbies));
+    console.log(Object.isFrozen(this.state.applicationDataContext.persons.state));
+    console.log(Object.isFrozen(this.state.applicationDataContext.persons.state.collection));
+    console.log(Object.isFrozen(this.state.applicationDataContext.persons.state.collection[1]));
+    console.log(Object.isFrozen(this.state.applicationDataContext.persons.state.collection[1].hobbies));
+    console.log(Object.isFrozen(this.state.applicationDataContext.hobbies.state._selectedPerson));*/
     return (
       <div>
         <NavBarView appContext={this.state.applicationDataContext} />

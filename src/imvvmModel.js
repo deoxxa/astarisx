@@ -64,9 +64,9 @@ var IMVVMModel = {
         }
 
         //runs everytime
-        if(desc.originalSpec.validateState){
+        if(desc.originalSpec.getValidState){
           nextState = extend(nextState,
-            desc.originalSpec.validateState.call(model, nextState, prevState));
+            desc.originalSpec.getValidState.call(model, nextState, prevState));
         }
 
         if(withContext){
@@ -90,6 +90,13 @@ var IMVVMModel = {
           writable: false,
           value: nextState
         });
+
+        Object.keys(model).forEach(function(key){
+          if(Object.prototype.toString.call(this[key]) === '[object Object]' || 
+            Object.prototype.toString.call(this[key]) === '[object Array]'){
+            Object.freeze(this[key]);
+          }
+        }.bind(model));
 
         if(!withContext){
           Object.freeze(model);

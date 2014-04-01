@@ -169,6 +169,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//Provided for the main app to return from init() to the View
 		if(!reprocessing){
 			Object.freeze(thisAppState);
+			Object.freeze(thisAppState.state);
 			stateChangedHandler(thisAppState, caller, callback);
 			return thisAppState;
 		}
@@ -459,6 +460,13 @@ var IMVVMModel = {
           value: nextState
         });
 
+        Object.keys(model).forEach(function(key){
+          if(Object.prototype.toString.call(this[key]) === '[object Object]' || 
+            Object.prototype.toString.call(this[key]) === '[object Array]'){
+            Object.freeze(this[key]);
+          }
+        }.bind(model));
+
         if(!withContext){
           Object.freeze(model);
         }
@@ -564,7 +572,7 @@ var IMVVMViewModel = {
         }
 
         Object.freeze(nextState);
-        return model;
+        return Object.freeze(model);
 
       };
       return dataContext;

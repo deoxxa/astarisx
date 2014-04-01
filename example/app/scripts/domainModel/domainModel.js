@@ -20,7 +20,7 @@ var DomainModel = IMVVM.createDomainModel({
   },
 
   //runs last every time transition to new State (after all ViewModels have been updated)
-  validateState: function(nextState, prevState){
+  getValidState: function(nextState, prevState){
     if(!!nextState.hobbies.selected){
       return {busy: true};
     } else {

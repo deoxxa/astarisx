@@ -55,9 +55,9 @@ var IMVVMViewModel = {
         }
 
         //runs everytime
-        if(desc.originalSpec.validateState){
+        if(desc.originalSpec.getValidState){
           nextState = extend(nextState,
-            desc.originalSpec.validateState.call(model, nextState, prevState));
+            desc.originalSpec.getValidState.call(model, nextState, prevState));
         }
 
         Object.defineProperty(model, 'state', {
@@ -90,7 +90,7 @@ var IMVVMViewModel = {
         }
 
         Object.freeze(nextState);
-        return model;
+        return Object.freeze(model);
 
       };
       return dataContext;

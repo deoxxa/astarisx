@@ -36,8 +36,9 @@ var PersonModel = IMVVM.createModel({
 
   calculateAge: function(dob){ // dob is a date
     var DOB = new Date(dob);
-    var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from epoch
-    return Math.abs(ageDate.getFullYear() - 1970) + ' years old';
+    var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from 
+    var age = Math.abs(ageDate.getFullYear() - 1970);
+    return Number.isNaN(age) ? 'Enter your Birthday' : age + ' years old';
   },
 
   getInitialCalculatedState: function(nextState, prevState){
@@ -111,6 +112,9 @@ var PersonModel = IMVVM.createModel({
       var nextState = {};
       if(newValue.length === 10){
         nextState.age = this.calculateAge(newValue);
+      }
+      if(newValue.length === 0){
+        nextState.age = 'C\'mon. When\'s your Birthday?';
       }
       nextState.dob = newValue;
       this.setState(nextState);
