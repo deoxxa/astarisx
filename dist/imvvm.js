@@ -641,10 +641,10 @@ var utils = {
             delete descriptor[key].calculated;
             calcFlds.push(key);
           } else if(!('enumerable' in this.originalSpec[key])){
-            if('adapter' in this.originalSpec[key]){
+            if('pseudo' in this.originalSpec[key]){
               //default enumerable to true
-              this.originalSpec[key].enumerable = !this.originalSpec[key].adapter;
-              delete this.originalSpec[key].adapter;
+              this.originalSpec[key].enumerable = !this.originalSpec[key].pseudo;
+              delete this.originalSpec[key].pseudo;
             } else {
               //default enumerable to true
               this.originalSpec[key].enumerable = true;

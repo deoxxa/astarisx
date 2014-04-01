@@ -11,16 +11,16 @@ var utils = {
         if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
           //assume it is a descriptor
           if('calculated' in this.originalSpec[key]){
-            //default enumerable to true
+            //We want to preserve the calculated flag on originalSpec
             descriptor[key] = utils.extend(this.originalSpec[key]);
             descriptor[key].enumerable = !this.originalSpec[key].calculated;
             delete descriptor[key].calculated;
             calcFlds.push(key);
           } else if(!('enumerable' in this.originalSpec[key])){
-            if('adapter' in this.originalSpec[key]){
-              //default enumerable to true
-              this.originalSpec[key].enumerable = !this.originalSpec[key].adapter;
-              delete this.originalSpec[key].adapter;
+            //No need to preserve the pseudo flag on originalSpec
+            if('pseudo' in this.originalSpec[key]){
+              this.originalSpec[key].enumerable = !this.originalSpec[key].pseudo;
+              delete this.originalSpec[key].pseudo;
             } else {
               //default enumerable to true
               this.originalSpec[key].enumerable = true;

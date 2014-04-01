@@ -72,7 +72,7 @@ var PersonModel = IMVVM.createModel({
   },
   
   fullName: {
-    adapter: true,
+    pseudo: true,
     get: function(){
       if(this.lastName === void(0)){
         return this.firstName;
