@@ -52,7 +52,8 @@ var PersonsViewModel = IMVVM.createViewModel({
     }
     this.setState(nextState);
   },
-
+  
+  //runs once to initialize
   getInitialState: function(){
     var nextState = {};
     nextState.collection = DataService.getData().map(function(person, idx){

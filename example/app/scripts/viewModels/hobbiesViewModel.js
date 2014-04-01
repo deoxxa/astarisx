@@ -32,12 +32,13 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
 
   hobbies: {
-    enumerable: false,
+    enumerable: false, //false because its not calculated but is supplied externally
     get: function(){
       return this.state._selectedPerson.hobbies;
     }
   },
-
+  
+  //runs everytime transition to state occurs
   validateState: function(nextState, prevState){
     return {
       selected: this.resetSelected(nextState, prevState),
@@ -45,6 +46,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
 
   busyText: {
+    enumerable: false, //false because its not calculated but is supplied externally
     get: function(){
       return this.state._busy ? 'Im Busy! Go away...' : 'Not doing too much.';
     }

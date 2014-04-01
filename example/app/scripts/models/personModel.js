@@ -72,8 +72,8 @@ var PersonModel = IMVVM.createModel({
   
   fullName: {
     enumerable: false, //calculated fields should set enumerable to false
-    //calculated: true, //Only set this if you getInitialCalculatedState
-                      //otherwise you must set enumerable to false - one or the other
+    //calculated: true, //Only set this if you use getInitialCalculatedState
+                      //otherwise set enumerable to false - one or the other
     get: function(){
       if(this.lastName === void(0)){
         return this.firstName;

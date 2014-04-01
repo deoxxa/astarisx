@@ -6,16 +6,20 @@
 
 var DomainModel = IMVVM.createDomainModel({
 
+  //run once
   getInitialState: function(){ //optional
     return {
       online: true
     };
   },
+  //runs to initialize calculated fields
   getInitialCalculatedState: function(nextState, prevState){
     return {
       busy: false
     };
   },
+
+  //runs last every time transition to new State (after all ViewModels have been updated)
   validateState: function(nextState, prevState){
     if(!!nextState.hobbies.selected){
       return {busy: true};
@@ -33,9 +37,6 @@ var DomainModel = IMVVM.createDomainModel({
     get: function(){
       return this.state.busy;
     },
-    // set: function(newValue){
-    //   this.setState({'busy': newValue });
-    // }
   },
 
   online: {
@@ -47,6 +48,10 @@ var DomainModel = IMVVM.createDomainModel({
     }
   },
 
+  //if alias is supplied that prop name will appear in ViewModel state
+  //otherwise it will appear concatenated by '$' i.e. hobbies$selected
+  //if you would like dependency prop to not appear in the View, supply
+  //and alias with a preceding underscore i.e. alias: _busy
   dataContexts: function(){
     return {
       hobbies: {
