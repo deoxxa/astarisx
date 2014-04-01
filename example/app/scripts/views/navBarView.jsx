@@ -25,6 +25,7 @@ var NavBarView = React.createClass({
 	render: function(){
 		var onlineBtnTxt = this.props.appContext.online ? "Go offline" : "Go online";
 		var onlineBtnClass = this.props.appContext.online ? "btn btn-success": "btn btn-danger";
+		var noOfPeople = this.props.appContext.personCount;
 		return (
 			<nav className="navbar navbar-default" role="navigation">
 			  <div className="container-fluid">
@@ -38,7 +39,9 @@ var NavBarView = React.createClass({
 			        <span className="icon-bar"></span>
 			        <span className="icon-bar"></span>
 			      </button>
-			      <a className="navbar-brand" href="#">IMVVM Demo has {this.props.appContext.personCount} people</a>
+			      <a className="navbar-brand" href="#">
+			      	IMVVM Demo has {noOfPeople} {noOfPeople === 1 ? "person" : "people"}
+			      </a>
 			    </div>
 
 			    <div ref="menu" className="collapse navbar-collapse pull-right">
