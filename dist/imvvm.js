@@ -151,8 +151,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 		//Create a new App state context.
 		thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo);
-		if(!!thisAppState.validateState && !rollback && !reprocessing) {
-				var validationObj = thisAppState.validateState(thisAppState.state, thisAppState.previousState);
+		if(!!thisAppState.getValidState && !rollback && !reprocessing) {
+				var validationObj = thisAppState.getValidState(thisAppState.state, thisAppState.previousState);
 				var validationKeys = Object.keys(validationObj);
 				for (var keyIdx = validationKeys.length - 1; keyIdx >= 0; keyIdx--) {
 					if(Object.prototype.toString.call(validationObj[validationKeys[keyIdx]]) !== '[object Object]' && 
@@ -433,9 +433,9 @@ var IMVVMModel = {
         }
 
         //runs everytime
-        if(desc.originalSpec.validateState){
+        if(desc.originalSpec.getValidState){
           nextState = extend(nextState,
-            desc.originalSpec.validateState.call(model, nextState, prevState));
+            desc.originalSpec.getValidState.call(model, nextState, prevState));
         }
 
         if(withContext){
@@ -537,9 +537,9 @@ var IMVVMViewModel = {
         }
 
         //runs everytime
-        if(desc.originalSpec.validateState){
+        if(desc.originalSpec.getValidState){
           nextState = extend(nextState,
-            desc.originalSpec.validateState.call(model, nextState, prevState));
+            desc.originalSpec.getValidState.call(model, nextState, prevState));
         }
 
         Object.defineProperty(model, 'state', {

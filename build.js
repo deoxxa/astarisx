@@ -3,10 +3,9 @@ var path = require('path');
 
 var compressor = require('yuicompressor');
 var browserify = require('browserify');
-var b = browserify();
+var b = browserify('./main.js');
 var writer = fs.createWriteStream(path.normalize('dist/imvvm.js'));
 
-b.add('./main.js');
 b.bundle({standalone:'IMVVM'}).pipe(writer);
 
 writer.on('finish', function() {
