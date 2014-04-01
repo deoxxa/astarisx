@@ -95,7 +95,6 @@ IMVVM can be loaded as:
 
   ```javascript
   var PersonsViewModel = IMVVM.createViewModel({
-
     select: function(id){
       var nextState = {};
       nextState.collection = this.collection.map(function(person){
@@ -253,7 +252,6 @@ var FormView = React.createClass({
     this.props.appContext.persons.selected.dob = e.target.value;
   },
   render: function() {
-    var app = this.props.appContext;
     var current = this.props.appContext.persons.selected;
 
     return (
@@ -271,13 +269,15 @@ var FormView = React.createClass({
               <div className="col-md-3">
                 <div className="radio">
                 <label>
-                  <input type="radio" onChange={this.updateGender} value="male" checked={current.gender === 'male'} />
+                  <input type="radio" onChange={this.updateGender} value="male"
+                    checked={current.gender === 'male'} />
                   Male
                 </label>
               </div>
               <div className="radio">
                 <label>
-                  <input type="radio" onChange={this.updateGender} value="female" checked={current.gender === 'female'} />
+                  <input type="radio" onChange={this.updateGender} value="female"
+                    checked={current.gender === 'female'} />
                   Female
                 </label>
               </div>
@@ -298,10 +298,25 @@ var FormView = React.createClass({
   }
 });
 ```
+
+##Running the example
+__Do the following Within the ``example`` directory__
+1. ```
+    $ npm install
+    ```
+2. ```
+    $ bower install
+  ```
+3. ```
+    $ grunt serve
+    ```
+
 ## API
+
 ## Browser Support
 Most ECMAScript 5 compliant browsers. 
 __IE8 and below are not supported__
+
 ## Author
 
 Frank Panetta  - [Follow @fattenap](https://twitter.com/intent/follow?screen_name=fattenap)
