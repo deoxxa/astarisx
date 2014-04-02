@@ -389,10 +389,10 @@ __arguments__
 ####Models
 _Available in:_ ViewModel
 
-__Definition__
+***Definition***
 #####ModelFactory: function(){ return new ModelClass(this.ModelStateChangeHandler).apply(this, arguments); }
 
-__Usage__
+***Usage***
 #####ModelFactory([object nextState, object previousState, boolean withContext])
 #####ModelFactory([object nextState, boolean withContext])
 
