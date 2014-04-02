@@ -41,9 +41,9 @@ var PersonModel = IMVVM.createModel({
     return Number.isNaN(age) ? 'Enter your Birthday' : age + ' years old';
   },
 
-  getInitialCalculatedState: function(nextState, prevState){
+  getInitialState: function(/*nextState, prevState*/){
     return {
-      age: this.calculateAge(nextState.dob),
+      age: this.calculateAge(this.dob),
     };
   },
 

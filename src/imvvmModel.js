@@ -12,28 +12,32 @@ var IMVVMModel = {
         var argCount = arguments.length;
         var lastArgIsBool = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
         var calcFld;
+        var initialize = false;
 
         if(argCount === 0){
           //defaults
           nextState = {};
           prevState = {};
-          withContext = true;
+          withContext = false;
         } else if(argCount === 1){
           if(lastArgIsBool){
             withContext = nextState;
             nextState = {};
             prevState = {};
           } else {
-            //assume prevState is same as nextState
-            prevState = nextState;
-            withContext = true;
+            //assume this is a new Object and there is no prevState
+            prevState = {};
+            withContext = false;
+            initialize = true;
           }
         } else if(argCount === 2){
           if(lastArgIsBool){
+            //assume this is a new Object and there is no prevState
             withContext = prevState;
-            prevState = nextState;              
+            prevState = {};
+            initialize = true;
           } else {
-            withContext = true;
+            withContext = false;
           }
         }
         nextState = ('state' in nextState) ? nextState.state : nextState;
@@ -46,28 +50,29 @@ var IMVVMModel = {
           value: nextState
         });
         //Need to have state prop in model before can extend model to get correct state
-        nextState = extend(nextState, model);
+        //nextState = extend(model, nextState);
         
         //runs everytime to initialize calculated state but will not run the calc func
         //if the prop has already been initialized
-        if(!!desc.originalSpec.getInitialCalculatedState){
-          for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
-            if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
-              calcFld = {}
-              calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
-                call(model, nextState, prevState)[desc.calculatedFields[i]];
-              if(calcFld[desc.calculatedFields[i]] !== void(0)){
-                nextState = extend(nextState,calcFld);                
-              }
-            }
-          };
+        if(initialize && !!desc.originalSpec.getInitialState){
+          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
+          // for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
+          //   if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
+          //     calcFld = {}
+          //     calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
+          //       call(model, nextState, prevState)[desc.calculatedFields[i]];
+          //     if(calcFld[desc.calculatedFields[i]] !== void(0)){
+          //       nextState = extend(nextState,calcFld);
+          //     }
+          //   }
+          // };
         }
 
-        //runs everytime
+        /*//runs everytime
         if(desc.originalSpec.getValidState){
           nextState = extend(nextState,
             desc.originalSpec.getValidState.call(model, nextState, prevState));
-        }
+        }*/
 
         if(withContext){
           //This will self distruct

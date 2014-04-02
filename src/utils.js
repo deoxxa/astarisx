@@ -13,7 +13,7 @@ var utils = {
           if('calculated' in this.originalSpec[key]){
             //We want to preserve the calculated flag on originalSpec
             descriptor[key] = utils.extend(this.originalSpec[key]);
-            descriptor[key].enumerable = !this.originalSpec[key].calculated;
+            descriptor[key].enumerable = this.originalSpec[key].calculated;
             delete descriptor[key].calculated;
             calcFlds.push(key);
           } else if(!('enumerable' in this.originalSpec[key])){

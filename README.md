@@ -402,7 +402,7 @@ __nextState__
 
 __previousState__
 
-_Available in:_ DomainModel, ViewModel, Model
+_Available in:_ ViewModel
 
 _Optional:_ true
 

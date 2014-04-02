@@ -24,20 +24,42 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		reprocessing = false;
 
 	disableUndo === void(0) ? false : disableUndo;
-		
-	var transitionState = function(nextState, prevState, watchedDataContext){
-		var processed = false,
-			dependencies,
-			initialize;
 
+	var getDependencies2 = function(nextState, dataContext){
+		var deps = {},
+			props,
+			watchedValue;
+
+		//if('dependsOn' in dataContext){
+		dataContext.dependsOn.forEach(function(dependency){
+			watchedValue = {};
+			props = dependency.property.split('.');
+			props.forEach(function(prop, idx){
+				if(idx === 0){
+					watchedValue = nextState[prop];
+				} else {
+					watchedValue = watchedValue ? watchedValue[prop] : void(0);
+				}
+			});
+			if('alias' in dependency){
+				deps[dependency.alias] = watchedValue;
+			} else {
+				deps[props.join('$')] = watchedValue;
+			}
+		});
+		//}
+		return deps;
+	};
+
+
+	var transitionState = function(caller, initialize, nextState, prevState, watchedDataContext){
+		var processed = false,
+			dependencies;
+
+		nextState = nextState || {};
 		prevState = prevState || {};
 
-		if(nextState === void(0)){
-			initialize = true;
-			nextState = {};
-		}
-
-		var getDependencies = function(dataContext){
+		var getDependencies = function(dataContext, caller){
 			var deps = {},
 				props,
 				watchedValue;
@@ -46,34 +68,49 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				dataContext.dependsOn.forEach(function(dependency){
 					watchedValue = {};
 					props = dependency.property.split('.');
-					props.forEach(function(prop, idx){
-						if(idx === 0){
-							watchedValue = nextState[prop];
+					if(caller === true){
+						props.forEach(function(prop, idx){
+							if(idx === 0){
+								watchedValue = nextState[prop];
+							} else {
+								watchedValue = watchedValue ? watchedValue[prop] : void(0);
+							}
+						});
+						if('alias' in dependency){
+							deps[dependency.alias] = watchedValue;
 						} else {
-							watchedValue = watchedValue ? watchedValue[prop] : void(0);
+							deps[props.join('$')] = watchedValue;
 						}
-					});
-					if('alias' in dependency){
-						deps[dependency.alias] = watchedValue;
-					} else {
-						deps[props.join('$')] = watchedValue;
+					} else if(caller === props[0]){
+						props.forEach(function(prop, idx){
+							if(idx === 0){
+								watchedValue = nextState[prop];
+							} else {
+								watchedValue = watchedValue ? watchedValue[prop] : void(0);
+							}
+						});
+						if('alias' in dependency){
+							deps[dependency.alias] = watchedValue;
+						} else {
+							deps[props.join('$')] = watchedValue;
+						}
 					}
 				});
 			}
 			return deps;
 		};
 
-		for(var dataContext in domain){
-			if(domain.hasOwnProperty(dataContext)){
-				dependencies = getDependencies(domain[dataContext]);
-				//Need to inject dependencies so that the state for this object can change
-				//if required. Can't use appState as that is provided after the object is created
-				if(initialize){
-					nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies,
-						prevState[dataContext]).getInitialState();
-				} else {
-					nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies,
-						prevState[dataContext]);
+		if(initialize){
+			for(var dataContext in domain){
+				if(domain.hasOwnProperty(dataContext)){
+					dependencies = getDependencies(domain[dataContext], initialize);
+					nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies, prevState[dataContext]);
+					if(!!nextState[dataContext].getInitialState){
+						nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext].getInitialState(), 
+							dependencies, nextState[dataContext]);
+					}
+					// nextState[dataContext] = new dataContexts[dataContext]()
+					// 	.getInitialState();
 				}
 				if(watchedDataContext){
 					if(processed && watchedDataContext.subscribers.indexOf(dataContext) !== -1){
@@ -82,9 +119,41 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 							dependencies, prevState[watchedDataContext.name]);
 					}
 					processed = processed ? processed : dataContext === watchedDataContext.name;
-				}					
+				}
 			}
+		} else {
+			dependencies = getDependencies(domain[caller], true);
+			nextState[caller] = new dataContexts[caller](nextState[caller], dependencies, prevState[caller]);
+			if(watchedDataContext){
+				watchedDataContext.subscribers.forEach(function(subscriber){
+					dependencies = extend(nextState[subscriber].dependencies,  getDependencies(domain[subscriber], caller));
+					nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber], dependencies, prevState[subscriber]);
+				});
+			}	
 		}
+
+		// for(var dataContext in domain){
+		// 	if(domain.hasOwnProperty(dataContext)){
+		// 		dependencies = getDependencies(domain[dataContext]);
+		// 		//Need to inject dependencies so that the state for this object can change
+		// 		//if required. Can't use appState as that is provided after the object is created
+		// 		if(initialize){
+		// 			nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies,
+		// 				prevState[dataContext]).getInitialState();
+		// 		} else {
+		// 			nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies,
+		// 				prevState[dataContext]);
+		// 		}
+		// 		if(watchedDataContext){
+		// 			if(processed && watchedDataContext.subscribers.indexOf(dataContext) !== -1){
+		// 				dependencies = getDependencies(domain[watchedDataContext.name]);
+		// 				nextState[watchedDataContext.name] = new dataContexts[watchedDataContext.name](nextState[watchedDataContext.name],
+		// 					dependencies, prevState[watchedDataContext.name]);
+		// 			}
+		// 			processed = processed ? processed : dataContext === watchedDataContext.name;
+		// 		}					
+		// 	}
+		// }
 		return nextState;
 	};
 
@@ -138,16 +207,18 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			} else {
 				//appDataContext is calling function
 				if(initialize) {
-					nextState = extend(transitionState(), newState);
+					nextState = transitionState(caller, true, extend(thisAppState.state, newState));
 				} else {
 					nextState = extend(thisAppState.state, newState);
 				}
 			}
 			prevState = reprocessing ? thisAppState.previousState : thisAppState;
-			nextState = transitionState(nextState, thisAppState.state, watchedDataContext);
+			nextState = transitionState(caller, caller === appNamespace, nextState, thisAppState.state, watchedDataContext);
 		}
-		prevState = prevState || {};
-		Object.freeze(prevState);
+		if(!!prevState){
+			Object.freeze(prevState);
+		}
+		//prevState = prevState || {};
 
 		//Create a new App state context.
 		thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo);
@@ -174,14 +245,16 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			return thisAppState;
 		}
 	};
-
+	var dependents = [];
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	var applicationDataContext = new ApplicationDataContext({}, {}, disableUndo);
-	domain = applicationDataContext.getDomainDataContext();
+	thisAppState = new ApplicationDataContext({}, void(0), disableUndo, true);
+	domain = thisAppState.getDomainDataContext();
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
+			thisAppState[dataContext] = new dataContexts[dataContext]({}, {}, {}, true);
 			if('dependsOn' in domain[dataContext]){
+				dependents.push(dataContext);
 				for(var i = 0, len = domain[dataContext].dependsOn.length; i < len; i++){
 					watchedProps = domain[dataContext].dependsOn[i].property.split('.');
 					if(watchedProps.length > 1){
@@ -195,7 +268,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 		}
 	}
-	return applicationDataContext.getInitialState(); 
+	dependents.forEach(function(dependent){
+		var dep = getDependencies2(thisAppState, domain[dependent])
+		thisAppState[dependent] = new dataContexts[dependent](thisAppState[dependent], dep, {}, true);
+	});
+	thisAppState = new ApplicationDataContext(extend(thisAppState), void(0), disableUndo);
+	return Object.freeze(thisAppState);//.getInitialState(); 
 };
 },{"./utils":8}],3:[function(_dereq_,module,exports){
 
@@ -287,77 +365,50 @@ var IMVVMDomainModel = {
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
 
-      var initialize = function(initState, callback){
-        return desc.proto.setState(initState, callback, true);
-      }
-
-      var dataContext = function(nextState, prevState, disableUndo) {
-        var initFunc;
-        var calcFld;
-        nextState = nextState || {};
-        prevState = prevState || {};
-
-        if(!('getInitialState' in desc.proto)){
-          desc.proto.getInitialState = function(){
-            return initialize();
-          }
-        } else {
-          initFunc = desc.proto.getInitialState;
-          desc.proto.getInitialState = function(){
-            return initialize(initFunc.call(this));
-          }
-        }
-
+      var dataContext = function(nextState, prevState, disableUndo, initialize) {
         var model = Object.create(desc.proto, desc.descriptor);
+
+        nextState = nextState || {};
         
-        Object.defineProperty(model, 'state', {
-          configurable: true,
-          enumerable: false,
-          writable: true,
-          value: nextState
-        });
-        //Need to have state prop in model before can extend model to get correct state
-        nextState = extend(nextState, model);
-
-        //runs everytime to initialize calculated state but will not run the calc func
-        //if the prop has already been initialized
-        if(!!desc.originalSpec.getInitialCalculatedState){
-          for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
-            if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
-              calcFld = {}
-              calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
-                call(model, nextState, prevState)[desc.calculatedFields[i]];
-              if(calcFld[desc.calculatedFields[i]] !== void(0)){
-                nextState = extend(nextState,calcFld);                
-              }
-            }
-          };
-        }
-
-        if(!disableUndo && !!Object.keys(prevState).length){       
-          Object.defineProperty(nextState, 'previousState', {
+        if(!disableUndo && !!prevState){
+          //if(!disableUndo && !!Object.keys(prevState).length){       
+          Object.defineProperty(model, 'previousState', {
             configurable: false,
             enumerable: false,
             writable: false,
             value: prevState
           });
+          //}
         }
+        prevState = prevState || {};
 
-        Object.defineProperty(nextState, 'state', {
+        if(initialize && ('getInitialState' in desc.proto)){
+          //Add state prop so that it can be referenced from within getInitialState
+          Object.defineProperty(model, 'state', {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: nextState
+          });
+          nextState = extend(nextState, desc.proto.getInitialState.call(model));
+        }
+        //attach the nextState props to model if the don't exist
+        var keys = Object.keys(nextState);
+        for (var i = keys.length - 1; i >= 0; i--) {
+          if(!(keys[i] in model)){
+            model[keys[i]] = nextState[keys[i]];
+          }
+        };
+
+
+
+        Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,
           writable: false,
-          value: extend(nextState)
+          value: nextState
         });
-
-        for(var k in desc.descriptor){
-          if(desc.descriptor.hasOwnProperty(k)){
-            Object.defineProperty(nextState, k, desc.descriptor[k]);
-          }
-        }
-
-        nextState.__proto__ = model.__proto__;
-        return nextState;
+        return model;
       };
       return dataContext;
     }
@@ -381,28 +432,32 @@ var IMVVMModel = {
         var argCount = arguments.length;
         var lastArgIsBool = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
         var calcFld;
+        var initialize = false;
 
         if(argCount === 0){
           //defaults
           nextState = {};
           prevState = {};
-          withContext = true;
+          withContext = false;
         } else if(argCount === 1){
           if(lastArgIsBool){
             withContext = nextState;
             nextState = {};
             prevState = {};
           } else {
-            //assume prevState is same as nextState
-            prevState = nextState;
-            withContext = true;
+            //assume this is a new Object and there is no prevState
+            prevState = {};
+            withContext = false;
+            initialize = true;
           }
         } else if(argCount === 2){
           if(lastArgIsBool){
+            //assume this is a new Object and there is no prevState
             withContext = prevState;
-            prevState = nextState;              
+            prevState = {};
+            initialize = true;
           } else {
-            withContext = true;
+            withContext = false;
           }
         }
         nextState = ('state' in nextState) ? nextState.state : nextState;
@@ -415,28 +470,29 @@ var IMVVMModel = {
           value: nextState
         });
         //Need to have state prop in model before can extend model to get correct state
-        nextState = extend(nextState, model);
+        //nextState = extend(model, nextState);
         
         //runs everytime to initialize calculated state but will not run the calc func
         //if the prop has already been initialized
-        if(!!desc.originalSpec.getInitialCalculatedState){
-          for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
-            if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
-              calcFld = {}
-              calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
-                call(model, nextState, prevState)[desc.calculatedFields[i]];
-              if(calcFld[desc.calculatedFields[i]] !== void(0)){
-                nextState = extend(nextState,calcFld);                
-              }
-            }
-          };
+        if(initialize && !!desc.originalSpec.getInitialState){
+          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
+          // for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
+          //   if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
+          //     calcFld = {}
+          //     calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
+          //       call(model, nextState, prevState)[desc.calculatedFields[i]];
+          //     if(calcFld[desc.calculatedFields[i]] !== void(0)){
+          //       nextState = extend(nextState,calcFld);
+          //     }
+          //   }
+          // };
         }
 
-        //runs everytime
+        /*//runs everytime
         if(desc.originalSpec.getValidState){
           nextState = extend(nextState,
             desc.originalSpec.getValidState.call(model, nextState, prevState));
-        }
+        }*/
 
         if(withContext){
           //This will self distruct
@@ -490,25 +546,21 @@ var IMVVMViewModel = {
     construct: function(raiseStateChangeHandler){
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
-
-      var dataContext = function(nextState, dependencies, prevState) {
+      var count = 0;
+      var dataContext = function(nextState, dependencies, prevState, initialize) {
         var initFunc;
         var calcFld;
+        console.log('COUNT - ' + ++count);
         //nextState has already been extended with prevState in core
         nextState = extend(nextState, dependencies);
         prevState = prevState || {};
         prevState = ('state' in prevState) ? prevState.state : prevState;
 
-        if(!('getInitialState' in desc.proto)){
-          desc.proto.getInitialState = function(){
-            return dataContext();
-          }
-        } else {
-          initFunc = desc.proto.getInitialState;
-          desc.proto.getInitialState = function(){
-            return dataContext(initFunc.call(this));
-          }
-        }
+        // if(!('getInitialState' in desc.proto)){
+        //   desc.proto.getInitialState = function(){
+        //     return dataContext();//.apply(this, arguments);
+        //   }
+        // } else {
         
         var model = Object.create(desc.proto, desc.descriptor);
 
@@ -521,19 +573,24 @@ var IMVVMViewModel = {
         //Need to have state prop in model before can extend model to get correct state
         nextState = extend(nextState, model);
 
-        //runs everytime to initialize calculated state but will not run the calc func
-        //if the prop has already been initialized
-        if(!!desc.originalSpec.getInitialCalculatedState){
-          for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
-            if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
-              calcFld = {}
-              calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
-                call(model, nextState, prevState)[desc.calculatedFields[i]];
-              if(calcFld[desc.calculatedFields[i]] !== void(0)){
-                nextState = extend(nextState,calcFld);                
+        if(initialize){
+          if(desc.proto.getInitialState){
+            nextState = extend(nextState, desc.proto.getInitialState());          
+          }
+          //runs everytime to initialize calculated state but will not run the calc func
+          //if the prop has already been initialized
+          if(!!desc.originalSpec.getInitialCalculatedState){
+            for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
+              if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
+                calcFld = {}
+                calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
+                  call(model, nextState, prevState)[desc.calculatedFields[i]];
+                if(calcFld[desc.calculatedFields[i]] !== void(0)){
+                  nextState = extend(nextState,calcFld);                
+                }
               }
-            }
-          };
+            };
+          }
         }
 
         //runs everytime
@@ -570,6 +627,13 @@ var IMVVMViewModel = {
             });
           }
         }
+
+        // Object.defineProperty(model, 'dependencies', {
+        //   configurable: false,
+        //   enumerable: false,
+        //   writable: false,
+        //   value: dependencies
+        // });
 
         Object.freeze(nextState);
         return Object.freeze(model);
@@ -637,7 +701,7 @@ var utils = {
           if('calculated' in this.originalSpec[key]){
             //We want to preserve the calculated flag on originalSpec
             descriptor[key] = utils.extend(this.originalSpec[key]);
-            descriptor[key].enumerable = !this.originalSpec[key].calculated;
+            descriptor[key].enumerable = this.originalSpec[key].calculated;
             delete descriptor[key].calculated;
             calcFlds.push(key);
           } else if(!('enumerable' in this.originalSpec[key])){

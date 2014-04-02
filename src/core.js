@@ -17,20 +17,42 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		reprocessing = false;
 
 	disableUndo === void(0) ? false : disableUndo;
-		
-	var transitionState = function(nextState, prevState, watchedDataContext){
-		var processed = false,
-			dependencies,
-			initialize;
 
+	var getDependencies2 = function(nextState, dataContext){
+		var deps = {},
+			props,
+			watchedValue;
+
+		//if('dependsOn' in dataContext){
+		dataContext.dependsOn.forEach(function(dependency){
+			watchedValue = {};
+			props = dependency.property.split('.');
+			props.forEach(function(prop, idx){
+				if(idx === 0){
+					watchedValue = nextState[prop];
+				} else {
+					watchedValue = watchedValue ? watchedValue[prop] : void(0);
+				}
+			});
+			if('alias' in dependency){
+				deps[dependency.alias] = watchedValue;
+			} else {
+				deps[props.join('$')] = watchedValue;
+			}
+		});
+		//}
+		return deps;
+	};
+
+
+	var transitionState = function(caller, initialize, nextState, prevState, watchedDataContext){
+		var processed = false,
+			dependencies;
+
+		nextState = nextState || {};
 		prevState = prevState || {};
 
-		if(nextState === void(0)){
-			initialize = true;
-			nextState = {};
-		}
-
-		var getDependencies = function(dataContext){
+		var getDependencies = function(dataContext, caller){
 			var deps = {},
 				props,
 				watchedValue;
@@ -39,34 +61,49 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				dataContext.dependsOn.forEach(function(dependency){
 					watchedValue = {};
 					props = dependency.property.split('.');
-					props.forEach(function(prop, idx){
-						if(idx === 0){
-							watchedValue = nextState[prop];
+					if(caller === true){
+						props.forEach(function(prop, idx){
+							if(idx === 0){
+								watchedValue = nextState[prop];
+							} else {
+								watchedValue = watchedValue ? watchedValue[prop] : void(0);
+							}
+						});
+						if('alias' in dependency){
+							deps[dependency.alias] = watchedValue;
 						} else {
-							watchedValue = watchedValue ? watchedValue[prop] : void(0);
+							deps[props.join('$')] = watchedValue;
 						}
-					});
-					if('alias' in dependency){
-						deps[dependency.alias] = watchedValue;
-					} else {
-						deps[props.join('$')] = watchedValue;
+					} else if(caller === props[0]){
+						props.forEach(function(prop, idx){
+							if(idx === 0){
+								watchedValue = nextState[prop];
+							} else {
+								watchedValue = watchedValue ? watchedValue[prop] : void(0);
+							}
+						});
+						if('alias' in dependency){
+							deps[dependency.alias] = watchedValue;
+						} else {
+							deps[props.join('$')] = watchedValue;
+						}
 					}
 				});
 			}
 			return deps;
 		};
 
-		for(var dataContext in domain){
-			if(domain.hasOwnProperty(dataContext)){
-				dependencies = getDependencies(domain[dataContext]);
-				//Need to inject dependencies so that the state for this object can change
-				//if required. Can't use appState as that is provided after the object is created
-				if(initialize){
-					nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies,
-						prevState[dataContext]).getInitialState();
-				} else {
-					nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies,
-						prevState[dataContext]);
+		if(initialize){
+			for(var dataContext in domain){
+				if(domain.hasOwnProperty(dataContext)){
+					dependencies = getDependencies(domain[dataContext], initialize);
+					nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies, prevState[dataContext]);
+					if(!!nextState[dataContext].getInitialState){
+						nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext].getInitialState(), 
+							dependencies, nextState[dataContext]);
+					}
+					// nextState[dataContext] = new dataContexts[dataContext]()
+					// 	.getInitialState();
 				}
 				if(watchedDataContext){
 					if(processed && watchedDataContext.subscribers.indexOf(dataContext) !== -1){
@@ -75,9 +112,41 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 							dependencies, prevState[watchedDataContext.name]);
 					}
 					processed = processed ? processed : dataContext === watchedDataContext.name;
-				}					
+				}
 			}
+		} else {
+			dependencies = getDependencies(domain[caller], true);
+			nextState[caller] = new dataContexts[caller](nextState[caller], dependencies, prevState[caller]);
+			if(watchedDataContext){
+				watchedDataContext.subscribers.forEach(function(subscriber){
+					dependencies = extend(nextState[subscriber].dependencies,  getDependencies(domain[subscriber], caller));
+					nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber], dependencies, prevState[subscriber]);
+				});
+			}	
 		}
+
+		// for(var dataContext in domain){
+		// 	if(domain.hasOwnProperty(dataContext)){
+		// 		dependencies = getDependencies(domain[dataContext]);
+		// 		//Need to inject dependencies so that the state for this object can change
+		// 		//if required. Can't use appState as that is provided after the object is created
+		// 		if(initialize){
+		// 			nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies,
+		// 				prevState[dataContext]).getInitialState();
+		// 		} else {
+		// 			nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext], dependencies,
+		// 				prevState[dataContext]);
+		// 		}
+		// 		if(watchedDataContext){
+		// 			if(processed && watchedDataContext.subscribers.indexOf(dataContext) !== -1){
+		// 				dependencies = getDependencies(domain[watchedDataContext.name]);
+		// 				nextState[watchedDataContext.name] = new dataContexts[watchedDataContext.name](nextState[watchedDataContext.name],
+		// 					dependencies, prevState[watchedDataContext.name]);
+		// 			}
+		// 			processed = processed ? processed : dataContext === watchedDataContext.name;
+		// 		}					
+		// 	}
+		// }
 		return nextState;
 	};
 
@@ -131,16 +200,18 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			} else {
 				//appDataContext is calling function
 				if(initialize) {
-					nextState = extend(transitionState(), newState);
+					nextState = transitionState(caller, true, extend(thisAppState.state, newState));
 				} else {
 					nextState = extend(thisAppState.state, newState);
 				}
 			}
 			prevState = reprocessing ? thisAppState.previousState : thisAppState;
-			nextState = transitionState(nextState, thisAppState.state, watchedDataContext);
+			nextState = transitionState(caller, caller === appNamespace, nextState, thisAppState.state, watchedDataContext);
 		}
-		prevState = prevState || {};
-		Object.freeze(prevState);
+		if(!!prevState){
+			Object.freeze(prevState);
+		}
+		//prevState = prevState || {};
 
 		//Create a new App state context.
 		thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo);
@@ -167,14 +238,16 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			return thisAppState;
 		}
 	};
-
+	var dependents = [];
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	var applicationDataContext = new ApplicationDataContext({}, {}, disableUndo);
-	domain = applicationDataContext.getDomainDataContext();
+	thisAppState = new ApplicationDataContext({}, void(0), disableUndo, true);
+	domain = thisAppState.getDomainDataContext();
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
+			thisAppState[dataContext] = new dataContexts[dataContext]({}, {}, {}, true);
 			if('dependsOn' in domain[dataContext]){
+				dependents.push(dataContext);
 				for(var i = 0, len = domain[dataContext].dependsOn.length; i < len; i++){
 					watchedProps = domain[dataContext].dependsOn[i].property.split('.');
 					if(watchedProps.length > 1){
@@ -188,5 +261,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 		}
 	}
-	return applicationDataContext.getInitialState(); 
+	dependents.forEach(function(dependent){
+		var dep = getDependencies2(thisAppState, domain[dependent])
+		thisAppState[dependent] = new dataContexts[dependent](thisAppState[dependent], dep, {}, true);
+	});
+	thisAppState = new ApplicationDataContext(extend(thisAppState), void(0), disableUndo);
+	return Object.freeze(thisAppState);//.getInitialState(); 
 };
