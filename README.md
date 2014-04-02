@@ -311,28 +311,36 @@ The example application is a good starting place when figuring out how things wo
 ###Class
 ####Constructors
 #####function createDomainModel(object specification)
+Creates a DomainModel object.
 ***parameters***
 __specification__ - see [Specification](#specification)
 #####function createViewModel(object specification)
+Creates a ViewModel object.
 ***parameters***
-__specification__
+__specification__ - see [Specification](#specification)
 #####function createModel(object specification)
+Creates a Model object.
 ***parameters***
-__specification__
+__specification__ - see [Specification](#specification)
 
 ###Instance
-
 ####Functions
 #####void setState(object nextState[, function callback])
+Transition Data Context to the next state.
 ***parameters***
+
 __nextState__
 __callback__
 
 _Available in:_ DomainModel, ViewModel, Model
 #####object extend(object currentState[, object... nextState])
+Creates a shallow copy of currentState. Adds/replaces properties with properties of subsequent objects.
+
 ***parameters***
+
 __currentState__
 __nextState__
+
 _Available in:_ DomainModel, ViewModel, Model
 
 ####Properties
