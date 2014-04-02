@@ -484,6 +484,7 @@ __IE8 and below are not supported__
 
 ## Author
 Entrendipity  - [Follow @entrendipity](https://twitter.com/intent/follow?screen_name=entrendipity)
+
 Frank Panetta  - [Follow @fattenap](https://twitter.com/intent/follow?screen_name=fattenap)
 
 ##License
