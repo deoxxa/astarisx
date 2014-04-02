@@ -329,52 +329,52 @@ _Available in:_ DomainModel, ViewModel, Model
 #####previousState
 _Available in:_ DomainModel
 
-####Specification
-#####Hooks
-######object getDomainDataContext()
+###Specification
+####Hooks
+#####object getDomainDataContext()
 _Available in:_ DomainModel
 
 _Optional:_ false
-######object getInitialState()
+#####object getInitialState()
 _Available in:_ DomainModel, ViewModel
 
 _Optional:_ true
-######object getInitialCalculatedState(object nextState, object previousState)
+#####object getInitialCalculatedState(object nextState, object previousState)
 _Available in:_ DomainModel, ViewModel, Model
 
 _Optional:_ true
-######object getValidState(object nextState, object previousState)
+#####object getValidState(object nextState, object previousState)
 _Available in:_ DomainModel, ViewModel, Model
 
 _Optional:_ true
 
-#####Fields
+####Fields
 _Available in:_ DomainModel, ViewModel, Model
-######get
-######set
-######pseudo
-######calculated
+#####get
+#####set
+#####pseudo
+#####calculated
 
-#####State Change Handlers
+####State Change Handlers
 _Available in:_ ViewModel
 
   function(nextState, previousState[, callback])
 
-#####Models
+####Models
 _Available in:_ ViewModel
 
   Person: function(){
     return new PersonModel(this.personStateChangeHandler).apply(this, arguments);
   }
 
-#####Dependencies
+####Dependencies
 _Available in:_ ViewModel
 
-######public
-######private
+#####public
+#####private
 
-####Mixin
-#####mixin
+###Mixin
+####mixin
 mixins: [IMVVM.mixin],
 
 React.renderComponent(<ApplicationView 
