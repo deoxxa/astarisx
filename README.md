@@ -315,23 +315,6 @@ The example application is a good starting place to figuring out how things work
 #####function createModel(object specification)
 
 ###Instance
-####Hooks
-#####object getDomainDataContext()
-_Available in:_ DomainModel
-
-_Optional:_ false
-#####object getInitialState()
-_Available in:_ DomainModel, ViewModel
-
-_Optional:_ true
-#####object getInitialCalculatedState(object nextState, object previousState)
-_Available in:_ DomainModel, ViewModel, Model
-
-_Optional:_ true
-#####object getValidState(object nextState, object previousState)
-_Available in:_ DomainModel, ViewModel, Model
-
-_Optional:_ true
 
 ####Functions
 #####setState(object nextState[, function callback])
@@ -342,10 +325,29 @@ _Available in:_ DomainModel, ViewModel, Model
 ####Properties
 #####state
 _Available in:_ DomainModel, ViewModel, Model
+
 #####previousState
 _Available in:_ DomainModel
 
 ####Specification
+#####Hooks
+######object getDomainDataContext()
+_Available in:_ DomainModel
+
+_Optional:_ false
+######object getInitialState()
+_Available in:_ DomainModel, ViewModel
+
+_Optional:_ true
+######object getInitialCalculatedState(object nextState, object previousState)
+_Available in:_ DomainModel, ViewModel, Model
+
+_Optional:_ true
+######object getValidState(object nextState, object previousState)
+_Available in:_ DomainModel, ViewModel, Model
+
+_Optional:_ true
+
 #####Fields
 _Available in:_ DomainModel, ViewModel, Model
 ######get
@@ -355,13 +357,21 @@ _Available in:_ DomainModel, ViewModel, Model
 
 #####State Change Handlers
 _Available in:_ ViewModel
+
   function(nextState, previousState[, callback])
+
 #####Models
 _Available in:_ ViewModel
 
   Person: function(){
     return new PersonModel(this.personStateChangeHandler).apply(this, arguments);
   }
+
+#####Dependencies
+_Available in:_ ViewModel
+
+######public
+######private
 
 ####Mixin
 #####mixin
