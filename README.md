@@ -182,61 +182,61 @@ IMVVM can be loaded as:
   ```
 
 ### Create a DomainModel
-  ```javascript
-  var DomainModel = IMVVM.createDomainModel({
+```javascript
+var DomainModel = IMVVM.createDomainModel({
 
-    getInitialState: function(){
-      return {
-        online: true
-      };
+  getInitialState: function(){
+    return {
+      online: true
+    };
+  },
+
+  undo: function(){
+    this.setState(this.previousState);
+  },
+
+  online: {
+    get: function(){
+      return this.state.online;
     },
-
-    undo: function(){
-      this.setState(this.previousState);
-    },
-
-    online: {
-      get: function(){
-        return this.state.online;
-      },
-      set: function(newValue){
-        this.setState({'online': newValue });
-      }
-    },
-
-    getDomainDataContext: function(){
-      return {
-        persons: {
-          viewModel: PersonsViewModel,
-          dependsOn: [{property: 'online', alias: 'imOnline'}]
-        }
-      };
+    set: function(newValue){
+      this.setState({'online': newValue });
     }
-  });
-  ```
+  },
+
+  getDomainDataContext: function(){
+    return {
+      persons: {
+        viewModel: PersonsViewModel,
+        dependsOn: [{property: 'online', alias: 'imOnline'}]
+      }
+    };
+  }
+});
+```
 
 ### Hook up the View
-  ```javascript
-  var ApplicationView = React.createClass({
+```javascript
+var ApplicationView = React.createClass({
 
-    mixins: [IMVVM.mixin],
-    
-    render: function(){
-      return (
-        <div>
-          <NavBarView appContext={this.state.applicationDataContext} />
-          <SideBarView appContext={this.state.applicationDataContext} />
-          <DetailsView appContext={this.state.applicationDataContext} />
-        </div>
-      );    
-    }
-  });
-  ```
+  mixins: [IMVVM.mixin],
+  
+  render: function(){
+    return (
+      <div>
+        <NavBarView appContext={this.state.applicationDataContext} />
+        <SideBarView appContext={this.state.applicationDataContext} />
+        <DetailsView appContext={this.state.applicationDataContext} />
+      </div>
+    );    
+  }
+});
+```
 
 ### Render the View
-  ```javascript
-  React.renderComponent(<ApplicationView domainModel={DomainModel}/>, document.getElementById('container'));
-  ```
+```javascript
+React.renderComponent(<ApplicationView domainModel={DomainModel}/>, document.getElementById('container'));
+```
 
 __FormView example__
 ```javascript
@@ -298,7 +298,7 @@ var FormView = React.createClass({
 ```
 
 ##Running the example application
-The example application is a good starting place to figuring out how things work. So to get it running, navigate to the ``./example`` directory and run the following commands.
+The example application is a good starting place when figuring out how things work. So to get it running, navigate to the ``./example`` directory and run the following commands.
 
   ```
   $ npm install
@@ -323,13 +323,13 @@ The example application is a good starting place to figuring out how things work
 ###Instance
 
 ####Functions
-#####setState(object nextState[, function callback])
+#####void setState(object nextState[, function callback])
 ***parameters***
 ######nextState
 ######callback
 
 _Available in:_ DomainModel, ViewModel, Model
-#####extend(object currentState[, object... nextState])
+#####object extend(object currentState[, object... nextState])
 _Available in:_ DomainModel, ViewModel, Model
 ***parameters***
 ######currentState
@@ -344,11 +344,8 @@ _Available in:_ DomainModel
 
 ###Specification
 ####Hooks
-#####object getDomainDataContext()
+#####function getDomainDataContext()
 _Available in:_ DomainModel
-
-***return***
-######function domainDataContext
 
 _Optional:_ false
 #####object getInitialState()
@@ -391,7 +388,7 @@ Hidden from View from this Data Context
 
 ####Model State Change Handlers
 _Available in:_ ViewModel
-#####ModelStateChangeHandler(object nextState,object previousState[, function callback])
+#####void ModelStateChangeHandler(object nextState,object previousState[, function callback])
 __arguments__
 ######nextState
 ######previousState
@@ -415,11 +412,11 @@ __arguments__
 _Available in:_ ViewModel
 
 ***Definition***
-#####ModelFactory(){ return new ModelClass(this.ModelStateChangeHandler).apply(this, arguments); }
+#####function ModelFactory(){ return new ModelClass(this.ModelStateChangeHandler).apply(this, arguments); }
 
 ***Usage***
-#####ModelFactory([object nextState, object previousState, boolean withContext])
-#####ModelFactory([object nextState, boolean withContext])
+#####object ModelFactory([object nextState, object previousState, boolean withContext])
+#####object ModelFactory([object nextState, boolean withContext])
 
 ###Mixin
 ####mixin
