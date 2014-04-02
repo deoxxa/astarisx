@@ -364,6 +364,15 @@ _Available in:_ DomainModel, ViewModel, Model
 #####pseudo
 #####calculated
 
+####DependsOn Properties
+_Available in:_ ViewModel
+
+***Public***
+This will be made available to the View from this Data Context
+
+***Private***
+Hidden from View from this Data Context
+
 ####Model State Change Handlers
 _Available in:_ ViewModel
 #####ModelStateChangeHandler: function(nextState, previousState[, callback])
@@ -395,15 +404,6 @@ _Available in:_ ViewModel
 ***Usage***
 #####ModelFactory([object nextState, object previousState, boolean withContext])
 #####ModelFactory([object nextState, boolean withContext])
-
-####DependsOn Properties
-_Available in:_ ViewModel
-
-***Public***
-This will be made available to the View from this Data Context
-
-***Private***
-Hidden from View from this Data Context
 
 ###Mixin
 ####mixin
