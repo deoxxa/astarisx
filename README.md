@@ -308,13 +308,30 @@ The example application is a good starting place to figuring out how things work
 
 ## API
 
+###Class
 ####Constructors
-
 #####function createDomainModel(object specification)
 #####function createViewModel(object specification)
 #####function createModel(object specification)
 
+####Functions
+#####setState(object nextState[, function callback])
+#####extend(object nextState[, function callback])
+
+####Properties
+#####state
+#####previuosState
+
 ###Specification
+####Hooks
+#####object getDomainDataContext()
+#####object getInitialState()
+#####object getInitialCalculatedState()
+#####object getValidState()
+
+####Fields
+
+
 
 ## Browser Support
 Most ECMAScript 5 compliant browsers. 
