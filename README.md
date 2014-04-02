@@ -395,7 +395,7 @@ __arguments__
   }
 ```
 
-####Models
+####Model Factory
 _Available in:_ ViewModel
 
 ***Definition***
