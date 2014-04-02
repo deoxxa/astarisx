@@ -366,7 +366,7 @@ _Available in:_ DomainModel, ViewModel, Model
 
 ####State Change Handlers
 _Available in:_ ViewModel
-#####{StateChangeHandler}: function(nextState, previousState[, callback])
+#####ModelStateChangeHandler: function(nextState, previousState[, callback])
 __arguments__
 ######nextState
 ######previousState
@@ -389,11 +389,14 @@ __arguments__
 ####Models
 _Available in:_ ViewModel
 
-#####{Factory}([object nextState, object previousState, boolean withContext])
-#####{Factory}([object nextState, boolean withContext])
-  {Factory}: function(){
-    return new {ModelClass}(this.{StateChangeHandler}).apply(this, arguments);
+__Definition__
+#####ModelFactory: function(){
+    return new ModelClass(this.ModelStateChangeHandler).apply(this, arguments);
   }
+
+__Usage__
+#####ModelFactory([object nextState, object previousState, boolean withContext])
+#####ModelFactory([object nextState, boolean withContext])
 
 ####Dependencies
 _Available in:_ ViewModel
