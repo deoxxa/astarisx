@@ -314,21 +314,21 @@ ___
 #####function createDomainModel(object specification)
 Creates a DomainModel object.
 
-***parameters***
+*parameters*
 
 __specification__ - see [Specification](#specification)
 ___
 #####function createViewModel(object specification)
 Creates a ViewModel object.
 
-***parameters***
+*parameters*
 
 __specification__ - see [Specification](#specification)
 ___
 #####function createModel(object specification)
 Creates a Model object.
 
-***parameters***
+*parameters*
 
 __specification__ - see [Specification](#specification)
 
@@ -338,7 +338,7 @@ ___
 #####void setState(object nextState[, function callback])
 Transition Data Context to the next state.
 
-***parameters***
+*parameters*
 
 __nextState__
 __callback__
@@ -348,7 +348,7 @@ ___
 #####object extend(object currentState[, object... nextState])
 Creates a shallow copy of currentState. Adds/replaces properties with properties of subsequent objects.
 
-***parameters***
+*parameters*
 
 __currentState__
 __nextState__
@@ -382,7 +382,7 @@ _Optional:_ true
 ___
 #####object getInitialCalculatedState(object nextState, object previousState)
 
-***arguments***
+*arguments*
 
 __nextState__
 
@@ -395,7 +395,7 @@ _Optional:_ true
 ___
 #####object getValidState(object nextState, object previousState)
 
-***arguments***
+*arguments*
 
 __nextState__
 
@@ -428,7 +428,7 @@ _Available in:_ ViewModel
 ___
 #####void ModelStateChangeHandler(object nextState,object previousState[, function callback])
 
-***arguments***
+*arguments*
 
 __nextState__
 
