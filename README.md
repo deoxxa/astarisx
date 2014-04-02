@@ -312,7 +312,7 @@ The example application is a good starting place when figuring out how things wo
 ####Constructors
 #####function createDomainModel(object specification)
 ***parameters***
-######specification - see [Specification](#specification-2)
+######specification - see [Specification](#specification)
 #####function createViewModel(object specification)
 ***parameters***
 ######specification
@@ -342,7 +342,7 @@ _Available in:_ DomainModel, ViewModel, Model
 #####previousState
 _Available in:_ DomainModel
 
-###<a name="specification"></a>Specification
+###Specification
 ####Hooks
 #####function getDomainDataContext()
 _Available in:_ DomainModel
