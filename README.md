@@ -312,27 +312,37 @@ The example application is a good starting place when figuring out how things wo
 ####Constructors
 #####function createDomainModel(object specification)
 Creates a DomainModel object.
+
 ***parameters***
+
 __specification__ - see [Specification](#specification)
+
 #####function createViewModel(object specification)
 Creates a ViewModel object.
+
 ***parameters***
+
 __specification__ - see [Specification](#specification)
+
 #####function createModel(object specification)
 Creates a Model object.
+
 ***parameters***
+
 __specification__ - see [Specification](#specification)
 
 ###Instance
 ####Functions
 #####void setState(object nextState[, function callback])
 Transition Data Context to the next state.
+
 ***parameters***
 
 __nextState__
 __callback__
 
 _Available in:_ DomainModel, ViewModel, Model
+
 #####object extend(object currentState[, object... nextState])
 Creates a shallow copy of currentState. Adds/replaces properties with properties of subsequent objects.
 
@@ -345,32 +355,45 @@ _Available in:_ DomainModel, ViewModel, Model
 
 ####Properties
 #####state
+
 _Available in:_ DomainModel, ViewModel, Model
 
 #####previousState
+
 _Available in:_ DomainModel
 
 ###Specification
 ####Hooks
 #####function getDomainDataContext()
+
 _Available in:_ DomainModel
 
 _Optional:_ false
+
 #####object getInitialState()
+
 _Available in:_ DomainModel, ViewModel
 
 _Optional:_ true
+
 #####object getInitialCalculatedState(object nextState, object previousState)
+
 ***arguments***
+
 __nextState__
+
 ######previousState
+
 _Available in:_ DomainModel, ViewModel, Model
 
 _Optional:_ true
 
 #####object getValidState(object nextState, object previousState)
+
 ***arguments***
+
 __nextState__
+
 __previousState__
 
 _Available in:_ DomainModel, ViewModel, Model
@@ -382,6 +405,7 @@ _Optional:_ true
 #####void set(\* newValue)
 #####pseudo:boolean
 #####calculated:boolean
+
 _Available in:_ DomainModel, ViewModel, Model
 
 ####DependsOn Properties
@@ -396,9 +420,13 @@ _Available in:_ ViewModel
 
 ####Model State Change Handlers
 #####void ModelStateChangeHandler(object nextState,object previousState[, function callback])
+
 ***arguments***
+
 __nextState__
+
 __previousState__
+
 __callback__
 
 ```javascript
@@ -419,14 +447,17 @@ _Available in:_ ViewModel
 
 ####Model Factory Functions
 
-***Definition***
+_Definition_
+
 #####function ModelFactory(){ return new ModelClass(this.ModelStateChangeHandler).apply(this, arguments); }
 
-***Usage***
+_Usage_
+
 #####object ModelFactory([object nextState, object previousState, boolean withContext])
 #####object ModelFactory([object nextState, boolean withContext])
 
 _Available in:_ ViewModel
+
 ###Mixin
 ####mixin
 mixins: [IMVVM.mixin],
