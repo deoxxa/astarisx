@@ -389,8 +389,8 @@ __arguments__
 ####Models
 _Available in:_ ViewModel
 
-  #####{Factory}([object nextState, object previousState, boolean withContext])
-  #####{Factory}([object nextState, boolean withContext])
+#####{Factory}([object nextState, object previousState, boolean withContext])
+#####{Factory}([object nextState, boolean withContext])
   {Factory}: function(){
     return new {ModelClass}(this.{StateChangeHandler}).apply(this, arguments);
   }
