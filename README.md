@@ -204,7 +204,7 @@ IMVVM can be loaded as:
       }
     },
 
-    dataContexts: function(){
+    getDomainDataContext: function(){
       return {
         persons: {
           viewModel: PersonsViewModel,
@@ -311,16 +311,29 @@ The example application is a good starting place to figuring out how things work
 ###Class
 ####Constructors
 #####function createDomainModel(object specification)
+***parameters***
+######specification
 #####function createViewModel(object specification)
+***parameters***
+######specification
 #####function createModel(object specification)
+***parameters***
+######specification
 
 ###Instance
 
 ####Functions
 #####setState(object nextState[, function callback])
+***parameters***
+######nextState
+######callback
+
 _Available in:_ DomainModel, ViewModel, Model
 #####extend(object currentState[, object... nextState])
 _Available in:_ DomainModel, ViewModel, Model
+***parameters***
+######currentState
+######nextState
 
 ####Properties
 #####state
@@ -333,6 +346,9 @@ _Available in:_ DomainModel
 ####Hooks
 #####object getDomainDataContext()
 _Available in:_ DomainModel
+
+***return***
+######function domainDataContext
 
 _Optional:_ false
 #####object getInitialState()
@@ -375,7 +391,7 @@ Hidden from View from this Data Context
 
 ####Model State Change Handlers
 _Available in:_ ViewModel
-#####ModelStateChangeHandler: function(nextState, previousState[, callback])
+#####ModelStateChangeHandler(object nextState,object previousState[, function callback])
 __arguments__
 ######nextState
 ######previousState
@@ -395,11 +411,11 @@ __arguments__
   }
 ```
 
-####Model Factory
+####Model Factory Functions
 _Available in:_ ViewModel
 
 ***Definition***
-#####ModelFactory: function(){ return new ModelClass(this.ModelStateChangeHandler).apply(this, arguments); }
+#####ModelFactory(){ return new ModelClass(this.ModelStateChangeHandler).apply(this, arguments); }
 
 ***Usage***
 #####ModelFactory([object nextState, object previousState, boolean withContext])
