@@ -303,6 +303,7 @@ The example application is a good starting place when figuring out how things wo
   ```
   $ npm install
   $ bower install
+  $ bower install imvvm
   $ grunt serve
   ```
 
