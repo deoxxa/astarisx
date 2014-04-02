@@ -152,7 +152,7 @@ IMVVM can be loaded as:
     personStateChangedHandler: function(nextState, prevState/*, callback*/){
       var persons = {};
       persons.collection = this.collection.map(function(person){
-        if(person.id === prevState.id){
+        if(person.id === nextState.id){
           persons.selected = this.Person(nextState, person);
           return persons.selected;
         }
@@ -343,10 +343,19 @@ _Optional:_ true
 _Available in:_ DomainModel, ViewModel, Model
 
 _Optional:_ true
+
+__arguments__
+######nextState
+######previousState
+
 #####object getValidState(object nextState, object previousState)
 _Available in:_ DomainModel, ViewModel, Model
 
 _Optional:_ true
+
+__arguments__
+######nextState
+######previousState
 
 ####Fields
 _Available in:_ DomainModel, ViewModel, Model
@@ -358,16 +367,16 @@ _Available in:_ DomainModel, ViewModel, Model
 ####State Change Handlers
 _Available in:_ ViewModel
 #####{StateChangeHandler}: function(nextState, previousState[, callback])
-######arguments
-__nextState__
-__previousState__
-__callback__
+__arguments__
+######nextState
+######previousState
+######callback
 
 ```javascript
   personStateChangeHandler: function(nextState, prevState/*, callback*/){
     var persons = {};
     persons.collection = this.collection.map(function(person){
-      if(person.id === prevState.id){
+      if(person.id === nextState.id){
         persons.selected = this.Person(nextState, person);
         return persons.selected;
       }
