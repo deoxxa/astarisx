@@ -32,7 +32,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
 
   hobbies: {
-    enumerable: false, //false because its not calculated but is supplied externally
+    pseudo: true, //true because its not calculated but is supplied externally
     get: function(){
       return this.state._selectedPerson.hobbies;
     }
@@ -46,7 +46,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
 
   busyText: {
-    enumerable: false, //false because its not calculated but is supplied externally
+    pseudo: true, //true because its not calculated but is supplied externally
     get: function(){
       return this.state._busy ? 'Im Busy! Go away...' : 'Not doing too much.';
     }

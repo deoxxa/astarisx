@@ -60,7 +60,7 @@ var DomainModel = IMVVM.createDomainModel({
   //otherwise it will appear concatenated by '$' i.e. hobbies$selected
   //if you would like dependency prop to not appear in the View, supply
   //and alias with a preceding underscore i.e. alias: _busy
-  dataContexts: function(){
+  getDomainDataContext: function(){
     return {
       hobbies: {
         viewModel: HobbiesViewModel,

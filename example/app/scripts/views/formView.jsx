@@ -22,7 +22,6 @@ var FormView = React.createClass({
 		this.props.appContext.persons.selected.dob = e.target.value;
 	},
 	render: function() {
-		var app = this.props.appContext;
 		var current = this.props.appContext.persons.selected;
 
 		return (
