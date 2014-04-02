@@ -368,11 +368,11 @@ _Available in:_ DomainModel, ViewModel, Model
 
 _Optional:_ true
 
-####Fields
-#####get
-#####set
-#####pseudo
-#####calculated
+####Field Descriptor
+#####\* get()
+#####void set(\* newValue)
+#####pseudo:boolean
+#####calculated:boolean
 _Available in:_ DomainModel, ViewModel, Model
 
 ####DependsOn Properties
