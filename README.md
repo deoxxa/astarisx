@@ -316,14 +316,14 @@ Creates a DomainModel object.
 ***parameters***
 
 __specification__ - see [Specification](#specification)
-
+___
 #####function createViewModel(object specification)
 Creates a ViewModel object.
 
 ***parameters***
 
 __specification__ - see [Specification](#specification)
-
+___
 #####function createModel(object specification)
 Creates a Model object.
 
@@ -342,7 +342,7 @@ __nextState__
 __callback__
 
 _Available in:_ DomainModel, ViewModel, Model
-
+___
 #####object extend(object currentState[, object... nextState])
 Creates a shallow copy of currentState. Adds/replaces properties with properties of subsequent objects.
 
@@ -357,7 +357,7 @@ _Available in:_ DomainModel, ViewModel, Model
 #####state
 
 _Available in:_ DomainModel, ViewModel, Model
-
+___
 #####previousState
 
 _Available in:_ DomainModel
@@ -369,25 +369,26 @@ _Available in:_ DomainModel
 _Available in:_ DomainModel
 
 _Optional:_ false
-
+___
 #####object getInitialState()
 
 _Available in:_ DomainModel, ViewModel
 
 _Optional:_ true
-
+___
 #####object getInitialCalculatedState(object nextState, object previousState)
 
 ***arguments***
 
 __nextState__
 
-######previousState
+__previousState__
 
 _Available in:_ DomainModel, ViewModel, Model
 
 _Optional:_ true
 
+___
 #####object getValidState(object nextState, object previousState)
 
 ***arguments***
