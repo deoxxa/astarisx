@@ -310,6 +310,7 @@ The example application is a good starting place when figuring out how things wo
 
 ###Class
 ####Constructors
+___
 #####function createDomainModel(object specification)
 Creates a DomainModel object.
 
@@ -333,6 +334,7 @@ __specification__ - see [Specification](#specification)
 
 ###Instance
 ####Functions
+___
 #####void setState(object nextState[, function callback])
 Transition Data Context to the next state.
 
