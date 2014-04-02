@@ -7,7 +7,7 @@ Immutable MVVM for React
 
 IMVVM can be loaded as:
 
--   standalone. ``IMVVM`` is exposed as a global variable
+-   standalone. `IMVVM` is exposed as a global variable
 
 ```javscript
  <script src="imvvm.min.js"></script>
@@ -298,7 +298,7 @@ var FormView = React.createClass({
 ```
 
 ##Running the example application
-The example application is a good starting place when figuring out how things work. So to get it running, navigate to the ``./example`` directory and run the following commands.
+The example application is a good starting place when figuring out how things work. So to get it running, navigate to the `./example` directory and run the following commands.
 
   ```
   $ npm install
@@ -306,13 +306,13 @@ The example application is a good starting place when figuring out how things wo
   $ grunt serve
   ```
 
-## API
+##API
 
 ###Class
 ####Constructors
 #####function createDomainModel(object specification)
 ***parameters***
-######specification
+######specification - see [Specification](#specification)
 #####function createViewModel(object specification)
 ***parameters***
 ######specification
@@ -342,7 +342,7 @@ _Available in:_ DomainModel, ViewModel, Model
 #####previousState
 _Available in:_ DomainModel
 
-###Specification
+###<a name="specification"></a>Specification
 ####Hooks
 #####function getDomainDataContext()
 _Available in:_ DomainModel
@@ -393,7 +393,7 @@ __arguments__
 ######callback
 
 ```javascript
-  personStateChangeHandler: function(nextState, prevState/*, callback*/){
+  personStateChangeHandler: function(nextState, prevState){
     var persons = {};
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
