@@ -170,7 +170,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
 	var applicationDataContext = new ApplicationDataContext({}, {}, disableUndo);
-	domain = applicationDataContext.dataContexts();
+	domain = applicationDataContext.getDomainDataContext();
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
