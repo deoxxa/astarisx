@@ -9,177 +9,177 @@ IMVVM can be loaded as:
 
 -   standalone. ``IMVVM`` is exposed as a global variable
 
-    ```javscript
-     <script src="imvvm.min.js"></script>
-    ```
+```javscript
+ <script src="imvvm.min.js"></script>
+```
 
 -   a Node.js module
 
-    ```
-    $ npm install imvvm
-    ```
+```
+$ npm install imvvm
+```
 
 -   a Bower module
 
-    ```
-    $ bower install imvvm
-    ```
+```
+$ bower install imvvm
+```
 
 -   a RequireJS module
 
-    ```
-    require(['./imvvm.min.js'], function (IMVVM) {
-        // Do something with IMVVM
-    });
-    ```
+```
+require(['./imvvm.min.js'], function (IMVVM) {
+    // Do something with IMVVM
+});
+```
 
 ## Getting Started
 
 ### Create a Model
 
-  ```javascript
-  var PersonModel = IMVVM.createModel({
-    
-    uuid: function () {
-      var i, random;
-      var uuid = '';
+```javascript
+var PersonModel = IMVVM.createModel({
+  
+  uuid: function () {
+    var i, random;
+    var uuid = '';
 
-      for (i = 0; i < 32; i++) {
-        random = Math.random() * 16 | 0;
-        if (i === 8 || i === 12 || i === 16 || i === 20) {
-          uuid += '-';
-        }
-        uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
-          .toString(16);
+    for (i = 0; i < 32; i++) {
+      random = Math.random() * 16 | 0;
+      if (i === 8 || i === 12 || i === 16 || i === 20) {
+        uuid += '-';
       }
-      return uuid;
-    },
+      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
+        .toString(16);
+    }
+    return uuid;
+  },
 
-    id: {
-      get: function(){
-        return this.state.id ? this.state.id : this.uuid();
-      }
-    },
+  id: {
+    get: function(){
+      return this.state.id ? this.state.id : this.uuid();
+    }
+  },
 
-    name: {
-      get: function(){
-        return this.state.firstName;
-      },
-      set: function(newValue){
-        this.setState({'name': newValue});
-      }
+  name: {
+    get: function(){
+      return this.state.firstName;
     },
+    set: function(newValue){
+      this.setState({'name': newValue});
+    }
+  },
 
-    dob: {
-      get: function(){
-        return this.state.dob;
-      },
-      set: function(newValue){
-        this.setState({'dob': newValue});
-      }
+  dob: {
+    get: function(){
+      return this.state.dob;
     },
+    set: function(newValue){
+      this.setState({'dob': newValue});
+    }
+  },
 
-    gender: {
-      get: function(){
-        return this.state.gender;
-      },
-      set: function(newValue){
-        this.setState({'gender': newValue});
-      }
+  gender: {
+    get: function(){
+      return this.state.gender;
     },
+    set: function(newValue){
+      this.setState({'gender': newValue});
+    }
+  },
 
-  });
-  ```
+});
+```
 
 ### Create a ViewModel
 
-  ```javascript
-  var PersonsViewModel = IMVVM.createViewModel({
-    select: function(id){
-      var nextState = {};
-      nextState.collection = this.collection.map(function(person){
-        if(person.id === id){
-          nextState.selected = this.Person(person);
-          return nextState.selected;
-        }
-        return person;
-      }.bind(this));
-
-      this.setState(nextState);
-    },
-
-    addPerson: function(value){
-      var nextState = {};
-
-      if(value && value.length > 0){
-        nextState.selected = this.Person({
-          name: value
-        });
-        nextState.collection = this.collection.slice(0);
-        nextState.collection = nextState.collection.concat(nextState.selected);
-        this.setState(nextState);
+```javascript
+var PersonsViewModel = IMVVM.createViewModel({
+  select: function(id){
+    var nextState = {};
+    nextState.collection = this.collection.map(function(person){
+      if(person.id === id){
+        nextState.selected = this.Person(person);
+        return nextState.selected;
       }
-    },
+      return person;
+    }.bind(this));
 
-    deletePerson: function(uid){
-      var nextState = {};
-      nextState.collection = this.collection.filter(function(person){
-        return person.id !== uid;
+    this.setState(nextState);
+  },
+
+  addPerson: function(value){
+    var nextState = {};
+
+    if(value && value.length > 0){
+      nextState.selected = this.Person({
+        name: value
       });
-      nextState.selected = void(0);
-      if(nextState.collection.length > 0){
-        if (this.selected.id === uid){
-          nextState.selected = this.Person(nextState.collection[0]);
-        } else {
-          nextState.selected = this.Person(this.selected);
-        }
-      }
+      nextState.collection = this.collection.slice(0);
+      nextState.collection = nextState.collection.concat(nextState.selected);
       this.setState(nextState);
-    },
-    
-    getInitialState: function(){
-      var nextState = {};
-      nextState.collection = DataService.getData().map(function(person, idx){
-        if (idx === 0){
-          nextState.selected = this.Person(person);
-          return nextState.selected;
-        }
-        return this.Person(person, false);
-      }.bind(this));
-      return nextState;
-    },
+    }
+  },
 
-    personStateChangedHandler: function(nextState, prevState/*, callback*/){
-      var persons = {};
-      persons.collection = this.collection.map(function(person){
-        if(person.id === nextState.id){
-          persons.selected = this.Person(nextState, person);
-          return persons.selected;
-        }
-        return person;
-      }.bind(this));
-      this.setState(persons);
-    },
-
-    Person: function(){
-      return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
-    },
-
-    collection: {
-      get: function(){
-        return this.state.collection;
-      },
-    },
-
-    selected: {
-      get: function() {
-        return this.state.selected;
+  deletePerson: function(uid){
+    var nextState = {};
+    nextState.collection = this.collection.filter(function(person){
+      return person.id !== uid;
+    });
+    nextState.selected = void(0);
+    if(nextState.collection.length > 0){
+      if (this.selected.id === uid){
+        nextState.selected = this.Person(nextState.collection[0]);
+      } else {
+        nextState.selected = this.Person(this.selected);
       }
+    }
+    this.setState(nextState);
+  },
+  
+  getInitialState: function(){
+    var nextState = {};
+    nextState.collection = DataService.getData().map(function(person, idx){
+      if (idx === 0){
+        nextState.selected = this.Person(person);
+        return nextState.selected;
+      }
+      return this.Person(person, false);
+    }.bind(this));
+    return nextState;
+  },
+
+  personStateChangedHandler: function(nextState, prevState){
+    var persons = {};
+    persons.collection = this.collection.map(function(person){
+      if(person.id === nextState.id){
+        persons.selected = this.Person(nextState, person);
+        return persons.selected;
+      }
+      return person;
+    }.bind(this));
+    this.setState(persons);
+  },
+
+  Person: function(){
+    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
+  },
+
+  collection: {
+    get: function(){
+      return this.state.collection;
     },
+  },
 
-  });
+  selected: {
+    get: function() {
+      return this.state.selected;
+    }
+  },
 
-  ```
+});
+
+```
 
 ### Create a DomainModel
 ```javascript
@@ -330,10 +330,10 @@ The example application is a good starting place when figuring out how things wo
 
 _Available in:_ DomainModel, ViewModel, Model
 #####object extend(object currentState[, object... nextState])
-_Available in:_ DomainModel, ViewModel, Model
 ***parameters***
 ######currentState
 ######nextState
+_Available in:_ DomainModel, ViewModel, Model
 
 ####Properties
 #####state
@@ -353,32 +353,29 @@ _Available in:_ DomainModel, ViewModel
 
 _Optional:_ true
 #####object getInitialCalculatedState(object nextState, object previousState)
-_Available in:_ DomainModel, ViewModel, Model
-
-_Optional:_ true
-
 __arguments__
 ######nextState
 ######previousState
+_Available in:_ DomainModel, ViewModel, Model
+
+_Optional:_ true
 
 #####object getValidState(object nextState, object previousState)
+__arguments__
+######nextState
+######previousState
 _Available in:_ DomainModel, ViewModel, Model
 
 _Optional:_ true
 
-__arguments__
-######nextState
-######previousState
-
 ####Fields
-_Available in:_ DomainModel, ViewModel, Model
 #####get
 #####set
 #####pseudo
 #####calculated
+_Available in:_ DomainModel, ViewModel, Model
 
 ####DependsOn Properties
-_Available in:_ ViewModel
 
 ***Public***
 This will be made available to the View from this Data Context
@@ -386,8 +383,9 @@ This will be made available to the View from this Data Context
 ***Private***
 Hidden from View from this Data Context
 
-####Model State Change Handlers
 _Available in:_ ViewModel
+
+####Model State Change Handlers
 #####void ModelStateChangeHandler(object nextState,object previousState[, function callback])
 __arguments__
 ######nextState
@@ -408,8 +406,9 @@ __arguments__
   }
 ```
 
-####Model Factory Functions
 _Available in:_ ViewModel
+
+####Model Factory Functions
 
 ***Definition***
 #####function ModelFactory(){ return new ModelClass(this.ModelStateChangeHandler).apply(this, arguments); }
@@ -418,6 +417,7 @@ _Available in:_ ViewModel
 #####object ModelFactory([object nextState, object previousState, boolean withContext])
 #####object ModelFactory([object nextState, boolean withContext])
 
+_Available in:_ ViewModel
 ###Mixin
 ####mixin
 mixins: [IMVVM.mixin],
