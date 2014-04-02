@@ -356,6 +356,7 @@ __nextState__
 _Available in:_ DomainModel, ViewModel, Model
 
 ####Properties
+___
 #####state
 
 _Available in:_ DomainModel, ViewModel, Model
@@ -366,6 +367,7 @@ _Available in:_ DomainModel
 
 ###Specification
 ####Hooks
+___
 #####function getDomainDataContext()
 
 _Available in:_ DomainModel
@@ -404,6 +406,7 @@ _Available in:_ DomainModel, ViewModel, Model
 _Optional:_ true
 
 ####Field Descriptor
+___
 #####\* get()
 #####void set(\* newValue)
 #####pseudo:boolean
@@ -412,7 +415,7 @@ _Optional:_ true
 _Available in:_ DomainModel, ViewModel, Model
 
 ####DependsOn Properties
-
+___
 ***Public***
 This will be made available to the View from this Data Context
 
@@ -422,6 +425,7 @@ Hidden from View from this Data Context
 _Available in:_ ViewModel
 
 ####Model State Change Handlers
+___
 #####void ModelStateChangeHandler(object nextState,object previousState[, function callback])
 
 ***arguments***
@@ -449,7 +453,7 @@ __callback__
 _Available in:_ ViewModel
 
 ####Model Factory Functions
-
+___
 _Definition_
 
 #####function ModelFactory(){ return new ModelClass(this.ModelStateChangeHandler).apply(this, arguments); }
@@ -463,6 +467,7 @@ _Available in:_ ViewModel
 
 ###Mixin
 ####mixin
+___
 mixins: [IMVVM.mixin],
 
 React.renderComponent(<ApplicationView 
