@@ -312,27 +312,27 @@ The example application is a good starting place when figuring out how things wo
 ####Constructors
 #####function createDomainModel(object specification)
 ***parameters***
-######specification - see [Specification](#specification)
+__specification__ - see [Specification](#specification)
 #####function createViewModel(object specification)
 ***parameters***
-######specification
+__specification__
 #####function createModel(object specification)
 ***parameters***
-######specification
+__specification__
 
 ###Instance
 
 ####Functions
 #####void setState(object nextState[, function callback])
 ***parameters***
-######nextState
-######callback
+__nextState__
+__callback__
 
 _Available in:_ DomainModel, ViewModel, Model
 #####object extend(object currentState[, object... nextState])
 ***parameters***
-######currentState
-######nextState
+__currentState__
+__nextState__
 _Available in:_ DomainModel, ViewModel, Model
 
 ####Properties
@@ -353,17 +353,18 @@ _Available in:_ DomainModel, ViewModel
 
 _Optional:_ true
 #####object getInitialCalculatedState(object nextState, object previousState)
-__arguments__
-######nextState
+***arguments***
+__nextState__
 ######previousState
 _Available in:_ DomainModel, ViewModel, Model
 
 _Optional:_ true
 
 #####object getValidState(object nextState, object previousState)
-__arguments__
-######nextState
-######previousState
+***arguments***
+__nextState__
+__previousState__
+
 _Available in:_ DomainModel, ViewModel, Model
 
 _Optional:_ true
@@ -387,10 +388,10 @@ _Available in:_ ViewModel
 
 ####Model State Change Handlers
 #####void ModelStateChangeHandler(object nextState,object previousState[, function callback])
-__arguments__
-######nextState
-######previousState
-######callback
+***arguments***
+__nextState__
+__previousState__
+__callback__
 
 ```javascript
   personStateChangeHandler: function(nextState, prevState){
