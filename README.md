@@ -357,14 +357,33 @@ _Available in:_ DomainModel, ViewModel, Model
 
 ####State Change Handlers
 _Available in:_ ViewModel
+#####{StateChangeHandler}: function(nextState, previousState[, callback])
+######arguments
+__nextState__
+__previousState__
+__callback__
 
-  function(nextState, previousState[, callback])
+```javascript
+  personStateChangeHandler: function(nextState, prevState/*, callback*/){
+    var persons = {};
+    persons.collection = this.collection.map(function(person){
+      if(person.id === prevState.id){
+        persons.selected = this.Person(nextState, person);
+        return persons.selected;
+      }
+      return person;
+    }.bind(this));
+    this.setState(persons);
+  }
+```
 
 ####Models
 _Available in:_ ViewModel
 
-  Person: function(){
-    return new PersonModel(this.personStateChangeHandler).apply(this, arguments);
+  #####{Factory}([object nextState, object previousState, boolean withContext])
+  #####{Factory}([object nextState, boolean withContext])
+  {Factory}: function(){
+    return new {ModelClass}(this.{StateChangeHandler}).apply(this, arguments);
   }
 
 ####Dependencies
