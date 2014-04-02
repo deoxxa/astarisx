@@ -312,7 +312,7 @@ The example application is a good starting place when figuring out how things wo
 ####Constructors
 #####function createDomainModel(object specification)
 ***parameters***
-######specification - see [Specification](#specification)
+######specification - see [Specification](#specification-2)
 #####function createViewModel(object specification)
 ***parameters***
 ######specification
