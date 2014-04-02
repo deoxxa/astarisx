@@ -238,7 +238,7 @@ IMVVM can be loaded as:
   React.renderComponent(<ApplicationView domainModel={DomainModel}/>, document.getElementById('container'));
   ```
 
-__Example of a FormView__
+__FormView example__
 ```javascript
 var FormView = React.createClass({
   updateName: function(e){
@@ -297,7 +297,7 @@ var FormView = React.createClass({
 });
 ```
 
-##Running the example
+##Running the example application
 The example application is a good starting place to figuring out how things work. So to get it running, navigate to the ``./example`` directory and run the following commands.
 
   ```
@@ -317,36 +317,48 @@ The example application is a good starting place to figuring out how things work
 ###Instance
 ####Hooks
 #####object getDomainDataContext()
-_Available in: DomainModel_
-_Optional: false_
+_Available in:_ DomainModel
+
+_Optional:_ false
 #####object getInitialState()
-_Available in: DomainModel, ViewModel_
-_Optional: true_
+_Available in:_ DomainModel, ViewModel
+
+_Optional:_ true
 #####object getInitialCalculatedState(object nextState, object previousState)
-_Available in: DomainModel, ViewModel, Model_
-_Optional: true_
+_Available in:_ DomainModel, ViewModel, Model
+
+_Optional:_ true
 #####object getValidState(object nextState, object previousState)
-_Available in: DomainModel, ViewModel, Model_
-_Optional: true_
+_Available in:_ DomainModel, ViewModel, Model
+
+_Optional:_ true
 
 ####Functions
 #####setState(object nextState[, function callback])
+_Available in:_ DomainModel, ViewModel, Model
 #####extend(object currentState[, object... nextState])
+_Available in:_ DomainModel, ViewModel, Model
 
 ####Properties
 #####state
+_Available in:_ DomainModel, ViewModel, Model
 #####previousState
+_Available in:_ DomainModel
 
 ####Specification
 #####Fields
+_Available in:_ DomainModel, ViewModel, Model
 ######get
 ######set
 ######pseudo
 ######calculated
 
-#####State change handlers
+#####State Change Handlers
+_Available in:_ ViewModel
   function(nextState, previousState[, callback])
 #####Models
+_Available in:_ ViewModel
+
   Person: function(){
     return new PersonModel(this.personStateChangeHandler).apply(this, arguments);
   }
