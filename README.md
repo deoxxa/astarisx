@@ -314,23 +314,53 @@ The example application is a good starting place to figuring out how things work
 #####function createViewModel(object specification)
 #####function createModel(object specification)
 
+###Instance
+####Hooks
+#####object getDomainDataContext()
+_Available in: DomainModel_
+_Optional: false_
+#####object getInitialState()
+_Available in: DomainModel, ViewModel_
+_Optional: true_
+#####object getInitialCalculatedState(object nextState, object previousState)
+_Available in: DomainModel, ViewModel, Model_
+_Optional: true_
+#####object getValidState(object nextState, object previousState)
+_Available in: DomainModel, ViewModel, Model_
+_Optional: true_
+
 ####Functions
 #####setState(object nextState[, function callback])
-#####extend(object nextState[, function callback])
+#####extend(object currentState[, object... nextState])
 
 ####Properties
 #####state
-#####previuosState
+#####previousState
 
-###Specification
-####Hooks
-#####object getDomainDataContext()
-#####object getInitialState()
-#####object getInitialCalculatedState()
-#####object getValidState()
+####Specification
+#####Fields
+######get
+######set
+######pseudo
+######calculated
 
-####Fields
+#####State change handlers
+  function(nextState, previousState[, callback])
+#####Models
+  Person: function(){
+    return new PersonModel(this.personStateChangeHandler).apply(this, arguments);
+  }
 
+####Mixin
+#####mixin
+mixins: [IMVVM.mixin],
+
+React.renderComponent(<ApplicationView 
+  domainModel={DomainModel}
+  disableUndo={false} />,
+  document.getElementById('container'));
+  
+this.state.applicationDataContext
 
 
 ## Browser Support

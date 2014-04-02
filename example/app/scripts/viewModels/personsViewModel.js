@@ -65,7 +65,7 @@ var PersonsViewModel = IMVVM.createViewModel({
     return nextState;
   },
 
-  personStateChangedHandler: function(nextState, prevState/*, callback*/){
+  personStateChangeHandler: function(nextState, prevState/*, callback*/){
     var persons = {};
     persons.collection = this.collection.map(function(person){
       if(person.id === prevState.id){
@@ -78,7 +78,7 @@ var PersonsViewModel = IMVVM.createViewModel({
   },
 
   Person: function(){
-    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
+    return new PersonModel(this.personStateChangeHandler).apply(this, arguments);
   },
 
   collection: {
