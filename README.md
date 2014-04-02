@@ -236,7 +236,6 @@ IMVVM can be loaded as:
 ### Render the View
   ```javascript
   React.renderComponent(<ApplicationView domainModel={DomainModel}/>, document.getElementById('container'));
-
   ```
 
 __Example of a FormView__
@@ -253,7 +252,6 @@ var FormView = React.createClass({
   },
   render: function() {
     var current = this.props.appContext.persons.selected;
-
     return (
       <div key={current.id}>
         <form className="form-horizontal" role="form">
@@ -310,14 +308,20 @@ The example application is a good starting place to figuring out how things work
 
 ## API
 
+####Constructors
 
+#####function createDomainModel(object specification)
+#####function createViewModel(object specification)
+#####function createModel(object specification)
+
+###Specification
 
 ## Browser Support
 Most ECMAScript 5 compliant browsers. 
 __IE8 and below are not supported__
 
 ## Author
-
+Entrendipity  - [Follow @entrendipity](https://twitter.com/intent/follow?screen_name=entrendipity)
 Frank Panetta  - [Follow @fattenap](https://twitter.com/intent/follow?screen_name=fattenap)
 
 ##License
