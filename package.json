@@ -1,7 +1,7 @@
 {
   "name": "imvvm",
   "description": "Immutable MVVM for React",
-  "version": "0.4.2-alpha",
+  "version": "0.4.4",
   "keywords": [
     "imvvm",
     "react",
