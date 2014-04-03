@@ -17,12 +17,6 @@ var IMVVMViewModel = {
         nextState = extend(nextState, dependencies);
         prevState = prevState || {};
         prevState = ('state' in prevState) ? prevState.state : prevState;
-
-        // if(!('getInitialState' in desc.proto)){
-        //   desc.proto.getInitialState = function(){
-        //     return dataContext();//.apply(this, arguments);
-        //   }
-        // } else {
         
         var model = Object.create(desc.proto, desc.descriptor);
 
@@ -39,27 +33,7 @@ var IMVVMViewModel = {
           if(desc.proto.getInitialState){
             nextState = extend(nextState, desc.proto.getInitialState());          
           }
-          // //runs everytime to initialize calculated state but will not run the calc func
-          // //if the prop has already been initialized
-          // if(!!desc.originalSpec.getInitialCalculatedState){
-          //   for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
-          //     if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
-          //       calcFld = {}
-          //       calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
-          //         call(model, nextState, prevState)[desc.calculatedFields[i]];
-          //       if(calcFld[desc.calculatedFields[i]] !== void(0)){
-          //         nextState = extend(nextState,calcFld);                
-          //       }
-          //     }
-          //   };
-          // }
         }
-
-        // //runs everytime
-        // if(desc.originalSpec.getValidState){
-        //   nextState = extend(nextState,
-        //     desc.originalSpec.getValidState.call(model, nextState, prevState));
-        // }
 
         Object.defineProperty(model, 'state', {
           configurable: false,

@@ -6,7 +6,7 @@
 var HobbiesViewModel = IMVVM.createViewModel({
   getDependencies: function(){
     return {
-      selectedPerson: { 
+      _selectedPerson: { 
         property: 'persons.selected', 
         onStateChange: this.resetSelected
       },
@@ -22,35 +22,33 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
   
   addHobby: function(value){
-    this.state.selectedPerson.addHobby(value);
+    this.state._selectedPerson.addHobby(value);
   },
   
   deleteHobby: function(value){
-    this.state.selectedPerson.deleteHobby(value);
+    this.state._selectedPerson.deleteHobby(value);
   },
 
   //When a dependency changes reset the selected hobby to undefined
-  resetSelected: function(nextState, prevState) {
-    console.log('nextState');
-    console.log(nextState);
+
+  resetSelected: function(newValue) {
+    console.log('newValue');
+    console.log(newValue);
+
     console.log('prevState');
-    console.log(prevState);
-    return {selected: void(0)};
+    console.log(this);
+
+    if(this.selected !== void(0)){
+      return {selected: void(0)};
+    }
   },
 
   hobbies: {
     pseudo: true, //true because its not calculated but is supplied externally
     get: function(){
-      return this.state.selectedPerson.hobbies;
+      return this.state._selectedPerson.hobbies;
     }
   },
-  
-  //runs everytime transition to state occurs
-  // getValidState: function(nextState, prevState){
-  //   return {
-  //     selected: this.resetSelected(nextState, prevState),
-  //   };
-  // },
 
   busyText: {
     pseudo: true, //true because its not calculated but is supplied externally
