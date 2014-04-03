@@ -116,8 +116,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			if(domainState){
 				if(watchedDataContext){
 					watchedDataContext.subscribers.forEach(function(subscriber){
-						dependencies = extend(nextState[subscriber].dependencies,  getDependencies(nextState, domain[subscriber]));
-						nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber], dependencies, prevState[subscriber]);
+						nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
+							getDependencies(nextState, domain[subscriber]), prevState[subscriber]);
 					});
 				}	
 			} else {
@@ -125,8 +125,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					getDependencies(nextState, domain[caller]), prevState[caller]);
 				if(watchedDataContext){
 					watchedDataContext.subscribers.forEach(function(subscriber){
-						dependencies = extend(nextState[subscriber].dependencies,  getDependencies(nextState, domain[subscriber], caller));
-						nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber], dependencies, prevState[subscriber]);
+						nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
+							getDependencies(nextState, domain[subscriber], caller), prevState[subscriber]);
 					});
 				}	
 
@@ -193,7 +193,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 				for(var i= 0; i < newStateKeysLen; i++){
 					if(watchList[caller][newStateKeys[i]]){
-						subscriberKeys[watchList[caller][newStateKeys[i]]] = true;
+						for(var j = 0, jl = watchList[caller][newStateKeys[i]].length; j < jl;j++){
+							subscriberKeys[watchList[caller][newStateKeys[i]][j].dataContext] = true;
+						}
 					}
 				}
 				watchedDataContext = {};
@@ -206,9 +208,29 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			if(caller !== appNamespace){
 				nextState[caller] = newState;
 				nextState = extend(thisAppState.state, nextState);
+				if(watchedDataContext && watchedDataContext.subscribers){
+					watchedDataContext.subscribers.forEach(function(sub){
+						for(var ii= 0; ii < newStateKeysLen; ii++){
+							if(watchList[caller][newStateKeys[ii]]){
+								var tempArr = watchList[caller][newStateKeys[ii]];
+								for(var m=0, ml =tempArr.length;m<ml;m++){
+									if(domain[tempArr[m].dataContext].dependsOn[tempArr[m].alias].onStateChange){
+										var tmpNextState = {};
+										var tmpPrevState = {};
+										tmpNextState[tempArr[m].alias] = nextState[caller][newStateKeys[ii]];
+										tmpPrevState[tempArr[m].alias] = thisAppState.state[caller][newStateKeys[ii]];
+										nextState[tempArr[m].dataContext] = domain[tempArr[m].dataContext].dependsOn[tempArr[m].alias].
+											onStateChange(tmpNextState, tmpPrevState);										
+									}
+								}
+							}
+						}
+					});
+				}
 			} else {
 				nextState = extend(thisAppState.state, newState);
 			}
+
 			prevState = reprocessing ? thisAppState.previousState : thisAppState;
 			nextState = transitionState(caller === appNamespace ? void(0) : caller, nextState, thisAppState.state, watchedDataContext);
 		}
@@ -270,19 +292,22 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				for(var dep in domain[dataContext].dependsOn){
 					if(domain[dataContext].dependsOn.hasOwnProperty(dep)){
 						watchedProps = domain[dataContext].dependsOn[dep].property.split('.');
-						if(watchedProps.length > 1){
-							watchList[watchedProps[0]] = watchList[watchedProps[0]] || {};
-							watchList[watchedProps[0]][watchedProps[1]] = watchList[watchedProps[0]][watchedProps[1]] || [];
-							if(watchList[watchedProps[0]][watchedProps[1]].indexOf(dataContext) === -1){
-								watchList[watchedProps[0]][watchedProps[1]].push(dataContext);
-							}
-						} else {
-							watchList[appNamespace] = watchList[appNamespace] || {};
-							watchList[appNamespace][watchedProps[0]] = watchList[appNamespace][watchedProps[0]] || [];
-							if(watchList[appNamespace][watchedProps[0]].indexOf(dataContext) === -1){
-								watchList[appNamespace][watchedProps[0]].push(dataContext);
-							}
+						//if(watchedProps.length > 1){
+						var watchedPropsLen = watchedProps.length;
+						var watchListProp1 = watchedPropsLen > 1 ? watchedProps[0] : appNamespace;
+						var watchListProp2 = watchedPropsLen > 1 ? watchedProps[1] : watchedProps[0];
+						watchList[watchListProp1] = watchList[watchListProp1] || {};
+						watchList[watchListProp1][watchListProp2] = watchList[watchListProp1][watchListProp2] || [];
+						if(watchList[watchListProp1][watchListProp2].indexOf(dataContext) === -1){
+							watchList[watchListProp1][watchListProp2].push({dataContext:dataContext, alias: dep});
 						}
+						// } else {
+						// 	watchList[appNamespace] = watchList[appNamespace] || {};
+						// 	watchList[appNamespace][watchedProps[0]] = watchList[appNamespace][watchedProps[0]] || [];
+						// 	if(watchList[appNamespace][watchedProps[0]].indexOf(dataContext) === -1){
+						// 		watchList[appNamespace][watchedProps[0]].push(dataContext);
+						// 	}
+						// }
 					}
 				}
 			}

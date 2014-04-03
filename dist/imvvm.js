@@ -43,7 +43,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		return newObj;
 	}
 
-	var getDependencies = function(nextState, dataContext, dependent){
+	var getDependencies = function(nextState, dataContext/*, dependent*/){
 		var deps = {},
 			props,
 			watchedValue;
@@ -60,11 +60,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 							watchedValue = watchedValue ? watchedValue[prop] : void(0);
 						}
 					});
-					//if('alias' in dependency){
-					deps[dependency] = watchedValue;
-					// } else {
-					// 	deps[props.join('$')] = watchedValue;
-					// }					
+					deps[dependency] = watchedValue;			
 				}
 			};
 		}
@@ -127,8 +123,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			if(domainState){
 				if(watchedDataContext){
 					watchedDataContext.subscribers.forEach(function(subscriber){
-						dependencies = extend(nextState[subscriber].dependencies,  getDependencies(nextState, domain[subscriber]));
-						nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber], dependencies, prevState[subscriber]);
+						nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
+							getDependencies(nextState, domain[subscriber]), prevState[subscriber]);
 					});
 				}	
 			} else {
@@ -136,8 +132,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					getDependencies(nextState, domain[caller]), prevState[caller]);
 				if(watchedDataContext){
 					watchedDataContext.subscribers.forEach(function(subscriber){
-						dependencies = extend(nextState[subscriber].dependencies,  getDependencies(nextState, domain[subscriber], caller));
-						nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber], dependencies, prevState[subscriber]);
+						nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
+							getDependencies(nextState, domain[subscriber], caller), prevState[subscriber]);
 					});
 				}	
 
@@ -204,7 +200,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 				for(var i= 0; i < newStateKeysLen; i++){
 					if(watchList[caller][newStateKeys[i]]){
-						subscriberKeys[watchList[caller][newStateKeys[i]]] = true;
+						for(var j = 0, jl = watchList[caller][newStateKeys[i]].length; j < jl;j++){
+							subscriberKeys[watchList[caller][newStateKeys[i]][j].dataContext] = true;
+						}
 					}
 				}
 				watchedDataContext = {};
@@ -217,9 +215,29 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			if(caller !== appNamespace){
 				nextState[caller] = newState;
 				nextState = extend(thisAppState.state, nextState);
+				if(watchedDataContext && watchedDataContext.subscribers){
+					watchedDataContext.subscribers.forEach(function(sub){
+						for(var ii= 0; ii < newStateKeysLen; ii++){
+							if(watchList[caller][newStateKeys[ii]]){
+								var tempArr = watchList[caller][newStateKeys[ii]];
+								for(var m=0, ml =tempArr.length;m<ml;m++){
+									if(domain[tempArr[m].dataContext].dependsOn[tempArr[m].alias].onStateChange){
+										var tmpNextState = {};
+										var tmpPrevState = {};
+										tmpNextState[tempArr[m].alias] = nextState[caller][newStateKeys[ii]];
+										tmpPrevState[tempArr[m].alias] = thisAppState.state[caller][newStateKeys[ii]];
+										nextState[tempArr[m].dataContext] = domain[tempArr[m].dataContext].dependsOn[tempArr[m].alias].
+											onStateChange(tmpNextState, tmpPrevState);										
+									}
+								}
+							}
+						}
+					});
+				}
 			} else {
 				nextState = extend(thisAppState.state, newState);
 			}
+
 			prevState = reprocessing ? thisAppState.previousState : thisAppState;
 			nextState = transitionState(caller === appNamespace ? void(0) : caller, nextState, thisAppState.state, watchedDataContext);
 		}
@@ -278,49 +296,33 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			if(thisAppState[dataContext].getDependencies){
 				dependents.push(dataContext);
 				domain[dataContext].dependsOn = getConfig(thisAppState[dataContext].getDependencies(), 'property');
-
-				for(var ppp in domain[dataContext].dependsOn){
-					if(domain[dataContext].dependsOn.hasOwnProperty(ppp)){
-						watchedProps = domain[dataContext].dependsOn[ppp].property.split('.');
-						if(watchedProps.length > 1){
-							watchList[watchedProps[0]] = watchList[watchedProps[0]] || {};
-							watchList[watchedProps[0]][watchedProps[1]] = watchList[watchedProps[0]][watchedProps[1]] || [];
-							if(watchList[watchedProps[0]][watchedProps[1]].indexOf(dataContext) === -1){
-								watchList[watchedProps[0]][watchedProps[1]].push(dataContext);
-							}
-						} else {
-							watchList[appNamespace] = watchList[appNamespace] || {};
-							watchList[appNamespace][watchedProps[0]] = watchList[appNamespace][watchedProps[0]] || [];
-							if(watchList[appNamespace][watchedProps[0]].indexOf(dataContext) === -1){
-								watchList[appNamespace][watchedProps[0]].push(dataContext);
-							}
+				for(var dep in domain[dataContext].dependsOn){
+					if(domain[dataContext].dependsOn.hasOwnProperty(dep)){
+						watchedProps = domain[dataContext].dependsOn[dep].property.split('.');
+						//if(watchedProps.length > 1){
+						var watchedPropsLen = watchedProps.length;
+						var watchListProp1 = watchedPropsLen > 1 ? watchedProps[0] : appNamespace;
+						var watchListProp2 = watchedPropsLen > 1 ? watchedProps[1] : watchedProps[0];
+						watchList[watchListProp1] = watchList[watchListProp1] || {};
+						watchList[watchListProp1][watchListProp2] = watchList[watchListProp1][watchListProp2] || [];
+						if(watchList[watchListProp1][watchListProp2].indexOf(dataContext) === -1){
+							watchList[watchListProp1][watchListProp2].push({dataContext:dataContext, alias: dep});
 						}
+						// } else {
+						// 	watchList[appNamespace] = watchList[appNamespace] || {};
+						// 	watchList[appNamespace][watchedProps[0]] = watchList[appNamespace][watchedProps[0]] || [];
+						// 	if(watchList[appNamespace][watchedProps[0]].indexOf(dataContext) === -1){
+						// 		watchList[appNamespace][watchedProps[0]].push(dataContext);
+						// 	}
+						// }
 					}
 				}
-
-
-				// for(var i = 0, len = domain[dataContext].dependsOn.length; i < len; i++){
-				// 	watchedProps = domain[dataContext].dependsOn[i].property.split('.');
-				// 	if(watchedProps.length > 1){
-				// 		watchList[watchedProps[0]] = watchList[watchedProps[0]] || {};
-				// 		watchList[watchedProps[0]][watchedProps[1]] = watchList[watchedProps[0]][watchedProps[1]] || [];
-				// 		if(watchList[watchedProps[0]][watchedProps[1]].indexOf(dataContext) === -1){
-				// 			watchList[watchedProps[0]][watchedProps[1]].push(dataContext);
-				// 		}
-				// 	} else {
-				// 		watchList[appNamespace] = watchList[appNamespace] || {};
-				// 		watchList[appNamespace][watchedProps[0]] = watchList[appNamespace][watchedProps[0]] || [];
-				// 		if(watchList[appNamespace][watchedProps[0]].indexOf(dataContext) === -1){
-				// 			watchList[appNamespace][watchedProps[0]].push(dataContext);
-				// 		}
-				// 	}
-				// }
 			}
 		}
 	}
 	dependents.forEach(function(dependent){
 		thisAppState[dependent] = new dataContexts[dependent](thisAppState[dependent],
-			getDependencies(thisAppState, domain[dependent]), {}, true);
+			getDependencies(thisAppState, domain[dependent]), {}/*, true*/);
 	});
 	thisAppState = new ApplicationDataContext(extend(thisAppState), void(0), disableUndo);
 	return Object.freeze(thisAppState);
@@ -627,27 +629,27 @@ var IMVVMViewModel = {
           if(desc.proto.getInitialState){
             nextState = extend(nextState, desc.proto.getInitialState());          
           }
-          //runs everytime to initialize calculated state but will not run the calc func
-          //if the prop has already been initialized
-          if(!!desc.originalSpec.getInitialCalculatedState){
-            for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
-              if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
-                calcFld = {}
-                calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
-                  call(model, nextState, prevState)[desc.calculatedFields[i]];
-                if(calcFld[desc.calculatedFields[i]] !== void(0)){
-                  nextState = extend(nextState,calcFld);                
-                }
-              }
-            };
-          }
+          // //runs everytime to initialize calculated state but will not run the calc func
+          // //if the prop has already been initialized
+          // if(!!desc.originalSpec.getInitialCalculatedState){
+          //   for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
+          //     if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
+          //       calcFld = {}
+          //       calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
+          //         call(model, nextState, prevState)[desc.calculatedFields[i]];
+          //       if(calcFld[desc.calculatedFields[i]] !== void(0)){
+          //         nextState = extend(nextState,calcFld);                
+          //       }
+          //     }
+          //   };
+          // }
         }
 
-        //runs everytime
-        if(desc.originalSpec.getValidState){
-          nextState = extend(nextState,
-            desc.originalSpec.getValidState.call(model, nextState, prevState));
-        }
+        // //runs everytime
+        // if(desc.originalSpec.getValidState){
+        //   nextState = extend(nextState,
+        //     desc.originalSpec.getValidState.call(model, nextState, prevState));
+        // }
 
         Object.defineProperty(model, 'state', {
           configurable: false,
@@ -667,23 +669,16 @@ var IMVVMViewModel = {
         }.bind(model));
 
         //Add dependencies to model
-        // for(var dep in dependencies){
-        //   if(dependencies.hasOwnProperty(dep) && dep[0] !== '_'){
-        //     Object.defineProperty(model, dep, {
-        //       configurable: false,
-        //       enumerable: false,
-        //       writable: false,
-        //       value: dependencies[dep]
-        //     });
-        //   }
-        // }
-
-        // Object.defineProperty(model, 'dependencies', {
-        //   configurable: false,
-        //   enumerable: false,
-        //   writable: false,
-        //   value: dependencies
-        // });
+        for(var dep in dependencies){
+          if(dependencies.hasOwnProperty(dep) && dep[0] !== '_'){
+            Object.defineProperty(model, dep, {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: dependencies[dep]
+            });
+          }
+        }
 
         Object.freeze(nextState);
         return Object.freeze(model);

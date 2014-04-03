@@ -39,27 +39,27 @@ var IMVVMViewModel = {
           if(desc.proto.getInitialState){
             nextState = extend(nextState, desc.proto.getInitialState());          
           }
-          //runs everytime to initialize calculated state but will not run the calc func
-          //if the prop has already been initialized
-          if(!!desc.originalSpec.getInitialCalculatedState){
-            for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
-              if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
-                calcFld = {}
-                calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
-                  call(model, nextState, prevState)[desc.calculatedFields[i]];
-                if(calcFld[desc.calculatedFields[i]] !== void(0)){
-                  nextState = extend(nextState,calcFld);                
-                }
-              }
-            };
-          }
+          // //runs everytime to initialize calculated state but will not run the calc func
+          // //if the prop has already been initialized
+          // if(!!desc.originalSpec.getInitialCalculatedState){
+          //   for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
+          //     if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
+          //       calcFld = {}
+          //       calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
+          //         call(model, nextState, prevState)[desc.calculatedFields[i]];
+          //       if(calcFld[desc.calculatedFields[i]] !== void(0)){
+          //         nextState = extend(nextState,calcFld);                
+          //       }
+          //     }
+          //   };
+          // }
         }
 
-        //runs everytime
-        if(desc.originalSpec.getValidState){
-          nextState = extend(nextState,
-            desc.originalSpec.getValidState.call(model, nextState, prevState));
-        }
+        // //runs everytime
+        // if(desc.originalSpec.getValidState){
+        //   nextState = extend(nextState,
+        //     desc.originalSpec.getValidState.call(model, nextState, prevState));
+        // }
 
         Object.defineProperty(model, 'state', {
           configurable: false,
@@ -79,23 +79,16 @@ var IMVVMViewModel = {
         }.bind(model));
 
         //Add dependencies to model
-        // for(var dep in dependencies){
-        //   if(dependencies.hasOwnProperty(dep) && dep[0] !== '_'){
-        //     Object.defineProperty(model, dep, {
-        //       configurable: false,
-        //       enumerable: false,
-        //       writable: false,
-        //       value: dependencies[dep]
-        //     });
-        //   }
-        // }
-
-        // Object.defineProperty(model, 'dependencies', {
-        //   configurable: false,
-        //   enumerable: false,
-        //   writable: false,
-        //   value: dependencies
-        // });
+        for(var dep in dependencies){
+          if(dependencies.hasOwnProperty(dep) && dep[0] !== '_'){
+            Object.defineProperty(model, dep, {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: dependencies[dep]
+            });
+          }
+        }
 
         Object.freeze(nextState);
         return Object.freeze(model);
