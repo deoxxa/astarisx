@@ -21,13 +21,18 @@ var DomainModel = IMVVM.createDomainModel({
   // },
 
   //runs last every time transition to new State (after all ViewModels have been updated)
-  // getValidState: function(nextState, prevState){
-  //   if(!!nextState.hobbies.selected){
-  //     return {busy: true};
-  //   } else {
-  //     return {busy: false};
-  //   }
-  // },
+  getValidState: function(nextState, prevState){
+    if(nextState.persons.selected.id !== prevState.persons.selected.id){
+      nextState.hobbies.selected = void(0);
+    }
+      return nextState;
+    //return void(0);
+    // if(!!nextState.hobbies.selected){
+    //   return {busy: true};
+    // } else {
+    //   return {busy: false};
+    // }
+  },
 
   undo: function(){
     this.setState(this.previousState);
@@ -69,8 +74,8 @@ var DomainModel = IMVVM.createDomainModel({
       },
       persons: {
         viewModel: PersonsViewModel,
-        /*dependsOn: [{property: 'hobbies.selected'},
-                    {property: 'online', alias: 'imOnline'}]*/
+        dependsOn: [{property: 'hobbies.selected'},
+                    {property: 'online', alias: 'imOnline'}]
       }
     };
   }

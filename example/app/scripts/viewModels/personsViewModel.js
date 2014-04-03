@@ -9,7 +9,7 @@ var PersonsViewModel = IMVVM.createViewModel({
     var nextState = {};
     nextState.collection = this.collection.map(function(person){
       if(person.id === id){
-        nextState.selected = this.Person(person);
+        nextState.selected = this.Person(person, true);
         return nextState.selected;
       }
       return person;
@@ -29,7 +29,7 @@ var PersonsViewModel = IMVVM.createViewModel({
       nextState.selected = this.Person({
         firstName: name[0],
         lastName: name.slice(1).join(' ')
-      });
+      }, true);
       nextState.collection = this.collection.slice(0);
       nextState.collection = nextState.collection.concat(nextState.selected);
       this.setState(nextState);
@@ -44,9 +44,9 @@ var PersonsViewModel = IMVVM.createViewModel({
     nextState.selected = void(0);
     if(nextState.collection.length > 0){
       if (this.selected.id === uid){
-        nextState.selected = this.Person(nextState.collection[0]);
+        nextState.selected = this.Person(nextState.collection[0], true);
       } else {
-        nextState.selected = this.Person(this.selected);
+        nextState.selected = this.Person(this.selected, true);
       }
     }
     this.setState(nextState);
@@ -57,10 +57,10 @@ var PersonsViewModel = IMVVM.createViewModel({
     var nextState = {};
     nextState.collection = DataService.getData().map(function(person, idx){
       if (idx === 0){
-        nextState.selected = this.Person(person);
+        nextState.selected = this.Person(person, true);
         return nextState.selected;
       }
-      return this.Person(person, false);
+      return this.Person(person);
     }.bind(this));
     return nextState;
   },
@@ -69,7 +69,7 @@ var PersonsViewModel = IMVVM.createViewModel({
     var persons = {};
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
-        persons.selected = this.Person(nextState, person);
+        persons.selected = this.Person(nextState, person, true);
         return persons.selected;
       }
       return person;

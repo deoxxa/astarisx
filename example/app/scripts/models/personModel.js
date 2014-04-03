@@ -44,12 +44,13 @@ var PersonModel = IMVVM.createModel({
   getInitialState: function(/*nextState, prevState*/){
     return {
       age: this.calculateAge(this.dob),
+      id: this.id ? this.id : this.uuid()
     };
   },
 
   id: {
     get: function(){
-      return this.state.id ? this.state.id : this.uuid();
+      return this.state.id;
     }
   },
 
