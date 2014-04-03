@@ -4,6 +4,15 @@
 'use strict';
 
 var HobbiesViewModel = IMVVM.createViewModel({
+  getDependencies: function(){
+    return {
+      selectedPerson: { 
+        property: 'persons.selected', 
+        //onStateChange: 
+      },
+      busy: 'busy'
+    }
+  },
   select: function(value){
     var nextState = {};
     nextState.selected = this.hobbies.filter(function(hobby){
@@ -13,17 +22,17 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
   
   addHobby: function(value){
-    this.state._selectedPerson.addHobby(value);
+    this.state.selectedPerson.addHobby(value);
   },
   
   deleteHobby: function(value){
-    this.state._selectedPerson.deleteHobby(value);
+    this.state.selectedPerson.deleteHobby(value);
   },
 
   //When a dependency changes reset the selected hobby to undefined
   resetSelected: function(nextState, prevState) {
-    if(prevState._selectedPerson && nextState._selectedPerson){
-      if(nextState._selectedPerson.id !== prevState._selectedPerson.id &&
+    if(prevState.selectedPerson && nextState.selectedPerson){
+      if(nextState.selectedPerson.id !== prevState.selectedPerson.id &&
         nextState.selected !== void(0)){
         return void(0);
       }
@@ -34,7 +43,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
   hobbies: {
     pseudo: true, //true because its not calculated but is supplied externally
     get: function(){
-      return this.state._selectedPerson.hobbies;
+      return this.state.selectedPerson.hobbies;
     }
   },
   
@@ -48,7 +57,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
   busyText: {
     pseudo: true, //true because its not calculated but is supplied externally
     get: function(){
-      return this.state._busy ? 'Im Busy! Go away...' : 'Not doing too much.';
+      return this.state.busy ? 'Im Busy! Go away...' : 'Not doing too much.';
     }
   },
 

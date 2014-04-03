@@ -79,16 +79,16 @@ var IMVVMViewModel = {
         }.bind(model));
 
         //Add dependencies to model
-        for(var dep in dependencies){
-          if(dependencies.hasOwnProperty(dep) && dep[0] !== '_'){
-            Object.defineProperty(model, dep, {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: dependencies[dep]
-            });
-          }
-        }
+        // for(var dep in dependencies){
+        //   if(dependencies.hasOwnProperty(dep) && dep[0] !== '_'){
+        //     Object.defineProperty(model, dep, {
+        //       configurable: false,
+        //       enumerable: false,
+        //       writable: false,
+        //       value: dependencies[dep]
+        //     });
+        //   }
+        // }
 
         // Object.defineProperty(model, 'dependencies', {
         //   configurable: false,

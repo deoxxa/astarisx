@@ -17,30 +17,45 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		domain,
 		reprocessing = false;
 
+
+
 	disableUndo === void(0) ? false : disableUndo;
 
-	var getDependencies = function(nextState, dataContext, dependent){
+	var getConfig = function(obj, propName){
+		var newObj = {};
+		for(var k in obj){
+			if(obj.hasOwnProperty(k)){
+				if(Object.prototype.toString.call(obj[k]) === '[object Object]'){
+					newObj[k] = obj[k];
+				} else {
+					newObj[k] = {};
+					newObj[k][propName] = obj[k];
+				}
+			}
+		}
+		return newObj;
+	}
+
+	var getDependencies = function(nextState, dataContext/*, dependent*/){
 		var deps = {},
 			props,
 			watchedValue;
 
 		if('dependsOn' in dataContext){
-			dataContext.dependsOn.forEach(function(dependency){
-				watchedValue = {};
-				props = dependency.property.split('.');
-				props.forEach(function(prop, idx){
-					if(idx === 0){
-						watchedValue = nextState[prop];
-					} else {
-						watchedValue = watchedValue ? watchedValue[prop] : void(0);
-					}
-				});
-				if('alias' in dependency){
-					deps[dependency.alias] = watchedValue;
-				} else {
-					deps[props.join('$')] = watchedValue;
+			for(var dependency in dataContext.dependsOn){
+				if(dataContext.dependsOn.hasOwnProperty(dependency)){
+					watchedValue = {};
+					props = dataContext.dependsOn[dependency].property.split('.');
+					props.forEach(function(prop, idx){
+						if(idx === 0){
+							watchedValue = nextState[prop];
+						} else {
+							watchedValue = watchedValue ? watchedValue[prop] : void(0);
+						}
+					});
+					deps[dependency] = watchedValue;			
 				}
-			});
+			};
 		}
 		return deps;
 	};
@@ -244,26 +259,29 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
 	thisAppState = new ApplicationDataContext({}, void(0), disableUndo, true);
-	domain = thisAppState.getDomainDataContext();
+	domain = getConfig(thisAppState.getDomainDataContext(), 'viewModel');
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
 			thisAppState[dataContext] = new dataContexts[dataContext]({}, {}, {}, true);
-			if('dependsOn' in domain[dataContext]){
+			if(thisAppState[dataContext].getDependencies){
 				dependents.push(dataContext);
-				for(var i = 0, len = domain[dataContext].dependsOn.length; i < len; i++){
-					watchedProps = domain[dataContext].dependsOn[i].property.split('.');
-					if(watchedProps.length > 1){
-						watchList[watchedProps[0]] = watchList[watchedProps[0]] || {};
-						watchList[watchedProps[0]][watchedProps[1]] = watchList[watchedProps[0]][watchedProps[1]] || [];
-						if(watchList[watchedProps[0]][watchedProps[1]].indexOf(dataContext) === -1){
-							watchList[watchedProps[0]][watchedProps[1]].push(dataContext);
-						}
-					} else {
-						watchList[appNamespace] = watchList[appNamespace] || {};
-						watchList[appNamespace][watchedProps[0]] = watchList[appNamespace][watchedProps[0]] || [];
-						if(watchList[appNamespace][watchedProps[0]].indexOf(dataContext) === -1){
-							watchList[appNamespace][watchedProps[0]].push(dataContext);
+				domain[dataContext].dependsOn = getConfig(thisAppState[dataContext].getDependencies(), 'property');
+				for(var dep in domain[dataContext].dependsOn){
+					if(domain[dataContext].dependsOn.hasOwnProperty(dep)){
+						watchedProps = domain[dataContext].dependsOn[dep].property.split('.');
+						if(watchedProps.length > 1){
+							watchList[watchedProps[0]] = watchList[watchedProps[0]] || {};
+							watchList[watchedProps[0]][watchedProps[1]] = watchList[watchedProps[0]][watchedProps[1]] || [];
+							if(watchList[watchedProps[0]][watchedProps[1]].indexOf(dataContext) === -1){
+								watchList[watchedProps[0]][watchedProps[1]].push(dataContext);
+							}
+						} else {
+							watchList[appNamespace] = watchList[appNamespace] || {};
+							watchList[appNamespace][watchedProps[0]] = watchList[appNamespace][watchedProps[0]] || [];
+							if(watchList[appNamespace][watchedProps[0]].indexOf(dataContext) === -1){
+								watchList[appNamespace][watchedProps[0]].push(dataContext);
+							}
 						}
 					}
 				}
@@ -272,7 +290,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	}
 	dependents.forEach(function(dependent){
 		thisAppState[dependent] = new dataContexts[dependent](thisAppState[dependent],
-			getDependencies(thisAppState, domain[dependent]), {}, true);
+			getDependencies(thisAppState, domain[dependent]), {}/*, true*/);
 	});
 	thisAppState = new ApplicationDataContext(extend(thisAppState), void(0), disableUndo);
 	return Object.freeze(thisAppState);

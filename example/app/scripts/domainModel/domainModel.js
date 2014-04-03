@@ -20,19 +20,19 @@ var DomainModel = IMVVM.createDomainModel({
   //   };
   // },
 
-  //runs last every time transition to new State (after all ViewModels have been updated)
-  getValidState: function(nextState, prevState){
-    if(nextState.persons.selected.id !== prevState.persons.selected.id){
-      nextState.hobbies.selected = void(0);
-    }
-      return nextState;
-    //return void(0);
-    // if(!!nextState.hobbies.selected){
-    //   return {busy: true};
-    // } else {
-    //   return {busy: false};
-    // }
-  },
+  // //runs last every time transition to new State (after all ViewModels have been updated)
+  // getValidState: function(nextState, prevState){
+  //   if(nextState.persons.selected.id !== prevState.persons.selected.id){
+  //     nextState.hobbies.selected = void(0);
+  //   }
+  //     return nextState;
+  //   //return void(0);
+  //   // if(!!nextState.hobbies.selected){
+  //   //   return {busy: true};
+  //   // } else {
+  //   //   return {busy: false};
+  //   // }
+  // },
 
   undo: function(){
     this.setState(this.previousState);
@@ -59,24 +59,14 @@ var DomainModel = IMVVM.createDomainModel({
     }
   },
   //dataContext keys define the dataContext names that will appear in
-  //the View. viewModel refer to the ViewModels and 
-  //dependsOn will enable props to be transfered to other ViewModels.
-  //if alias is supplied that prop name will appear in ViewModel state
-  //otherwise it will appear concatenated by '$' i.e. hobbies$selected
-  //if you would like dependency prop to not appear in the View, supply
-  //and alias with a preceding underscore i.e. alias: _busy
+  //the View. viewModel refers to a ViewModel
   getDomainDataContext: function(){
     return {
       hobbies: {
         viewModel: HobbiesViewModel,
-        dependsOn: [{property: 'persons.selected', alias: '_selectedPerson'},
-                    {property: 'busy', alias: '_busy'}]
+        onStateChange: 'Do something',
       },
-      persons: {
-        viewModel: PersonsViewModel,
-        dependsOn: [{property: 'hobbies.selected'},
-                    {property: 'online', alias: 'imOnline'}]
-      }
+      persons: PersonsViewModel,
     };
   }
 });

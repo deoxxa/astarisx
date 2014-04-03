@@ -4,7 +4,12 @@
 'use strict';
 
 var PersonsViewModel = IMVVM.createViewModel({
-
+  getDependencies: function(){
+    return {
+      selectedHobby: 'hobbies.selected',
+      imOnline: 'online'
+    }
+  },
   select: function(id){
     var nextState = {};
     nextState.collection = this.collection.map(function(person){
