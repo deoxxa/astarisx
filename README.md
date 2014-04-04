@@ -40,24 +40,16 @@ require(['./imvvm.min.js'], function (IMVVM) {
 ```javascript
 var PersonModel = IMVVM.createModel({
   
-  uuid: function () {
-    var i, random;
-    var uuid = '';
-
-    for (i = 0; i < 32; i++) {
-      random = Math.random() * 16 | 0;
-      if (i === 8 || i === 12 || i === 16 || i === 20) {
-        uuid += '-';
-      }
-      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
-        .toString(16);
-    }
-    return uuid;
+  getInitialState: function(/*nextState, prevState*/){
+    return {
+      age: this.calculateAge(this.dob),
+      id: this.id ? this.id : this.uuid()
+    };
   },
 
   id: {
     get: function(){
-      return this.state.id ? this.state.id : this.uuid();
+      return this.state.id;
     }
   },
 
@@ -75,10 +67,18 @@ var PersonModel = IMVVM.createModel({
       return this.state.dob;
     },
     set: function(newValue){
-      this.setState({'dob': newValue});
+      var nextState = {};
+      if(newValue.length === 10){
+        nextState.age = this.calculateAge(newValue);
+      }
+      if(newValue.length === 0){
+        nextState.age = 'Enter your Birthday';
+      }
+      nextState.dob = newValue;
+      this.setState(nextState);
     }
   },
-
+  
   gender: {
     get: function(){
       return this.state.gender;
@@ -88,6 +88,35 @@ var PersonModel = IMVVM.createModel({
     }
   },
 
+  age: {
+    get: function(){
+      return this.state.age;
+    }
+  },
+  
+  calculateAge: function(dob){ // dob is a date
+    var DOB = new Date(dob);
+    var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from 
+    var age = Math.abs(ageDate.getFullYear() - 1970);
+    return Number.isNaN(age) ? 'Enter your Birthday' : age + ' years old';
+  },
+
+  uuid: function () {
+    /*jshint bitwise:false */
+    var i, random;
+    var uuid = '';
+
+    for (i = 0; i < 32; i++) {
+      random = Math.random() * 16 | 0;
+      if (i === 8 || i === 12 || i === 16 || i === 20) {
+        uuid += '-';
+      }
+      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
+        .toString(16);
+    }
+    return uuid;
+  },
+
 });
 ```
 
@@ -95,11 +124,59 @@ var PersonModel = IMVVM.createModel({
 
 ```javascript
 var PersonsViewModel = IMVVM.createViewModel({
+
+  getInitialState: function(){
+    var nextState = {};
+    nextState.collection = DataService.getData().map(function(person, idx){
+      if (idx === 0){
+        nextState.selected = this.Person(person, true);
+        return nextState.selected;
+      }
+      return this.Person(person);
+    }.bind(this));
+    return nextState;
+  },
+
+  getDependencies: function(){
+    return {
+      selectedHobby: 'hobbies.selected',
+      imOnline: 'online'
+    }
+  },
+
+  Person: function(){
+    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
+  },
+
+  personStateChangedHandler: function(nextState, prevState){
+    var persons = {};
+    
+    persons.collection = this.collection.map(function(person){
+      if(person.id === nextState.id){
+
+        persons.selected = this.Person(nextState, person, true);
+        return persons.selected;
+      }
+      return person;
+    }.bind(this));
+    this.setState(persons);
+  },
+
+  selected: {
+    kind: 'instance',
+    get: function() { return this.state.selected; }
+  },
+
+  collection: {
+    kind: 'array',
+    get: function(){ return this.state.collection; },
+  },
+
   select: function(id){
     var nextState = {};
     nextState.collection = this.collection.map(function(person){
       if(person.id === id){
-        nextState.selected = this.Person(person);
+        nextState.selected = this.Person(person, true);
         return nextState.selected;
       }
       return person;
@@ -110,11 +187,16 @@ var PersonsViewModel = IMVVM.createViewModel({
 
   addPerson: function(value){
     var nextState = {};
+    var name;
 
     if(value && value.length > 0){
+      name = value.split(' ');
+      //Cannot initialize by passing in calculated prop value
+      //i.e. fullname
       nextState.selected = this.Person({
-        name: value
-      });
+        firstName: name[0],
+        lastName: name.slice(1).join(' ')
+      }, true);
       nextState.collection = this.collection.slice(0);
       nextState.collection = nextState.collection.concat(nextState.selected);
       this.setState(nextState);
@@ -129,52 +211,12 @@ var PersonsViewModel = IMVVM.createViewModel({
     nextState.selected = void(0);
     if(nextState.collection.length > 0){
       if (this.selected.id === uid){
-        nextState.selected = this.Person(nextState.collection[0]);
+        nextState.selected = this.Person(nextState.collection[0], true);
       } else {
-        nextState.selected = this.Person(this.selected);
+        nextState.selected = this.Person(this.selected, true);
       }
     }
     this.setState(nextState);
-  },
-  
-  getInitialState: function(){
-    var nextState = {};
-    nextState.collection = DataService.getData().map(function(person, idx){
-      if (idx === 0){
-        nextState.selected = this.Person(person);
-        return nextState.selected;
-      }
-      return this.Person(person, false);
-    }.bind(this));
-    return nextState;
-  },
-
-  personStateChangedHandler: function(nextState, prevState){
-    var persons = {};
-    persons.collection = this.collection.map(function(person){
-      if(person.id === nextState.id){
-        persons.selected = this.Person(nextState, person);
-        return persons.selected;
-      }
-      return person;
-    }.bind(this));
-    this.setState(persons);
-  },
-
-  Person: function(){
-    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
-  },
-
-  collection: {
-    get: function(){
-      return this.state.collection;
-    },
-  },
-
-  selected: {
-    get: function() {
-      return this.state.selected;
-    }
   },
 
 });
@@ -185,14 +227,51 @@ var PersonsViewModel = IMVVM.createViewModel({
 ```javascript
 var DomainModel = IMVVM.createDomainModel({
 
+  getDomainDataContext: function(){
+    return {
+      hobbies: HobbiesViewModel,
+      persons: PersonsViewModel
+    };
+  },
+
   getInitialState: function(){
     return {
-      online: true
+      online: true,
+      busy: false
     };
+  },
+
+  getDependencies: function(){
+    return {
+      selectedHobby: { 
+        property: 'hobbies.selected', 
+        onStateChange: this.toggleBusyState
+      }
+    }
+  },
+
+  toggleBusyState: function(nextState){
+    if(!!nextState.selectedHobby){
+      return {busy: true};
+    } else {
+      return {busy: false};
+    }
   },
 
   undo: function(){
     this.setState(this.previousState);
+  },
+
+  personCount: {
+    get: function(){
+      return this.persons ? this.persons.collection.length : 0;
+    }
+  },
+
+  busy: {
+    get: function(){
+      return this.state.busy;
+    },
   },
 
   online: {
@@ -204,14 +283,6 @@ var DomainModel = IMVVM.createDomainModel({
     }
   },
 
-  getDomainDataContext: function(){
-    return {
-      persons: {
-        viewModel: PersonsViewModel,
-        dependsOn: [{property: 'online', alias: 'imOnline'}]
-      }
-    };
-  }
 });
 ```
 
@@ -224,9 +295,9 @@ var ApplicationView = React.createClass({
   render: function(){
     return (
       <div>
-        <NavBarView appContext={this.state.applicationDataContext} />
-        <SideBarView appContext={this.state.applicationDataContext} />
-        <DetailsView appContext={this.state.applicationDataContext} />
+        <NavBarView appContext={this.state.domainDataContext} />
+        <SideBarView appContext={this.state.domainDataContext} />
+        <DetailsView appContext={this.state.domainDataContext} />
       </div>
     );    
   }
@@ -235,7 +306,8 @@ var ApplicationView = React.createClass({
 
 ### Render the View
 ```javascript
-React.renderComponent(<ApplicationView domainModel={DomainModel}/>, document.getElementById('container'));
+React.renderComponent(<ApplicationView domainModel={DomainModel}/>,
+  document.getElementById('container'));
 ```
 
 __FormView example__
@@ -246,6 +318,9 @@ var FormView = React.createClass({
   },
   updateGender: function(e){
     this.props.appContext.persons.selected.gender = e.target.value;
+  },
+  updateDOB: function(e){
+    this.props.appContext.persons.selected.dob = e.target.value;
   },
   updateDOB: function(e){
     this.props.appContext.persons.selected.dob = e.target.value;
@@ -267,14 +342,16 @@ var FormView = React.createClass({
               <div className="col-md-3">
                 <div className="radio">
                 <label>
-                  <input type="radio" onChange={this.updateGender} value="male"
+                  <input type="radio" onChange={this.updateGender}
+                    value="male"
                     checked={current.gender === 'male'} />
                   Male
                 </label>
               </div>
               <div className="radio">
                 <label>
-                  <input type="radio" onChange={this.updateGender} value="female"
+                  <input type="radio" onChange={this.updateGender}
+                    value="female"
                     checked={current.gender === 'female'} />
                   Female
                 </label>
@@ -288,6 +365,14 @@ var FormView = React.createClass({
                 placeholder="yyyy-mm-dd"
                 value={current.dob}
                 onChange={this.updateDOB} />
+            </div>
+          </div>
+          <div className="form-group">
+              <label className="col-md-2 control-label">Age</label>
+              <div className="col-md-3">
+                <div>
+                  {current.age}
+                </div>
             </div>
           </div>
         </form>
@@ -381,26 +466,15 @@ _Available in:_ DomainModel, ViewModel
 
 _Optional:_ true
 ___
-#####object getInitialCalculatedState(object nextState, object previousState)
+#####object getDependencies()
 
-*arguments*
-
-__nextState__
-
-__previousState__
+***Public***
+This will be made available to the View from this Data Context
 
 _Available in:_ DomainModel, ViewModel, Model
 
-_Optional:_ true
-
-___
-#####object getValidState(object nextState, object previousState)
-
-*arguments*
-
-__nextState__
-
-__previousState__
+***Private***
+Hidden from View from this Data Context
 
 _Available in:_ ViewModel
 
@@ -410,24 +484,13 @@ _Optional:_ true
 ___
 #####\* get()
 #####void set(\* newValue)
-#####pseudo:boolean
-#####calculated:boolean
+#####kind:['instance'||'array'||'pseudo']
 
 _Available in:_ DomainModel, ViewModel, Model
 
-####DependsOn Properties
-___
-***Public***
-This will be made available to the View from this Data Context
-
-***Private***
-Hidden from View from this Data Context
-
-_Available in:_ ViewModel
-
 ####Model State Change Handlers
 ___
-#####void ModelStateChangeHandler(object nextState,object previousState[, function callback])
+#####void ModelStateChangedHandler(object nextState,object previousState[, function callback])
 
 *arguments*
 
@@ -438,17 +501,18 @@ __previousState__
 __callback__
 
 ```javascript
-  personStateChangeHandler: function(nextState, prevState){
+  personStateChangedHandler: function(nextState, prevState){
     var persons = {};
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
-        persons.selected = this.Person(nextState, person);
+
+        persons.selected = this.Person(nextState, person, true);
         return persons.selected;
       }
       return person;
     }.bind(this));
     this.setState(persons);
-  }
+  },
 ```
 
 _Available in:_ ViewModel
@@ -464,6 +528,12 @@ _Usage_
 #####object ModelFactory([object nextState, object previousState, boolean withContext])
 #####object ModelFactory([object nextState, boolean withContext])
 
+```javascript
+  Person: function(){
+    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
+  },
+```
+
 _Available in:_ ViewModel
 
 ###Mixin
@@ -473,10 +543,10 @@ mixins: [IMVVM.mixin],
 
 React.renderComponent(<ApplicationView 
   domainModel={DomainModel}
-  disableUndo={false} />,
+  enableUndo={true} />,
   document.getElementById('container'));
   
-this.state.applicationDataContext
+this.state.domainDataContext
 
 
 ## Browser Support
