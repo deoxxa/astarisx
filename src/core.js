@@ -39,7 +39,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		return newObj;
 	}
 
-	var getDependencies2 = function(nextState, dataContext/*, dependent*/){
+	var getDependencies2 = function(nextState, dataContext){
 		var deps = {},
 			props,
 			watchedValue;
@@ -71,26 +71,43 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		nextState = nextState || {};
 		prevState = prevState || {};
 
-		var domainState = caller === void(0);
+		//var domainState = subscriber === appNamespace;
 
-			if(domainState){
-				// if(watchedDataContext){
-				// 	watchedDataContext.subscribers.forEach(function(subscriber){
-				// 		nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
-				// 			getDependencies2(nextState, domain[subscriber]), prevState[subscriber]);
-				// 	});
-				// }	
-			} else {
-				nextState[caller] = new dataContexts[caller](nextState[caller], 
-					getDependencies2(nextState, domain[caller]), prevState[caller]);
+			// if(domainState){
+			// 	// if(watchedDataContext){
+			// 	// 	watchedDataContext.subscribers.forEach(function(subscriber){
+			// 	// 		nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
+			// 	// 			getDependencies2(nextState, domain[subscriber]), prevState[subscriber]);
+			// 	// 	});
+			// 	// }	
+			// } else {
+				if(caller !== appNamespace){
+					nextState[caller] = new dataContexts[caller](nextState[caller], 
+						getDependencies2(nextState, domain[caller]), prevState[caller]);					
+				}
 				if(watchedDataContext){
+					var tempDeps = {};
+					if(!!dependsOn){
+						tempDeps = getDependencies2(nextState, dependsOn);
+						nextState = extend(nextState, tempDeps);
+						for(var depKey in dependsOn){
+							if(dependsOn.hasOwnProperty(depKey) && ('onStateChange' in dependsOn[depKey])){
+								var nextVal = {};
+								nextVal[depKey] = nextState[depKey];
+								nextState = extend(nextState, dependsOn[depKey].onStateChange(nextVal));
+							}
+						}
+					}
+					nextState = new ApplicationDataContext(extend(nextState, tempDeps), prevState, disableUndo);
 					watchedDataContext.subscribers.forEach(function(subscriber){
-						nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
-							getDependencies2(nextState, domain[subscriber], caller), prevState[subscriber]);
+						if(subscriber !== appNamespace){
+							nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
+							getDependencies2(nextState, domain[subscriber]), prevState[subscriber]);
+						}
 					});
 				}	
 
-			}
+			// }
 		return nextState;
 	};
 
@@ -158,9 +175,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 											onStateChange.call(thisAppState.state[tempArr[m2].dataContext], tmpNextState);
 										if(Object.prototype.toString.call(testing) === '[object Object]'){
 											if(tempArr[m2].dataContext === appNamespace){
-												nextState[tempArr[m2].alias] = tmpNextState[tempArr[m2].alias];
+												nextState = extend(nextState, testing);
 											} else {
-												nextState[tempArr[m2].dataContext][tempArr[m2].alias] = tmpNextState[tempArr[m2].alias];
+												nextState[tempArr[m2].dataContext] = extend(nextState[tempArr[m2].dataContext], testing);
 											}
 										}
 									}
@@ -174,7 +191,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 
 			prevState = thisAppState;//reprocessing ? thisAppState.previousState : thisAppState;
-			nextState = transitionState(caller === appNamespace ? void(0) : caller, nextState, thisAppState.state, watchedDataContext);
+			nextState = transitionState(caller, nextState, thisAppState.state, watchedDataContext);
 		}
 		if(!!prevState){
 			Object.freeze(prevState);
@@ -269,17 +286,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 		}
 	}
-	var processThisAppState = false;
 	dependents.forEach(function(dependent){
-		if(dependent === appNamespace){
-			//do this last
-			processThisAppState = true;
-		} else {
+		if(dependent !== appNamespace){
 				thisAppState[dependent] = new dataContexts[dependent](thisAppState[dependent],
 					getDependencies2(thisAppState, domain[dependent]), {});
 		}
 	});
-	var tempDeps = processThisAppState ? getDependencies2(thisAppState, {dependsOn: dependsOn}) : {};
+	var tempDeps = !!dependsOn ? getDependencies2(thisAppState, dependsOn) : {};
 	thisAppState = new ApplicationDataContext(extend(thisAppState, tempDeps), void(0), disableUndo);
 	return Object.freeze(thisAppState);
 };
