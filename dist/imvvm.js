@@ -9,7 +9,7 @@ module.exports = IMVVM;
 var utils = _dereq_('./utils');
 var extend = utils.extend;
 
-exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, disableUndo) {
+exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, enableUndo) {
 
 	if(typeof stateChangedHandler !== 'function'){
 		throw new TypeError();
@@ -29,7 +29,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	var watchListProp1;
 	var watchListProp2;
 
-	disableUndo === void(0) ? false : disableUndo;
+	enableUndo === void(0) ? true : enableUndo;
 
 	var getConfig = function(obj, propName){
 		var newObj = {};
@@ -78,47 +78,35 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		nextState = nextState || {};
 		prevState = prevState || {};
 
-		//var domainState = subscriber === appNamespace;
-
-			// if(domainState){
-			// 	// if(watchedDataContext){
-			// 	// 	watchedDataContext.subscribers.forEach(function(subscriber){
-			// 	// 		nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
-			// 	// 			getDependencies2(nextState, domain[subscriber]), prevState[subscriber]);
-			// 	// 	});
-			// 	// }	
-			// } else {
-				if(caller !== appNamespace){
-					nextState[caller] = new dataContexts[caller](nextState[caller], 
-						getDependencies2(nextState, domain[caller]), prevState[caller]);					
-				}
-				if(watchedDataContext){
-					var tempDeps = {};
-					if(!!dependsOn){
-						tempDeps = getDependencies2(nextState, dependsOn);
-						nextState = extend(nextState, tempDeps);
-						for(var depKey in dependsOn){
-							if(dependsOn.hasOwnProperty(depKey) && ('onStateChange' in dependsOn[depKey])){
-								var nextVal = {};
-								nextVal[depKey] = nextState[depKey];
-								nextState = extend(nextState, dependsOn[depKey].onStateChange(nextVal));
-							}
-						}
+		if(caller !== appNamespace){
+			nextState[caller] = new dataContexts[caller](nextState[caller], 
+				getDependencies2(nextState, domain[caller]), prevState[caller]);					
+		}
+		if(watchedDataContext){
+			var tempDeps = {};
+			if(!!dependsOn){
+				tempDeps = getDependencies2(nextState, dependsOn);
+				nextState = extend(nextState, tempDeps);
+				for(var depKey in dependsOn){
+					if(dependsOn.hasOwnProperty(depKey) && ('onStateChange' in dependsOn[depKey])){
+						var nextVal = {};
+						nextVal[depKey] = nextState[depKey];
+						nextState = extend(nextState, dependsOn[depKey].onStateChange(nextVal));
 					}
-					nextState = new ApplicationDataContext(extend(nextState, tempDeps), prevState, disableUndo);
-					watchedDataContext.subscribers.forEach(function(subscriber){
-						if(subscriber !== appNamespace){
-							nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
-							getDependencies2(nextState, domain[subscriber]), prevState[subscriber]);
-						}
-					});
-				}	
-
-			// }
+				}
+			}
+			nextState = new ApplicationDataContext(extend(nextState, tempDeps), prevState, enableUndo);
+			watchedDataContext.subscribers.forEach(function(subscriber){
+				if(subscriber !== appNamespace){
+					nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
+					getDependencies2(nextState, domain[subscriber]), prevState[subscriber]);
+				}
+			});
+		}
 		return nextState;
 	};
 
-	var appStateChangedHandler = function(caller, newState, callback/*, initialize*/) {
+	var appStateChangedHandler = function(caller, newState, callback) {
 		var nextState = {},
 			prevState = {},
 			watchedDataContext = void(0),
@@ -126,9 +114,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			newStateKeysLen,
 			subscriberKeys;
 
-		//initialize === void(0) ? false : initialize;
 
-		if(/*!initialize && */(newState === void(0) || newState === null || Object.keys(newState).length === 0)){
+		if((newState === void(0) || newState === null || Object.keys(newState).length === 0)){
 			return;
 		}
 		var DomainModel = !!newState ? Object.getPrototypeOf(newState).constructor.classType === "DomainModel" : false;
@@ -196,61 +183,25 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			} else {
 				nextState = extend(thisAppState.state, newState);
 			}
-
-			prevState = thisAppState;//reprocessing ? thisAppState.previousState : thisAppState;
+			prevState = thisAppState;
 			nextState = transitionState(caller, nextState, thisAppState.state, watchedDataContext);
 		}
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
-
 		//Create a new App state context.
-		// thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo);
-		// if(!!thisAppState.getValidState && !rollback && !reprocessing) {
-		// 		// var validationObj = thisAppState.getValidState(thisAppState.state, thisAppState.previousState);
-		// 		// var validationKeys = Object.keys(validationObj);
-		// 		// for (var keyIdx = validationKeys.length - 1; keyIdx >= 0; keyIdx--) {
-		// 		// 	if(Object.prototype.toString.call(validationObj[validationKeys[keyIdx]]) !== '[object Object]' && 
-		// 		// 		Object.prototype.toString.call(validationObj[validationKeys[keyIdx]]) !== '[object Array]' &&
-		// 		// 		validationObj[validationKeys[keyIdx]] !== thisAppState.state[validationKeys[keyIdx]]){
-		// 		// 		reprocessing = true;
-		// 		// 		thisAppState.setState(extend(thisAppState.state, validationObj));
-		// 		// 		reprocessing = false;
-		// 		// 		break;
-		// 		// 	}
-		// 		// };
-		// 		var tempState = thisAppState.getValidState(nextState, prevState);
-		// 		if(tempState){
-		// 			reprocessing = true;
-
-		// 			thisAppState.setState(tempState);
-		// 			// thisAppState = new ApplicationDataContext(thisAppState.getValidState(thisAppState.state, thisAppState.previousState),
-		// 			// 	thisAppState.previousState, disableUndo);
-
-		// 			reprocessing = false;
-
-		// 		}
-		// }	
-		//Create a new App state context.
-		thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo);
-
+		thisAppState = new ApplicationDataContext(nextState, prevState, enableUndo);
 		//All the work is done! -> Notify the View
 		//Provided for the main app to return from init() to the View
-		//if(!reprocessing){
-			Object.freeze(thisAppState);
-			Object.freeze(thisAppState.state);
-			stateChangedHandler(thisAppState, caller, callback);
-			return thisAppState;
-		//}
+		Object.freeze(thisAppState);
+		Object.freeze(thisAppState.state);
+		stateChangedHandler(thisAppState, caller, callback);
+		return thisAppState;
 	};
-	// var dep;
-	// var dependsOn;
-	// var watchedPropsLen;
-	// var watchListProp1;
-	// var watchListProp2;
+
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	thisAppState = new ApplicationDataContext({}, void(0), disableUndo, true);
+	thisAppState = new ApplicationDataContext({}, void(0), enableUndo, true);
 	dependsOn = thisAppState.getDependencies ? getConfig(thisAppState.getDependencies(), 'property') : void(0);
 	if(dependsOn){
 		dependents.push(appNamespace);
@@ -300,7 +251,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		}
 	});
 	var tempDeps = !!dependsOn ? getDependencies2(thisAppState, dependsOn) : {};
-	thisAppState = new ApplicationDataContext(extend(thisAppState, tempDeps), void(0), disableUndo);
+	thisAppState = new ApplicationDataContext(extend(thisAppState, tempDeps), void(0), enableUndo);
 	Object.freeze(thisAppState.state);
 	return Object.freeze(thisAppState);
 };
@@ -391,57 +342,62 @@ var getDescriptor = utils.getDescriptor;
 var IMVVMDomainModel = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
+      
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
 
-      var dataContext = function(nextState, prevState, disableUndo, initialize) {
-        var freezeFields = desc.freezeFields;
-        var model = Object.create(desc.proto, desc.descriptor);
-
-        nextState = nextState || {};
+      var dataContext = function(nextState, prevState, enableUndo, initialize) {
         
-        if(!disableUndo && !!prevState){
-          Object.defineProperty(model, 'previousState', {
+        var freezeFields = desc.freezeFields;
+        var domainModel = Object.create(desc.proto, desc.descriptor);
+        
+        //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
+        Object.defineProperty(domainModel, 'state', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: nextState
+        });
+        
+        if(!!enableUndo && !!prevState){
+          Object.defineProperty(domainModel, 'previousState', {
             configurable: false,
             enumerable: false,
             writable: false,
             value: prevState
           });
         }
+
         prevState = prevState || {};
 
-        if(initialize && ('getInitialState' in desc.proto)){
+        if(initialize && ('getInitialState' in domainModel)){
           //Add state prop so that it can be referenced from within getInitialState
-          Object.defineProperty(model, 'state', {
-            configurable: true,
-            enumerable: false,
-            writable: true,
-            value: nextState
-          });
-          nextState = extend(nextState, desc.proto.getInitialState.call(model));
+          nextState = extend(nextState, domainModel.getInitialState.call(domainModel));
         }
-        //attach the nextState props to model if the don't exist
+
+        //attach the nextState props to domainModel if they don't exist
         var keys = Object.keys(nextState);
         for (var i = keys.length - 1; i >= 0; i--) {
-          if(!(keys[i] in model)){
-            model[keys[i]] = nextState[keys[i]];
+          if(!(keys[i] in domainModel)){
+            domainModel[keys[i]] = nextState[keys[i]];
           }
         };
 
-        Object.defineProperty(model, 'state', {
+        Object.defineProperty(domainModel, 'state', {
           configurable: false,
           enumerable: false,
           writable: false,
           value: nextState
         });
 
-        //freeze arrays and model instances
-        for (var i = freezeFields.length - 1; i >= 0; i--) {
-            Object.freeze(model[freezeFields[i].fieldName]);
+        //freeze arrays and domainModel instances
+        for (var fld = freezeFields.length - 1; fld >= 0; fld--) {
+            Object.freeze(domainModel[freezeFields[fld].fieldName]);
         };
 
-        return model;
+        return domainModel;
       };
+      
       return dataContext;
     }
   }
@@ -458,16 +414,16 @@ var getDescriptor = utils.getDescriptor;
 var IMVVMModel = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
+
       var desc = getDescriptor.call(this);
+      
       var dataContext = function(nextState, prevState, withContext) {
+        
         var freezeFields = desc.freezeFields;
         var model = Object.create(desc.proto, desc.descriptor);
         var argCount = arguments.length;
         var lastArgIsBool = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
         var initialize = false;
-
-        console.log('desc');
-        console.log(desc);
 
         if(argCount === 0){
           //defaults
@@ -495,6 +451,7 @@ var IMVVMModel = {
             withContext = false;
           }
         }
+        
         nextState = ('state' in nextState) ? nextState.state : nextState;
         prevState = ('state' in prevState) ? prevState.state : prevState;
 
@@ -504,20 +461,16 @@ var IMVVMModel = {
           writable: true,
           value: nextState
         });
-        //Need to have state prop in model before can extend model to get correct state
-        //nextState = extend(model, nextState);
-        
-        //runs everytime to initialize calculated state but will not run the calc func
-        //if the prop has already been initialized
-        if(initialize && !!desc.originalSpec.getInitialState){
-          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
+
+        if(initialize && ('getInitialState' in model)){
+          nextState = extend(nextState, model.getInitialState.call(model));
         }
 
         if(withContext){
           //This will self distruct
           Object.defineProperty(model, 'context', {
             configurable: true,
-            enumerable: true,
+            enumerable: false,
             set: function(context){
               this.setState = function(nextState, callback){ //callback may be useful for DB updates
                 return raiseStateChangeHandler.bind(context)
@@ -539,16 +492,11 @@ var IMVVMModel = {
         for (var i = freezeFields.length - 1; i >= 0; i--) {
             Object.freeze(model[freezeFields[i].fieldName]);
         };
-        // Object.keys(model).forEach(function(key){
-        //   if(Object.prototype.toString.call(this[key]) === '[object Object]' || 
-        //     Object.prototype.toString.call(this[key]) === '[object Array]'){
-        //     Object.freeze(this[key]);
-        //   }
-        // }.bind(model));
 
         if(!withContext){
           Object.freeze(model);
         }
+
         return model;
       };
       return dataContext;
@@ -567,63 +515,51 @@ var getDescriptor = utils.getDescriptor;
 var IMVVMViewModel = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
+
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
-      var count = 0;
+      
       var dataContext = function(nextState, dependencies, prevState, initialize) {
-        var freezeFields = desc.freezeFields;
-        console.log('COUNT - ' + ++count);
+        
         //nextState has already been extended with prevState in core
         nextState = extend(nextState, dependencies);
         prevState = prevState || {};
         prevState = ('state' in prevState) ? prevState.state : prevState;
         
-        var model = Object.create(desc.proto, desc.descriptor);
+        var freezeFields = desc.freezeFields;
+        var viewModel = Object.create(desc.proto, desc.descriptor);
 
-        Object.defineProperty(model, 'state', {
+        Object.defineProperty(viewModel, 'state', {
           configurable: true,
           enumerable: false,
           writable: true,
           value: nextState
         });
-        //Need to have state prop in model before can extend model to get correct state
-        nextState = extend(nextState, model);
 
-        if(initialize){
-          if(desc.proto.getInitialState){
-            nextState = extend(nextState, desc.proto.getInitialState());          
-          }
+        if(initialize && ('getInitialState' in viewModel)){
+          nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
         }
 
-        Object.defineProperty(model, 'state', {
+        Object.defineProperty(viewModel, 'state', {
           configurable: false,
           enumerable: false,
           writable: false,
           value: nextState
         });
 
-        //freeze arrays and model instances
+        //freeze arrays and viewModel instances
         for (var i = freezeFields.length - 1; i >= 0; i--) {
           if(freezeFields[i].kind === 'instance' &&
-              ('context' in model[freezeFields[i].fieldName])){
-            model[freezeFields[i].fieldName].context = model; 
+              ('context' in viewModel[freezeFields[i].fieldName])){
+            viewModel[freezeFields[i].fieldName].context = viewModel; 
           }
-          Object.freeze(model[freezeFields[i].fieldName]);
+          Object.freeze(viewModel[freezeFields[i].fieldName]);
         };
-        // Object.keys(model).forEach(function(key){
-        //   if(Object.prototype.toString.call(this[key]) === '[object Object]' &&
-        //     ('context' in this[key])){
-        //     this[key].context = this; 
-        //     Object.freeze(this[key]);
-        //   } else if(Object.prototype.toString.call(this[key]) === '[object Array]'){
-        //     Object.freeze(this[key]);
-        //   }
-        // }.bind(model));
 
-        //Add dependencies to model
+        //Add dependencies to viewModel
         for(var dep in dependencies){
           if(dependencies.hasOwnProperty(dep) && dep[0] !== '_'){
-            Object.defineProperty(model, dep, {
+            Object.defineProperty(viewModel, dep, {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -633,7 +569,7 @@ var IMVVMViewModel = {
         }
 
         Object.freeze(nextState);
-        return Object.freeze(model);
+        return Object.freeze(viewModel);
 
       };
       return dataContext;
@@ -650,7 +586,7 @@ var NAMESPACE = '__IMVVM__';
 
 var mixin = {
 	stateChangedHandler: function(dataContext, caller, callback){
-  	this.setState({applicationDataContext: dataContext}, function(){
+  	this.setState({domainDataContext: dataContext}, function(){
 	    //send all state back to caller
 	    //useful if you need to know what other parts of the app
 	    //were impacted by your changes. You can also use the returned
@@ -658,13 +594,13 @@ var mixin = {
 	    //Allows you to have multiple Application ViewModels in the one app and
 	    //still share the state with other presentation models that may be interested
 	    if(typeof callback === 'function'){
-      	if(this.state === null || !('applicationDataContext' in this.state)){
+      	if(this.state === null || !('domainDataContext' in this.state)){
           callback(void(0));
         } else {
-					if(caller in this.state.applicationDataContext){
-					  callback(this.state.applicationDataContext[caller]);
+					if(caller in this.state.domainDataContext){
+					  callback(this.state.domainDataContext[caller]);
 					} else if(caller === NAMESPACE) {
-					  callback(this.state.applicationDataContext);
+					  callback(this.state.domainDataContext);
 					} else {
 					  callback(void(0));
 					}
@@ -674,9 +610,9 @@ var mixin = {
   },
 
 	getInitialState: function(){
-		var appDataContext = core.getInitialState(NAMESPACE, this.props.domainModel,
-			this.stateChangedHandler, this.props.disableUndo);
-		return {applicationDataContext: appDataContext};
+		var dataContext = core.getInitialState(NAMESPACE, this.props.domainModel,
+			this.stateChangedHandler, this.props.enableUndo);
+		return {domainDataContext: dataContext};
 	}
 
 };
@@ -694,7 +630,6 @@ var utils = {
       return this.originalSpec.__processedObject__;
     }
 
-    //var originalSpec = this.originalSpec || {};
     for(var key in this.originalSpec){
       if(this.originalSpec.hasOwnProperty(key)){
         if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
@@ -729,6 +664,7 @@ var utils = {
 
     return this.originalSpec.__processedObject__;
   },
+
   extend: function () {
     var newObj = {};
     for (var i = 0; i < arguments.length; i++) {
@@ -741,6 +677,7 @@ var utils = {
     }
     return newObj;
   },
+  
   mixInto: function(constructor, methodBag) {
     var methodName;
     for (methodName in methodBag) {

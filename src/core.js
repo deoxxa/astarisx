@@ -2,7 +2,7 @@
 var utils = require('./utils');
 var extend = utils.extend;
 
-exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, disableUndo) {
+exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, enableUndo) {
 
 	if(typeof stateChangedHandler !== 'function'){
 		throw new TypeError();
@@ -22,7 +22,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	var watchListProp1;
 	var watchListProp2;
 
-	disableUndo === void(0) ? false : disableUndo;
+	enableUndo === void(0) ? true : enableUndo;
 
 	var getConfig = function(obj, propName){
 		var newObj = {};
@@ -71,47 +71,35 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		nextState = nextState || {};
 		prevState = prevState || {};
 
-		//var domainState = subscriber === appNamespace;
-
-			// if(domainState){
-			// 	// if(watchedDataContext){
-			// 	// 	watchedDataContext.subscribers.forEach(function(subscriber){
-			// 	// 		nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
-			// 	// 			getDependencies2(nextState, domain[subscriber]), prevState[subscriber]);
-			// 	// 	});
-			// 	// }	
-			// } else {
-				if(caller !== appNamespace){
-					nextState[caller] = new dataContexts[caller](nextState[caller], 
-						getDependencies2(nextState, domain[caller]), prevState[caller]);					
-				}
-				if(watchedDataContext){
-					var tempDeps = {};
-					if(!!dependsOn){
-						tempDeps = getDependencies2(nextState, dependsOn);
-						nextState = extend(nextState, tempDeps);
-						for(var depKey in dependsOn){
-							if(dependsOn.hasOwnProperty(depKey) && ('onStateChange' in dependsOn[depKey])){
-								var nextVal = {};
-								nextVal[depKey] = nextState[depKey];
-								nextState = extend(nextState, dependsOn[depKey].onStateChange(nextVal));
-							}
-						}
+		if(caller !== appNamespace){
+			nextState[caller] = new dataContexts[caller](nextState[caller], 
+				getDependencies2(nextState, domain[caller]), prevState[caller]);					
+		}
+		if(watchedDataContext){
+			var tempDeps = {};
+			if(!!dependsOn){
+				tempDeps = getDependencies2(nextState, dependsOn);
+				nextState = extend(nextState, tempDeps);
+				for(var depKey in dependsOn){
+					if(dependsOn.hasOwnProperty(depKey) && ('onStateChange' in dependsOn[depKey])){
+						var nextVal = {};
+						nextVal[depKey] = nextState[depKey];
+						nextState = extend(nextState, dependsOn[depKey].onStateChange(nextVal));
 					}
-					nextState = new ApplicationDataContext(extend(nextState, tempDeps), prevState, disableUndo);
-					watchedDataContext.subscribers.forEach(function(subscriber){
-						if(subscriber !== appNamespace){
-							nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
-							getDependencies2(nextState, domain[subscriber]), prevState[subscriber]);
-						}
-					});
-				}	
-
-			// }
+				}
+			}
+			nextState = new ApplicationDataContext(extend(nextState, tempDeps), prevState, enableUndo);
+			watchedDataContext.subscribers.forEach(function(subscriber){
+				if(subscriber !== appNamespace){
+					nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
+					getDependencies2(nextState, domain[subscriber]), prevState[subscriber]);
+				}
+			});
+		}
 		return nextState;
 	};
 
-	var appStateChangedHandler = function(caller, newState, callback/*, initialize*/) {
+	var appStateChangedHandler = function(caller, newState, callback) {
 		var nextState = {},
 			prevState = {},
 			watchedDataContext = void(0),
@@ -119,9 +107,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			newStateKeysLen,
 			subscriberKeys;
 
-		//initialize === void(0) ? false : initialize;
 
-		if(/*!initialize && */(newState === void(0) || newState === null || Object.keys(newState).length === 0)){
+		if((newState === void(0) || newState === null || Object.keys(newState).length === 0)){
 			return;
 		}
 		var DomainModel = !!newState ? Object.getPrototypeOf(newState).constructor.classType === "DomainModel" : false;
@@ -189,61 +176,25 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			} else {
 				nextState = extend(thisAppState.state, newState);
 			}
-
-			prevState = thisAppState;//reprocessing ? thisAppState.previousState : thisAppState;
+			prevState = thisAppState;
 			nextState = transitionState(caller, nextState, thisAppState.state, watchedDataContext);
 		}
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
-
 		//Create a new App state context.
-		// thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo);
-		// if(!!thisAppState.getValidState && !rollback && !reprocessing) {
-		// 		// var validationObj = thisAppState.getValidState(thisAppState.state, thisAppState.previousState);
-		// 		// var validationKeys = Object.keys(validationObj);
-		// 		// for (var keyIdx = validationKeys.length - 1; keyIdx >= 0; keyIdx--) {
-		// 		// 	if(Object.prototype.toString.call(validationObj[validationKeys[keyIdx]]) !== '[object Object]' && 
-		// 		// 		Object.prototype.toString.call(validationObj[validationKeys[keyIdx]]) !== '[object Array]' &&
-		// 		// 		validationObj[validationKeys[keyIdx]] !== thisAppState.state[validationKeys[keyIdx]]){
-		// 		// 		reprocessing = true;
-		// 		// 		thisAppState.setState(extend(thisAppState.state, validationObj));
-		// 		// 		reprocessing = false;
-		// 		// 		break;
-		// 		// 	}
-		// 		// };
-		// 		var tempState = thisAppState.getValidState(nextState, prevState);
-		// 		if(tempState){
-		// 			reprocessing = true;
-
-		// 			thisAppState.setState(tempState);
-		// 			// thisAppState = new ApplicationDataContext(thisAppState.getValidState(thisAppState.state, thisAppState.previousState),
-		// 			// 	thisAppState.previousState, disableUndo);
-
-		// 			reprocessing = false;
-
-		// 		}
-		// }	
-		//Create a new App state context.
-		thisAppState = new ApplicationDataContext(nextState, prevState, disableUndo);
-
+		thisAppState = new ApplicationDataContext(nextState, prevState, enableUndo);
 		//All the work is done! -> Notify the View
 		//Provided for the main app to return from init() to the View
-		//if(!reprocessing){
-			Object.freeze(thisAppState);
-			Object.freeze(thisAppState.state);
-			stateChangedHandler(thisAppState, caller, callback);
-			return thisAppState;
-		//}
+		Object.freeze(thisAppState);
+		Object.freeze(thisAppState.state);
+		stateChangedHandler(thisAppState, caller, callback);
+		return thisAppState;
 	};
-	// var dep;
-	// var dependsOn;
-	// var watchedPropsLen;
-	// var watchListProp1;
-	// var watchListProp2;
+
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	thisAppState = new ApplicationDataContext({}, void(0), disableUndo, true);
+	thisAppState = new ApplicationDataContext({}, void(0), enableUndo, true);
 	dependsOn = thisAppState.getDependencies ? getConfig(thisAppState.getDependencies(), 'property') : void(0);
 	if(dependsOn){
 		dependents.push(appNamespace);
@@ -293,7 +244,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		}
 	});
 	var tempDeps = !!dependsOn ? getDependencies2(thisAppState, dependsOn) : {};
-	thisAppState = new ApplicationDataContext(extend(thisAppState, tempDeps), void(0), disableUndo);
+	thisAppState = new ApplicationDataContext(extend(thisAppState, tempDeps), void(0), enableUndo);
 	Object.freeze(thisAppState.state);
 	return Object.freeze(thisAppState);
 };

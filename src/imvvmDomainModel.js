@@ -6,57 +6,62 @@ var getDescriptor = utils.getDescriptor;
 var IMVVMDomainModel = {
   Mixin: {
     construct: function(raiseStateChangeHandler){
+      
       var desc = getDescriptor.call(this);
       desc.proto.setState = raiseStateChangeHandler;
 
-      var dataContext = function(nextState, prevState, disableUndo, initialize) {
-        var freezeFields = desc.freezeFields;
-        var model = Object.create(desc.proto, desc.descriptor);
-
-        nextState = nextState || {};
+      var dataContext = function(nextState, prevState, enableUndo, initialize) {
         
-        if(!disableUndo && !!prevState){
-          Object.defineProperty(model, 'previousState', {
+        var freezeFields = desc.freezeFields;
+        var domainModel = Object.create(desc.proto, desc.descriptor);
+        
+        //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
+        Object.defineProperty(domainModel, 'state', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: nextState
+        });
+        
+        if(!!enableUndo && !!prevState){
+          Object.defineProperty(domainModel, 'previousState', {
             configurable: false,
             enumerable: false,
             writable: false,
             value: prevState
           });
         }
+
         prevState = prevState || {};
 
-        if(initialize && ('getInitialState' in desc.proto)){
+        if(initialize && ('getInitialState' in domainModel)){
           //Add state prop so that it can be referenced from within getInitialState
-          Object.defineProperty(model, 'state', {
-            configurable: true,
-            enumerable: false,
-            writable: true,
-            value: nextState
-          });
-          nextState = extend(nextState, desc.proto.getInitialState.call(model));
+          nextState = extend(nextState, domainModel.getInitialState.call(domainModel));
         }
-        //attach the nextState props to model if the don't exist
+
+        //attach the nextState props to domainModel if they don't exist
         var keys = Object.keys(nextState);
         for (var i = keys.length - 1; i >= 0; i--) {
-          if(!(keys[i] in model)){
-            model[keys[i]] = nextState[keys[i]];
+          if(!(keys[i] in domainModel)){
+            domainModel[keys[i]] = nextState[keys[i]];
           }
         };
 
-        Object.defineProperty(model, 'state', {
+        Object.defineProperty(domainModel, 'state', {
           configurable: false,
           enumerable: false,
           writable: false,
           value: nextState
         });
 
-        //freeze arrays and model instances
-        for (var i = freezeFields.length - 1; i >= 0; i--) {
-            Object.freeze(model[freezeFields[i].fieldName]);
+        //freeze arrays and domainModel instances
+        for (var fld = freezeFields.length - 1; fld >= 0; fld--) {
+            Object.freeze(domainModel[freezeFields[fld].fieldName]);
         };
 
-        return model;
+        return domainModel;
       };
+      
       return dataContext;
     }
   }

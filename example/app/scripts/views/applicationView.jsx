@@ -14,31 +14,31 @@ var ApplicationView = React.createClass({
   render: function(){
 
     console.log('------------------------------------------ Current Application State ------------------------------------------')
-    console.log(this.state.applicationDataContext);
+    console.log(this.state.domainDataContext);
 
-    /*console.log(Object.isFrozen(this.state.applicationDataContext.previousState || {}));
-    console.log(Object.isFrozen(this.state.applicationDataContext));
-    console.log(Object.isFrozen(this.state.applicationDataContext.state));
-    console.log(Object.isFrozen(this.state.applicationDataContext.persons));
-    console.log(Object.isFrozen(this.state.applicationDataContext.persons.collection));
-    console.log(Object.isFrozen(this.state.applicationDataContext.persons.selected));
-    console.log(Object.isFrozen(this.state.applicationDataContext.persons.selected.hobbies));
-    console.log(Object.isFrozen(this.state.applicationDataContext.persons.state));
-    console.log(Object.isFrozen(this.state.applicationDataContext.persons.state.collection));
-    console.log(Object.isFrozen(this.state.applicationDataContext.persons.state.collection[1]));
-    console.log(Object.isFrozen(this.state.applicationDataContext.persons.state.collection[1].hobbies));
-    console.log(Object.isFrozen(this.state.applicationDataContext.hobbies.state._selectedPerson));
-    console.log(Object.isFrozen(this.state.applicationDataContext.hobbies.state._selectedPerson.hobbies));*/
+    /*console.log(Object.isFrozen(this.state.domainDataContext.previousState || {}));
+    console.log(Object.isFrozen(this.state.domainDataContext));
+    console.log(Object.isFrozen(this.state.domainDataContext.state));
+    console.log(Object.isFrozen(this.state.domainDataContext.persons));
+    console.log(Object.isFrozen(this.state.domainDataContext.persons.collection));
+    console.log(Object.isFrozen(this.state.domainDataContext.persons.selected));
+    console.log(Object.isFrozen(this.state.domainDataContext.persons.selected.hobbies));
+    console.log(Object.isFrozen(this.state.domainDataContext.persons.state));
+    console.log(Object.isFrozen(this.state.domainDataContext.persons.state.collection));
+    console.log(Object.isFrozen(this.state.domainDataContext.persons.state.collection[1]));
+    console.log(Object.isFrozen(this.state.domainDataContext.persons.state.collection[1].hobbies));
+    console.log(Object.isFrozen(this.state.domainDataContext.hobbies.state._selectedPerson));
+    console.log(Object.isFrozen(this.state.domainDataContext.hobbies.state._selectedPerson.hobbies));*/
     return (
       <div>
-        <NavBarView appContext={this.state.applicationDataContext} />
+        <NavBarView appContext={this.state.domainDataContext} />
         <div className="container">
           <div className="row">
             <div className="col-md-4">
-              <SideBarView appContext={this.state.applicationDataContext} />
+              <SideBarView appContext={this.state.domainDataContext} />
             </div>
             <div className="col-md-8">
-              <DetailsView appContext={this.state.applicationDataContext} />
+              <DetailsView appContext={this.state.domainDataContext} />
             </div>
           </div>
         </div>

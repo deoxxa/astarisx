@@ -12,7 +12,7 @@
 //noUndo is optional - default is false
 React.renderComponent(<ApplicationView 
 	domainModel={DomainModel}
-  disableUndo={false} />,
+  enableUndo={true} />,
 	document.getElementById('container'));
 
 
