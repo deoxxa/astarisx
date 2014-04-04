@@ -15,14 +15,12 @@ var IMVVMDomainModel = {
         nextState = nextState || {};
         
         if(!disableUndo && !!prevState){
-          //if(!disableUndo && !!Object.keys(prevState).length){       
           Object.defineProperty(model, 'previousState', {
             configurable: false,
             enumerable: false,
             writable: false,
             value: prevState
           });
-          //}
         }
         prevState = prevState || {};
 
@@ -43,8 +41,6 @@ var IMVVMDomainModel = {
             model[keys[i]] = nextState[keys[i]];
           }
         };
-
-
 
         Object.defineProperty(model, 'state', {
           configurable: false,

@@ -87,10 +87,12 @@ var PersonsViewModel = IMVVM.createViewModel({
   },
 
   collection: {
+    kind: 'array',
     get: function(){ return this.state.collection; },
   },
 
   selected: {
+    kind: 'instance',
     get: function() { return this.state.selected; }
   },
 

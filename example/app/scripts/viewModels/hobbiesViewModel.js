@@ -44,14 +44,15 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
 
   hobbies: {
-    pseudo: true, //true because its not calculated but is supplied externally
+    kind: 'pseudo',//kind: 'pseudo' because get is supplied from other source
+                    //if referencing a dependency this kind = 'pseudo'
     get: function(){
       return this.state._selectedPerson.hobbies;
     }
   },
 
   busyText: {
-    pseudo: true, //true because its not calculated but is supplied externally
+    kind: 'pseudo', //kind: 'pseudo' because its not calculated but is supplied externally
     get: function(){
       return this.state.busy ? 'Im Busy! Go away...' : 'Not doing too much.';
     }

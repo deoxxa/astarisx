@@ -3,32 +3,25 @@ var utils = {
   getDescriptor: function(){
     var descriptor = {};
     var proto = this.prototype;
-    var calcFlds = [];
+    var autoFreeze = [];
 
     //var originalSpec = this.originalSpec || {};
     for(var key in this.originalSpec){
       if(this.originalSpec.hasOwnProperty(key)){
         if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
           //assume it is a descriptor
-          if('calculated' in this.originalSpec[key]){
-            //We want to preserve the calculated flag on originalSpec
-            descriptor[key] = utils.extend(this.originalSpec[key]);
-            descriptor[key].enumerable = this.originalSpec[key].calculated;
-            delete descriptor[key].calculated;
-            calcFlds.push(key);
-          } else if(!('enumerable' in this.originalSpec[key])){
-            //No need to preserve the pseudo flag on originalSpec
-            if('pseudo' in this.originalSpec[key]){
-              this.originalSpec[key].enumerable = !this.originalSpec[key].pseudo;
-              delete this.originalSpec[key].pseudo;
-            } else {
-              //default enumerable to true
-              this.originalSpec[key].enumerable = true;
+          //set enumerable to true
+          this.originalSpec[key].enumerable = true;
+          if('kind' in this.originalSpec[key]){
+            //No need to preserve the 'pseudo' fields
+            if(this.originalSpec[key].kind === 'pseudo'){
+              this.originalSpec[key].enumerable = false;
+            } else { //then it must be 'instance' || 'array'
+              autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
             }
-            descriptor[key] = this.originalSpec[key];
-          } else {
-            descriptor[key] = this.originalSpec[key];            
+            delete this.originalSpec[key].kind;
           }
+          descriptor[key] = this.originalSpec[key];
         } else {
           proto[key] = this.originalSpec[key];
         }
@@ -41,7 +34,7 @@ var utils = {
       descriptor: descriptor,
       proto: proto,
       originalSpec: this.originalSpec || {},
-      calculatedFields: calcFlds
+      freezeFields: autoFreeze
     }
   },
   extend: function () {

@@ -11,7 +11,6 @@ var IMVVMModel = {
         var model = Object.create(desc.proto, desc.descriptor);
         var argCount = arguments.length;
         var lastArgIsBool = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
-        var calcFld;
         var initialize = false;
 
         if(argCount === 0){
@@ -56,23 +55,7 @@ var IMVVMModel = {
         //if the prop has already been initialized
         if(initialize && !!desc.originalSpec.getInitialState){
           nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
-          // for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
-          //   if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
-          //     calcFld = {}
-          //     calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
-          //       call(model, nextState, prevState)[desc.calculatedFields[i]];
-          //     if(calcFld[desc.calculatedFields[i]] !== void(0)){
-          //       nextState = extend(nextState,calcFld);
-          //     }
-          //   }
-          // };
         }
-
-        /*//runs everytime
-        if(desc.originalSpec.getValidState){
-          nextState = extend(nextState,
-            desc.originalSpec.getValidState.call(model, nextState, prevState));
-        }*/
 
         if(withContext){
           //This will self distruct

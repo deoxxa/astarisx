@@ -399,14 +399,12 @@ var IMVVMDomainModel = {
         nextState = nextState || {};
         
         if(!disableUndo && !!prevState){
-          //if(!disableUndo && !!Object.keys(prevState).length){       
           Object.defineProperty(model, 'previousState', {
             configurable: false,
             enumerable: false,
             writable: false,
             value: prevState
           });
-          //}
         }
         prevState = prevState || {};
 
@@ -427,8 +425,6 @@ var IMVVMDomainModel = {
             model[keys[i]] = nextState[keys[i]];
           }
         };
-
-
 
         Object.defineProperty(model, 'state', {
           configurable: false,
@@ -459,7 +455,6 @@ var IMVVMModel = {
         var model = Object.create(desc.proto, desc.descriptor);
         var argCount = arguments.length;
         var lastArgIsBool = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
-        var calcFld;
         var initialize = false;
 
         if(argCount === 0){
@@ -504,23 +499,7 @@ var IMVVMModel = {
         //if the prop has already been initialized
         if(initialize && !!desc.originalSpec.getInitialState){
           nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
-          // for (var i = desc.calculatedFields.length - 1; i >= 0; i--) {
-          //   if(!(desc.calculatedFields[i] in nextState) || nextState[desc.calculatedFields[i]] === void(0)){
-          //     calcFld = {}
-          //     calcFld[desc.calculatedFields[i]] = desc.originalSpec.getInitialCalculatedState.
-          //       call(model, nextState, prevState)[desc.calculatedFields[i]];
-          //     if(calcFld[desc.calculatedFields[i]] !== void(0)){
-          //       nextState = extend(nextState,calcFld);
-          //     }
-          //   }
-          // };
         }
-
-        /*//runs everytime
-        if(desc.originalSpec.getValidState){
-          nextState = extend(nextState,
-            desc.originalSpec.getValidState.call(model, nextState, prevState));
-        }*/
 
         if(withContext){
           //This will self distruct
@@ -577,7 +556,6 @@ var IMVVMViewModel = {
       var count = 0;
       var dataContext = function(nextState, dependencies, prevState, initialize) {
         var initFunc;
-        var calcFld;
         console.log('COUNT - ' + ++count);
         //nextState has already been extended with prevState in core
         nextState = extend(nextState, dependencies);
@@ -686,32 +664,25 @@ var utils = {
   getDescriptor: function(){
     var descriptor = {};
     var proto = this.prototype;
-    var calcFlds = [];
+    var autoFreeze = [];
 
     //var originalSpec = this.originalSpec || {};
     for(var key in this.originalSpec){
       if(this.originalSpec.hasOwnProperty(key)){
         if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
           //assume it is a descriptor
-          if('calculated' in this.originalSpec[key]){
-            //We want to preserve the calculated flag on originalSpec
-            descriptor[key] = utils.extend(this.originalSpec[key]);
-            descriptor[key].enumerable = this.originalSpec[key].calculated;
-            delete descriptor[key].calculated;
-            calcFlds.push(key);
-          } else if(!('enumerable' in this.originalSpec[key])){
-            //No need to preserve the pseudo flag on originalSpec
-            if('pseudo' in this.originalSpec[key]){
-              this.originalSpec[key].enumerable = !this.originalSpec[key].pseudo;
-              delete this.originalSpec[key].pseudo;
-            } else {
-              //default enumerable to true
-              this.originalSpec[key].enumerable = true;
+          //set enumerable to true
+          this.originalSpec[key].enumerable = true;
+          if('kind' in this.originalSpec[key]){
+            //No need to preserve the 'pseudo' fields
+            if(this.originalSpec[key].kind === 'pseudo'){
+              this.originalSpec[key].enumerable = false;
+            } else { //then it must be 'instance' || 'array'
+              autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
             }
-            descriptor[key] = this.originalSpec[key];
-          } else {
-            descriptor[key] = this.originalSpec[key];            
+            delete this.originalSpec[key].kind;
           }
+          descriptor[key] = this.originalSpec[key];
         } else {
           proto[key] = this.originalSpec[key];
         }
@@ -724,7 +695,7 @@ var utils = {
       descriptor: descriptor,
       proto: proto,
       originalSpec: this.originalSpec || {},
-      calculatedFields: calcFlds
+      freezeFields: autoFreeze
     }
   },
   extend: function () {

@@ -11,7 +11,6 @@ var IMVVMViewModel = {
       var count = 0;
       var dataContext = function(nextState, dependencies, prevState, initialize) {
         var initFunc;
-        var calcFld;
         console.log('COUNT - ' + ++count);
         //nextState has already been extended with prevState in core
         nextState = extend(nextState, dependencies);

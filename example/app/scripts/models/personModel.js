@@ -73,7 +73,7 @@ var PersonModel = IMVVM.createModel({
   },
   
   fullName: {
-    pseudo: true,
+    kind: 'pseudo',
     get: function(){
       if(this.lastName === void(0)){
         return this.firstName;
@@ -122,7 +122,6 @@ var PersonModel = IMVVM.createModel({
   
   //Calculated field -> dob
   age: {
-    calculated: true,
     get: function(){
       return this.state.age;
     }
@@ -136,6 +135,7 @@ var PersonModel = IMVVM.createModel({
   },
 
   hobbies: {
+    kind: 'array',
     get: function(){ return this.state.hobbies ? this.state.hobbies : []; },
     set: function(newArray){
       this.setState({'hobbies': newArray});
