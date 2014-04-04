@@ -549,7 +549,7 @@ var ApplicationView = React.createClass({
 });
 ```
 
-Point the Domain Model at the View.
+Point the View to the Domain Model.
 ```javascript
 React.renderComponent(<ApplicationView domainModel={DomainModel}/>,
   document.getElementById('container'));
