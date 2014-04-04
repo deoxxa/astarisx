@@ -25,7 +25,7 @@ var IMVVMClass = {
 
     var DescriptorConstructor = Constructor;
 
-    var ConvenienceConstructor = function(raiseStateChangeHandler) {
+    var ConvenienceConstructor = function(stateChangedHandler) {
       var descriptor = new DescriptorConstructor();
       return descriptor.construct.apply(ConvenienceConstructor, arguments);
     };

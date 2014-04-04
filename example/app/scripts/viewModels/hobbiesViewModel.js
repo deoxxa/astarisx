@@ -4,6 +4,7 @@
 'use strict';
 
 var HobbiesViewModel = IMVVM.createViewModel({
+  
   getDependencies: function(){
     return {
       _selectedPerson: { 
@@ -13,36 +14,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
       busy: 'busy'
     }
   },
-  select: function(value){
-    var nextState = {};
-    nextState.selected = this.hobbies.filter(function(hobby){
-      return hobby === value;
-    })[0];
-    this.setState(nextState);
-  },
   
-  addHobby: function(value){
-    this.state._selectedPerson.addHobby(value);
-  },
-  
-  deleteHobby: function(value){
-    this.state._selectedPerson.deleteHobby(value);
-  },
-
-  //When a dependency changes reset the selected hobby to undefined
-
-  resetSelected: function(newValue) {
-    console.log('newValue');
-    console.log(newValue);
-
-    console.log('prevState');
-    console.log(this);
-
-    if(this.selected !== void(0)){
-      return {selected: void(0)};
-    }
-  },
-
   hobbies: {
     kind: 'pseudo',//kind: 'pseudo' because get is supplied from other source
                     //if referencing a dependency this kind = 'pseudo'
@@ -63,4 +35,28 @@ var HobbiesViewModel = IMVVM.createViewModel({
       return this.state.selected;
     }
   },
+
+  select: function(value){
+    var nextState = {};
+    nextState.selected = this.hobbies.filter(function(hobby){
+      return hobby === value;
+    })[0];
+    this.setState(nextState);
+  },
+  
+  addHobby: function(value){
+    this.state._selectedPerson.addHobby(value);
+  },
+  
+  deleteHobby: function(value){
+    this.state._selectedPerson.deleteHobby(value);
+  },
+
+  //When a dependency changes reset the selected hobby to undefined
+  resetSelected: function(newValue) {
+    if(this.selected !== void(0)){
+      return { selected: void(0) };
+    }
+  },
+
 });

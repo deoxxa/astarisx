@@ -5,10 +5,10 @@ var getDescriptor = utils.getDescriptor;
 
 var IMVVMViewModel = {
   Mixin: {
-    construct: function(raiseStateChangeHandler){
+    construct: function(stateChangedHandler){
 
       var desc = getDescriptor.call(this);
-      desc.proto.setState = raiseStateChangeHandler;
+      desc.proto.setState = stateChangedHandler;
       
       var dataContext = function(nextState, dependencies, prevState, initialize) {
         

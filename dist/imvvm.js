@@ -14,22 +14,22 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	if(typeof stateChangedHandler !== 'function'){
 		throw new TypeError();
 	}
-	
-	var ApplicationDataContext,
-		thisAppState = {},
-		dataContexts = {},
-		watchedProps,
-		watchList = {},
-		dependents = [],
-		domain;
-
-	var dep;
-	var dependsOn;
-	var watchedPropsLen;
-	var watchListProp1;
-	var watchListProp2;
 
 	enableUndo === void(0) ? true : enableUndo;
+
+	var ApplicationDataContext,
+		dependsOn,
+		appState = {},
+		dataContexts = {},
+		watchedProps,
+		watchedPropsLen,
+		watchList = {},
+		dependents = [],
+		domain,
+		watchListPropA,
+		watchListPropB;
+
+	var depProp;
 
 	var getConfig = function(obj, propName){
 		var newObj = {};
@@ -46,50 +46,57 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		return newObj;
 	}
 
-	var getDependencies2 = function(nextState, dataContext){
+	var _getDependencies = function(nextState, dataContext){
 		var deps = {},
 			props,
 			watchedValue;
+
+		if(!dataContext){
+			return {};
+		}
+
 		dataContext = ('dependsOn' in dataContext) ? dataContext : {dependsOn: dataContext};
-		//if('dependsOn' in dataContext){
-			for(var dependency in dataContext.dependsOn){
-				if(dataContext.dependsOn.hasOwnProperty(dependency)){
-					watchedValue = {};
-					props = dataContext.dependsOn[dependency].property.split('.');
-					props.forEach(function(prop, idx){
-						if(idx === 0){
-							watchedValue = nextState[prop];
-						} else {
-							watchedValue = watchedValue ? watchedValue[prop] : void(0);
-						}
-					});
-					deps[dependency] = watchedValue;			
-				}
-			};
-		//}
+
+		for(var dependency in dataContext.dependsOn){
+			if(dataContext.dependsOn.hasOwnProperty(dependency)){
+				watchedValue = {};
+				props = dataContext.dependsOn[dependency].property.split('.');
+				props.forEach(function(prop, idx){
+					if(idx === 0){
+						watchedValue = nextState[prop];
+					} else {
+						watchedValue = watchedValue ? watchedValue[prop] : void(0);
+					}
+				});
+				deps[dependency] = watchedValue;			
+			}
+		};
 		return deps;
 	};
 
 
 	var transitionState = function(caller, nextState, prevState, watchedDataContext){
-		var processed = false,
-			dependencies;
 
 		nextState = nextState || {};
 		prevState = prevState || {};
 
+		var processed = false,
+			dependencies,
+			tempDeps,
+			nextVal;
+
 		if(caller !== appNamespace){
 			nextState[caller] = new dataContexts[caller](nextState[caller], 
-				getDependencies2(nextState, domain[caller]), prevState[caller]);					
+				_getDependencies(nextState, domain[caller]), prevState[caller]);					
 		}
+
 		if(watchedDataContext){
-			var tempDeps = {};
 			if(!!dependsOn){
-				tempDeps = getDependencies2(nextState, dependsOn);
+				tempDeps = _getDependencies(nextState, dependsOn);
 				nextState = extend(nextState, tempDeps);
 				for(var depKey in dependsOn){
 					if(dependsOn.hasOwnProperty(depKey) && ('onStateChange' in dependsOn[depKey])){
-						var nextVal = {};
+						nextVal = {};
 						nextVal[depKey] = nextState[depKey];
 						nextState = extend(nextState, dependsOn[depKey].onStateChange(nextVal));
 					}
@@ -99,14 +106,20 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			watchedDataContext.subscribers.forEach(function(subscriber){
 				if(subscriber !== appNamespace){
 					nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
-					getDependencies2(nextState, domain[subscriber]), prevState[subscriber]);
+					_getDependencies(nextState, domain[subscriber]), prevState[subscriber]);
 				}
 			});
 		}
+
 		return nextState;
 	};
 
 	var appStateChangedHandler = function(caller, newState, callback) {
+		
+		if((newState === void(0) || newState === null || Object.keys(newState).length === 0)){
+			return;
+		}
+
 		var nextState = {},
 			prevState = {},
 			watchedDataContext = void(0),
@@ -114,16 +127,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			newStateKeysLen,
 			subscriberKeys;
 
-
-		if((newState === void(0) || newState === null || Object.keys(newState).length === 0)){
-			return;
-		}
-		var DomainModel = !!newState ? Object.getPrototypeOf(newState).constructor.classType === "DomainModel" : false;
-
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangedHandler. If a callback was passed in
 		//it would be assigned to newState
-		if(DomainModel) {
+		if(Object.getPrototypeOf(newState).constructor.classType === "DomainModel") {
 			//This means previous state has been requested
 			//so set nextState to the previous state
 			nextState = extend(newState);
@@ -152,7 +159,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			var m2;
 			if(caller !== appNamespace){
 				nextState[caller] = newState;
-				nextState = extend(thisAppState.state, nextState);
+				nextState = extend(appState.state, nextState);
 				if(watchedDataContext && watchedDataContext.subscribers){
 					watchedDataContext.subscribers.forEach(function(sub){
 						for(ii=0; ii < newStateKeysLen; ii++){
@@ -166,7 +173,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 										var tmpNextState = {};
 										tmpNextState[tempArr[m2].alias] = nextState[caller][newStateKeys[ii]];
 										var testing = dependsOn2[tempArr[m2].alias].
-											onStateChange.call(thisAppState.state[tempArr[m2].dataContext], tmpNextState);
+											onStateChange.call(appState.state[tempArr[m2].dataContext], tmpNextState);
 										if(Object.prototype.toString.call(testing) === '[object Object]'){
 											if(tempArr[m2].dataContext === appNamespace){
 												nextState = extend(nextState, testing);
@@ -181,63 +188,63 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					});
 				}
 			} else {
-				nextState = extend(thisAppState.state, newState);
+				nextState = extend(appState.state, newState);
 			}
-			prevState = thisAppState;
-			nextState = transitionState(caller, nextState, thisAppState.state, watchedDataContext);
+			prevState = appState;
+			nextState = transitionState(caller, nextState, appState.state, watchedDataContext);
 		}
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
 		//Create a new App state context.
-		thisAppState = new ApplicationDataContext(nextState, prevState, enableUndo);
+		appState = new ApplicationDataContext(nextState, prevState, enableUndo);
 		//All the work is done! -> Notify the View
 		//Provided for the main app to return from init() to the View
-		Object.freeze(thisAppState);
-		Object.freeze(thisAppState.state);
-		stateChangedHandler(thisAppState, caller, callback);
-		return thisAppState;
+		Object.freeze(appState);
+		Object.freeze(appState.state);
+		stateChangedHandler(appState, caller, callback);
+		return appState;
 	};
 
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	thisAppState = new ApplicationDataContext({}, void(0), enableUndo, true);
-	dependsOn = thisAppState.getDependencies ? getConfig(thisAppState.getDependencies(), 'property') : void(0);
+	appState = new ApplicationDataContext({}, void(0), enableUndo, true);
+	dependsOn = appState.getDependencies ? getConfig(appState.getDependencies(), 'property') : void(0);
 	if(dependsOn){
 		dependents.push(appNamespace);
-		for(dep in dependsOn){
-			if(dependsOn.hasOwnProperty(dep)){
-				watchedProps = dependsOn[dep].property.split('.');
+		for(depProp in dependsOn){
+			if(dependsOn.hasOwnProperty(depProp)){
+				watchedProps = dependsOn[depProp].property.split('.');
 				watchedPropsLen = watchedProps.length;
-				watchListProp1 = watchedPropsLen > 1 ? watchedProps[0] : appNamespace;
-				watchListProp2 = watchedPropsLen > 1 ? watchedProps[1] : watchedProps[0];
-				watchList[watchListProp1] = watchList[watchListProp1] || {};
-				watchList[watchListProp1][watchListProp2] = watchList[watchListProp1][watchListProp2] || [];
-				if(watchList[watchListProp1][watchListProp2].indexOf(appNamespace) === -1){
-					watchList[watchListProp1][watchListProp2].push({dataContext:appNamespace, alias: dep});
+				watchListPropA = watchedPropsLen > 1 ? watchedProps[0] : appNamespace;
+				watchListPropB = watchedPropsLen > 1 ? watchedProps[1] : watchedProps[0];
+				watchList[watchListPropA] = watchList[watchListPropA] || {};
+				watchList[watchListPropA][watchListPropB] = watchList[watchListPropA][watchListPropB] || [];
+				if(watchList[watchListPropA][watchListPropB].indexOf(appNamespace) === -1){
+					watchList[watchListPropA][watchListPropB].push({dataContext:appNamespace, alias: depProp});
 				}
 			}
 		}
 	}
 
-	domain = getConfig(thisAppState.getDomainDataContext(), 'viewModel');
+	domain = getConfig(appState.getDomainDataContext(), 'viewModel');
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
-			thisAppState[dataContext] = new dataContexts[dataContext]({}, {}, {}, true);
-			if(thisAppState[dataContext].getDependencies){
+			appState[dataContext] = new dataContexts[dataContext]({}, {}, {}, true);
+			if(appState[dataContext].getDependencies){
 				dependents.push(dataContext);
-				domain[dataContext].dependsOn = getConfig(thisAppState[dataContext].getDependencies(), 'property');
-				for(dep in domain[dataContext].dependsOn){
-					if(domain[dataContext].dependsOn.hasOwnProperty(dep)){
-						watchedProps = domain[dataContext].dependsOn[dep].property.split('.');
+				domain[dataContext].dependsOn = getConfig(appState[dataContext].getDependencies(), 'property');
+				for(depProp in domain[dataContext].dependsOn){
+					if(domain[dataContext].dependsOn.hasOwnProperty(depProp)){
+						watchedProps = domain[dataContext].dependsOn[depProp].property.split('.');
 						watchedPropsLen = watchedProps.length;
-						watchListProp1 = watchedPropsLen > 1 ? watchedProps[0] : appNamespace;
-						watchListProp2 = watchedPropsLen > 1 ? watchedProps[1] : watchedProps[0];
-						watchList[watchListProp1] = watchList[watchListProp1] || {};
-						watchList[watchListProp1][watchListProp2] = watchList[watchListProp1][watchListProp2] || [];
-						if(watchList[watchListProp1][watchListProp2].indexOf(dataContext) === -1){
-							watchList[watchListProp1][watchListProp2].push({dataContext:dataContext, alias: dep});
+						watchListPropA = watchedPropsLen > 1 ? watchedProps[0] : appNamespace;
+						watchListPropB = watchedPropsLen > 1 ? watchedProps[1] : watchedProps[0];
+						watchList[watchListPropA] = watchList[watchListPropA] || {};
+						watchList[watchListPropA][watchListPropB] = watchList[watchListPropA][watchListPropB] || [];
+						if(watchList[watchListPropA][watchListPropB].indexOf(dataContext) === -1){
+							watchList[watchListPropA][watchListPropB].push({dataContext:dataContext, alias: depProp});
 						}
 					}
 				}
@@ -246,14 +253,14 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	}
 	dependents.forEach(function(dependent){
 		if(dependent !== appNamespace){
-				thisAppState[dependent] = new dataContexts[dependent](thisAppState[dependent],
-					getDependencies2(thisAppState, domain[dependent]), {});
+				appState[dependent] = new dataContexts[dependent](appState[dependent],
+					_getDependencies(appState, domain[dependent]), {});
 		}
 	});
-	var tempDeps = !!dependsOn ? getDependencies2(thisAppState, dependsOn) : {};
-	thisAppState = new ApplicationDataContext(extend(thisAppState, tempDeps), void(0), enableUndo);
-	Object.freeze(thisAppState.state);
-	return Object.freeze(thisAppState);
+	
+	appState = new ApplicationDataContext(extend(appState, _getDependencies(appState, dependsOn)), void(0), enableUndo);
+	Object.freeze(appState.state);
+	return Object.freeze(appState);
 };
 },{"./utils":8}],3:[function(_dereq_,module,exports){
 
@@ -283,7 +290,7 @@ var IMVVMClass = {
 
     var DescriptorConstructor = Constructor;
 
-    var ConvenienceConstructor = function(raiseStateChangeHandler) {
+    var ConvenienceConstructor = function(stateChangedHandler) {
       var descriptor = new DescriptorConstructor();
       return descriptor.construct.apply(ConvenienceConstructor, arguments);
     };
@@ -341,10 +348,10 @@ var getDescriptor = utils.getDescriptor;
 
 var IMVVMDomainModel = {
   Mixin: {
-    construct: function(raiseStateChangeHandler){
+    construct: function(stateChangedHandler){
       
       var desc = getDescriptor.call(this);
-      desc.proto.setState = raiseStateChangeHandler;
+      desc.proto.setState = stateChangedHandler;
 
       var dataContext = function(nextState, prevState, enableUndo, initialize) {
         
@@ -413,7 +420,7 @@ var getDescriptor = utils.getDescriptor;
 
 var IMVVMModel = {
   Mixin: {
-    construct: function(raiseStateChangeHandler){
+    construct: function(stateChangedHandler){
 
       var desc = getDescriptor.call(this);
       
@@ -473,7 +480,7 @@ var IMVVMModel = {
             enumerable: false,
             set: function(context){
               this.setState = function(nextState, callback){ //callback may be useful for DB updates
-                return raiseStateChangeHandler.bind(context)
+                return stateChangedHandler.bind(context)
                   .call(context, extend(this.state, nextState), this.state, callback);
               }.bind(this);
               delete this.context;
@@ -514,10 +521,10 @@ var getDescriptor = utils.getDescriptor;
 
 var IMVVMViewModel = {
   Mixin: {
-    construct: function(raiseStateChangeHandler){
+    construct: function(stateChangedHandler){
 
       var desc = getDescriptor.call(this);
-      desc.proto.setState = raiseStateChangeHandler;
+      desc.proto.setState = stateChangedHandler;
       
       var dataContext = function(nextState, dependencies, prevState, initialize) {
         
@@ -621,6 +628,7 @@ module.exports = mixin;
 },{"./core":2}],8:[function(_dereq_,module,exports){
 
 var utils = {
+
   getDescriptor: function(){
     var descriptor = {};
     var proto = this.prototype;
@@ -634,13 +642,11 @@ var utils = {
       if(this.originalSpec.hasOwnProperty(key)){
         if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
           //assume it is a descriptor
-          //set enumerable to true
           this.originalSpec[key].enumerable = true;
           if('kind' in this.originalSpec[key]){
-            //No need to preserve the 'pseudo' fields
             if(this.originalSpec[key].kind === 'pseudo'){
               this.originalSpec[key].enumerable = false;
-            } else { //then it must be 'instance' || 'array'
+            } else { //'instance' || 'array'
               autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
             }
             delete this.originalSpec[key].kind;
@@ -677,7 +683,7 @@ var utils = {
     }
     return newObj;
   },
-  
+
   mixInto: function(constructor, methodBag) {
     var methodName;
     for (methodName in methodBag) {
@@ -687,6 +693,7 @@ var utils = {
       constructor.prototype[methodName] = methodBag[methodName];
     }
   }
+  
 };
 
 module.exports = utils;

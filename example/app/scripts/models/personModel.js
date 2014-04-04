@@ -5,42 +5,6 @@
 
 var PersonModel = IMVVM.createModel({
   
-  uuid: function () {
-    /*jshint bitwise:false */
-    var i, random;
-    var uuid = '';
-
-    for (i = 0; i < 32; i++) {
-      random = Math.random() * 16 | 0;
-      if (i === 8 || i === 12 || i === 16 || i === 20) {
-        uuid += '-';
-      }
-      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
-        .toString(16);
-    }
-    return uuid;
-  },
-  addHobby: function(value){
-    var arr;
-    if(this.hobbies.indexOf(value) === -1){
-      arr = this.hobbies.slice(0);
-      this.hobbies = arr.concat(value);
-    }
-  },
-  
-  deleteHobby: function(value){
-    this.hobbies = this.hobbies.filter(function(hobby){
-      return hobby !== value;
-    });
-  },
-
-  calculateAge: function(dob){ // dob is a date
-    var DOB = new Date(dob);
-    var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from 
-    var age = Math.abs(ageDate.getFullYear() - 1970);
-    return Number.isNaN(age) ? 'Enter your Birthday' : age + ' years old';
-  },
-
   getInitialState: function(/*nextState, prevState*/){
     return {
       age: this.calculateAge(this.dob),
@@ -120,13 +84,20 @@ var PersonModel = IMVVM.createModel({
     }
   },
   
-  //Calculated field -> dob
+  //Calculated field <- dob
   age: {
     get: function(){
       return this.state.age;
     }
   },
   
+  calculateAge: function(dob){ // dob is a date
+    var DOB = new Date(dob);
+    var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from 
+    var age = Math.abs(ageDate.getFullYear() - 1970);
+    return Number.isNaN(age) ? 'Enter your Birthday' : age + ' years old';
+  },
+
   gender: {
     get: function(){ return this.state.gender; },
     set: function(newValue){
@@ -141,5 +112,36 @@ var PersonModel = IMVVM.createModel({
       this.setState({'hobbies': newArray});
     }
   },
+
+  addHobby: function(value){
+    var arr;
+    if(this.hobbies.indexOf(value) === -1){
+      arr = this.hobbies.slice(0);
+      this.hobbies = arr.concat(value);
+    }
+  },
+  
+  deleteHobby: function(value){
+    this.hobbies = this.hobbies.filter(function(hobby){
+      return hobby !== value;
+    });
+  },
+
+  uuid: function () {
+    /*jshint bitwise:false */
+    var i, random;
+    var uuid = '';
+
+    for (i = 0; i < 32; i++) {
+      random = Math.random() * 16 | 0;
+      if (i === 8 || i === 12 || i === 16 || i === 20) {
+        uuid += '-';
+      }
+      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
+        .toString(16);
+    }
+    return uuid;
+  },
+
 });
 

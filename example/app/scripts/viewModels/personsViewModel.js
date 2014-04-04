@@ -4,12 +4,54 @@
 'use strict';
 
 var PersonsViewModel = IMVVM.createViewModel({
+
+  getInitialState: function(){
+    var nextState = {};
+    nextState.collection = DataService.getData().map(function(person, idx){
+      if (idx === 0){
+        nextState.selected = this.Person(person, true);
+        return nextState.selected;
+      }
+      return this.Person(person);
+    }.bind(this));
+    return nextState;
+  },
+
   getDependencies: function(){
     return {
       selectedHobby: 'hobbies.selected',
       imOnline: 'online'
     }
   },
+
+  Person: function(){
+    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
+  },
+
+  personStateChangedHandler: function(nextState, prevState/*, callback*/){
+    var persons = {};
+    
+    persons.collection = this.collection.map(function(person){
+      if(person.id === nextState.id){
+
+        persons.selected = this.Person(nextState, person, true);
+        return persons.selected;
+      }
+      return person;
+    }.bind(this));
+    this.setState(persons);
+  },
+
+  selected: {
+    kind: 'instance',
+    get: function() { return this.state.selected; }
+  },
+
+  collection: {
+    kind: 'array',
+    get: function(){ return this.state.collection; },
+  },
+
   select: function(id){
     var nextState = {};
     nextState.collection = this.collection.map(function(person){
@@ -55,47 +97,6 @@ var PersonsViewModel = IMVVM.createViewModel({
       }
     }
     this.setState(nextState);
-  },
-  
-  //runs once to initialize
-  getInitialState: function(){
-    var nextState = {};
-    nextState.collection = DataService.getData().map(function(person, idx){
-      if (idx === 0){
-        nextState.selected = this.Person(person, true);
-        return nextState.selected;
-      }
-      return this.Person(person);
-    }.bind(this));
-    return nextState;
-  },
-
-  personStateChangeHandler: function(nextState, prevState/*, callback*/){
-    var persons = {};
-    
-    persons.collection = this.collection.map(function(person){
-      if(person.id === nextState.id){
-
-        persons.selected = this.Person(nextState, person, true);
-        return persons.selected;
-      }
-      return person;
-    }.bind(this));
-    this.setState(persons);
-  },
-
-  Person: function(){
-    return new PersonModel(this.personStateChangeHandler).apply(this, arguments);
-  },
-
-  collection: {
-    kind: 'array',
-    get: function(){ return this.state.collection; },
-  },
-
-  selected: {
-    kind: 'instance',
-    get: function() { return this.state.selected; }
   },
 
 });

@@ -1,5 +1,6 @@
 
 var utils = {
+
   getDescriptor: function(){
     var descriptor = {};
     var proto = this.prototype;
@@ -13,13 +14,11 @@ var utils = {
       if(this.originalSpec.hasOwnProperty(key)){
         if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
           //assume it is a descriptor
-          //set enumerable to true
           this.originalSpec[key].enumerable = true;
           if('kind' in this.originalSpec[key]){
-            //No need to preserve the 'pseudo' fields
             if(this.originalSpec[key].kind === 'pseudo'){
               this.originalSpec[key].enumerable = false;
-            } else { //then it must be 'instance' || 'array'
+            } else { //'instance' || 'array'
               autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
             }
             delete this.originalSpec[key].kind;
@@ -56,7 +55,7 @@ var utils = {
     }
     return newObj;
   },
-  
+
   mixInto: function(constructor, methodBag) {
     var methodName;
     for (methodName in methodBag) {
@@ -66,6 +65,7 @@ var utils = {
       constructor.prototype[methodName] = methodBag[methodName];
     }
   }
+  
 };
 
 module.exports = utils;

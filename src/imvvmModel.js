@@ -5,7 +5,7 @@ var getDescriptor = utils.getDescriptor;
 
 var IMVVMModel = {
   Mixin: {
-    construct: function(raiseStateChangeHandler){
+    construct: function(stateChangedHandler){
 
       var desc = getDescriptor.call(this);
       
@@ -65,7 +65,7 @@ var IMVVMModel = {
             enumerable: false,
             set: function(context){
               this.setState = function(nextState, callback){ //callback may be useful for DB updates
-                return raiseStateChangeHandler.bind(context)
+                return stateChangedHandler.bind(context)
                   .call(context, extend(this.state, nextState), this.state, callback);
               }.bind(this);
               delete this.context;
