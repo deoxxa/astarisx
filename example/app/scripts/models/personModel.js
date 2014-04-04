@@ -5,7 +5,7 @@
 
 var PersonModel = IMVVM.createModel({
   
-  getInitialState: function(/*nextState, prevState*/){
+  getInitialState: function(){
     return {
       age: this.calculateAge(this.dob),
       id: this.id ? this.id : this.uuid()
