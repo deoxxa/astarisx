@@ -538,12 +538,22 @@ _Available in:_ ViewModel
 ___
 mixins: [IMVVM.mixin],
 
-React.renderComponent(<ApplicationView 
-  domainModel={DomainModel}
-  enableUndo={true} />,
+Adds domainDataContext to state.
+
+```javascript
+var ApplicationView = React.createClass({
+  mixins: [IMVVM.mixin],
+  render: function(){
+    return <DetailsView appContext={this.state.domainDataContext} />;    
+  }
+});
+```
+
+Point the Domain Model at the View.
+```javascript
+React.renderComponent(<ApplicationView domainModel={DomainModel}/>,
   document.getElementById('container'));
-  
-this.state.domainDataContext
+```
 
 
 ## Browser Support
