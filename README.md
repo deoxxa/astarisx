@@ -94,9 +94,9 @@ var PersonModel = IMVVM.createModel({
     }
   },
   
-  calculateAge: function(dob){ // dob is a date
+  calculateAge: function(dob){
     var DOB = new Date(dob);
-    var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from 
+    var ageDate = new Date(Date.now() - DOB.getTime()); 
     var age = Math.abs(ageDate.getFullYear() - 1970);
     return Number.isNaN(age) ? 'Enter your Birthday' : age + ' years old';
   },
@@ -191,8 +191,6 @@ var PersonsViewModel = IMVVM.createViewModel({
 
     if(value && value.length > 0){
       name = value.split(' ');
-      //Cannot initialize by passing in calculated prop value
-      //i.e. fullname
       nextState.selected = this.Person({
         firstName: name[0],
         lastName: name.slice(1).join(' ')
