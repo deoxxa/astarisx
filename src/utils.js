@@ -5,7 +5,10 @@ var utils = {
     var proto = this.prototype;
     var autoFreeze = [];
 
-    //var originalSpec = this.originalSpec || {};
+    if('__processedObject__' in this.originalSpec){
+      return this.originalSpec.__processedObject__;
+    }
+
     for(var key in this.originalSpec){
       if(this.originalSpec.hasOwnProperty(key)){
         if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
@@ -30,13 +33,17 @@ var utils = {
     if(!('extend' in proto)){
       proto.extend = utils.extend;      
     }
-    return { 
+
+    this.originalSpec.__processedObject__ = { 
       descriptor: descriptor,
       proto: proto,
       originalSpec: this.originalSpec || {},
       freezeFields: autoFreeze
-    }
+    };
+
+    return this.originalSpec.__processedObject__;
   },
+
   extend: function () {
     var newObj = {};
     for (var i = 0; i < arguments.length; i++) {
@@ -49,6 +56,7 @@ var utils = {
     }
     return newObj;
   },
+  
   mixInto: function(constructor, methodBag) {
     var methodName;
     for (methodName in methodBag) {

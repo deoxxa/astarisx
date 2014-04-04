@@ -294,5 +294,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	});
 	var tempDeps = !!dependsOn ? getDependencies2(thisAppState, dependsOn) : {};
 	thisAppState = new ApplicationDataContext(extend(thisAppState, tempDeps), void(0), disableUndo);
+	Object.freeze(thisAppState.state);
 	return Object.freeze(thisAppState);
 };

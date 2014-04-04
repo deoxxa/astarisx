@@ -10,6 +10,7 @@ var IMVVMDomainModel = {
       desc.proto.setState = raiseStateChangeHandler;
 
       var dataContext = function(nextState, prevState, disableUndo, initialize) {
+        var freezeFields = desc.freezeFields;
         var model = Object.create(desc.proto, desc.descriptor);
 
         nextState = nextState || {};
@@ -48,6 +49,12 @@ var IMVVMDomainModel = {
           writable: false,
           value: nextState
         });
+
+        //freeze arrays and model instances
+        for (var i = freezeFields.length - 1; i >= 0; i--) {
+            Object.freeze(model[freezeFields[i].fieldName]);
+        };
+
         return model;
       };
       return dataContext;

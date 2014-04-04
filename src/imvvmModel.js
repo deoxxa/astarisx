@@ -8,10 +8,14 @@ var IMVVMModel = {
     construct: function(raiseStateChangeHandler){
       var desc = getDescriptor.call(this);
       var dataContext = function(nextState, prevState, withContext) {
+        var freezeFields = desc.freezeFields;
         var model = Object.create(desc.proto, desc.descriptor);
         var argCount = arguments.length;
         var lastArgIsBool = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
         var initialize = false;
+
+        console.log('desc');
+        console.log(desc);
 
         if(argCount === 0){
           //defaults
@@ -79,12 +83,16 @@ var IMVVMModel = {
           value: nextState
         });
 
-        Object.keys(model).forEach(function(key){
-          if(Object.prototype.toString.call(this[key]) === '[object Object]' || 
-            Object.prototype.toString.call(this[key]) === '[object Array]'){
-            Object.freeze(this[key]);
-          }
-        }.bind(model));
+        //freeze arrays and model instances
+        for (var i = freezeFields.length - 1; i >= 0; i--) {
+            Object.freeze(model[freezeFields[i].fieldName]);
+        };
+        // Object.keys(model).forEach(function(key){
+        //   if(Object.prototype.toString.call(this[key]) === '[object Object]' || 
+        //     Object.prototype.toString.call(this[key]) === '[object Array]'){
+        //     Object.freeze(this[key]);
+        //   }
+        // }.bind(model));
 
         if(!withContext){
           Object.freeze(model);

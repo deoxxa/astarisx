@@ -27,7 +27,8 @@ var ApplicationView = React.createClass({
     console.log(Object.isFrozen(this.state.applicationDataContext.persons.state.collection));
     console.log(Object.isFrozen(this.state.applicationDataContext.persons.state.collection[1]));
     console.log(Object.isFrozen(this.state.applicationDataContext.persons.state.collection[1].hobbies));
-    console.log(Object.isFrozen(this.state.applicationDataContext.hobbies.state._selectedPerson));*/
+    console.log(Object.isFrozen(this.state.applicationDataContext.hobbies.state._selectedPerson));
+    console.log(Object.isFrozen(this.state.applicationDataContext.hobbies.state._selectedPerson.hobbies));*/
     return (
       <div>
         <NavBarView appContext={this.state.applicationDataContext} />
