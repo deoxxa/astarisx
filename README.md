@@ -102,7 +102,6 @@ var PersonModel = IMVVM.createModel({
   },
 
   uuid: function () {
-    /*jshint bitwise:false */
     var i, random;
     var uuid = '';
 
@@ -327,18 +326,18 @@ var FormView = React.createClass({
     var current = this.props.appContext.persons.selected;
     return (
       <div key={current.id}>
-        <form className="form-horizontal" role="form">
-          <div className="form-group">
-              <label className="col-md-2 control-label">Name</label>
-              <div className="col-md-3">
-                <input className="form-control" type="text" value={current.name}
+        <form role="form">
+          <div>
+              <label>Name</label>
+              <div>
+                <input type="text" value={current.name}
                 onChange={this.updateName} />
             </div>
           </div>
-          <div className="form-group">
-              <label className="col-md-2 control-label">Gender</label>
-              <div className="col-md-3">
-                <div className="radio">
+          <div>
+              <label>Gender</label>
+              <div>
+                <div>
                 <label>
                   <input type="radio" onChange={this.updateGender}
                     value="male"
@@ -346,7 +345,7 @@ var FormView = React.createClass({
                   Male
                 </label>
               </div>
-              <div className="radio">
+              <div>
                 <label>
                   <input type="radio" onChange={this.updateGender}
                     value="female"
@@ -356,18 +355,18 @@ var FormView = React.createClass({
               </div>
             </div>
           </div>
-          <div className="form-group">
-              <label className="col-md-2 control-label">Birthday</label>
-              <div className="col-md-3">
-                <input className="form-control" type="text" 
+          <div>
+              <label>Birthday</label>
+              <div>
+                <input type="text" 
                 placeholder="yyyy-mm-dd"
                 value={current.dob}
                 onChange={this.updateDOB} />
             </div>
           </div>
           <div className="form-group">
-              <label className="col-md-2 control-label">Age</label>
-              <div className="col-md-3">
+              <label>Age</label>
+              <div>
                 <div>
                   {current.age}
                 </div>
