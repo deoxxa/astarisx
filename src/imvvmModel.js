@@ -8,23 +8,20 @@ var IMVVMModel = {
     construct: function(stateChangedHandler){
 
       var desc = this.getDescriptor(this);
-      //desc.proto.__stateChangedHandler = stateChangedHandler;
       desc.stateChangedHandler = stateChangedHandler;
       desc.proto.__getDescriptor = function(){
         return desc;
       }
-      var dataContext = function(nextState) {
+
+      var dataContext = function(nextState, initialize) {
         
         var freezeFields = desc.freezeFields;
         var model = Object.create(desc.proto, desc.descriptor);
-        var initialize = false;
 
-        nextState = nextState || {};
-        if('state' in nextState){
-          nextState = nextState.state;
-        } else {
+        if(nextState === void(0)){
           initialize = true;
         }
+        nextState = nextState || {};
 
         Object.defineProperty(model, 'state', {
           configurable: true,

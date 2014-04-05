@@ -128,10 +128,10 @@ var PersonsViewModel = IMVVM.createViewModel({
     var nextState = {};
     nextState.collection = DataService.getData().map(function(person, idx){
       if (idx === 0){
-        nextState.selected = this.Person(person);
+        nextState.selected = this.Person(person, true);
         return nextState.selected;
       }
-      return this.Person(person);
+      return this.Person(person, true);
     }.bind(this));
     return nextState;
   },
@@ -143,11 +143,11 @@ var PersonsViewModel = IMVVM.createViewModel({
     }
   },
 
-  Person: function(personState){
-    return new PersonModel(this.personStateChangedHandler)(personState);
+  Person: function(personState, init){
+    return new PersonModel(this.personStateChangedHandler)(personState, init);
   },
 
-  personStateChangedHandler: function(nextState, prevState/*, callback*/){
+  personStateChangedHandler: function(nextState, prevState){
     var persons = {};
     
     persons.collection = this.collection.map(function(person){
@@ -195,7 +195,7 @@ var PersonsViewModel = IMVVM.createViewModel({
       nextState.selected = this.Person({
         firstName: name[0],
         lastName: name.slice(1).join(' ')
-      });
+      }, true);
       nextState.collection = this.collection.slice(0);
       nextState.collection = nextState.collection.concat(nextState.selected);
       this.setState(nextState);
@@ -522,15 +522,15 @@ _Available in:_ ViewModel
 ___
 _Definition_
 
-#####function ModelFactory(arg){ return new ModelClass(this.ModelStateChangeHandler)(arg); }
+#####function ModelFactory(args){ return new ModelClass(this.ModelStateChangeHandler)(args); }
 
 _Usage_
 
-#####object ModelFactory(object nextState)
+#####object ModelFactory(object nextState[, boolean init])
 
 ```javascript
-  Person: function(person){
-    return new PersonModel(this.personStateChangedHandler)(person);
+  Person: function(person, init){
+    return new PersonModel(this.personStateChangedHandler)(person, init);
   },
 ```
 

@@ -477,23 +477,20 @@ var IMVVMModel = {
     construct: function(stateChangedHandler){
 
       var desc = this.getDescriptor(this);
-      //desc.proto.__stateChangedHandler = stateChangedHandler;
       desc.stateChangedHandler = stateChangedHandler;
       desc.proto.__getDescriptor = function(){
         return desc;
       }
-      var dataContext = function(nextState) {
+
+      var dataContext = function(nextState, initialize) {
         
         var freezeFields = desc.freezeFields;
         var model = Object.create(desc.proto, desc.descriptor);
-        var initialize = false;
 
-        nextState = nextState || {};
-        if('state' in nextState){
-          nextState = nextState.state;
-        } else {
+        if(nextState === void(0)){
           initialize = true;
         }
+        nextState = nextState || {};
 
         Object.defineProperty(model, 'state', {
           configurable: true,
@@ -572,18 +569,22 @@ var IMVVMViewModel = {
         //freeze arrays and viewModel instances
         for (var i = freezeFields.length - 1; i >= 0; i--) {
           if(freezeFields[i].kind === 'instance'){
+              
               tempDesc = viewModel[freezeFields[i].fieldName].__getDescriptor();
               tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
+
               Object.defineProperty(tempModel, 'state', {
-                  configurable: false,
-                  enumerable: false,
-                  writable: false,
-                  value: viewModel[freezeFields[i].fieldName].state
-                });
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: viewModel[freezeFields[i].fieldName].state
+              });
+              
               tempModel.__proto__.setState = function(nextState, callback){ //callback may be useful for DB updates
                   return tempDesc.stateChangedHandler.bind(viewModel)
                     .call(viewModel, extend(this.state, nextState), this.state, callback);
               }.bind(tempModel);
+              
               viewModel[freezeFields[i].fieldName] = Object.freeze(tempModel);
 
           } else {

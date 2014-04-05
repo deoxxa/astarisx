@@ -9,10 +9,10 @@ var PersonsViewModel = IMVVM.createViewModel({
     var nextState = {};
     nextState.collection = DataService.getData().map(function(person, idx){
       if (idx === 0){
-        nextState.selected = this.Person(person);
+        nextState.selected = this.Person(person, true);
         return nextState.selected;
       }
-      return this.Person(person);
+      return this.Person(person, true);
     }.bind(this));
     return nextState;
   },
@@ -24,8 +24,8 @@ var PersonsViewModel = IMVVM.createViewModel({
     }
   },
 
-  Person: function(personState){
-    return new PersonModel(this.personStateChangedHandler)(personState);
+  Person: function(personState, init){
+    return new PersonModel(this.personStateChangedHandler)(personState, init);
   },
 
   personStateChangedHandler: function(nextState, prevState/*, callback*/){
@@ -76,7 +76,7 @@ var PersonsViewModel = IMVVM.createViewModel({
       nextState.selected = this.Person({
         firstName: name[0],
         lastName: name.slice(1).join(' ')
-      });
+      }, true);
       nextState.collection = this.collection.slice(0);
       nextState.collection = nextState.collection.concat(nextState.selected);
       this.setState(nextState);
