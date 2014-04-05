@@ -71,8 +71,6 @@ var PersonsViewModel = IMVVM.createViewModel({
 
     if(value && value.length > 0){
       name = value.split(' ');
-      //Cannot initialize by passing in calculated prop value
-      //i.e. fullname
       nextState.selected = this.Person({
         firstName: name[0],
         lastName: name.slice(1).join(' ')
