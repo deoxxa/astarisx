@@ -477,8 +477,11 @@ var IMVVMModel = {
     construct: function(stateChangedHandler){
 
       var desc = this.getDescriptor(this);
-      desc.proto.__stateChangedHandler = stateChangedHandler;
-      
+      //desc.proto.__stateChangedHandler = stateChangedHandler;
+      desc.stateChangedHandler = stateChangedHandler;
+      desc.proto.__getDescriptor = function(){
+        return desc;
+      }
       var dataContext = function(nextState) {
         
         var freezeFields = desc.freezeFields;
@@ -544,8 +547,8 @@ var IMVVMViewModel = {
         
         var freezeFields = desc.freezeFields;
         var viewModel = Object.create(desc.proto, desc.descriptor);
-        var tempDesc = {};
-        var propNames, tempModel;
+        var tempDesc,
+          tempModel;
 
 
         Object.defineProperty(viewModel, 'state', {
@@ -569,12 +572,8 @@ var IMVVMViewModel = {
         //freeze arrays and viewModel instances
         for (var i = freezeFields.length - 1; i >= 0; i--) {
           if(freezeFields[i].kind === 'instance'){
-              propNames = Object.getOwnPropertyNames(viewModel[freezeFields[i].fieldName]);
-              for (var j = propNames.length - 1; j >= 0; j--) {
-                tempDesc[propNames[j]] = Object.getOwnPropertyDescriptor(viewModel[freezeFields[i].fieldName], propNames[j]);
-              };
-
-              tempModel = Object.create(viewModel[freezeFields[i].fieldName].__proto__, tempDesc);
+              tempDesc = viewModel[freezeFields[i].fieldName].__getDescriptor();
+              tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
               Object.defineProperty(tempModel, 'state', {
                   configurable: false,
                   enumerable: false,
@@ -582,10 +581,9 @@ var IMVVMViewModel = {
                   value: viewModel[freezeFields[i].fieldName].state
                 });
               tempModel.__proto__.setState = function(nextState, callback){ //callback may be useful for DB updates
-                  return this.__stateChangedHandler.bind(viewModel)
+                  return tempDesc.stateChangedHandler.bind(viewModel)
                     .call(viewModel, extend(this.state, nextState), this.state, callback);
               }.bind(tempModel);
-
               viewModel[freezeFields[i].fieldName] = Object.freeze(tempModel);
 
           } else {

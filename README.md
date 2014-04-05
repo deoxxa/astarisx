@@ -128,10 +128,10 @@ var PersonsViewModel = IMVVM.createViewModel({
     var nextState = {};
     nextState.collection = DataService.getData().map(function(person, idx){
       if (idx === 0){
-        nextState.selected = this.Person(true, person);
+        nextState.selected = this.Person(person);
         return nextState.selected;
       }
-      return this.Person(false, person);
+      return this.Person(person);
     }.bind(this));
     return nextState;
   },
@@ -143,17 +143,17 @@ var PersonsViewModel = IMVVM.createViewModel({
     }
   },
 
-  Person: function(){
-    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
+  Person: function(personState){
+    return new PersonModel(this.personStateChangedHandler)(personState);
   },
 
-  personStateChangedHandler: function(nextState, prevState){
+  personStateChangedHandler: function(nextState, prevState/*, callback*/){
     var persons = {};
     
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
 
-        persons.selected = this.Person(true, nextState, person);
+        persons.selected = this.Person(nextState);
         return persons.selected;
       }
       return person;
@@ -175,7 +175,7 @@ var PersonsViewModel = IMVVM.createViewModel({
     var nextState = {};
     nextState.collection = this.collection.map(function(person){
       if(person.id === id){
-        nextState.selected = this.Person(true, person);
+        nextState.selected = this.Person(person);
         return nextState.selected;
       }
       return person;
@@ -190,7 +190,9 @@ var PersonsViewModel = IMVVM.createViewModel({
 
     if(value && value.length > 0){
       name = value.split(' ');
-      nextState.selected = this.Person(true, {
+      //Cannot initialize by passing in calculated prop value
+      //i.e. fullname
+      nextState.selected = this.Person({
         firstName: name[0],
         lastName: name.slice(1).join(' ')
       });
@@ -208,9 +210,9 @@ var PersonsViewModel = IMVVM.createViewModel({
     nextState.selected = void(0);
     if(nextState.collection.length > 0){
       if (this.selected.id === uid){
-        nextState.selected = this.Person(true, nextState.collection[0]);
+        nextState.selected = this.Person(nextState.collection[0]);
       } else {
-        nextState.selected = this.Person(true, this.selected);
+        nextState.selected = this.Person(this.selected);
       }
     }
     this.setState(nextState);
@@ -424,6 +426,7 @@ Transition Data Context to the next state.
 *parameters*
 
 __nextState__
+
 __callback__
 
 _Available in:_ DomainModel, ViewModel, Model
@@ -434,6 +437,7 @@ Creates a shallow copy of currentState. Adds/replaces properties with properties
 *parameters*
 
 __currentState__
+
 __nextState__
 
 _Available in:_ DomainModel, ViewModel, Model
@@ -518,16 +522,15 @@ _Available in:_ ViewModel
 ___
 _Definition_
 
-#####function ModelFactory(){ return new ModelClass(this.ModelStateChangeHandler).apply(this, arguments); }
+#####function ModelFactory(arg){ return new ModelClass(this.ModelStateChangeHandler)(arg); }
 
 _Usage_
 
-#####object ModelFactory([object nextState, object previousState, boolean withContext])
-#####object ModelFactory([object nextState, boolean withContext])
+#####object ModelFactory(object nextState)
 
 ```javascript
-  Person: function(){
-    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
+  Person: function(person){
+    return new PersonModel(this.personStateChangedHandler)(person);
   },
 ```
 
