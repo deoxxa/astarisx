@@ -9,7 +9,7 @@ var PersonsViewModel = IMVVM.createViewModel({
     var nextState = {};
     nextState.collection = DataService.getData().map(function(person, idx){
       if (idx === 0){
-        nextState.selected = this.Person(person, true);
+        nextState.selected = this.Person(person);
         return nextState.selected;
       }
       return this.Person(person);
@@ -24,8 +24,8 @@ var PersonsViewModel = IMVVM.createViewModel({
     }
   },
 
-  Person: function(){
-    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
+  Person: function(personState){
+    return new PersonModel(this.personStateChangedHandler)(personState);
   },
 
   personStateChangedHandler: function(nextState, prevState/*, callback*/){
@@ -34,7 +34,7 @@ var PersonsViewModel = IMVVM.createViewModel({
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
 
-        persons.selected = this.Person(nextState, person, true);
+        persons.selected = this.Person(nextState);
         return persons.selected;
       }
       return person;
@@ -56,7 +56,7 @@ var PersonsViewModel = IMVVM.createViewModel({
     var nextState = {};
     nextState.collection = this.collection.map(function(person){
       if(person.id === id){
-        nextState.selected = this.Person(person, true);
+        nextState.selected = this.Person(person);
         return nextState.selected;
       }
       return person;
@@ -76,7 +76,7 @@ var PersonsViewModel = IMVVM.createViewModel({
       nextState.selected = this.Person({
         firstName: name[0],
         lastName: name.slice(1).join(' ')
-      }, true);
+      });
       nextState.collection = this.collection.slice(0);
       nextState.collection = nextState.collection.concat(nextState.selected);
       this.setState(nextState);
@@ -91,9 +91,9 @@ var PersonsViewModel = IMVVM.createViewModel({
     nextState.selected = void(0);
     if(nextState.collection.length > 0){
       if (this.selected.id === uid){
-        nextState.selected = this.Person(nextState.collection[0], true);
+        nextState.selected = this.Person(nextState.collection[0]);
       } else {
-        nextState.selected = this.Person(this.selected, true);
+        nextState.selected = this.Person(this.selected);
       }
     }
     this.setState(nextState);

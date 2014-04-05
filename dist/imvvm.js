@@ -75,10 +75,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	};
 
 
-	var transitionState = function(caller, nextState, prevState, subscribers){
+	var transitionState = function(caller, subscribers, nextState, prevState){
 
 		nextState = nextState || {};
-		prevState = prevState || {};
 
 		var processed = false,
 			tempDeps,
@@ -86,7 +85,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 		if(caller !== appNamespace){
 			nextState[caller] = new dataContexts[caller](nextState[caller], 
-				getDeps(nextState, domain[caller]), prevState[caller]);					
+				getDeps(nextState, domain[caller]));					
 		}
 
 		if(subscribers){
@@ -105,7 +104,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			subscribers.forEach(function(subscriber){
 				if(subscriber !== appNamespace){
 					nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
-					getDeps(nextState, domain[subscriber]), prevState[subscriber]);
+					getDeps(nextState, domain[subscriber]));
 				}
 			});
 		}
@@ -204,7 +203,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				nextState = extend(appState.state, newState);
 			}
 			prevState = appState;
-			nextState = transitionState(caller, nextState, appState.state, hasSubscribers ? subscribers : false);
+			nextState = transitionState(caller, hasSubscribers ? subscribers : false, nextState, appState.state);
 		}
 		if(!!prevState){
 			Object.freeze(prevState);
@@ -244,7 +243,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
-			appState[dataContext] = new dataContexts[dataContext]({}, {}, {}, true);
+			appState[dataContext] = new dataContexts[dataContext]({}, {}, true);
 			if(appState[dataContext].getDependencies){
 				dependents.push(dataContext);
 				domain[dataContext].dependsOn = configure(appState[dataContext].getDependencies(), 'property');
@@ -267,7 +266,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	dependents.forEach(function(dependent){
 		if(dependent !== appNamespace){
 				appState[dependent] = new dataContexts[dependent](appState[dependent],
-					getDeps(appState, domain[dependent]), {});
+					getDeps(appState, domain[dependent]));
 		}
 	});
 	
@@ -286,9 +285,9 @@ var utils = _dereq_('./utils');
 var extend = utils.extend;
 var mixInto = utils.mixInto;
 
-var ModelBase = function() {};
-var ViewModelBase = function() {};
-var DomainModelBase = function() {};
+var ModelBase = function(){};
+var ViewModelBase = function(){};
+var DomainModelBase = function(){};
 
 mixInto(ModelBase, model.Mixin);
 mixInto(ViewModelBase, viewModel.Mixin);
@@ -323,6 +322,48 @@ var IMVVMClass = {
 
     ConvenienceConstructor.classType = classType;
     Constructor.prototype.classType = classType;
+
+    ConvenienceConstructor.getDescriptor = function(){
+      var descriptor = {};
+      var proto = this.prototype;
+      var autoFreeze = [];
+
+      if('__processedObject__' in this.originalSpec){
+        return this.originalSpec.__processedObject__;
+      }
+
+      for(var key in this.originalSpec){
+        if(this.originalSpec.hasOwnProperty(key)){
+          if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
+            //assume it is a descriptor
+            this.originalSpec[key].enumerable = true;
+            if('kind' in this.originalSpec[key]){
+              if(this.originalSpec[key].kind === 'pseudo'){
+                this.originalSpec[key].enumerable = false;
+              } else { //'instance' || 'array'
+                autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
+              }
+              delete this.originalSpec[key].kind;
+            }
+            descriptor[key] = this.originalSpec[key];
+          } else {
+            proto[key] = this.originalSpec[key];
+          }
+        }
+      }
+      if(!('extend' in proto)){
+        proto.extend = utils.extend;      
+      }
+
+      this.originalSpec.__processedObject__ = { 
+        descriptor: descriptor,
+        proto: proto,
+        originalSpec: this.originalSpec || {},
+        freezeFields: autoFreeze
+      };
+
+      return this.originalSpec.__processedObject__;
+    };
 
 /*    // Reduce time spent doing lookups by setting these on the prototype.
     for (var methodName in IMVVMInterface) {
@@ -363,7 +404,7 @@ var IMVVMDomainModel = {
   Mixin: {
     construct: function(stateChangedHandler){
       
-      var desc = getDescriptor.call(this);
+      var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
       var dataContext = function(nextState, prevState, enableUndo, initialize) {
@@ -435,45 +476,21 @@ var IMVVMModel = {
   Mixin: {
     construct: function(stateChangedHandler){
 
-      var desc = getDescriptor.call(this);
+      var desc = this.getDescriptor(this);
+      desc.proto.__stateChangedHandler = stateChangedHandler;
       
-      var dataContext = function(nextState, prevState, withContext) {
+      var dataContext = function(nextState) {
         
         var freezeFields = desc.freezeFields;
         var model = Object.create(desc.proto, desc.descriptor);
-        var argCount = arguments.length;
-        var lastArgIsBool = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
         var initialize = false;
 
-        if(argCount === 0){
-          //defaults
-          nextState = {};
-          prevState = {};
-          withContext = false;
-        } else if(argCount === 1){
-          if(lastArgIsBool){
-            withContext = nextState;
-            nextState = {};
-            prevState = {};
-          } else {
-            //assume this is a new Object and there is no prevState
-            prevState = {};
-            withContext = false;
-            initialize = true;
-          }
-        } else if(argCount === 2){
-          if(lastArgIsBool){
-            //assume this is a new Object and there is no prevState
-            withContext = prevState;
-            prevState = {};
-            initialize = true;
-          } else {
-            withContext = false;
-          }
+        nextState = nextState || {};
+        if('state' in nextState){
+          nextState = nextState.state;
+        } else {
+          initialize = true;
         }
-        
-        nextState = ('state' in nextState) ? nextState.state : nextState;
-        prevState = ('state' in prevState) ? prevState.state : prevState;
 
         Object.defineProperty(model, 'state', {
           configurable: true,
@@ -484,21 +501,6 @@ var IMVVMModel = {
 
         if(initialize && ('getInitialState' in model)){
           nextState = extend(nextState, model.getInitialState.call(model));
-        }
-
-        if(withContext){
-          //This will self distruct
-          Object.defineProperty(model, 'context', {
-            configurable: true,
-            enumerable: false,
-            set: function(context){
-              this.setState = function(nextState, callback){ //callback may be useful for DB updates
-                return stateChangedHandler.bind(context)
-                  .call(context, extend(this.state, nextState), this.state, callback);
-              }.bind(this);
-              delete this.context;
-            }
-          });
         }
 
         Object.defineProperty(model, 'state', {
@@ -513,11 +515,7 @@ var IMVVMModel = {
             Object.freeze(model[freezeFields[i].fieldName]);
         };
 
-        if(!withContext){
-          Object.freeze(model);
-        }
-
-        return model;
+        return Object.freeze(model);
       };
       return dataContext;
     }
@@ -536,18 +534,19 @@ var IMVVMViewModel = {
   Mixin: {
     construct: function(stateChangedHandler){
 
-      var desc = getDescriptor.call(this);
+      var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
       
-      var dataContext = function(nextState, dependencies, prevState, initialize) {
+      var dataContext = function(nextState, dependencies, initialize) {
         
         //nextState has already been extended with prevState in core
         nextState = extend(nextState, dependencies);
-        prevState = prevState || {};
-        prevState = ('state' in prevState) ? prevState.state : prevState;
         
         var freezeFields = desc.freezeFields;
         var viewModel = Object.create(desc.proto, desc.descriptor);
+        var tempDesc = {};
+        var propNames, tempModel;
+
 
         Object.defineProperty(viewModel, 'state', {
           configurable: true,
@@ -569,11 +568,29 @@ var IMVVMViewModel = {
 
         //freeze arrays and viewModel instances
         for (var i = freezeFields.length - 1; i >= 0; i--) {
-          if(freezeFields[i].kind === 'instance' &&
-              ('context' in viewModel[freezeFields[i].fieldName])){
-            viewModel[freezeFields[i].fieldName].context = viewModel; 
+          if(freezeFields[i].kind === 'instance'){
+              propNames = Object.getOwnPropertyNames(viewModel[freezeFields[i].fieldName]);
+              for (var j = propNames.length - 1; j >= 0; j--) {
+                tempDesc[propNames[j]] = Object.getOwnPropertyDescriptor(viewModel[freezeFields[i].fieldName], propNames[j]);
+              };
+
+              tempModel = Object.create(viewModel[freezeFields[i].fieldName].__proto__, tempDesc);
+              Object.defineProperty(tempModel, 'state', {
+                  configurable: false,
+                  enumerable: false,
+                  writable: false,
+                  value: viewModel[freezeFields[i].fieldName].state
+                });
+              tempModel.__proto__.setState = function(nextState, callback){ //callback may be useful for DB updates
+                  return this.__stateChangedHandler.bind(viewModel)
+                    .call(viewModel, extend(this.state, nextState), this.state, callback);
+              }.bind(tempModel);
+
+              viewModel[freezeFields[i].fieldName] = Object.freeze(tempModel);
+
+          } else {
+            Object.freeze(viewModel[freezeFields[i].fieldName]);            
           }
-          Object.freeze(viewModel[freezeFields[i].fieldName]);
         };
 
         //Add dependencies to viewModel
@@ -641,49 +658,7 @@ module.exports = mixin;
 },{"./core":2}],8:[function(_dereq_,module,exports){
 
 var utils = {
-
-  getDescriptor: function(){
-    var descriptor = {};
-    var proto = this.prototype;
-    var autoFreeze = [];
-
-    if('__processedObject__' in this.originalSpec){
-      return this.originalSpec.__processedObject__;
-    }
-
-    for(var key in this.originalSpec){
-      if(this.originalSpec.hasOwnProperty(key)){
-        if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
-          //assume it is a descriptor
-          this.originalSpec[key].enumerable = true;
-          if('kind' in this.originalSpec[key]){
-            if(this.originalSpec[key].kind === 'pseudo'){
-              this.originalSpec[key].enumerable = false;
-            } else { //'instance' || 'array'
-              autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
-            }
-            delete this.originalSpec[key].kind;
-          }
-          descriptor[key] = this.originalSpec[key];
-        } else {
-          proto[key] = this.originalSpec[key];
-        }
-      }
-    }
-    if(!('extend' in proto)){
-      proto.extend = utils.extend;      
-    }
-
-    this.originalSpec.__processedObject__ = { 
-      descriptor: descriptor,
-      proto: proto,
-      originalSpec: this.originalSpec || {},
-      freezeFields: autoFreeze
-    };
-
-    return this.originalSpec.__processedObject__;
-  },
-
+  
   extend: function () {
     var newObj = {};
     for (var i = 0; i < arguments.length; i++) {

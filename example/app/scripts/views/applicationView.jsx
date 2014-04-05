@@ -29,6 +29,7 @@ var ApplicationView = React.createClass({
     console.log(Object.isFrozen(this.state.domainDataContext.persons.state.collection[1].hobbies));
     console.log(Object.isFrozen(this.state.domainDataContext.hobbies.state._selectedPerson));
     console.log(Object.isFrozen(this.state.domainDataContext.hobbies.state._selectedPerson.hobbies));*/
+
     return (
       <div>
         <NavBarView appContext={this.state.domainDataContext} />

@@ -68,10 +68,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	};
 
 
-	var transitionState = function(caller, nextState, prevState, subscribers){
+	var transitionState = function(caller, subscribers, nextState, prevState){
 
 		nextState = nextState || {};
-		prevState = prevState || {};
 
 		var processed = false,
 			tempDeps,
@@ -79,7 +78,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 		if(caller !== appNamespace){
 			nextState[caller] = new dataContexts[caller](nextState[caller], 
-				getDeps(nextState, domain[caller]), prevState[caller]);					
+				getDeps(nextState, domain[caller]));					
 		}
 
 		if(subscribers){
@@ -98,7 +97,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			subscribers.forEach(function(subscriber){
 				if(subscriber !== appNamespace){
 					nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
-					getDeps(nextState, domain[subscriber]), prevState[subscriber]);
+					getDeps(nextState, domain[subscriber]));
 				}
 			});
 		}
@@ -197,7 +196,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				nextState = extend(appState.state, newState);
 			}
 			prevState = appState;
-			nextState = transitionState(caller, nextState, appState.state, hasSubscribers ? subscribers : false);
+			nextState = transitionState(caller, hasSubscribers ? subscribers : false, nextState, appState.state);
 		}
 		if(!!prevState){
 			Object.freeze(prevState);
@@ -237,7 +236,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
-			appState[dataContext] = new dataContexts[dataContext]({}, {}, {}, true);
+			appState[dataContext] = new dataContexts[dataContext]({}, {}, true);
 			if(appState[dataContext].getDependencies){
 				dependents.push(dataContext);
 				domain[dataContext].dependsOn = configure(appState[dataContext].getDependencies(), 'property');
@@ -260,7 +259,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	dependents.forEach(function(dependent){
 		if(dependent !== appNamespace){
 				appState[dependent] = new dataContexts[dependent](appState[dependent],
-					getDeps(appState, domain[dependent]), {});
+					getDeps(appState, domain[dependent]));
 		}
 	});
 	

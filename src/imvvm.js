@@ -8,9 +8,9 @@ var utils = require('./utils');
 var extend = utils.extend;
 var mixInto = utils.mixInto;
 
-var ModelBase = function() {};
-var ViewModelBase = function() {};
-var DomainModelBase = function() {};
+var ModelBase = function(){};
+var ViewModelBase = function(){};
+var DomainModelBase = function(){};
 
 mixInto(ModelBase, model.Mixin);
 mixInto(ViewModelBase, viewModel.Mixin);
@@ -45,6 +45,48 @@ var IMVVMClass = {
 
     ConvenienceConstructor.classType = classType;
     Constructor.prototype.classType = classType;
+
+    ConvenienceConstructor.getDescriptor = function(){
+      var descriptor = {};
+      var proto = this.prototype;
+      var autoFreeze = [];
+
+      if('__processedObject__' in this.originalSpec){
+        return this.originalSpec.__processedObject__;
+      }
+
+      for(var key in this.originalSpec){
+        if(this.originalSpec.hasOwnProperty(key)){
+          if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
+            //assume it is a descriptor
+            this.originalSpec[key].enumerable = true;
+            if('kind' in this.originalSpec[key]){
+              if(this.originalSpec[key].kind === 'pseudo'){
+                this.originalSpec[key].enumerable = false;
+              } else { //'instance' || 'array'
+                autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
+              }
+              delete this.originalSpec[key].kind;
+            }
+            descriptor[key] = this.originalSpec[key];
+          } else {
+            proto[key] = this.originalSpec[key];
+          }
+        }
+      }
+      if(!('extend' in proto)){
+        proto.extend = utils.extend;      
+      }
+
+      this.originalSpec.__processedObject__ = { 
+        descriptor: descriptor,
+        proto: proto,
+        originalSpec: this.originalSpec || {},
+        freezeFields: autoFreeze
+      };
+
+      return this.originalSpec.__processedObject__;
+    };
 
 /*    // Reduce time spent doing lookups by setting these on the prototype.
     for (var methodName in IMVVMInterface) {
