@@ -7,7 +7,7 @@ var PersonsViewModel = IMVVM.createViewModel({
 
   getInitialState: function(){
     var nextState = {};
-    nextState.collection = DataService.getData().map(function(person, idx){
+    nextState.collection = DataService.getPersonData().map(function(person, idx){
       if (idx === 0){
         nextState.selected = this.Person(person, true);
         return nextState.selected;
@@ -19,7 +19,7 @@ var PersonsViewModel = IMVVM.createViewModel({
 
   getDependencies: function(){
     return {
-      selectedHobby: 'hobbies.selected',
+      selectedHobby: 'hobbies.selected.name',
       imOnline: 'online'
     }
   },

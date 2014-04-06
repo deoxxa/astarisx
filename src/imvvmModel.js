@@ -30,6 +30,8 @@ var IMVVMModel = {
           value: nextState
         });
 
+        nextState = extend(nextState, model);
+        
         if(initialize && ('getInitialState' in model)){
           nextState = extend(nextState, model.getInitialState.call(model));
         }

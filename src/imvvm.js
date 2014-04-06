@@ -49,6 +49,7 @@ var IMVVMClass = {
     ConvenienceConstructor.getDescriptor = function(){
       var descriptor = {};
       var proto = this.prototype;
+      var uid;
       var autoFreeze = [];
 
       if('__processedObject__' in this.originalSpec){
@@ -63,6 +64,8 @@ var IMVVMClass = {
             if('kind' in this.originalSpec[key]){
               if(this.originalSpec[key].kind === 'pseudo'){
                 this.originalSpec[key].enumerable = false;
+              } else if(this.originalSpec[key].kind === 'uid'){
+                uid = key;
               } else { //'instance' || 'array'
                 autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
               }
@@ -82,7 +85,8 @@ var IMVVMClass = {
         descriptor: descriptor,
         proto: proto,
         originalSpec: this.originalSpec || {},
-        freezeFields: autoFreeze
+        freezeFields: autoFreeze,
+        uid: uid
       };
 
       return this.originalSpec.__processedObject__;

@@ -6,10 +6,24 @@
 var PersonModel = IMVVM.createModel({
   
   getInitialState: function(){
+
+    var id, hobbies = [];
+    
+    id = this.id || this.uuid();
+    
+    hobbies = DataService.getHobbiesData(this.id).map(function(hobby){
+      return this.Hobby(hobby, true);
+    }.bind(this));
+
     return {
       age: this.calculateAge(this.dob),
-      id: this.id ? this.id : this.uuid()
+      id: id,
+      hobbies: hobbies
     };
+  },
+
+  Hobby: function(hobbyState, init){
+    return new HobbyModel()(hobbyState, init);
   },
 
   id: {
@@ -107,7 +121,7 @@ var PersonModel = IMVVM.createModel({
 
   hobbies: {
     kind: 'array',
-    get: function(){ return this.state.hobbies ? this.state.hobbies : []; },
+    get: function(){ return this.state.hobbies; },
     set: function(newArray){
       this.setState({'hobbies': newArray});
     }

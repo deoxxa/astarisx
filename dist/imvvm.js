@@ -326,6 +326,7 @@ var IMVVMClass = {
     ConvenienceConstructor.getDescriptor = function(){
       var descriptor = {};
       var proto = this.prototype;
+      var uid;
       var autoFreeze = [];
 
       if('__processedObject__' in this.originalSpec){
@@ -340,6 +341,8 @@ var IMVVMClass = {
             if('kind' in this.originalSpec[key]){
               if(this.originalSpec[key].kind === 'pseudo'){
                 this.originalSpec[key].enumerable = false;
+              } else if(this.originalSpec[key].kind === 'uid'){
+                uid = key;
               } else { //'instance' || 'array'
                 autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
               }
@@ -359,7 +362,8 @@ var IMVVMClass = {
         descriptor: descriptor,
         proto: proto,
         originalSpec: this.originalSpec || {},
-        freezeFields: autoFreeze
+        freezeFields: autoFreeze,
+        uid: uid
       };
 
       return this.originalSpec.__processedObject__;
@@ -430,7 +434,9 @@ var IMVVMDomainModel = {
         }
 
         prevState = prevState || {};
-
+        
+        nextState = extend(nextState, domainModel);
+        
         if(initialize && ('getInitialState' in domainModel)){
           //Add state prop so that it can be referenced from within getInitialState
           nextState = extend(nextState, domainModel.getInitialState.call(domainModel));
@@ -499,6 +505,8 @@ var IMVVMModel = {
           value: nextState
         });
 
+        nextState = extend(nextState, model);
+        
         if(initialize && ('getInitialState' in model)){
           nextState = extend(nextState, model.getInitialState.call(model));
         }
@@ -555,10 +563,11 @@ var IMVVMViewModel = {
           value: nextState
         });
 
+        nextState = extend(nextState, viewModel);
+        
         if(initialize && ('getInitialState' in viewModel)){
           nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
         }
-
         Object.defineProperty(viewModel, 'state', {
           configurable: false,
           enumerable: false,
@@ -569,23 +578,24 @@ var IMVVMViewModel = {
         //freeze arrays and viewModel instances
         for (var i = freezeFields.length - 1; i >= 0; i--) {
           if(freezeFields[i].kind === 'instance'){
-              
-              tempDesc = viewModel[freezeFields[i].fieldName].__getDescriptor();
-              tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
+              if(viewModel[freezeFields[i].fieldName]){
+                tempDesc = viewModel[freezeFields[i].fieldName].__getDescriptor();
+                tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
 
-              Object.defineProperty(tempModel, 'state', {
-                configurable: false,
-                enumerable: false,
-                writable: false,
-                value: viewModel[freezeFields[i].fieldName].state
-              });
-              
-              tempModel.__proto__.setState = function(nextState, callback){ //callback may be useful for DB updates
-                  return tempDesc.stateChangedHandler.bind(viewModel)
-                    .call(viewModel, extend(this.state, nextState), this.state, callback);
-              }.bind(tempModel);
-              
-              viewModel[freezeFields[i].fieldName] = Object.freeze(tempModel);
+                Object.defineProperty(tempModel, 'state', {
+                  configurable: false,
+                  enumerable: false,
+                  writable: false,
+                  value: viewModel[freezeFields[i].fieldName].state
+                });
+                
+                tempModel.__proto__.setState = function(nextState, callback){ //callback may be useful for DB updates
+                    return tempDesc.stateChangedHandler.bind(viewModel)
+                      .call(viewModel, extend(this.state, nextState), this.state, callback);
+                }.bind(tempModel);
+                
+                viewModel[freezeFields[i].fieldName] = Object.freeze(tempModel);
+              }
 
           } else {
             Object.freeze(viewModel[freezeFields[i].fieldName]);            

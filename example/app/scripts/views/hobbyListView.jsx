@@ -18,32 +18,35 @@ var HobbyListView = React.createClass({
 	deleteHobby: function(uid, e){
 		this.props.appContext.hobbies.deleteHobby(uid);
 	},
+	updateName: function(e){
+		this.props.appContext.hobbies.selected.name = e.target.value;
+	},
 	render: function() {
 		var app = this.props.appContext;
 		var collection = this.props.appContext.hobbies.hobbies;
 		var current = this.props.appContext.hobbies.selected;
-
+		console.log(current);
 		var list = collection.map(function(hobby){
-			if(current === hobby){
+			if(current && (current.id === hobby.id)){
 				return (
 					<a 
-					onClick={this.handleSelection.bind(this, hobby)}
-					key={hobby}
+					onClick={this.handleSelection.bind(this, hobby.id)}
+					key={hobby.id}
 					href="#"
 					className="list-group-item active">
-					    {hobby}
-					    <DeleteButton funcDelete={this.deleteHobby.bind(this, hobby)} />
+					    {hobby.name}
+					    <DeleteButton funcDelete={this.deleteHobby.bind(this, hobby.id)} />
 					</a>
 				);
 			}
 			return (
 				<a 
-				onClick={this.handleSelection.bind(this, hobby)}
-				key={hobby}
+				onClick={this.handleSelection.bind(this, hobby.id)}
+				key={hobby.id}
 				href="#"
 				className="list-group-item">
-				    {hobby}
-				    <DeleteButton funcDelete={this.deleteHobby.bind(this, hobby)} />
+				    {hobby.name}
+				    <DeleteButton funcDelete={this.deleteHobby.bind(this, hobby.id)} />
 				</a>
 			);
 		}.bind(this));
@@ -53,6 +56,8 @@ var HobbyListView = React.createClass({
 				<AddControl placeholder="What do you like doing in your spare time?"
 					funcAdd={this.addHobby} />
 				{this.props.appContext.hobbies.busyText}
+				<input key={current ? current.id:-1} className="form-control" type="text" value={current ? current.name : 'no'}
+						    onChange={this.updateName} />
 				<div className="list-group">
 				  {list}
 				</div>

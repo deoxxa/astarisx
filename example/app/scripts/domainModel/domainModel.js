@@ -48,6 +48,12 @@ var DomainModel = IMVVM.createDomainModel({
       return this.persons ? this.persons.collection.length : 0;
     }
   },
+  personName: {
+    get: function(){
+      return this.persons ? this.persons.selected.firstName: 'no one';
+    }
+  },
+
 
   busy: {
     get: function(){
