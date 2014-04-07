@@ -170,10 +170,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				//At this point assign nextState to all subscribers
 				nextState.persons.state.$hobbies = nextState.hobbies;
 				nextState.hobbies.state.$persons = nextState.persons;
-				Object.freeze(nextState.persons.state);
-				Object.freeze(nextState.hobbies.state);
-				// Object.freeze(nextState.hobbies.state.$persons.previousState);
-				// Object.freeze(nextState.persons.state.$hobbies.previousState);
+				nextState.persons.previousState.$hobbies = appState.hobbies;
+				nextState.hobbies.previousState.$persons = appState.persons;
+				// Object.freeze(nextState.persons.state);
+				// Object.freeze(nextState.hobbies.state);
 				//for each subscriber call onStateChanged(appState.hobbies.state) => pass in previousState
 				//also call if for datacontext that is invoking the change
 				
@@ -470,7 +470,7 @@ var IMVVMDomainModel = {
         //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
         Object.defineProperty(domainModel, 'state', {
           configurable: true,
-          enumerable: false,
+          enumerable: true,
           writable: true,
           value: nextState
         });
@@ -617,7 +617,7 @@ var IMVVMViewModel = {
         }
         
         Object.defineProperty(viewModel, 'state', {
-          configurable: true,
+          configurable: false,
           enumerable: true,
           writable: true,
           value: nextState
@@ -628,7 +628,7 @@ var IMVVMViewModel = {
           nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
         
           Object.defineProperty(viewModel, 'state', {
-            configurable: true,
+            configurable: false,
             enumerable: true,
             writable: true,
             value: nextState
@@ -657,11 +657,11 @@ var IMVVMViewModel = {
               }
 
           } else {
-            Object.freeze(viewModel[freezeFields[i].fieldName]);            
+            Object.freeze(viewModel[freezeFields[i].fieldName]);
           }
         };
-
         return Object.freeze(viewModel);
+
       };
       return dataContext;
     }

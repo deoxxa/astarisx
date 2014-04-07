@@ -31,7 +31,7 @@ var IMVVMViewModel = {
         }
         
         Object.defineProperty(viewModel, 'state', {
-          configurable: true,
+          configurable: false,
           enumerable: true,
           writable: true,
           value: nextState
@@ -42,7 +42,7 @@ var IMVVMViewModel = {
           nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
         
           Object.defineProperty(viewModel, 'state', {
-            configurable: true,
+            configurable: false,
             enumerable: true,
             writable: true,
             value: nextState
@@ -71,11 +71,11 @@ var IMVVMViewModel = {
               }
 
           } else {
-            Object.freeze(viewModel[freezeFields[i].fieldName]);            
+            Object.freeze(viewModel[freezeFields[i].fieldName]);
           }
         };
-
         return Object.freeze(viewModel);
+
       };
       return dataContext;
     }

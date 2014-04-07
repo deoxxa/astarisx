@@ -87,10 +87,13 @@ var HobbiesViewModel = IMVVM.createViewModel({
 
     kind: 'instance',
     get: function(){
-      // console.log('this.selectedPerson');
-      // console.log(this.selectedPerson);
-      // console.log('this.state.$persons.selected');
-      // console.log(this.state.$persons.selected);
+      // if(this.state.$persons && this.previousState.$persons){
+      //   if(this.state.$persons.selected.id !==
+      //     this.previousState.$persons.selected.id){
+      //     return void(0);
+      //   }
+      //   return this.state.selected;
+      // }
       return this.state.selected;
     }
   },
