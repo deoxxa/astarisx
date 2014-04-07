@@ -172,6 +172,15 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				nextState.hobbies.state.$persons = nextState.persons;
 				nextState.persons.previousState.$hobbies = appState.hobbies.state;
 				nextState.hobbies.previousState.$persons = appState.persons.state;
+
+				if(caller === 'persons'){
+					nextState.hobbies = extend(appState.state.hobbies.state, nextState.hobbies.onStateChanged());
+					nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
+					nextState.persons.state.$hobbies = nextState.hobbies;
+					nextState.hobbies.state.$persons = nextState.persons;
+					nextState.persons.previousState.$hobbies = appState.hobbies.state;
+					nextState.hobbies.previousState.$persons = appState.persons.state;
+				}
 				// Object.freeze(nextState.persons.state);
 				// Object.freeze(nextState.hobbies.state);
 				//for each subscriber call onStateChanged(appState.hobbies.state) => pass in previousState

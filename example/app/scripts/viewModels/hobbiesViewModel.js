@@ -95,6 +95,16 @@ var HobbiesViewModel = IMVVM.createViewModel({
     return new HobbyModel(this.hobbyStateChangedHandler)(hobbyState, init);
   },
 
+  onStateChanged: function(){
+    
+    if(this.previousState.$persons.selected && this.state.$persons.selected.id !==
+      this.previousState.$persons.selected.id){
+      console.log(this.previousState.$persons.selected.id);
+      console.log(this.state.$persons.selected.id);
+      return {selected: void(0)};
+    }
+  },
+
   // testWatcher: {
   //   kind: 'watched',
   //   get: function(){ return this.state.$persons.selected.id != this.previousState.$persons.selected.id;}
@@ -159,23 +169,14 @@ var HobbiesViewModel = IMVVM.createViewModel({
   select: function(id){
     //var hobbiesArr;
     var nextState = {};
-    console.log('this.state.$persons.selected');
-    console.log(this.state.$persons.selected);
-    console.log('this.previousState.$persons.selected');
-    console.log(this.previousState.$persons.selected);
-    if(this.previousState.$persons.selected && this.state.$persons.selected.id !==
-      this.previousState.$persons.selected.id){
-      console.log(this.previousState.$persons.selected.id);
-      console.log(this.state.$persons.selected.id);
-      nextState.selected =  void(0);
-    } else {
+    
+
       this.hobbies.forEach(function(hobby){
         if (hobby.id === id){
           nextState.selected = this.Hobby(hobby);;
         }
        
       }.bind(this));
-    }
 
     this.setState(nextState);
 
