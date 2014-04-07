@@ -160,7 +160,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			if(caller !== appNamespace){
 
 				nextState[caller] = extend(appState.state[caller].state, newState);
-				nextState[caller] = new dataContexts[caller](nextState[caller], appState[caller]); //All this should really do is create
+				nextState[caller] = new dataContexts[caller](nextState[caller]); //All this should really do is create
 				//a viewModel with the prototype and enable calling initial and onStateChange functions
 				
 				//for each subscriber call onStateChanging(next.hobbies.state) => pass in nextState
@@ -170,8 +170,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				//At this point assign nextState to all subscribers
 				nextState.persons.state.$hobbies = nextState.hobbies;
 				nextState.hobbies.state.$persons = nextState.persons;
-				nextState.persons.previousState.$hobbies = appState.hobbies;
-				nextState.hobbies.previousState.$persons = appState.persons;
+				nextState.persons.previousState.$hobbies = appState.hobbies.state;
+				nextState.hobbies.previousState.$persons = appState.persons.state;
 				// Object.freeze(nextState.persons.state);
 				// Object.freeze(nextState.hobbies.state);
 				//for each subscriber call onStateChanged(appState.hobbies.state) => pass in previousState
@@ -271,7 +271,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
-			appState[dataContext] = new dataContexts[dataContext]({}, {}, true);
+			appState[dataContext] = new dataContexts[dataContext]({}, true);
 			if(appState[dataContext].getDependencies){
 				// dependents.push(dataContext);
 				// domain[dataContext].dependsOn = configure(appState[dataContext].getDependencies(), 'property');
@@ -304,6 +304,19 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		get: function(){ return appState.persons; }
 	});
 	Object.freeze(appState.hobbies.state);
+	//move this within if statement above
+	Object.defineProperty(appState.persons.previousState, '$hobbies', {
+		configurable: false,
+		enumerable: true,
+		get: function(){ return {}; }
+	});
+	Object.freeze(appState.persons.previousState);
+	Object.defineProperty(appState.hobbies.previousState, '$persons', {
+		configurable: false,
+		enumerable: true,
+		get: function(){ return {}; }
+	});
+	Object.freeze(appState.hobbies.previousState);
 	
 	// Object.defineProperty(appState.state, '$hobbies', {
 	// 	enumerable: true,
@@ -597,7 +610,7 @@ var IMVVMViewModel = {
       desc.proto.setState = stateChangedHandler;
 
       // console.log('viewModel');
-      var dataContext = function(nextState, prevState, initialize) {
+      var dataContext = function(nextState, initialize) {
 
         //nextState has already been extended with prevState in core
         //nextState = extend(nextState, dependencies);
@@ -607,14 +620,12 @@ var IMVVMViewModel = {
         var tempDesc,
           tempModel;
 
-        if(prevState){
-          Object.defineProperty(viewModel, 'previousState', {
-            configurable: false,
-            enumerable: false,
-            writable: false,
-            value: prevState
-          });  
-        }
+        Object.defineProperty(viewModel, 'previousState', {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: {}
+        });  
         
         Object.defineProperty(viewModel, 'state', {
           configurable: false,

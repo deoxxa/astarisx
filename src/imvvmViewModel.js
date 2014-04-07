@@ -11,7 +11,7 @@ var IMVVMViewModel = {
       desc.proto.setState = stateChangedHandler;
 
       // console.log('viewModel');
-      var dataContext = function(nextState, prevState, initialize) {
+      var dataContext = function(nextState, initialize) {
 
         //nextState has already been extended with prevState in core
         //nextState = extend(nextState, dependencies);
@@ -21,14 +21,12 @@ var IMVVMViewModel = {
         var tempDesc,
           tempModel;
 
-        if(prevState){
-          Object.defineProperty(viewModel, 'previousState', {
-            configurable: false,
-            enumerable: false,
-            writable: false,
-            value: prevState
-          });  
-        }
+        Object.defineProperty(viewModel, 'previousState', {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value: {}
+        });  
         
         Object.defineProperty(viewModel, 'state', {
           configurable: false,

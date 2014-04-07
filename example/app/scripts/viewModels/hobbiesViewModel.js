@@ -87,13 +87,6 @@ var HobbiesViewModel = IMVVM.createViewModel({
 
     kind: 'instance',
     get: function(){
-      // if(this.state.$persons && this.previousState.$persons){
-      //   if(this.state.$persons.selected.id !==
-      //     this.previousState.$persons.selected.id){
-      //     return void(0);
-      //   }
-      //   return this.state.selected;
-      // }
       return this.state.selected;
     }
   },
@@ -102,6 +95,10 @@ var HobbiesViewModel = IMVVM.createViewModel({
     return new HobbyModel(this.hobbyStateChangedHandler)(hobbyState, init);
   },
 
+  // testWatcher: {
+  //   kind: 'watched',
+  //   get: function(){ return this.state.$persons.selected.id != this.previousState.$persons.selected.id;}
+  // },
   selectedPerson: {
     get: function(){return this.state.$persons.selected;}
   },
@@ -161,32 +158,26 @@ var HobbiesViewModel = IMVVM.createViewModel({
 
   select: function(id){
     //var hobbiesArr;
-
-
     var nextState = {};
-    this.hobbies.forEach(function(hobby){
-      if (hobby.id === id){
-        // nextState.selected = this.Hobby(hobby);
-        // return nextState.selected;
-        nextState.selected = this.Hobby(hobby);;
-      }
-     
-    }.bind(this));
+    console.log('this.state.$persons.selected');
+    console.log(this.state.$persons.selected);
+    console.log('this.previousState.$persons.selected');
+    console.log(this.previousState.$persons.selected);
+    if(this.previousState.$persons.selected && this.state.$persons.selected.id !==
+      this.previousState.$persons.selected.id){
+      console.log(this.previousState.$persons.selected.id);
+      console.log(this.state.$persons.selected.id);
+      nextState.selected =  void(0);
+    } else {
+      this.hobbies.forEach(function(hobby){
+        if (hobby.id === id){
+          nextState.selected = this.Hobby(hobby);;
+        }
+       
+      }.bind(this));
+    }
 
-    //console.log(hobbiesArr);
-    // var nextState = {};
-    // for (var i = hobbiesArr.length - 1; i >= 0; i--)
-    // {
-    //   if (hobbiesArr[i].id === id){
-    //     nextState.selected = this.Hobby(this.hobbies[i]);
-    //     hobbiesArr[i] = nextState.selected;
-    //     break;
-    //   }
-    // }
-    this.setState(nextState);/*, function(dataContext){
-      // console.log(dataContext);
-      this.state.selectedPerson.hobbies = hobbiesArr;
-    }.bind(this));*/
+    this.setState(nextState);
 
   },
   
