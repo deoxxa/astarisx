@@ -9,7 +9,7 @@ module.exports = IMVVM;
 var utils = _dereq_('./utils');
 var extend = utils.extend;
 
-exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, enableUndo) {
+exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, enableUndo, initialize) {
 
 	if(typeof stateChangedHandler !== 'function'){
 		throw new TypeError();
@@ -46,71 +46,70 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		return newObj;
 	};
 
-	var getDeps = function(nextState, dataContext){
-		var dependencies = {},
-			props,
-			watchedValue;
+	// var getDeps = function(nextState, dataContext){
+	// 	var dependencies = {},
+	// 		props,
+	// 		watchedValue;
 
-		if(!dataContext){
-			return {};
-		}
+	// 	if(!dataContext){
+	// 		return {};
+	// 	}
 
-		dataContext = ('dependsOn' in dataContext) ? dataContext : {dependsOn: dataContext};
+	// 	dataContext = ('dependsOn' in dataContext) ? dataContext : {dependsOn: dataContext};
 
-		for(var dependency in dataContext.dependsOn){
-			if(dataContext.dependsOn.hasOwnProperty(dependency)){
-				watchedValue = {};
-				props = dataContext.dependsOn[dependency].property.split('.');
-				props.forEach(function(prop, idx){
-					if(idx === 0){
-						watchedValue = nextState[prop];
-					} else {
-						watchedValue = watchedValue ? watchedValue[prop] : void(0);
-					}
-				});
-				dependencies[dependency] = watchedValue;			
-			}
-		};
-		return dependencies;
-	};
+	// 	for(var dependency in dataContext.dependsOn){
+	// 		if(dataContext.dependsOn.hasOwnProperty(dependency)){
+	// 			watchedValue = {};
+	// 			props = dataContext.dependsOn[dependency].property.split('.');
+	// 			props.forEach(function(prop, idx){
+	// 				if(idx === 0){
+	// 					watchedValue = nextState[prop];
+	// 				} else {
+	// 					watchedValue = watchedValue ? watchedValue[prop] : void(0);
+	// 				}
+	// 			});
+	// 			dependencies[dependency] = watchedValue;			
+	// 		}
+	// 	};
+	// 	return dependencies;
+	// };
 
 
-	var transitionState = function(caller, subscribers, nextState, prevState){
+	// var transitionState = function(caller, nextState, prevState){
 
-		nextState = nextState || {};
+	// 	nextState = nextState || {};
 
-		var processed = false,
-			tempDeps,
-			nextVal;
+	// 	var processed = false,
+	// 		tempDeps,
+	// 		nextVal;
 
-		if(caller !== appNamespace){
-			nextState[caller] = new dataContexts[caller](nextState[caller], 
-				getDeps(nextState, domain[caller]));					
-		}
+	// 	if(caller !== appNamespace){
+	// 		nextState[caller] = new dataContexts[caller](nextState.state[caller]/*, getDeps(nextState, domain[caller])*/, initialize);
+	// 	}
 
-		if(subscribers){
-			if(!!dependsOn){
-				tempDeps = getDeps(nextState, dependsOn);
-				nextState = extend(nextState, tempDeps);
-				for(var depKey in dependsOn){
-					if(dependsOn.hasOwnProperty(depKey) && ('onStateChange' in dependsOn[depKey])){
-						nextVal = {};
-						nextVal[depKey] = nextState[depKey];
-						nextState = extend(nextState, dependsOn[depKey].onStateChange(nextVal));
-					}
-				}
-			}
-			nextState = new ApplicationDataContext(extend(nextState, tempDeps), prevState, enableUndo);
-			subscribers.forEach(function(subscriber){
-				if(subscriber !== appNamespace){
-					nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
-					getDeps(nextState, domain[subscriber]));
-				}
-			});
-		}
+	// 	// if(subscribers){
+	// 	// 	if(!!dependsOn){
+	// 	// 		tempDeps = getDeps(nextState, dependsOn);
+	// 	// 		nextState = extend(nextState, tempDeps);
+	// 	// 		for(var depKey in dependsOn){
+	// 	// 			if(dependsOn.hasOwnProperty(depKey) && ('onStateChange' in dependsOn[depKey])){
+	// 	// 				nextVal = {};
+	// 	// 				nextVal[depKey] = nextState[depKey];
+	// 	// 				nextState = extend(nextState, dependsOn[depKey].onStateChange(nextVal));
+	// 	// 			}
+	// 	// 		}
+	// 	// 	}
+	// 	// 	nextState = new ApplicationDataContext(extend(nextState, tempDeps), prevState, enableUndo);
+	// 	// 	subscribers.forEach(function(subscriber){
+	// 	// 		if(subscriber !== appNamespace){
+	// 	// 			nextState[subscriber] = new dataContexts[subscriber](nextState[subscriber],
+	// 	// 			getDeps(nextState, domain[subscriber]));
+	// 	// 		}
+	// 	// 	});
+	// 	// }
 
-		return nextState;
-	};
+	// 	return nextState;
+	// };
 
 	var appStateChangedHandler = function(caller, newState, callback) {
 		
@@ -140,76 +139,102 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			//revert the current appState to the previous state of the previous state
 			prevState = newState.previousState;
 		} else {
-			if(caller in watchList){
+			// if(caller in watchList){
 				
-				newStateKeys = Object.keys(newState);
-				newStateKeysLen = newStateKeys.length;
-				subscriberNames = {};
+			// 	newStateKeys = Object.keys(newState);
+			// 	newStateKeysLen = newStateKeys.length;
+			// 	subscriberNames = {};
 
-				for (var i = newStateKeysLen - 1; i >= 0; i--){
-					if(watchList[caller][newStateKeys[i]]){
-						for(var j = watchList[caller][newStateKeys[i]].length - 1; j >= 0; j--){
-							subscriberNames[watchList[caller][newStateKeys[i]][j].dataContext] = true;
-						}
-					}
-				}
+			// 	for (var i = newStateKeysLen - 1; i >= 0; i--){
+			// 		if(watchList[caller][newStateKeys[i]]){
+			// 			for(var j = watchList[caller][newStateKeys[i]].length - 1; j >= 0; j--){
+			// 				subscriberNames[watchList[caller][newStateKeys[i]][j].dataContext] = true;
+			// 			}
+			// 		}
+			// 	}
 
-				subscribers = Object.keys(subscriberNames);
-				hasSubscribers = !!subscribers.length;
-			}
+			// 	subscribers = Object.keys(subscriberNames);
+			// 	hasSubscribers = !!subscribers.length;
+			// }
 
 			if(caller !== appNamespace){
 
-				nextState[caller] = newState;
-				nextState = extend(appState.state, nextState);
+				nextState[caller] = extend(appState.state[caller].state, newState);
+				nextState[caller] = new dataContexts[caller](nextState[caller], appState[caller]); //All this should really do is create
+				//a viewModel with the prototype and enable calling initial and onStateChange functions
+				
+				//for each subscriber call onStateChanging(next.hobbies.state) => pass in nextState
+				//also call if for datacontext that is invoking the change
+				nextState = extend(appState, nextState);
 
-				if(hasSubscribers){
+				//At this point assign nextState to all subscribers
+				nextState.persons.state.$hobbies = nextState.hobbies;
+				nextState.hobbies.state.$persons = nextState.persons;
+				Object.freeze(nextState.persons.state);
+				Object.freeze(nextState.hobbies.state);
+				// Object.freeze(nextState.hobbies.state.$persons.previousState);
+				// Object.freeze(nextState.persons.state.$hobbies.previousState);
+				//for each subscriber call onStateChanged(appState.hobbies.state) => pass in previousState
+				//also call if for datacontext that is invoking the change
+				
+				//nextState[caller] = nextState;
+				
+				// if(hasSubscribers){
 
-					subscribers.forEach(function(sub){
+				// 	subscribers.forEach(function(sub){
 						
-						for(idxKey=newStateKeysLen-1; idxKey >= 0; idxKey--){
+				// 		for(idxKey=newStateKeysLen-1; idxKey >= 0; idxKey--){
 
-							if(watchList[caller][newStateKeys[idxKey]]){
+				// 			if(watchList[caller][newStateKeys[idxKey]]){
 
-								var depFldArr = watchList[caller][newStateKeys[idxKey]];						
+				// 				var depFldArr = watchList[caller][newStateKeys[idxKey]];						
 								
-								for(idxDepFld = depFldArr.length - 1; idxDepFld >= 0; idxDepFld--){
+				// 				for(idxDepFld = depFldArr.length - 1; idxDepFld >= 0; idxDepFld--){
 
-									dependsOnObj = depFldArr[idxDepFld].dataContext === appNamespace ? dependsOn : 
-										domain[depFldArr[idxDepFld].dataContext].dependsOn;
+				// 					dependsOnObj = depFldArr[idxDepFld].dataContext === appNamespace ? dependsOn : 
+				// 						domain[depFldArr[idxDepFld].dataContext].dependsOn;
 
-									if(dependsOnObj[depFldArr[idxDepFld].alias].onStateChange){
+				// 					if(dependsOnObj[depFldArr[idxDepFld].alias].onStateChange){
 
-										tmpNextState[depFldArr[idxDepFld].alias] = nextState[caller][newStateKeys[idxKey]];
-										changeState = dependsOnObj[depFldArr[idxDepFld].alias].
-											onStateChange.call(appState.state[depFldArr[idxDepFld].dataContext], tmpNextState);
+				// 						tmpNextState[depFldArr[idxDepFld].alias] = nextState[caller][newStateKeys[idxKey]];
+				// 						changeState = dependsOnObj[depFldArr[idxDepFld].alias].
+				// 							onStateChange.call(appState.state[depFldArr[idxDepFld].dataContext], tmpNextState);
 
-										if(Object.prototype.toString.call(changeState) === '[object Object]'){
+				// 						if(Object.prototype.toString.call(changeState) === '[object Object]'){
 
-											if(depFldArr[idxDepFld].dataContext === appNamespace){
-												nextState = extend(nextState, changeState);
-											} else {
-												nextState[depFldArr[idxDepFld].dataContext] =
-													extend(nextState[depFldArr[idxDepFld].dataContext], changeState);
-											}
-										}
-									}
-								}
-							}
-						}
-					});
-				}
+				// 							if(depFldArr[idxDepFld].dataContext === appNamespace){
+				// 								nextState = extend(nextState, changeState);
+				// 							} else {
+				// 								nextState[depFldArr[idxDepFld].dataContext] =
+				// 									extend(nextState[depFldArr[idxDepFld].dataContext], changeState);
+				// 							}
+				// 						}
+				// 					}
+				// 				}
+				// 			}
+				// 		}
+				// 	});
+				// }
 			} else {
-				nextState = extend(appState.state, newState);
+				nextState = extend(appState, newState);
+
+				//At this point assign nextState to all subscribers
+				// nextState.state.$hobbies = nextState.hobbies;
+				// nextState.state.$persons = nextState.persons;
 			}
 			prevState = appState;
-			nextState = transitionState(caller, hasSubscribers ? subscribers : false, nextState, appState.state);
+			//nextState = extend(appState, nextState);
+			//nextState = transitionState(caller, nextState, appState.state);
+			//nextState = extend(appState, new dataContexts[caller](nextState[caller]));
 		}
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
 		//Create a new App state context.
 		appState = new ApplicationDataContext(nextState, prevState, enableUndo);
+
+		//appState.persons.state.hobbies = appState.hobbies;
+
 		//All the work is done! -> Notify the View
 		//Provided for the main app to return from init() to the View
 		Object.freeze(appState);
@@ -220,57 +245,83 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	appState = new ApplicationDataContext({}, void(0), enableUndo, true);
-	dependsOn = appState.getDependencies ? configure(appState.getDependencies(), 'property') : void(0);
-	if(dependsOn){
-		dependents.push(appNamespace);
-		for(depProp in dependsOn){
-			if(dependsOn.hasOwnProperty(depProp)){
-				watchedProps = dependsOn[depProp].property.split('.');
-				watchedPropsLen = watchedProps.length;
-				watchListPropA = watchedPropsLen > 1 ? watchedProps[0] : appNamespace;
-				watchListPropB = watchedPropsLen > 1 ? watchedProps[1] : watchedProps[0];
-				watchList[watchListPropA] = watchList[watchListPropA] || {};
-				watchList[watchListPropA][watchListPropB] = watchList[watchListPropA][watchListPropB] || [];
-				if(watchList[watchListPropA][watchListPropB].indexOf(appNamespace) === -1){
-					watchList[watchListPropA][watchListPropB].push({dataContext:appNamespace, alias: depProp});
-				}
-			}
-		}
-	}
+	appState = new ApplicationDataContext({}, void(0), enableUndo, false);
+	// dependsOn = appState.getDependencies ? configure(appState.getDependencies(), 'property') : void(0);
+	// if(dependsOn){
+	// 	dependents.push(appNamespace);
+	// 	for(depProp in dependsOn){
+	// 		if(dependsOn.hasOwnProperty(depProp)){
+	// 			watchedProps = dependsOn[depProp].property.split('.');
+	// 			watchedPropsLen = watchedProps.length;
+	// 			watchListPropA = watchedPropsLen > 1 ? watchedProps[0] : appNamespace;
+	// 			watchListPropB = watchedPropsLen > 1 ? watchedProps[1] : watchedProps[0];
+	// 			watchList[watchListPropA] = watchList[watchListPropA] || {};
+	// 			watchList[watchListPropA][watchListPropB] = watchList[watchListPropA][watchListPropB] || [];
+	// 			if(watchList[watchListPropA][watchListPropB].indexOf(appNamespace) === -1){
+	// 				watchList[watchListPropA][watchListPropB].push({dataContext:appNamespace, alias: depProp});
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	domain = configure(appState.getDomainDataContext(), 'viewModel');
+
+	//var test = domain.persons.viewModel.originalSpec.getDependencies();
+
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
 			appState[dataContext] = new dataContexts[dataContext]({}, {}, true);
 			if(appState[dataContext].getDependencies){
-				dependents.push(dataContext);
-				domain[dataContext].dependsOn = configure(appState[dataContext].getDependencies(), 'property');
-				for(depProp in domain[dataContext].dependsOn){
-					if(domain[dataContext].dependsOn.hasOwnProperty(depProp)){
-						watchedProps = domain[dataContext].dependsOn[depProp].property.split('.');
-						watchedPropsLen = watchedProps.length;
-						watchListPropA = watchedPropsLen > 1 ? watchedProps[0] : appNamespace;
-						watchListPropB = watchedPropsLen > 1 ? watchedProps[1] : watchedProps[0];
-						watchList[watchListPropA] = watchList[watchListPropA] || {};
-						watchList[watchListPropA][watchListPropB] = watchList[watchListPropA][watchListPropB] || [];
-						if(watchList[watchListPropA][watchListPropB].indexOf(dataContext) === -1){
-							watchList[watchListPropA][watchListPropB].push({dataContext:dataContext, alias: depProp});
-						}
-					}
-				}
+				// dependents.push(dataContext);
+				// domain[dataContext].dependsOn = configure(appState[dataContext].getDependencies(), 'property');
+				// for(depProp in domain[dataContext].dependsOn){
+				// 	if(domain[dataContext].dependsOn.hasOwnProperty(depProp)){
+				// 		watchedProps = domain[dataContext].dependsOn[depProp].property.split('.');
+				// 		watchedPropsLen = watchedProps.length;
+				// 		watchListPropA = watchedPropsLen > 1 ? watchedProps[0] : appNamespace;
+				// 		watchListPropB = watchedPropsLen > 1 ? watchedProps[1] : watchedProps[0];
+				// 		watchList[watchListPropA] = watchList[watchListPropA] || {};
+				// 		watchList[watchListPropA][watchListPropB] = watchList[watchListPropA][watchListPropB] || [];
+				// 		if(watchList[watchListPropA][watchListPropB].indexOf(dataContext) === -1){
+				// 			watchList[watchListPropA][watchListPropB].push({dataContext:dataContext, alias: depProp});
+				// 		}
+				// 	}
+				// }
 			}
 		}
 	}
-	dependents.forEach(function(dependent){
-		if(dependent !== appNamespace){
-				appState[dependent] = new dataContexts[dependent](appState[dependent],
-					getDeps(appState, domain[dependent]));
-		}
+	//move this within if statement above
+	Object.defineProperty(appState.persons.state, '$hobbies', {
+		configurable: false,
+		enumerable: true,
+		get: function(){ return appState.hobbies; }
 	});
+	Object.freeze(appState.persons.state);
+	Object.defineProperty(appState.hobbies.state, '$persons', {
+		configurable: false,
+		enumerable: true,
+		get: function(){ return appState.persons; }
+	});
+	Object.freeze(appState.hobbies.state);
 	
-	appState = new ApplicationDataContext(extend(appState, getDeps(appState, dependsOn)), void(0), enableUndo);
+	// Object.defineProperty(appState.state, '$hobbies', {
+	// 	enumerable: true,
+	// 	get: function(){ return appState.hobbies; }
+	// });
+
+	// Object.defineProperty(appState.state, '$persons', {
+	// 	enumerable: true,
+	// 	get: function(){ return appState.persons; }
+	// });
+
+	/*dependents.forEach(function(dependent){
+		if(dependent !== appNamespace){
+				appState[dependent] = new dataContexts[dependent](appState[dependent], getDeps(appState, domain[dependent]));
+		}
+	});*/
+	
+	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
 	Object.freeze(appState.state);
 	return Object.freeze(appState);
 };
@@ -500,7 +551,7 @@ var IMVVMModel = {
 
         Object.defineProperty(model, 'state', {
           configurable: true,
-          enumerable: false,
+          enumerable: true,
           writable: true,
           value: nextState
         });
@@ -513,7 +564,7 @@ var IMVVMModel = {
 
         Object.defineProperty(model, 'state', {
           configurable: false,
-          enumerable: false,
+          enumerable: true,
           writable: false,
           value: nextState
         });
@@ -522,7 +573,7 @@ var IMVVMModel = {
         for (var i = freezeFields.length - 1; i >= 0; i--) {
             Object.freeze(model[freezeFields[i].fieldName]);
         };
-
+        //return model;
         return Object.freeze(model);
       };
       return dataContext;
@@ -544,37 +595,45 @@ var IMVVMViewModel = {
 
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
-      
-      var dataContext = function(nextState, dependencies, initialize) {
-        
+
+      // console.log('viewModel');
+      var dataContext = function(nextState, prevState, initialize) {
+
         //nextState has already been extended with prevState in core
-        nextState = extend(nextState, dependencies);
+        //nextState = extend(nextState, dependencies);
         
         var freezeFields = desc.freezeFields;
         var viewModel = Object.create(desc.proto, desc.descriptor);
         var tempDesc,
           tempModel;
 
-
+        if(prevState){
+          Object.defineProperty(viewModel, 'previousState', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: prevState
+          });  
+        }
+        
         Object.defineProperty(viewModel, 'state', {
           configurable: true,
-          enumerable: false,
+          enumerable: true,
           writable: true,
           value: nextState
         });
-
-        nextState = extend(nextState, viewModel);
         
+
         if(initialize && ('getInitialState' in viewModel)){
           nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
+        
+          Object.defineProperty(viewModel, 'state', {
+            configurable: true,
+            enumerable: true,
+            writable: true,
+            value: nextState
+          });
         }
-        Object.defineProperty(viewModel, 'state', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: nextState
-        });
-
         //freeze arrays and viewModel instances
         for (var i = freezeFields.length - 1; i >= 0; i--) {
           if(freezeFields[i].kind === 'instance'){
@@ -584,7 +643,7 @@ var IMVVMViewModel = {
 
                 Object.defineProperty(tempModel, 'state', {
                   configurable: false,
-                  enumerable: false,
+                  enumerable: true,
                   writable: false,
                   value: viewModel[freezeFields[i].fieldName].state
                 });
@@ -602,21 +661,7 @@ var IMVVMViewModel = {
           }
         };
 
-        //Add dependencies to viewModel
-        for(var dep in dependencies){
-          if(dependencies.hasOwnProperty(dep) && dep[0] !== '_'){
-            Object.defineProperty(viewModel, dep, {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: dependencies[dep]
-            });
-          }
-        }
-
-        Object.freeze(nextState);
         return Object.freeze(viewModel);
-
       };
       return dataContext;
     }

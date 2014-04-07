@@ -17,12 +17,12 @@ var PersonsViewModel = IMVVM.createViewModel({
     return nextState;
   },
 
-  getDependencies: function(){
-    return {
-      selectedHobby: 'hobbies.selected.name',
-      imOnline: 'online'
-    }
-  },
+  // getDependencies: function(){
+  //   return {
+  //     selectedHobby: 'hobbies.selected.name',
+  //     imOnline: 'online'
+  //   }
+  // },
 
   Person: function(personState, init){
     return new PersonModel(this.personStateChangedHandler)(personState, init);
@@ -41,6 +41,18 @@ var PersonsViewModel = IMVVM.createViewModel({
     }.bind(this));
     this.setState(persons);
   },
+
+  selectedHobby: {
+    get: function() {
+      return this.state.$hobbies.selected ? this.state.$hobbies.selected.name: void(0); 
+    }
+  },
+
+  // aTestGetter: {
+  //   get: function(){
+  //     return this.state.selectedTest;
+  //   }
+  // },
 
   selected: {
     kind: 'instance',

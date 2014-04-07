@@ -23,6 +23,6 @@ var DataService = {
     var personHobbies = hobbies.filter(function(person){
       return person.id === uid;
     });
-    return personHobbies[0].hobbies;
+    return personHobbies[0] ? personHobbies[0].hobbies : [];
   }
 };

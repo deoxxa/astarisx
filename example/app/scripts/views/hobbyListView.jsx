@@ -25,7 +25,7 @@ var HobbyListView = React.createClass({
 		var app = this.props.appContext;
 		var collection = this.props.appContext.hobbies.hobbies;
 		var current = this.props.appContext.hobbies.selected;
-		console.log(current);
+
 		var list = collection.map(function(hobby){
 			if(current && (current.id === hobby.id)){
 				return (

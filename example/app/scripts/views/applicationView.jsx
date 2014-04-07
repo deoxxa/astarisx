@@ -16,7 +16,8 @@ var ApplicationView = React.createClass({
     console.log('------------------------------------------ Current Application State ------------------------------------------')
     console.log(this.state.domainDataContext);
 
-    /*console.log(Object.isFrozen(this.state.domainDataContext.previousState || {}));
+/*    console.log(Object.isFrozen(this.state.domainDataContext.previousState || {}));
+    console.log(Object.isFrozen(this.state.domainDataContext.persons.previousState || {}));
     console.log(Object.isFrozen(this.state.domainDataContext));
     console.log(Object.isFrozen(this.state.domainDataContext.state));
     console.log(Object.isFrozen(this.state.domainDataContext.persons));
@@ -27,8 +28,9 @@ var ApplicationView = React.createClass({
     console.log(Object.isFrozen(this.state.domainDataContext.persons.state.collection));
     console.log(Object.isFrozen(this.state.domainDataContext.persons.state.collection[1]));
     console.log(Object.isFrozen(this.state.domainDataContext.persons.state.collection[1].hobbies));
-    console.log(Object.isFrozen(this.state.domainDataContext.hobbies.state._selectedPerson));
-    console.log(Object.isFrozen(this.state.domainDataContext.hobbies.state._selectedPerson.hobbies));*/
+    console.log(Object.isFrozen(this.state.domainDataContext.hobbies.state.$persons));
+    console.log(Object.isFrozen(this.state.domainDataContext.hobbies.state.$persons.selected));
+    console.log(Object.isFrozen(this.state.domainDataContext.hobbies.state.$persons.selected.hobbies));*/
 
     return (
       <div>

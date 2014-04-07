@@ -4,6 +4,7 @@
 
 'use strict';
 
+//Rename DomainModel to DomainViewModel
 var DomainModel = IMVVM.createDomainModel({
 
   //dataContext keys define the dataContext names that will appear in
@@ -22,15 +23,24 @@ var DomainModel = IMVVM.createDomainModel({
     };
   },
 
-  getDependencies: function(){
-    return {
-      selectedHobby: { 
-        property: 'hobbies.selected', 
-        onStateChange: this.toggleBusyState
+  // getDependencies: function(){
+  //   return {
+  //     selectedHobby: { 
+  //       property: 'hobbies.selected', 
+  //       onStateChange: this.toggleBusyState
+  //     }
+  //   }
+  // },
+
+  //Will not need to call onStateChange
+  //simply test the values within a get call
+  /*
+    busy: {
+      get: function() {
+        reutrn this.hobbies.selected ? true : false;
       }
     }
-  },
-
+  */
   toggleBusyState: function(nextState){
     if(!!nextState.selectedHobby){
       return {busy: true};
@@ -43,16 +53,17 @@ var DomainModel = IMVVM.createDomainModel({
     this.setState(this.previousState);
   },
 
-  personCount: {
-    get: function(){
-      return this.persons ? this.persons.collection.length : 0;
-    }
-  },
-  personName: {
-    get: function(){
-      return this.persons ? this.persons.selected.firstName: 'no one';
-    }
-  },
+  // personCount: {
+  //   get: function(){
+  //     return this.state.$persons ? this.state.$persons.collection.length : 0;
+  //   }
+  // },
+
+  // personName: {
+  //   get: function(){
+  //     return this.persons ? this.persons.selected.firstName: 'no one';
+  //   }
+  // },
 
 
   busy: {

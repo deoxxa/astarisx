@@ -9,37 +9,45 @@ var IMVVMViewModel = {
 
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
-      
-      var dataContext = function(nextState, dependencies, initialize) {
-        
+
+      // console.log('viewModel');
+      var dataContext = function(nextState, prevState, initialize) {
+
         //nextState has already been extended with prevState in core
-        nextState = extend(nextState, dependencies);
+        //nextState = extend(nextState, dependencies);
         
         var freezeFields = desc.freezeFields;
         var viewModel = Object.create(desc.proto, desc.descriptor);
         var tempDesc,
           tempModel;
 
-
+        if(prevState){
+          Object.defineProperty(viewModel, 'previousState', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: prevState
+          });  
+        }
+        
         Object.defineProperty(viewModel, 'state', {
           configurable: true,
-          enumerable: false,
+          enumerable: true,
           writable: true,
           value: nextState
         });
-
-        nextState = extend(nextState, viewModel);
         
+
         if(initialize && ('getInitialState' in viewModel)){
           nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
+        
+          Object.defineProperty(viewModel, 'state', {
+            configurable: true,
+            enumerable: true,
+            writable: true,
+            value: nextState
+          });
         }
-        Object.defineProperty(viewModel, 'state', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: nextState
-        });
-
         //freeze arrays and viewModel instances
         for (var i = freezeFields.length - 1; i >= 0; i--) {
           if(freezeFields[i].kind === 'instance'){
@@ -49,7 +57,7 @@ var IMVVMViewModel = {
 
                 Object.defineProperty(tempModel, 'state', {
                   configurable: false,
-                  enumerable: false,
+                  enumerable: true,
                   writable: false,
                   value: viewModel[freezeFields[i].fieldName].state
                 });
@@ -67,21 +75,7 @@ var IMVVMViewModel = {
           }
         };
 
-        //Add dependencies to viewModel
-        for(var dep in dependencies){
-          if(dependencies.hasOwnProperty(dep) && dep[0] !== '_'){
-            Object.defineProperty(viewModel, dep, {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: dependencies[dep]
-            });
-          }
-        }
-
-        Object.freeze(nextState);
         return Object.freeze(viewModel);
-
       };
       return dataContext;
     }
