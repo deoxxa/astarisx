@@ -39,6 +39,7 @@ var PersonsViewModel = IMVVM.createViewModel({
       }
       return person;
     }.bind(this));
+
     this.setState(persons);
   },
 
@@ -47,12 +48,6 @@ var PersonsViewModel = IMVVM.createViewModel({
       return this.state.$hobbies.selected ? this.state.$hobbies.selected.name: void(0); 
     }
   },
-
-  // aTestGetter: {
-  //   get: function(){
-  //     return this.state.selectedTest;
-  //   }
-  // },
 
   selected: {
     kind: 'instance',
@@ -65,16 +60,14 @@ var PersonsViewModel = IMVVM.createViewModel({
   },
 
   select: function(id){
-    var nextState = {};
-    nextState.collection = this.collection.map(function(person){
-      if(person.id === id){
-        nextState.selected = this.Person(person);
-        return nextState.selected;
+    var selectedPerson;
+    for (var i = this.collection.length - 1; i >= 0; i--) {
+      if(this.collection[i].id === id){
+        selectedPerson = this.collection[i];
+        break;
       }
-      return person;
-    }.bind(this));
-
-    this.setState(nextState);
+    };
+    this.setState({ selected: selectedPerson });
   },
 
   addPerson: function(value){
