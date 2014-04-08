@@ -14,8 +14,6 @@ var IMVVMViewModel = {
       var dataContext = function(nextState, initialize) {
 
         //nextState has already been extended with prevState in core
-        //nextState = extend(nextState, dependencies);
-        
         var freezeFields = desc.freezeFields;
         var viewModel = Object.create(desc.proto, desc.descriptor);
         var tempDesc,
@@ -32,7 +30,6 @@ var IMVVMViewModel = {
           value: nextState
         });
         
-
         if(initialize && ('getInitialState' in viewModel)){
           nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
         

@@ -71,12 +71,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//pass it straight to the stateChangedHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(Object.getPrototypeOf(newState).constructor.classType === "DomainModel") {
-			//This means previous state has been requested
-			//so set nextState to the previous state
 			nextState = extend(newState);
-			//revert the current appState to the previous state of the previous state
-	// 			nextState.persons.state.$hobbies = nextState.hobbies;
-	// nextState.hobbies.state.$persons = nextState.persons;
 			prevState = newState.previousState;
 		} else {
 
@@ -121,6 +116,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		nextState.hobbies.state.$persons = nextState.persons;
 		nextState.persons.state.$hobbies = nextState.hobbies;
 
+		Object.freeze(nextState.persons.state);
+		Object.freeze(nextState.hobbies.state);
+
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
@@ -134,17 +132,16 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			//Create a new App state context.
 			appState = new ApplicationDataContext(nextState, invokedWithCallback ? prevState.previousState: prevState, enableUndo);
 			invokedWithCallback = false;
+			//All the work is done! -> Notify the View
 			stateChangedHandler(appState, caller, callback);
 		}
 
-		//All the work is done! -> Notify the View
-		//Provided for the main app to return from init() to the View
 		Object.freeze(appState);
 		Object.freeze(appState.state);
-
-		//stateChangedHandler(appState, caller, callback);
+		//Provided for the main app to return to the View
 		return appState;
 	};
+
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
 	appState = new ApplicationDataContext({}, void(0), enableUndo, true);
@@ -163,7 +160,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	appState.persons.state.$hobbies = new dataContexts.hobbies(appState.hobbies);
 	appState.hobbies.state.$persons = new dataContexts.persons(appState.persons);
-		
+	Object.freeze(appState.persons.state);
+	Object.freeze(appState.hobbies.state);
 	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
 	Object.freeze(appState.state);
 	return Object.freeze(appState);
@@ -442,8 +440,6 @@ var IMVVMViewModel = {
       var dataContext = function(nextState, initialize) {
 
         //nextState has already been extended with prevState in core
-        //nextState = extend(nextState, dependencies);
-        
         var freezeFields = desc.freezeFields;
         var viewModel = Object.create(desc.proto, desc.descriptor);
         var tempDesc,
@@ -460,7 +456,6 @@ var IMVVMViewModel = {
           value: nextState
         });
         
-
         if(initialize && ('getInitialState' in viewModel)){
           nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
         
