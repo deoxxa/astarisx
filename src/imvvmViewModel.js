@@ -21,12 +21,17 @@ var IMVVMViewModel = {
         var tempDesc,
           tempModel;
 
-        Object.defineProperty(viewModel, 'previousState', {
-          configurable: true,
-          enumerable: true,
-          writable: true,
-          value: {}
-        });  
+        // Object.defineProperty(viewModel, 'previousState', {
+        //   configurable: true,
+        //   enumerable: true,
+        //   writable: true,
+        //   value: {}
+        // });
+        
+        if(nextState.state){
+          nextState = extend(nextState.state, nextState);
+          delete nextState.state;
+        }
         
         Object.defineProperty(viewModel, 'state', {
           configurable: false,

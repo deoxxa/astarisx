@@ -159,7 +159,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 			if(caller !== appNamespace){
 
-				nextState[caller] = extend(appState.state[caller].state, newState);
+				//nextState[caller] = extend(appState.state[caller].state, newState);
+				nextState[caller] = extend(appState[caller], newState);
 				nextState[caller] = new dataContexts[caller](nextState[caller]); //All this should really do is create
 				//a viewModel with the prototype and enable calling initial and onStateChange functions
 				
@@ -169,18 +170,51 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 				//At this point assign nextState to all subscribers
 				nextState.persons.state.$hobbies = nextState.hobbies;
-				nextState.hobbies.state.$persons = nextState.persons;
-				nextState.persons.previousState.$hobbies = appState.hobbies.state;
-				nextState.hobbies.previousState.$persons = appState.persons.state;
+				//nextState.hobbies.state.$persons = nextState.persons;
 
-				if(caller === 'persons'){
-					nextState.hobbies = extend(appState.state.hobbies.state, nextState.hobbies.onStateChanged());
+				if(caller === 'persons' && ('$persons' in nextState.hobbies.state) && !Object.isFrozen(nextState.hobbies.state)){
+					Object.defineProperty(nextState.hobbies.state, '$persons', {
+						configurable: true,
+						enumerable: true,
+						get: function(){ return appState.persons; },
+						set: function(persons) {
+
+							nextState.hobbies = extend(appState.hobbies, appState.hobbies.onStateChanged(caller, persons));
+							nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
+							nextState.persons.state.$hobbies = nextState.hobbies;
+							console.log(nextState.hobbies);
+						}
+					});
+					//nextState.hobbies.previousState = extend(appState.hobbies);
+
+					// Object.defineProperty(nextState.hobbies, 'previousState', {
+					// 	configurable: false,
+					// 	enumerable: true,
+					// 	get: function(){ return appState.previousState.hobbies; }
+					// });
+					//Object.freeze(nextState.hobbies.state);
+
+				}
+
+				//This calls set() only once
+				nextState.hobbies.state.$persons = nextState.persons;
+				nextState.hobbies.state.$persons = nextState.persons;
+
+				// nextState.persons.previousState.$hobbies = appState.hobbies.state;
+				// nextState.hobbies.previousState.$persons = appState.persons.state;
+
+				//Need to Look at why this is not preserving previous state
+				//maybe it's because I am testing with this code
+
+				/*if(caller === 'persons'){
+					nextState.hobbies = extend(appState.hobbies, appState.hobbies.onStateChanged(appState.hobbies,
+						appState.previousState ? appState.previousState.hobbies: void(0)));
 					nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
 					nextState.persons.state.$hobbies = nextState.hobbies;
 					nextState.hobbies.state.$persons = nextState.persons;
-					nextState.persons.previousState.$hobbies = appState.hobbies.state;
-					nextState.hobbies.previousState.$persons = appState.persons.state;
-				}
+					// nextState.persons.previousState.$hobbies = appState.hobbies.state;
+					// nextState.hobbies.previousState.$persons = appState.persons.state;
+				}*/
 				// Object.freeze(nextState.persons.state);
 				// Object.freeze(nextState.hobbies.state);
 				//for each subscriber call onStateChanged(appState.hobbies.state) => pass in previousState
@@ -248,6 +282,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//Provided for the main app to return from init() to the View
 		Object.freeze(appState);
 		Object.freeze(appState.state);
+
+
+//		appState.hobbies.previousState = appState.previousState.hobbies;
+
 		stateChangedHandler(appState, caller, callback);
 		return appState;
 	};
@@ -300,49 +338,40 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 		}
 	}
-	//move this within if statement above
-	Object.defineProperty(appState.persons.state, '$hobbies', {
-		configurable: false,
-		enumerable: true,
-		get: function(){ return appState.hobbies; }
-	});
-	Object.freeze(appState.persons.state);
-	Object.defineProperty(appState.hobbies.state, '$persons', {
-		configurable: false,
-		enumerable: true,
-		get: function(){ return appState.persons; }
-	});
-	Object.freeze(appState.hobbies.state);
-	//move this within if statement above
-	Object.defineProperty(appState.persons.previousState, '$hobbies', {
-		configurable: false,
-		enumerable: true,
-		get: function(){ return {}; }
-	});
-	Object.freeze(appState.persons.previousState);
-	Object.defineProperty(appState.hobbies.previousState, '$persons', {
-		configurable: false,
-		enumerable: true,
-		get: function(){ return {}; }
-	});
-	Object.freeze(appState.hobbies.previousState);
-	
-	// Object.defineProperty(appState.state, '$hobbies', {
+	// //move this within if statement above
+	// Object.defineProperty(appState.persons.state, '$hobbies', {
+	// 	configurable: true,
 	// 	enumerable: true,
 	// 	get: function(){ return appState.hobbies; }
 	// });
-
-	// Object.defineProperty(appState.state, '$persons', {
+	// Object.freeze(appState.persons.state);
+	// Object.defineProperty(appState.hobbies.state, '$persons', {
+	// 	configurable: true,
 	// 	enumerable: true,
-	// 	get: function(){ return appState.persons; }
+	// 	get: function(){ return appState.persons; },
+	// 	set: function(persons) {
+	// 		console.log('persons has been set');
+	// 		console.log(persons);
+	// 	}
 	// });
+	// Object.freeze(appState.hobbies.state);
 
-	/*dependents.forEach(function(dependent){
-		if(dependent !== appNamespace){
-				appState[dependent] = new dataContexts[dependent](appState[dependent], getDeps(appState, domain[dependent]));
-		}
-	});*/
-	
+	appState.persons.state.$hobbies = appState.hobbies;
+	appState.hobbies.state.$persons = appState.persons;
+
+	// Object.defineProperty(appState.persons.previousState, '$hobbies', {
+	// 	configurable: false,
+	// 	enumerable: true,
+	// 	get: function(){ return {}; }
+	// });
+	// Object.freeze(appState.persons.previousState);
+	// Object.defineProperty(appState.hobbies.previousState, '$persons', {
+	// 	configurable: false,
+	// 	enumerable: true,
+	// 	get: function(){ return {}; }
+	// });
+	// Object.freeze(appState.hobbies.previousState);
+		
 	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
 	Object.freeze(appState.state);
 	return Object.freeze(appState);
@@ -629,12 +658,17 @@ var IMVVMViewModel = {
         var tempDesc,
           tempModel;
 
-        Object.defineProperty(viewModel, 'previousState', {
-          configurable: true,
-          enumerable: true,
-          writable: true,
-          value: {}
-        });  
+        // Object.defineProperty(viewModel, 'previousState', {
+        //   configurable: true,
+        //   enumerable: true,
+        //   writable: true,
+        //   value: {}
+        // });
+        
+        if(nextState.state){
+          nextState = extend(nextState.state, nextState);
+          delete nextState.state;
+        }
         
         Object.defineProperty(viewModel, 'state', {
           configurable: false,
