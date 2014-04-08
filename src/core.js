@@ -130,6 +130,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			//so set nextState to the previous state
 			nextState = extend(newState);
 			//revert the current appState to the previous state of the previous state
+				nextState.persons.state.$hobbies = nextState.hobbies;
+	nextState.hobbies.state.$persons = nextState.persons;
 			prevState = newState.previousState;
 		} else {
 			// if(caller in watchList){
@@ -151,7 +153,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			// }
 
 			if(caller !== appNamespace){
-
 				//nextState[caller] = extend(appState.state[caller].state, newState);
 				nextState[caller] = extend(appState[caller], newState);
 				nextState[caller] = new dataContexts[caller](nextState[caller]); //All this should really do is create
@@ -171,21 +172,14 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 						enumerable: true,
 						get: function(){ return appState.persons; },
 						set: function(persons) {
-
-							nextState.hobbies = extend(appState.hobbies, appState.hobbies.onStateChanged(caller, persons));
-							nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
-							nextState.persons.state.$hobbies = nextState.hobbies;
-							console.log(nextState.hobbies);
+							if(appState.hobbies.onWatchedStateChanged){
+								nextState.hobbies = extend(appState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
+								nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
+								nextState = extend(appState, nextState);
+								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);								
+							}
 						}
 					});
-					//nextState.hobbies.previousState = extend(appState.hobbies);
-
-					// Object.defineProperty(nextState.hobbies, 'previousState', {
-					// 	configurable: false,
-					// 	enumerable: true,
-					// 	get: function(){ return appState.previousState.hobbies; }
-					// });
-					//Object.freeze(nextState.hobbies.state);
 
 				}
 
@@ -251,14 +245,21 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				// 		}
 				// 	});
 				// }
+				if(typeof callback === 'function'){
+					prevState = appState.previousState || void(0);
+				} else {
+					prevState = appState;
+				}
+
 			} else {
 				nextState = extend(appState, newState);
 
 				//At this point assign nextState to all subscribers
 				// nextState.state.$hobbies = nextState.hobbies;
 				// nextState.state.$persons = nextState.persons;
+				prevState = appState;
 			}
-			prevState = appState;
+			// prevState = appState;
 			//nextState = extend(appState, nextState);
 			//nextState = transitionState(caller, nextState, appState.state);
 			//nextState = extend(appState, new dataContexts[caller](nextState[caller]));
@@ -351,6 +352,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	appState.persons.state.$hobbies = appState.hobbies;
 	appState.hobbies.state.$persons = appState.persons;
+
+	appState.persons.state.$hobbies = new dataContexts.hobbies(appState.hobbies);
+	appState.hobbies.state.$persons = new dataContexts.persons(appState.persons);
 
 	// Object.defineProperty(appState.persons.previousState, '$hobbies', {
 	// 	configurable: false,
