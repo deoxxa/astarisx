@@ -176,7 +176,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								nextState.hobbies = extend(appState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
 								nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
 								nextState = extend(appState, nextState);
-								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);								
+								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
+								nextState.hobbies.state.$persons = nextState.persons;
+				
 							}
 						}
 					});
@@ -184,7 +186,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				}
 
 				//This calls set() only once
-				nextState.hobbies.state.$persons = nextState.persons;
 				nextState.hobbies.state.$persons = nextState.persons;
 
 				// nextState.persons.previousState.$hobbies = appState.hobbies.state;
@@ -245,11 +246,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				// 		}
 				// 	});
 				// }
-				if(typeof callback === 'function'){
-					prevState = appState.previousState || void(0);
-				} else {
-					prevState = appState;
-				}
+				// if(typeof callback === 'function'){
+				// 	prevState = appState.previousState || void(0);
+				// } else {
+				// 	prevState = appState;
+				// }
 
 			} else {
 				nextState = extend(appState, newState);
@@ -257,9 +258,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				//At this point assign nextState to all subscribers
 				// nextState.state.$hobbies = nextState.hobbies;
 				// nextState.state.$persons = nextState.persons;
-				prevState = appState;
+				//prevState = appState;
 			}
-			// prevState = appState;
+			prevState = appState;
+
+//			var test = JSON.parse(JSON.stringify(appState));
+	
+
 			//nextState = extend(appState, nextState);
 			//nextState = transitionState(caller, nextState, appState.state);
 			//nextState = extend(appState, new dataContexts[caller](nextState[caller]));
@@ -286,7 +291,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	appState = new ApplicationDataContext({}, void(0), enableUndo, false);
+	appState = new ApplicationDataContext({}, void(0), enableUndo, true);
 	// dependsOn = appState.getDependencies ? configure(appState.getDependencies(), 'property') : void(0);
 	// if(dependsOn){
 	// 	dependents.push(appNamespace);

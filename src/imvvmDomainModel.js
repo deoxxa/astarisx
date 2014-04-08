@@ -18,7 +18,7 @@ var IMVVMDomainModel = {
         //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
         Object.defineProperty(domainModel, 'state', {
           configurable: true,
-          enumerable: true,
+          enumerable: false,
           writable: true,
           value: nextState
         });

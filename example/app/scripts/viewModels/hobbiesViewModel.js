@@ -14,7 +14,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
 
   onWatchedStateChanged: function(viewModel, nextState){
     if(this.selected !== void(0) && viewModel === 'persons' &&
-      nextState.selected.id !== this.selectedPerson.id){
+      nextState.selected.id !== this.state.$persons.selected.id){
       return {selected: void(0)};
     }
   },
@@ -43,10 +43,10 @@ var HobbiesViewModel = IMVVM.createViewModel({
     return new HobbyModel(this.hobbyStateChangedHandler)(hobbyState, init);
   },
 
-  selectedPerson: {
-    kind: 'pseudo',
-    get: function(){return this.state.$persons.selected;}
-  },
+  // selectedPerson: {
+  //   kind: 'pseudo',
+  //   get: function(){return this.state.$persons.selected;}
+  // },
 
   hobbyStateChangedHandler: function(nextState, prevState/*, callback*/){
 
