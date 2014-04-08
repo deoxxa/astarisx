@@ -61,7 +61,8 @@ var HobbiesViewModel = IMVVM.createViewModel({
     }.bind(this));
 
     //Need to batch this so that undo works properly
-    this.setState(newState, function(){
+    this.setState(newState, function(retVal){
+      console.log(retVal);
       this.state.$persons.selected.hobbies = hobbiesArr;  
     }.bind(this));
 

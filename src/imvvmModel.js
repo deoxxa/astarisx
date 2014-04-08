@@ -25,7 +25,7 @@ var IMVVMModel = {
 
         Object.defineProperty(model, 'state', {
           configurable: true,
-          enumerable: true,
+          enumerable: false,
           writable: true,
           value: nextState
         });
@@ -38,7 +38,7 @@ var IMVVMModel = {
 
         Object.defineProperty(model, 'state', {
           configurable: false,
-          enumerable: true,
+          enumerable: false,
           writable: false,
           value: nextState
         });

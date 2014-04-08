@@ -2,7 +2,7 @@
 var utils = require('./utils');
 var extend = utils.extend;
 
-exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, enableUndo, initialize) {
+exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, enableUndo) {
 
 	if(typeof stateChangedHandler !== 'function'){
 		throw new TypeError();
@@ -74,7 +74,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		} else {
 
 			if(caller !== appNamespace){
-				//nextState[caller] = extend(appState.state[caller].state, newState);
+				
 				nextState[caller] = extend(appState[caller], newState);
 				nextState[caller] = new dataContexts[caller](nextState[caller]); //All this should really do is create
 				//a viewModel with the prototype and enable calling initial and onStateChange functions
@@ -84,8 +84,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				nextState = extend(appState, nextState);
 
 				//At this point assign nextState to all subscribers
-				nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
-				nextState.hobbies.state.$persons = new dataContexts.persons(nextState.persons);
+				nextState.persons.state.$hobbies = nextState.hobbies;
+				nextState.hobbies.state.$persons = nextState.persons;
 
 				if(caller === 'persons' && ('$persons' in nextState.hobbies.state) && !Object.isFrozen(nextState.hobbies.state)){
 					Object.defineProperty(nextState.hobbies.state, '$persons', {
@@ -99,22 +99,20 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								nextState.hobbies = extend(nextState.hobbies, nextState.hobbies.onWatchedStateChanged(caller, persons));
 								nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
 								nextState = extend(appState, nextState);
-								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
-								nextState.hobbies.state.$persons = new dataContexts.persons(nextState.persons);
+								nextState.persons.state.$hobbies = nextState.hobbies;
+								nextState.hobbies.state.$persons = nextState.persons;
 							}
 						}
 					});
 				}
-
 			} else {
 				nextState = extend(appState, newState);
 			}
 			prevState = appState;
 		}
 
-
-		nextState.hobbies.state.$persons = new dataContexts.persons(nextState.persons);
-		nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
+		nextState.hobbies.state.$persons = nextState.persons;
+		nextState.persons.state.$hobbies = nextState.hobbies;
 
 		if(!!prevState){
 			Object.freeze(prevState);
@@ -131,8 +129,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			invokedWithCallback = false;
 			stateChangedHandler(appState, caller, callback);
 		}
-		//Create a new App state context.
-		//appState = new ApplicationDataContext(nextState, prevState, enableUndo);
 
 		//All the work is done! -> Notify the View
 		//Provided for the main app to return from init() to the View
