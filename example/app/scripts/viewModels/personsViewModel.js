@@ -17,6 +17,13 @@ var PersonsViewModel = IMVVM.createViewModel({
     return nextState;
   },
 
+  getWatchedState: function(){
+    return {
+      hobbies: ['selected'],
+    }
+  },
+
+
   // getDependencies: function(){
   //   return {
   //     selectedHobby: 'hobbies.selected.name',
@@ -60,14 +67,12 @@ var PersonsViewModel = IMVVM.createViewModel({
   },
 
   select: function(id){
-    var selectedPerson;
     for (var i = this.collection.length - 1; i >= 0; i--) {
-      if(this.collection[i].id === id){
-        selectedPerson = this.collection[i];
+      if(this.selected.id !== id && this.collection[i].id === id){
+        this.setState({ selected: this.collection[i] });
         break;
       }
     };
-    this.setState({ selected: selectedPerson });
   },
 
   addPerson: function(value){

@@ -116,9 +116,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		nextState.hobbies.state.$persons = new dataContexts.persons(nextState.persons);
 		nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
 
-		// Object.freeze(nextState.persons.state);
-		// Object.freeze(nextState.hobbies.state);
-
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
@@ -160,9 +157,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	appState.persons.state.$hobbies = new dataContexts.hobbies(appState.hobbies);
 	appState.hobbies.state.$persons = new dataContexts.persons(appState.persons);
-
-	// Object.freeze(appState.persons.state);
-	// Object.freeze(appState.hobbies.state);
 
 	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
 	Object.freeze(appState.state);
@@ -221,7 +215,7 @@ var IMVVMClass = {
     ConvenienceConstructor.getDescriptor = function(){
       var descriptor = {};
       var proto = this.prototype;
-      var uid;
+      //var uid;
       var autoFreeze = [];
 
       if('__processedObject__' in this.originalSpec){
@@ -236,8 +230,8 @@ var IMVVMClass = {
             if('kind' in this.originalSpec[key]){
               if(this.originalSpec[key].kind === 'pseudo'){
                 this.originalSpec[key].enumerable = false;
-              } else if(this.originalSpec[key].kind === 'uid'){
-                uid = key;
+              // } else if(this.originalSpec[key].kind === 'uid'){
+              //   uid = key;
               } else { //'instance' || 'array'
                 autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
               }
@@ -258,7 +252,7 @@ var IMVVMClass = {
         proto: proto,
         originalSpec: this.originalSpec || {},
         freezeFields: autoFreeze,
-        uid: uid
+        // uid: uid
       };
 
       return this.originalSpec.__processedObject__;
@@ -460,14 +454,8 @@ var IMVVMViewModel = {
         
         if(initialize && ('getInitialState' in viewModel)){
           nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
-        
-          // Object.defineProperty(viewModel, 'state', {
-          //   configurable: true,
-          //   enumerable: false,
-          //   writable: true,
-          //   value: nextState
-          // });
         }
+        
         Object.defineProperty(viewModel, 'state', {
           configurable: false,
           enumerable: false,

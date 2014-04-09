@@ -5,10 +5,10 @@
 
 var HobbiesViewModel = IMVVM.createViewModel({
   
-  getWatchedLists: function(){
+  getWatchedState: function(){
     return {
-      app: { watchList: ['busy'] },
-      personsVM: { dataContext: 'persons', watchList: ['selected'] },
+      //app: { watchList: ['busy'] },
+      persons: ['selected'],
     }
   },
 
@@ -69,24 +69,12 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
 
   select: function(id){
-    var nextState = {};
-    // var hobbiesArr = this.hobbies.map(function(hobby){
-    //   if (hobby.id === id){
-
-    //     nextState.selected = this.Hobby(hobby);
-    //     return nextState.selected;
-    //   }
-    //  return hobby;
-    // }.bind(this));
-
-    this.hobbies.forEach(function(hobby){
-      if (hobby.id === id){
-        nextState.selected = this.Hobby(hobby);
+    for (var i = this.hobbies.length - 1; i >= 0; i--) {
+      if ((this.selected === void(0) || this.selected.id !== id) && this.hobbies[i].id === id){
+        this.setState({selected: this.Hobby(this.hobbies[i])});
+        break;
       }
-    }.bind(this));
-
-    this.setState(nextState);
-
+    };
   },
   
   addHobby: function(value){
