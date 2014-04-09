@@ -98,15 +98,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
 							}
 						}
-						// set: function(persons) {
-						// 	if(appState.hobbies.onWatchedStateChanged){
-						// 		nextState.hobbies = extend(nextState.hobbies, nextState.hobbies.onWatchedStateChanged(caller, persons));
-						// 		nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
-						// 		nextState = extend(appState, nextState);
-						// 		nextState.persons.state.$hobbies = nextState.hobbies;
-						// 		nextState.hobbies.state.$persons = nextState.persons;
-						// 	}
-						// }
 					});
 				}
 			} else {
@@ -166,8 +157,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	// Object.freeze(appState.persons.state);
 	// Object.freeze(appState.hobbies.state);
 
+	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
 	Object.freeze(appState.state);
 	Object.freeze(appState);
-	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
 	return appState;
 };

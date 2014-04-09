@@ -105,15 +105,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
 							}
 						}
-						// set: function(persons) {
-						// 	if(appState.hobbies.onWatchedStateChanged){
-						// 		nextState.hobbies = extend(nextState.hobbies, nextState.hobbies.onWatchedStateChanged(caller, persons));
-						// 		nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
-						// 		nextState = extend(appState, nextState);
-						// 		nextState.persons.state.$hobbies = nextState.hobbies;
-						// 		nextState.hobbies.state.$persons = nextState.persons;
-						// 	}
-						// }
 					});
 				}
 			} else {
@@ -173,9 +164,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	// Object.freeze(appState.persons.state);
 	// Object.freeze(appState.hobbies.state);
 
+	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
 	Object.freeze(appState.state);
 	Object.freeze(appState);
-	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
 	return appState;
 };
 },{"./utils":8}],3:[function(_dereq_,module,exports){
@@ -426,7 +417,7 @@ var IMVVMModel = {
         for (var i = freezeFields.length - 1; i >= 0; i--) {
             Object.freeze(model[freezeFields[i].fieldName]);
         };
-        return model;//Object.freeze(model);
+        return Object.freeze(model);
       };
       return dataContext;
     }
@@ -505,8 +496,7 @@ var IMVVMViewModel = {
             Object.freeze(viewModel[freezeFields[i].fieldName]);
           }
         };
-        return viewModel;
-        //return Object.freeze(viewModel);
+        return Object.freeze(viewModel);
 
       };
       return dataContext;

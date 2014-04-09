@@ -67,8 +67,7 @@ var IMVVMViewModel = {
             Object.freeze(viewModel[freezeFields[i].fieldName]);
           }
         };
-        return viewModel;
-        //return Object.freeze(viewModel);
+        return Object.freeze(viewModel);
 
       };
       return dataContext;
