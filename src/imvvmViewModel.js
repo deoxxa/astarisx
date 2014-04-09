@@ -25,7 +25,7 @@ var IMVVMViewModel = {
         
         Object.defineProperty(viewModel, 'state', {
           configurable: true,
-          enumerable: true,
+          enumerable: false,
           writable: true,
           value: nextState
         });
@@ -35,7 +35,7 @@ var IMVVMViewModel = {
         
           Object.defineProperty(viewModel, 'state', {
             configurable: true,
-            enumerable: true,
+            enumerable: false,
             writable: true,
             value: nextState
           });
@@ -49,14 +49,14 @@ var IMVVMViewModel = {
 
                 Object.defineProperty(tempModel, 'state', {
                   configurable: true,
-                  enumerable: true,
+                  enumerable: false,
                   writable: true,
                   value: viewModel[freezeFields[i].fieldName].state
                 });
                 
                 tempModel.__proto__.setState = function(nextState, callback){ //callback may be useful for DB updates
-                    return tempDesc.stateChangedHandler//.bind(viewModel)
-                      .call(this, extend(tempModel, nextState), tempModel.state, callback);
+                    return tempDesc.stateChangedHandler
+                      .call(this, extend(tempModel.state, nextState), tempModel.state, callback);
                 }.bind(viewModel);
                 
                 Object.freeze(viewModel[freezeFields[i].fieldName]);

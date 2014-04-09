@@ -86,8 +86,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				nextState = extend(appState, nextState);
 
 				//At this point assign nextState to all subscribers
-				//nextState.persons.state.$hobbies = nextState.hobbies;
-				//nextState.hobbies.state.$persons = nextState.persons;
+				nextState.persons.state.$hobbies = nextState.hobbies;
+				nextState.hobbies.state.$persons = nextState.persons;
 
 				if(caller === 'persons' && ('$persons' in nextState.hobbies.state)){
 					Object.defineProperty(nextState.hobbies.state, '$persons', {
@@ -101,8 +101,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								nextState.hobbies = extend(nextState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
 								nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
 								nextState = extend(appState, nextState);
-								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
 								nextState.hobbies.state.$persons = nextState.persons;
+								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
 							}
 						}
 						// set: function(persons) {
@@ -164,8 +164,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		}
 	}
 
-	appState.persons.state.$hobbies = appState.hobbies;
-	appState.hobbies.state.$persons = appState.persons;
+	appState.persons.state.$hobbies = appState.hobbies.state;
+	appState.hobbies.state.$persons = appState.persons.state;
 
 	appState.persons.state.$hobbies = new dataContexts.hobbies(appState.hobbies);
 	appState.hobbies.state.$persons = new dataContexts.persons(appState.persons);
@@ -323,7 +323,7 @@ var IMVVMDomainModel = {
         //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
         Object.defineProperty(domainModel, 'state', {
           configurable: true,
-          enumerable: true,
+          enumerable: false,
           writable: true,
           value: nextState
         });
@@ -331,7 +331,7 @@ var IMVVMDomainModel = {
         if(!!enableUndo && !!prevState){
           Object.defineProperty(domainModel, 'previousState', {
             configurable: false,
-            enumerable: true,
+            enumerable: false,
             writable: true,
             value: prevState
           });
@@ -356,7 +356,7 @@ var IMVVMDomainModel = {
 
         Object.defineProperty(domainModel, 'state', {
           configurable: true,
-          enumerable: true,
+          enumerable: false,
           writable: true,
           value: nextState
         });
@@ -463,7 +463,7 @@ var IMVVMViewModel = {
         
         Object.defineProperty(viewModel, 'state', {
           configurable: true,
-          enumerable: true,
+          enumerable: false,
           writable: true,
           value: nextState
         });
@@ -473,7 +473,7 @@ var IMVVMViewModel = {
         
           Object.defineProperty(viewModel, 'state', {
             configurable: true,
-            enumerable: true,
+            enumerable: false,
             writable: true,
             value: nextState
           });
@@ -487,14 +487,14 @@ var IMVVMViewModel = {
 
                 Object.defineProperty(tempModel, 'state', {
                   configurable: true,
-                  enumerable: true,
+                  enumerable: false,
                   writable: true,
                   value: viewModel[freezeFields[i].fieldName].state
                 });
                 
                 tempModel.__proto__.setState = function(nextState, callback){ //callback may be useful for DB updates
-                    return tempDesc.stateChangedHandler//.bind(viewModel)
-                      .call(this, extend(tempModel, nextState), tempModel.state, callback);
+                    return tempDesc.stateChangedHandler
+                      .call(this, extend(tempModel.state, nextState), tempModel.state, callback);
                 }.bind(viewModel);
                 
                 Object.freeze(viewModel[freezeFields[i].fieldName]);
