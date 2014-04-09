@@ -79,10 +79,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				nextState = extend(appState, nextState);
 
 				//At this point assign nextState to all subscribers
-				nextState.persons.state.$hobbies = nextState.hobbies;
-				nextState.hobbies.state.$persons = nextState.persons;
+				//nextState.persons.state.$hobbies = nextState.hobbies;
+				//nextState.hobbies.state.$persons = nextState.persons;
 
-				if(caller === 'persons' && ('$persons' in nextState.hobbies.state) && !Object.isFrozen(nextState.hobbies.state)){
+				if(caller === 'persons' && ('$persons' in nextState.hobbies.state)){
 					Object.defineProperty(nextState.hobbies.state, '$persons', {
 						configurable: true,
 						enumerable: true,
@@ -91,7 +91,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 						},
 						set: function(persons) {
 							if(appState.hobbies.onWatchedStateChanged){
-								nextState.hobbies = extend(appState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
+								nextState.hobbies = extend(nextState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
 								nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
 								nextState = extend(appState, nextState);
 								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
@@ -115,8 +115,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			prevState = appState;
 		}
 
-		nextState.hobbies.state.$persons = nextState.persons;
-		nextState.persons.state.$hobbies = nextState.hobbies;
+		nextState.hobbies.state.$persons = new dataContexts.persons(nextState.persons);
+		nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
 
 		// Object.freeze(nextState.persons.state);
 		// Object.freeze(nextState.hobbies.state);

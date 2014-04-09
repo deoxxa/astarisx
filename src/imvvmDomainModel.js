@@ -25,7 +25,7 @@ var IMVVMDomainModel = {
         
         if(!!enableUndo && !!prevState){
           Object.defineProperty(domainModel, 'previousState', {
-            configurable: true,
+            configurable: false,
             enumerable: true,
             writable: true,
             value: prevState

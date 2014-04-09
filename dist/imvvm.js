@@ -86,10 +86,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				nextState = extend(appState, nextState);
 
 				//At this point assign nextState to all subscribers
-				nextState.persons.state.$hobbies = nextState.hobbies;
-				nextState.hobbies.state.$persons = nextState.persons;
+				//nextState.persons.state.$hobbies = nextState.hobbies;
+				//nextState.hobbies.state.$persons = nextState.persons;
 
-				if(caller === 'persons' && ('$persons' in nextState.hobbies.state) && !Object.isFrozen(nextState.hobbies.state)){
+				if(caller === 'persons' && ('$persons' in nextState.hobbies.state)){
 					Object.defineProperty(nextState.hobbies.state, '$persons', {
 						configurable: true,
 						enumerable: true,
@@ -98,7 +98,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 						},
 						set: function(persons) {
 							if(appState.hobbies.onWatchedStateChanged){
-								nextState.hobbies = extend(appState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
+								nextState.hobbies = extend(nextState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
 								nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
 								nextState = extend(appState, nextState);
 								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
@@ -122,8 +122,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			prevState = appState;
 		}
 
-		nextState.hobbies.state.$persons = nextState.persons;
-		nextState.persons.state.$hobbies = nextState.hobbies;
+		nextState.hobbies.state.$persons = new dataContexts.persons(nextState.persons);
+		nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
 
 		// Object.freeze(nextState.persons.state);
 		// Object.freeze(nextState.hobbies.state);
@@ -330,7 +330,7 @@ var IMVVMDomainModel = {
         
         if(!!enableUndo && !!prevState){
           Object.defineProperty(domainModel, 'previousState', {
-            configurable: true,
+            configurable: false,
             enumerable: true,
             writable: true,
             value: prevState
@@ -405,7 +405,7 @@ var IMVVMModel = {
         Object.defineProperty(model, 'state', {
           configurable: true,
           enumerable: false,
-          writable: false,
+          writable: true,
           value: nextState
         });
 
@@ -418,7 +418,7 @@ var IMVVMModel = {
         Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,
-          writable: false,
+          writable: true,
           value: nextState
         });
 
@@ -426,7 +426,7 @@ var IMVVMModel = {
         for (var i = freezeFields.length - 1; i >= 0; i--) {
             Object.freeze(model[freezeFields[i].fieldName]);
         };
-        return Object.freeze(model);
+        return model;//Object.freeze(model);
       };
       return dataContext;
     }
@@ -458,6 +458,7 @@ var IMVVMViewModel = {
         
         if(nextState.state){
           nextState = extend(nextState.state, nextState);
+          // delete nextState.state;
         }
         
         Object.defineProperty(viewModel, 'state', {
@@ -485,25 +486,27 @@ var IMVVMViewModel = {
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
 
                 Object.defineProperty(tempModel, 'state', {
-                  configurable: false,
-                  enumerable: false,
-                  writable: false,
+                  configurable: true,
+                  enumerable: true,
+                  writable: true,
                   value: viewModel[freezeFields[i].fieldName].state
                 });
                 
                 tempModel.__proto__.setState = function(nextState, callback){ //callback may be useful for DB updates
-                    return tempDesc.stateChangedHandler.bind(viewModel)
-                      .call(viewModel, extend(this.state, nextState), this.state, callback);
-                }.bind(tempModel);
+                    return tempDesc.stateChangedHandler//.bind(viewModel)
+                      .call(this, extend(tempModel, nextState), tempModel.state, callback);
+                }.bind(viewModel);
                 
-                viewModel[freezeFields[i].fieldName] = Object.freeze(tempModel);
+                Object.freeze(viewModel[freezeFields[i].fieldName]);
+                //viewModel[freezeFields[i].fieldName] = Object.freeze(viewModel[freezeFields[i].fieldName]);
               }
 
           } else {
             Object.freeze(viewModel[freezeFields[i].fieldName]);
           }
         };
-        return Object.freeze(viewModel);
+        return viewModel;
+        //return Object.freeze(viewModel);
 
       };
       return dataContext;

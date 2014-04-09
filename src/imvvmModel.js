@@ -26,7 +26,7 @@ var IMVVMModel = {
         Object.defineProperty(model, 'state', {
           configurable: true,
           enumerable: false,
-          writable: false,
+          writable: true,
           value: nextState
         });
 
@@ -39,7 +39,7 @@ var IMVVMModel = {
         Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,
-          writable: false,
+          writable: true,
           value: nextState
         });
 
@@ -47,7 +47,7 @@ var IMVVMModel = {
         for (var i = freezeFields.length - 1; i >= 0; i--) {
             Object.freeze(model[freezeFields[i].fieldName]);
         };
-        return Object.freeze(model);
+        return model;//Object.freeze(model);
       };
       return dataContext;
     }

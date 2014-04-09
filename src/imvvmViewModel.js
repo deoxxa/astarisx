@@ -20,6 +20,7 @@ var IMVVMViewModel = {
         
         if(nextState.state){
           nextState = extend(nextState.state, nextState);
+          // delete nextState.state;
         }
         
         Object.defineProperty(viewModel, 'state', {
@@ -47,25 +48,27 @@ var IMVVMViewModel = {
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
 
                 Object.defineProperty(tempModel, 'state', {
-                  configurable: false,
-                  enumerable: false,
-                  writable: false,
+                  configurable: true,
+                  enumerable: true,
+                  writable: true,
                   value: viewModel[freezeFields[i].fieldName].state
                 });
                 
                 tempModel.__proto__.setState = function(nextState, callback){ //callback may be useful for DB updates
-                    return tempDesc.stateChangedHandler.bind(viewModel)
-                      .call(viewModel, extend(this.state, nextState), this.state, callback);
-                }.bind(tempModel);
+                    return tempDesc.stateChangedHandler//.bind(viewModel)
+                      .call(this, extend(tempModel, nextState), tempModel.state, callback);
+                }.bind(viewModel);
                 
-                viewModel[freezeFields[i].fieldName] = Object.freeze(tempModel);
+                Object.freeze(viewModel[freezeFields[i].fieldName]);
+                //viewModel[freezeFields[i].fieldName] = Object.freeze(viewModel[freezeFields[i].fieldName]);
               }
 
           } else {
             Object.freeze(viewModel[freezeFields[i].fieldName]);
           }
         };
-        return Object.freeze(viewModel);
+        return viewModel;
+        //return Object.freeze(viewModel);
 
       };
       return dataContext;
