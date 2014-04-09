@@ -41,6 +41,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		return newObj;
 	};
 
+	var watchedState = {
+		persons: ['hobbies'],
+		hobbies: ['persons']
+	}
 
 	var appStateChangedHandler = function(caller, newState, callback) {
 		
@@ -71,43 +75,87 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			if(caller !== appNamespace){
 				
 				nextState[caller] = extend(appState[caller], newState);
-				nextState[caller] = new dataContexts[caller](nextState); //All this should really do is create
+				nextState[caller] = new dataContexts[caller](extend(appState, nextState)); //All this should really do is create
 				//a viewModel with the prototype and enable calling initial and onStateChange functions
 				
 				//for each subscriber call onStateChanging(next.hobbies.state) => pass in nextState
 				//also call if for datacontext that is invoking the change
 				nextState = extend(appState, nextState);
 
-				//At this point assign nextState to all subscribers
-				nextState.persons.state.$hobbies = nextState.hobbies;
-				nextState.hobbies.state.$persons = nextState.persons;
+				if(caller in watchedState){
+					var list = watchedState[caller];
+					list.forEach(function(vm){
+						if(appState[vm].onWatchedStateChanged){
+							nextState[vm] = extend(nextState[vm], appState[vm].onWatchedStateChanged(caller, nextState[caller]));
+							// nextState[vm] = new dataContexts[vm](nextState);
+							// nextState = extend(appState, nextState);
+							
+							// nextState[caller] = new dataContexts[caller](nextState);
+							// nextState = extend(appState, nextState);
 
-				if(caller === 'persons' && ('$persons' in nextState.hobbies.state)){
-					Object.defineProperty(nextState.hobbies.state, '$persons', {
-						configurable: true,
-						enumerable: true,
-						get: function(){ 
-							return appState.persons; 
-						},
-						set: function(persons) {
-							if(appState.hobbies.onWatchedStateChanged){
-								nextState.hobbies = extend(nextState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
-								nextState.hobbies = new dataContexts.hobbies(nextState);
-								nextState = extend(appState, nextState);
-								nextState.hobbies.state.$persons = nextState.persons;
-								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
-							}
 						}
+						nextState[vm] = new dataContexts[vm](nextState);
 					});
+					nextState = extend(appState, nextState);
+					
+					nextState[caller] = new dataContexts[caller](nextState);
+					nextState = extend(appState, nextState);
 				}
+				// if(appState.hobbies.onWatchedStateChanged){
+				// 	nextState.hobbies = extend(nextState.hobbies, appState.hobbies.onWatchedStateChanged(caller, nextState[caller]));
+				// 	nextState.hobbies = new dataContexts.hobbies(nextState);
+				// 	nextState = extend(appState, nextState);
+				// 	// nextState.hobbies.state.$persons = nextState.persons;
+				// 	// nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
+				// }
+
+				//At this point assign nextState to all subscribers
+				// nextState.persons.state.$hobbies = nextState.hobbies;
+				// nextState.hobbies.state.$persons = nextState.persons;
+
+				// if(caller === 'persons' && ('$persons' in nextState.hobbies.state)){
+				// 	Object.defineProperty(nextState.hobbies.state, '$persons', {
+				// 		configurable: true,
+				// 		enumerable: true,
+				// 		get: function(){ 
+				// 			return appState.persons; 
+				// 		},
+				// 		set: function(persons) {
+				// 			if(appState.hobbies.onWatchedStateChanged){
+				// 				nextState.hobbies = extend(nextState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
+				// 				nextState.hobbies = new dataContexts.hobbies(nextState);
+				// 				nextState = extend(appState, nextState);
+				// 				// nextState.hobbies.state.$persons = nextState.persons;
+				// 				// nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
+				// 			}
+				// 		}
+				// 	});
+				// }
+
+				// Object.defineProperty(nextState.hobbies.state, '$', {
+				// 	configurable: true,
+				// 	enumerable: true,
+				// 	get: function(){ 
+				// 		return nextState;
+				// 	}
+				// });
+				
+
 			} else {
 				nextState = extend(appState, newState);
 			}
 			prevState = appState;
 		}
 
-		nextState.hobbies.state.$persons = new dataContexts.persons(nextState);
-		nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
+		// if(appState.hobbies.onWatchedStateChanged){
+		// 	nextState.hobbies = extend(nextState.hobbies, appState.hobbies.onWatchedStateChanged(caller, nextState[caller]));
+		// 	nextState.hobbies = new dataContexts.hobbies(nextState);
+		// 	nextState = extend(appState, nextState);
+		// 	// nextState.hobbies.state.$persons = nextState.persons;
+		// 	// nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
+		// }
+		//nextState.hobbies.state.$persons = new dataContexts.persons(nextState);
+		//nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
 
 		if(!!prevState){
 			Object.freeze(prevState);
@@ -141,18 +189,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext)).bind(this, dataContext);
-			appState[dataContext] = new dataContexts[dataContext]({}, true);
+			appState[dataContext] = new dataContexts[dataContext](appState, true);
 		}
 	}
-
-	// appState.persons.state.$hobbies = appState.hobbies.state;
-	// appState.hobbies.state.$persons = appState.persons.state;
-
-	appState.persons.state.$ = appState;//.hobbies.state;
-	appState.hobbies.state.$ = appState;//.persons.state;
-
-	appState.persons.state.$hobbies = new dataContexts.hobbies(appState);
-	appState.hobbies.state.$persons = new dataContexts.persons(appState);
 
 	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
 	Object.freeze(appState.state);

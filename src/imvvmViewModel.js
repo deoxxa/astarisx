@@ -14,6 +14,7 @@ var IMVVMViewModel = {
 
         //nextState has already been extended with prevState in core
         var nextState = {};
+        nextState[VMName] = {};
         if(VMName in appState){
           nextState = ('state' in appState[VMName]) ? appState[VMName].state : appState[VMName];
         }

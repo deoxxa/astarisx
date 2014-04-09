@@ -23,6 +23,13 @@ var PersonsViewModel = IMVVM.createViewModel({
     }
   },
 
+  // onWatchedStateChanged: function(viewModel, nextState){
+  //   //console.log(this);
+  //   // if(this.selected !== void(0) && viewModel === 'persons' &&
+  //   //   nextState.selected.id !== this.state.$.persons.selected.id){
+  //   //   return {selected: void(0)};
+  //   // }
+  // },
 
   // getDependencies: function(){
   //   return {
