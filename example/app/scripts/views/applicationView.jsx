@@ -18,8 +18,8 @@ var ApplicationView = React.createClass({
 
     console.log(Object.isFrozen(this.state.domainDataContext.persons.state));
     console.log(Object.isFrozen(this.state.domainDataContext.hobbies.state));
-    console.log(Object.isFrozen(this.state.domainDataContext.previousState || {}));
     console.log(Object.isFrozen(this.state.domainDataContext.hobbies.selected || {}));
+    console.log(Object.isFrozen(this.state.domainDataContext.previousState || {}));
     console.log(Object.isFrozen(this.state.domainDataContext));
     console.log(Object.isFrozen(this.state.domainDataContext.state));
     console.log(Object.isFrozen(this.state.domainDataContext.persons));

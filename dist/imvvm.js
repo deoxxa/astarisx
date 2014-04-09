@@ -346,9 +346,9 @@ var IMVVMDomainModel = {
         };
 
         Object.defineProperty(domainModel, 'state', {
-          configurable: true,
+          configurable: false,
           enumerable: false,
-          writable: true,
+          writable: false,
           value: nextState
         });
 
@@ -409,7 +409,7 @@ var IMVVMModel = {
         Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,
-          writable: true,
+          writable: false,
           value: nextState
         });
 
@@ -449,7 +449,6 @@ var IMVVMViewModel = {
         
         if(nextState.state){
           nextState = extend(nextState.state, nextState);
-          // delete nextState.state;
         }
         
         Object.defineProperty(viewModel, 'state', {
@@ -477,25 +476,31 @@ var IMVVMViewModel = {
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
 
                 Object.defineProperty(tempModel, 'state', {
-                  configurable: true,
+                  configurable: false,
                   enumerable: false,
-                  writable: true,
+                  writable: false,
                   value: viewModel[freezeFields[i].fieldName].state
                 });
                 
                 tempModel.__proto__.setState = function(nextState, callback){ //callback may be useful for DB updates
                     return tempDesc.stateChangedHandler
                       .call(this, extend(tempModel.state, nextState), tempModel.state, callback);
-                }.bind(viewModel);
-                
+                }.bind(viewModel);                
                 Object.freeze(viewModel[freezeFields[i].fieldName]);
-                //viewModel[freezeFields[i].fieldName] = Object.freeze(viewModel[freezeFields[i].fieldName]);
               }
 
           } else {
             Object.freeze(viewModel[freezeFields[i].fieldName]);
           }
         };
+        
+        Object.defineProperty(viewModel, 'state', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: nextState
+        });
+
         return Object.freeze(viewModel);
 
       };

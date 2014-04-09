@@ -50,9 +50,9 @@ var IMVVMDomainModel = {
         };
 
         Object.defineProperty(domainModel, 'state', {
-          configurable: true,
+          configurable: false,
           enumerable: false,
-          writable: true,
+          writable: false,
           value: nextState
         });
 

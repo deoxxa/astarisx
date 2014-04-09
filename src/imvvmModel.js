@@ -39,7 +39,7 @@ var IMVVMModel = {
         Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,
-          writable: true,
+          writable: false,
           value: nextState
         });
 
