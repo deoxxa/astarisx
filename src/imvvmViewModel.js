@@ -31,14 +31,15 @@ var IMVVMViewModel = {
         
         if(initialize && ('getInitialState' in viewModel)){
           nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
-        
-          Object.defineProperty(viewModel, 'state', {
-            configurable: true,
-            enumerable: false,
-            writable: true,
-            value: nextState
-          });
         }
+        
+        Object.defineProperty(viewModel, 'state', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: nextState
+        });
+
         //freeze arrays and viewModel instances
         for (var i = freezeFields.length - 1; i >= 0; i--) {
           if(freezeFields[i].kind === 'instance'){
@@ -65,13 +66,6 @@ var IMVVMViewModel = {
           }
         };
         
-        Object.defineProperty(viewModel, 'state', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: nextState
-        });
-
         return Object.freeze(viewModel);
 
       };

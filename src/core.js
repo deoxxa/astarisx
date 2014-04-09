@@ -109,9 +109,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		nextState.hobbies.state.$persons = new dataContexts.persons(nextState.persons);
 		nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
 
-		// Object.freeze(nextState.persons.state);
-		// Object.freeze(nextState.hobbies.state);
-
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
@@ -153,9 +150,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	appState.persons.state.$hobbies = new dataContexts.hobbies(appState.hobbies);
 	appState.hobbies.state.$persons = new dataContexts.persons(appState.persons);
-
-	// Object.freeze(appState.persons.state);
-	// Object.freeze(appState.hobbies.state);
 
 	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
 	Object.freeze(appState.state);
