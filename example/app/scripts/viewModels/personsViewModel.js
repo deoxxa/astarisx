@@ -52,7 +52,7 @@ var PersonsViewModel = IMVVM.createViewModel({
 
   selectedHobby: {
     get: function() {
-      return this.state.$hobbies.selected ? this.state.$hobbies.selected.name: void(0); 
+      return this.state.$.hobbies.selected ? this.state.$.hobbies.selected.name: void(0); 
     }
   },
 

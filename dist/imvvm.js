@@ -78,7 +78,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			if(caller !== appNamespace){
 				
 				nextState[caller] = extend(appState[caller], newState);
-				nextState[caller] = new dataContexts[caller](nextState[caller]); //All this should really do is create
+				nextState[caller] = new dataContexts[caller](nextState); //All this should really do is create
 				//a viewModel with the prototype and enable calling initial and onStateChange functions
 				
 				//for each subscriber call onStateChanging(next.hobbies.state) => pass in nextState
@@ -99,10 +99,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 						set: function(persons) {
 							if(appState.hobbies.onWatchedStateChanged){
 								nextState.hobbies = extend(nextState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
-								nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
+								nextState.hobbies = new dataContexts.hobbies(nextState);
 								nextState = extend(appState, nextState);
 								nextState.hobbies.state.$persons = nextState.persons;
-								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
+								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
 							}
 						}
 					});
@@ -113,8 +113,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			prevState = appState;
 		}
 
-		nextState.hobbies.state.$persons = new dataContexts.persons(nextState.persons);
-		nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
+		nextState.hobbies.state.$persons = new dataContexts.persons(nextState);
+		nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
 
 		if(!!prevState){
 			Object.freeze(prevState);
@@ -147,16 +147,19 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
-			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext));
+			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext)).bind(this, dataContext);
 			appState[dataContext] = new dataContexts[dataContext]({}, true);
 		}
 	}
 
-	appState.persons.state.$hobbies = appState.hobbies.state;
-	appState.hobbies.state.$persons = appState.persons.state;
+	// appState.persons.state.$hobbies = appState.hobbies.state;
+	// appState.hobbies.state.$persons = appState.persons.state;
 
-	appState.persons.state.$hobbies = new dataContexts.hobbies(appState.hobbies);
-	appState.hobbies.state.$persons = new dataContexts.persons(appState.persons);
+	appState.persons.state.$ = appState;//.hobbies.state;
+	appState.hobbies.state.$ = appState;//.persons.state;
+
+	appState.persons.state.$hobbies = new dataContexts.hobbies(appState);
+	appState.hobbies.state.$persons = new dataContexts.persons(appState);
 
 	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
 	Object.freeze(appState.state);
@@ -433,17 +436,21 @@ var IMVVMViewModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(nextState, initialize) {
+      var dataContext = function(VMName, appState, initialize) {
 
         //nextState has already been extended with prevState in core
+        var nextState = {};
+        if(VMName in appState){
+          nextState = ('state' in appState[VMName]) ? appState[VMName].state : appState[VMName];
+        }
         var freezeFields = desc.freezeFields;
         var viewModel = Object.create(desc.proto, desc.descriptor);
         var tempDesc,
           tempModel;
         
-        if(nextState.state){
-          nextState = extend(nextState.state, nextState);
-        }
+        // if(nextState.state){
+        //   nextState = extend(nextState.state, nextState);
+        // }
         
         Object.defineProperty(viewModel, 'state', {
           configurable: true,
@@ -455,7 +462,14 @@ var IMVVMViewModel = {
         if(initialize && ('getInitialState' in viewModel)){
           nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
         }
-        
+
+        Object.defineProperty(nextState, '$', {
+          configurable: true,
+          enumerable: false,
+          writable: false,
+          value: appState
+        });
+
         Object.defineProperty(viewModel, 'state', {
           configurable: false,
           enumerable: false,
