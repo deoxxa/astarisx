@@ -70,6 +70,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		if(Object.getPrototypeOf(newState).constructor.classType === "DomainModel") {
 			nextState = extend(newState);
 			prevState = newState.previousState;
+
+			for(var p in watchedState){
+				nextState[p] = new dataContexts[p](nextState);
+			}
+
+
 		} else {
 
 			if(caller !== appNamespace){
@@ -101,44 +107,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					nextState[caller] = new dataContexts[caller](nextState);
 					nextState = extend(appState, nextState);
 				}
-				// if(appState.hobbies.onWatchedStateChanged){
-				// 	nextState.hobbies = extend(nextState.hobbies, appState.hobbies.onWatchedStateChanged(caller, nextState[caller]));
-				// 	nextState.hobbies = new dataContexts.hobbies(nextState);
-				// 	nextState = extend(appState, nextState);
-				// 	// nextState.hobbies.state.$persons = nextState.persons;
-				// 	// nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
-				// }
 
-				//At this point assign nextState to all subscribers
-				// nextState.persons.state.$hobbies = nextState.hobbies;
-				// nextState.hobbies.state.$persons = nextState.persons;
-
-				// if(caller === 'persons' && ('$persons' in nextState.hobbies.state)){
-				// 	Object.defineProperty(nextState.hobbies.state, '$persons', {
-				// 		configurable: true,
-				// 		enumerable: true,
-				// 		get: function(){ 
-				// 			return appState.persons; 
-				// 		},
-				// 		set: function(persons) {
-				// 			if(appState.hobbies.onWatchedStateChanged){
-				// 				nextState.hobbies = extend(nextState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
-				// 				nextState.hobbies = new dataContexts.hobbies(nextState);
-				// 				nextState = extend(appState, nextState);
-				// 				// nextState.hobbies.state.$persons = nextState.persons;
-				// 				// nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
-				// 			}
-				// 		}
-				// 	});
-				// }
-
-				// Object.defineProperty(nextState.hobbies.state, '$', {
-				// 	configurable: true,
-				// 	enumerable: true,
-				// 	get: function(){ 
-				// 		return nextState;
-				// 	}
-				// });
 				
 
 			} else {
