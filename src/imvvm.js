@@ -1,7 +1,7 @@
 
 var model = require('./imvvmModel');
 var viewModel = require('./imvvmViewModel');
-var domainModel = require('./imvvmDomainModel');
+var domainModel = require('./imvvmDomainViewModel');
 var mixin = require('./mixin');
 
 var utils = require('./utils');
@@ -10,11 +10,11 @@ var mixInto = utils.mixInto;
 
 var ModelBase = function(){};
 var ViewModelBase = function(){};
-var DomainModelBase = function(){};
+var DomainViewModelBase = function(){};
 
 mixInto(ModelBase, model.Mixin);
 mixInto(ViewModelBase, viewModel.Mixin);
-mixInto(DomainModelBase, domainModel.Mixin);
+mixInto(DomainViewModelBase, domainModel.Mixin);
 
 var IMVVMClass = {
   createClass: function(ctor, classType, spec){
@@ -115,7 +115,7 @@ var IMVVMClass = {
 var IMVVM = {
   createModel: IMVVMClass.createClass.bind(this, ModelBase, 'Model'),
   createViewModel: IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel'),
-  createDomainModel: IMVVMClass.createClass.bind(this, DomainModelBase, 'DomainModel'),
+  createDomainViewModel: IMVVMClass.createClass.bind(this, DomainViewModelBase, 'DomainViewModel'),
   mixin: mixin
 };
 

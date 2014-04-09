@@ -5,10 +5,10 @@
 'use strict';
 
 //Rename DomainModel to DomainViewModel
-var DomainModel = IMVVM.createDomainModel({
+var DomainViewModel = IMVVM.createDomainViewModel({
 
   //dataContext keys define the dataContext names that will appear in
-  //the Viewand and associates a ViewModel.
+  //the View and associates a ViewModel.
   getDomainDataContext: function(){
     return {
       hobbies: HobbiesViewModel,
@@ -64,13 +64,23 @@ var DomainModel = IMVVM.createDomainModel({
   //     return this.persons ? this.persons.selected.firstName: 'no one';
   //   }
   // },
-
+  watchDataContexts: ['hobbies'],
 
   busy: {
-    get: function(){
-      return this.state.busy;
-    },
+    get: function() {
+      return this.hobbies.selected ? true : false;
+    }
   },
+
+  // busy: {
+  //   get: function(){
+  //     return this.state.busy;
+  //   },
+  //   set: function(newValue){
+  //     console.log(newValue);
+  //     this.setState({'busy': newValue });
+  //   },
+  // },
 
   online: {
     get: function(){

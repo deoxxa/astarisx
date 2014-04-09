@@ -4,21 +4,22 @@
 'use strict';
 
 var HobbiesViewModel = IMVVM.createViewModel({
-  
-  getWatchedState: function(){
-    return {
-      //app: { watchList: ['busy'] },
-      persons: ['selected'],
-    }
-  },
 
-  onWatchedStateChanged: function(viewModel, nextState){
+  watchDataContexts: ['persons', 'Fred', 'somthin'],
+  
+  onWatchedDataContextChanged: function(viewModel, nextState){
     if(this.selected !== void(0) && viewModel === 'persons' &&
       nextState.selected.id !== this.state.$.persons.selected.id){
       return {selected: void(0)};
     }
   },
   
+  //watchDomainProps: ['busy'],
+  
+  // onWatchedDomainPropChanged: function(nextState){
+
+  // },
+
   hobbies: {
     get: function(){
       return this.state.$.persons.selected.hobbies;
@@ -71,7 +72,10 @@ var HobbiesViewModel = IMVVM.createViewModel({
   select: function(id){
     for (var i = this.hobbies.length - 1; i >= 0; i--) {
       if ((this.selected === void(0) || this.selected.id !== id) && this.hobbies[i].id === id){
-        this.setState({selected: this.Hobby(this.hobbies[i])});
+        this.setState({selected: this.Hobby(this.hobbies[i])}/*, function(){
+          console.log('called back');
+          this.state.$.busy = true;
+        }.bind(this)*/);
         break;
       }
     };

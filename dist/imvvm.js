@@ -18,70 +18,35 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	enableUndo === void(0) ? true : enableUndo;
 
 	var ApplicationDataContext,
-		dependsOn,
 		appState = {},
 		dataContexts = {},
-		watchedProps,
-		watchedPropsLen,
-		watchList = {},
-		dependents = [],
 		domain,
-		watchListPropA,
-		watchListPropB;
-
-	var invokedWithCallback = false;
-
-	var depProp;
-
-	var configure = function(obj, propName){
-		var newObj = {};
-		for(var k in obj){
-			if(obj.hasOwnProperty(k)){
-				if(Object.prototype.toString.call(obj[k]) === '[object Object]'){
-					newObj[k] = obj[k];
-				} else {
-					newObj[k] = {};
-					newObj[k][propName] = obj[k];
-				}
-			}
-		}
-		return newObj;
-	};
-
-	var watchedState = {
-		persons: ['hobbies'],
-		hobbies: ['persons']
-	}
+		invokedWithCallback = false,
+		watchedDataContexts = {},
+		watchedDomainProps = {};
 
 	var appStateChangedHandler = function(caller, newState, callback) {
 		
-		if((newState === void(0) || newState === null || Object.keys(newState).length === 0)){
-			return;
-		}
-
 		var nextState = {},
 			prevState = {},
-			subscribers = [],
-			newStateKeys,
-			newStateKeysLen,
-			subscriberNames,
-			idxKey,
-			idxDepFld,
-			tmpNextState = {},
-			changeState,
-			dependsOnObj;
+			newStateKeys;
+
+		newState = newState || {};
+		newStateKeys = Object.keys(newState);
+		if(newStateKeys.length === 0){
+			return;
+		}
 
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangedHandler. If a callback was passed in
 		//it would be assigned to newState
-		if(Object.getPrototypeOf(newState).constructor.classType === "DomainModel") {
+		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
 			nextState = extend(newState);
 			prevState = newState.previousState;
 
-			for(var p in watchedState){
-				nextState[p] = new dataContexts[p](nextState);
+			for(var dc in watchedDataContexts){
+				nextState[dc] = new dataContexts[dc](nextState);
 			}
-
 
 		} else {
 
@@ -95,77 +60,97 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				//also call if for datacontext that is invoking the change
 				nextState = extend(appState, nextState);
 
-				if(caller in watchedState){
-					var list = watchedState[caller];
-					list.forEach(function(vm){
-						if(appState[vm].onWatchedStateChanged){
-							nextState[vm] = extend(nextState[vm], appState[vm].onWatchedStateChanged(caller, nextState[caller]));
-							// nextState[vm] = new dataContexts[vm](nextState);
-							// nextState = extend(appState, nextState);
-							
-							// nextState[caller] = new dataContexts[caller](nextState);
-							// nextState = extend(appState, nextState);
-
+				if(caller in watchedDataContexts){
+					watchedDataContexts[caller].forEach(function(vm){
+						if(appState[vm].onWatchedDataContextChanged){
+							nextState[vm] = extend(nextState[vm], appState[vm].onWatchedDataContextChanged(caller, nextState[caller]));
 						}
 						nextState[vm] = new dataContexts[vm](nextState);
 					});
-					nextState = extend(appState, nextState);
-					
-					nextState[caller] = new dataContexts[caller](nextState);
+					nextState[caller] = new dataContexts[caller](extend(appState, nextState));
 					nextState = extend(appState, nextState);
 				}
 
-				
-
 			} else {
+				//app called
+				var tmp = {};
 				nextState = extend(appState, newState);
-			}
-			prevState = appState;
-		}
+				newStateKeys.forEach(function(key){
+					if(key in watchedDomainProps){
+						watchedDomainProps[key].forEach(function(prop){
+							tmp[prop] = true;
+						});
+					}
+				});
+				Object.keys(tmp).forEach(function(vm){
+					if(appState[vm].onWatchedDomainPropsChanged){
+						nextState[vm] = extend(nextState[vm], appState[vm].onWatchedDomainPropsChanged(nextState.state));
+					}
+					nextState[vm] = new dataContexts[vm](nextState);
+				})
+				nextState = new ApplicationDataContext(nextState, appState, enableUndo);//extend(appState, nextState);
 
-		// if(appState.hobbies.onWatchedStateChanged){
-		// 	nextState.hobbies = extend(nextState.hobbies, appState.hobbies.onWatchedStateChanged(caller, nextState[caller]));
-		// 	nextState.hobbies = new dataContexts.hobbies(nextState);
-		// 	nextState = extend(appState, nextState);
-		// 	// nextState.hobbies.state.$persons = nextState.persons;
-		// 	// nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
-		// }
-		//nextState.hobbies.state.$persons = new dataContexts.persons(nextState);
-		//nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
+			}
+			prevState = invokedWithCallback ? appState.previousState: appState;
+			invokedWithCallback = false;
+		}
 
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
+		
+		appState = new ApplicationDataContext(nextState, prevState, enableUndo);
 
-		if(caller !== appNamespace && typeof callback === 'function'){
+		if(typeof callback === 'function'){
 			//Create a new App state context.
-			appState = new ApplicationDataContext(nextState, prevState, enableUndo);
 			invokedWithCallback = true;
-			callback(appState[caller]);
+			callback(caller !== appNamespace ? appState[caller] : appState);
 		} else {
-			//Create a new App state context.
-			appState = new ApplicationDataContext(nextState, invokedWithCallback ? prevState.previousState: prevState, enableUndo);
-			invokedWithCallback = false;
 			//All the work is done! -> Notify the View
-			stateChangedHandler(appState, caller, callback);
+			stateChangedHandler(appState);
 		}
 
 		Object.freeze(appState);
 		Object.freeze(appState.state);
+		
 		//Provided for the main app to return to the View
 		return appState;
 	};
 
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	appState = new ApplicationDataContext({}, void(0), enableUndo, true);
+	appState = new ApplicationDataContext(void(0), void(0), enableUndo, true);
 
-	domain = configure(appState.getDomainDataContext(), 'viewModel');
+	domain = appState.getDomainDataContext();
 
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
-			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext)).bind(this, dataContext);
+			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangedHandler.bind(this, dataContext)).bind(this, dataContext);
 			appState[dataContext] = new dataContexts[dataContext](appState, true);
+
+			if('watchDataContexts' in appState[dataContext]){
+				appState[dataContext].watchDataContexts.forEach(function(dataContextName){
+					if(dataContextName in domain){
+						if(!(dataContextName in watchedDataContexts)){
+							watchedDataContexts[dataContextName] = [dataContext]
+						} else {
+							watchedDataContexts[dataContextName].push(dataContext);
+						}						
+					}
+				});
+			}
+
+			if('watchDomainProps' in appState[dataContext]){
+				appState[dataContext].watchDomainProps.forEach(function(propName){
+					if(propName in appState.state){
+						if(!(propName in watchedDomainProps)){
+							watchedDomainProps[propName] = [dataContext]
+						} else {
+							watchedDomainProps[propName].push(dataContext);
+						}
+					}
+				});
+			}
 		}
 	}
 
@@ -178,7 +163,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 var model = _dereq_('./imvvmModel');
 var viewModel = _dereq_('./imvvmViewModel');
-var domainModel = _dereq_('./imvvmDomainModel');
+var domainModel = _dereq_('./imvvmDomainViewModel');
 var mixin = _dereq_('./mixin');
 
 var utils = _dereq_('./utils');
@@ -187,11 +172,11 @@ var mixInto = utils.mixInto;
 
 var ModelBase = function(){};
 var ViewModelBase = function(){};
-var DomainModelBase = function(){};
+var DomainViewModelBase = function(){};
 
 mixInto(ModelBase, model.Mixin);
 mixInto(ViewModelBase, viewModel.Mixin);
-mixInto(DomainModelBase, domainModel.Mixin);
+mixInto(DomainViewModelBase, domainModel.Mixin);
 
 var IMVVMClass = {
   createClass: function(ctor, classType, spec){
@@ -292,13 +277,13 @@ var IMVVMClass = {
 var IMVVM = {
   createModel: IMVVMClass.createClass.bind(this, ModelBase, 'Model'),
   createViewModel: IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel'),
-  createDomainModel: IMVVMClass.createClass.bind(this, DomainModelBase, 'DomainModel'),
+  createDomainViewModel: IMVVMClass.createClass.bind(this, DomainViewModelBase, 'DomainViewModel'),
   mixin: mixin
 };
 
 module.exports = IMVVM;
 
-},{"./imvvmDomainModel":4,"./imvvmModel":5,"./imvvmViewModel":6,"./mixin":7,"./utils":8}],4:[function(_dereq_,module,exports){
+},{"./imvvmDomainViewModel":4,"./imvvmModel":5,"./imvvmViewModel":6,"./mixin":7,"./utils":8}],4:[function(_dereq_,module,exports){
 
 var utils = _dereq_('./utils');
 var extend = utils.extend;
@@ -316,6 +301,20 @@ var IMVVMDomainModel = {
         var freezeFields = desc.freezeFields;
         var domainModel = Object.create(desc.proto, desc.descriptor);
         
+        // if(nextState.state){
+        //   nextState = extend(nextState.state, nextState);
+        // }
+
+        // if(nextState){
+        //   //attach the nextState props to domainModel if they don't exist
+        //   var keys = Object.keys(nextState);
+        //   for (var i = keys.length - 1; i >= 0; i--) {
+        //     if(!(keys[i] in domainModel)){
+        //       domainModel[keys[i]] = nextState[keys[i]];
+        //     }
+        //   };
+        // }
+
         //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
         Object.defineProperty(domainModel, 'state', {
           configurable: false,
@@ -335,7 +334,7 @@ var IMVVMDomainModel = {
 
         prevState = prevState || {};
         
-        nextState = extend(nextState, domainModel);
+        nextState = nextState ? extend(nextState, domainModel.state) : {};
         
         if(initialize && ('getInitialState' in domainModel)){
           //Add state prop so that it can be referenced from within getInitialState
@@ -528,36 +527,14 @@ var core = _dereq_('./core');
 var NAMESPACE = '__IMVVM__';
 
 var mixin = {
-	stateChangedHandler: function(dataContext, caller, callback){
-  	this.setState({domainDataContext: dataContext}, function(){
-	    //send all state back to caller
-	    //useful if you need to know what other parts of the app
-	    //were impacted by your changes. You can also use the returned
-	    //information to display things external to your ApplicationModel
-	    //Allows you to have multiple Application ViewModels in the one app and
-	    //still share the state with other presentation models that may be interested
-	    if(typeof callback === 'function'){
-      	if(this.state === null || !('domainDataContext' in this.state)){
-          callback(void(0));
-        } else {
-					if(caller in this.state.domainDataContext){
-					  callback(this.state.domainDataContext[caller]);
-					} else if(caller === NAMESPACE) {
-					  callback(this.state.domainDataContext);
-					} else {
-					  callback(void(0));
-					}
-				}
-			}
-		}.bind(this));
+	stateChangedHandler: function(dataContext){
+  	this.setState({domainDataContext: dataContext})
   },
-
 	getInitialState: function(){
 		var dataContext = core.getInitialState(NAMESPACE, this.props.domainModel,
 			this.stateChangedHandler, this.props.enableUndo);
 		return {domainDataContext: dataContext};
 	}
-
 };
 
 module.exports = mixin;

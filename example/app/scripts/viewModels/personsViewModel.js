@@ -17,25 +17,16 @@ var PersonsViewModel = IMVVM.createViewModel({
     return nextState;
   },
 
-  getWatchedState: function(){
-    return {
-      hobbies: ['selected'],
-    }
-  },
-
-  // onWatchedStateChanged: function(viewModel, nextState){
-  //   //console.log(this);
-  //   // if(this.selected !== void(0) && viewModel === 'persons' &&
-  //   //   nextState.selected.id !== this.state.$.persons.selected.id){
-  //   //   return {selected: void(0)};
-  //   // }
+  watchDataContexts: ['hobbies', 'other', 'Fred'],
+  
+  // onWatchedDataContextChanged: function(viewModel, nextState){
+    
   // },
+  
+  watchDomainProps: ['online'],
+  
+  // onWatchedDomainPropChanged: function(nextState){
 
-  // getDependencies: function(){
-  //   return {
-  //     selectedHobby: 'hobbies.selected.name',
-  //     imOnline: 'online'
-  //   }
   // },
 
   Person: function(personState, init){
@@ -60,6 +51,12 @@ var PersonsViewModel = IMVVM.createViewModel({
   selectedHobby: {
     get: function() {
       return this.state.$.hobbies.selected ? this.state.$.hobbies.selected.name: void(0); 
+    }
+  },
+
+  imOnline: {
+    get: function() {
+      return this.state.$.online; 
     }
   },
 

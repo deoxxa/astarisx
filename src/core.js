@@ -11,70 +11,35 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	enableUndo === void(0) ? true : enableUndo;
 
 	var ApplicationDataContext,
-		dependsOn,
 		appState = {},
 		dataContexts = {},
-		watchedProps,
-		watchedPropsLen,
-		watchList = {},
-		dependents = [],
 		domain,
-		watchListPropA,
-		watchListPropB;
-
-	var invokedWithCallback = false;
-
-	var depProp;
-
-	var configure = function(obj, propName){
-		var newObj = {};
-		for(var k in obj){
-			if(obj.hasOwnProperty(k)){
-				if(Object.prototype.toString.call(obj[k]) === '[object Object]'){
-					newObj[k] = obj[k];
-				} else {
-					newObj[k] = {};
-					newObj[k][propName] = obj[k];
-				}
-			}
-		}
-		return newObj;
-	};
-
-	var watchedState = {
-		persons: ['hobbies'],
-		hobbies: ['persons']
-	}
+		invokedWithCallback = false,
+		watchedDataContexts = {},
+		watchedDomainProps = {};
 
 	var appStateChangedHandler = function(caller, newState, callback) {
 		
-		if((newState === void(0) || newState === null || Object.keys(newState).length === 0)){
-			return;
-		}
-
 		var nextState = {},
 			prevState = {},
-			subscribers = [],
-			newStateKeys,
-			newStateKeysLen,
-			subscriberNames,
-			idxKey,
-			idxDepFld,
-			tmpNextState = {},
-			changeState,
-			dependsOnObj;
+			newStateKeys;
+
+		newState = newState || {};
+		newStateKeys = Object.keys(newState);
+		if(newStateKeys.length === 0){
+			return;
+		}
 
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangedHandler. If a callback was passed in
 		//it would be assigned to newState
-		if(Object.getPrototypeOf(newState).constructor.classType === "DomainModel") {
+		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
 			nextState = extend(newState);
 			prevState = newState.previousState;
 
-			for(var p in watchedState){
-				nextState[p] = new dataContexts[p](nextState);
+			for(var dc in watchedDataContexts){
+				nextState[dc] = new dataContexts[dc](nextState);
 			}
-
 
 		} else {
 
@@ -88,77 +53,97 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				//also call if for datacontext that is invoking the change
 				nextState = extend(appState, nextState);
 
-				if(caller in watchedState){
-					var list = watchedState[caller];
-					list.forEach(function(vm){
-						if(appState[vm].onWatchedStateChanged){
-							nextState[vm] = extend(nextState[vm], appState[vm].onWatchedStateChanged(caller, nextState[caller]));
-							// nextState[vm] = new dataContexts[vm](nextState);
-							// nextState = extend(appState, nextState);
-							
-							// nextState[caller] = new dataContexts[caller](nextState);
-							// nextState = extend(appState, nextState);
-
+				if(caller in watchedDataContexts){
+					watchedDataContexts[caller].forEach(function(vm){
+						if(appState[vm].onWatchedDataContextChanged){
+							nextState[vm] = extend(nextState[vm], appState[vm].onWatchedDataContextChanged(caller, nextState[caller]));
 						}
 						nextState[vm] = new dataContexts[vm](nextState);
 					});
-					nextState = extend(appState, nextState);
-					
-					nextState[caller] = new dataContexts[caller](nextState);
+					nextState[caller] = new dataContexts[caller](extend(appState, nextState));
 					nextState = extend(appState, nextState);
 				}
 
-				
-
 			} else {
+				//app called
+				var tmp = {};
 				nextState = extend(appState, newState);
-			}
-			prevState = appState;
-		}
+				newStateKeys.forEach(function(key){
+					if(key in watchedDomainProps){
+						watchedDomainProps[key].forEach(function(prop){
+							tmp[prop] = true;
+						});
+					}
+				});
+				Object.keys(tmp).forEach(function(vm){
+					if(appState[vm].onWatchedDomainPropsChanged){
+						nextState[vm] = extend(nextState[vm], appState[vm].onWatchedDomainPropsChanged(nextState.state));
+					}
+					nextState[vm] = new dataContexts[vm](nextState);
+				})
+				nextState = extend(appState, nextState);
 
-		// if(appState.hobbies.onWatchedStateChanged){
-		// 	nextState.hobbies = extend(nextState.hobbies, appState.hobbies.onWatchedStateChanged(caller, nextState[caller]));
-		// 	nextState.hobbies = new dataContexts.hobbies(nextState);
-		// 	nextState = extend(appState, nextState);
-		// 	// nextState.hobbies.state.$persons = nextState.persons;
-		// 	// nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
-		// }
-		//nextState.hobbies.state.$persons = new dataContexts.persons(nextState);
-		//nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState);
+			}
+			prevState = invokedWithCallback ? appState.previousState: appState;
+			invokedWithCallback = false;
+		}
 
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
+		
+		appState = new ApplicationDataContext(nextState, prevState, enableUndo);
 
-		if(caller !== appNamespace && typeof callback === 'function'){
+		if(typeof callback === 'function'){
 			//Create a new App state context.
-			appState = new ApplicationDataContext(nextState, prevState, enableUndo);
 			invokedWithCallback = true;
-			callback(appState[caller]);
+			callback(caller !== appNamespace ? appState[caller] : appState);
 		} else {
-			//Create a new App state context.
-			appState = new ApplicationDataContext(nextState, invokedWithCallback ? prevState.previousState: prevState, enableUndo);
-			invokedWithCallback = false;
 			//All the work is done! -> Notify the View
-			stateChangedHandler(appState, caller, callback);
+			stateChangedHandler(appState);
 		}
 
 		Object.freeze(appState);
 		Object.freeze(appState.state);
+		
 		//Provided for the main app to return to the View
 		return appState;
 	};
 
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	appState = new ApplicationDataContext({}, void(0), enableUndo, true);
+	appState = new ApplicationDataContext(void(0), void(0), enableUndo, true);
 
-	domain = configure(appState.getDomainDataContext(), 'viewModel');
+	domain = appState.getDomainDataContext();
 
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
-			dataContexts[dataContext] = domain[dataContext].viewModel.call(this, appStateChangedHandler.bind(this, dataContext)).bind(this, dataContext);
+			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangedHandler.bind(this, dataContext)).bind(this, dataContext);
 			appState[dataContext] = new dataContexts[dataContext](appState, true);
+
+			if('watchDataContexts' in appState[dataContext]){
+				appState[dataContext].watchDataContexts.forEach(function(dataContextName){
+					if(dataContextName in domain){
+						if(!(dataContextName in watchedDataContexts)){
+							watchedDataContexts[dataContextName] = [dataContext]
+						} else {
+							watchedDataContexts[dataContextName].push(dataContext);
+						}						
+					}
+				});
+			}
+
+			if('watchDomainProps' in appState[dataContext]){
+				appState[dataContext].watchDomainProps.forEach(function(propName){
+					if(propName in appState.state){
+						if(!(propName in watchedDomainProps)){
+							watchedDomainProps[propName] = [dataContext]
+						} else {
+							watchedDomainProps[propName].push(dataContext);
+						}
+					}
+				});
+			}
 		}
 	}
 
