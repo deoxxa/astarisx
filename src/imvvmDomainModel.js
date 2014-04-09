@@ -17,17 +17,17 @@ var IMVVMDomainModel = {
         
         //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
         Object.defineProperty(domainModel, 'state', {
-          configurable: false,
-          enumerable: false,
+          configurable: true,
+          enumerable: true,
           writable: true,
           value: nextState
         });
         
         if(!!enableUndo && !!prevState){
           Object.defineProperty(domainModel, 'previousState', {
-            configurable: false,
-            enumerable: false,
-            writable: false,
+            configurable: true,
+            enumerable: true,
+            writable: true,
             value: prevState
           });
         }
@@ -50,9 +50,9 @@ var IMVVMDomainModel = {
         };
 
         Object.defineProperty(domainModel, 'state', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
+          configurable: true,
+          enumerable: true,
+          writable: true,
           value: nextState
         });
 

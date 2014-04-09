@@ -98,13 +98,22 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 						},
 						set: function(persons) {
 							if(appState.hobbies.onWatchedStateChanged){
-								nextState.hobbies = extend(nextState.hobbies, nextState.hobbies.onWatchedStateChanged(caller, persons));
+								nextState.hobbies = extend(appState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
 								nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
 								nextState = extend(appState, nextState);
-								nextState.persons.state.$hobbies = nextState.hobbies;
+								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
 								nextState.hobbies.state.$persons = nextState.persons;
 							}
 						}
+						// set: function(persons) {
+						// 	if(appState.hobbies.onWatchedStateChanged){
+						// 		nextState.hobbies = extend(nextState.hobbies, nextState.hobbies.onWatchedStateChanged(caller, persons));
+						// 		nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
+						// 		nextState = extend(appState, nextState);
+						// 		nextState.persons.state.$hobbies = nextState.hobbies;
+						// 		nextState.hobbies.state.$persons = nextState.persons;
+						// 	}
+						// }
 					});
 				}
 			} else {
@@ -116,8 +125,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		nextState.hobbies.state.$persons = nextState.persons;
 		nextState.persons.state.$hobbies = nextState.hobbies;
 
-		Object.freeze(nextState.persons.state);
-		Object.freeze(nextState.hobbies.state);
+		// Object.freeze(nextState.persons.state);
+		// Object.freeze(nextState.hobbies.state);
 
 		if(!!prevState){
 			Object.freeze(prevState);
@@ -160,11 +169,14 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	appState.persons.state.$hobbies = new dataContexts.hobbies(appState.hobbies);
 	appState.hobbies.state.$persons = new dataContexts.persons(appState.persons);
-	Object.freeze(appState.persons.state);
-	Object.freeze(appState.hobbies.state);
-	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
+
+	// Object.freeze(appState.persons.state);
+	// Object.freeze(appState.hobbies.state);
+
 	Object.freeze(appState.state);
-	return Object.freeze(appState);
+	Object.freeze(appState);
+	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
+	return appState;
 };
 },{"./utils":8}],3:[function(_dereq_,module,exports){
 
@@ -310,17 +322,17 @@ var IMVVMDomainModel = {
         
         //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
         Object.defineProperty(domainModel, 'state', {
-          configurable: false,
-          enumerable: false,
+          configurable: true,
+          enumerable: true,
           writable: true,
           value: nextState
         });
         
         if(!!enableUndo && !!prevState){
           Object.defineProperty(domainModel, 'previousState', {
-            configurable: false,
-            enumerable: false,
-            writable: false,
+            configurable: true,
+            enumerable: true,
+            writable: true,
             value: prevState
           });
         }
@@ -343,9 +355,9 @@ var IMVVMDomainModel = {
         };
 
         Object.defineProperty(domainModel, 'state', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
+          configurable: true,
+          enumerable: true,
+          writable: true,
           value: nextState
         });
 
@@ -393,7 +405,7 @@ var IMVVMModel = {
         Object.defineProperty(model, 'state', {
           configurable: true,
           enumerable: false,
-          writable: true,
+          writable: false,
           value: nextState
         });
 
@@ -436,7 +448,6 @@ var IMVVMViewModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      // console.log('viewModel');
       var dataContext = function(nextState, initialize) {
 
         //nextState has already been extended with prevState in core
@@ -450,8 +461,8 @@ var IMVVMViewModel = {
         }
         
         Object.defineProperty(viewModel, 'state', {
-          configurable: false,
-          enumerable: false,
+          configurable: true,
+          enumerable: true,
           writable: true,
           value: nextState
         });
@@ -460,8 +471,8 @@ var IMVVMViewModel = {
           nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
         
           Object.defineProperty(viewModel, 'state', {
-            configurable: false,
-            enumerable: false,
+            configurable: true,
+            enumerable: true,
             writable: true,
             value: nextState
           });

@@ -91,13 +91,22 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 						},
 						set: function(persons) {
 							if(appState.hobbies.onWatchedStateChanged){
-								nextState.hobbies = extend(nextState.hobbies, nextState.hobbies.onWatchedStateChanged(caller, persons));
+								nextState.hobbies = extend(appState.hobbies, appState.hobbies.onWatchedStateChanged(caller, persons));
 								nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
 								nextState = extend(appState, nextState);
-								nextState.persons.state.$hobbies = nextState.hobbies;
+								nextState.persons.state.$hobbies = new dataContexts.hobbies(nextState.hobbies);
 								nextState.hobbies.state.$persons = nextState.persons;
 							}
 						}
+						// set: function(persons) {
+						// 	if(appState.hobbies.onWatchedStateChanged){
+						// 		nextState.hobbies = extend(nextState.hobbies, nextState.hobbies.onWatchedStateChanged(caller, persons));
+						// 		nextState.hobbies = new dataContexts.hobbies(nextState.hobbies);
+						// 		nextState = extend(appState, nextState);
+						// 		nextState.persons.state.$hobbies = nextState.hobbies;
+						// 		nextState.hobbies.state.$persons = nextState.persons;
+						// 	}
+						// }
 					});
 				}
 			} else {
@@ -109,8 +118,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		nextState.hobbies.state.$persons = nextState.persons;
 		nextState.persons.state.$hobbies = nextState.hobbies;
 
-		Object.freeze(nextState.persons.state);
-		Object.freeze(nextState.hobbies.state);
+		// Object.freeze(nextState.persons.state);
+		// Object.freeze(nextState.hobbies.state);
 
 		if(!!prevState){
 			Object.freeze(prevState);
@@ -153,9 +162,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	appState.persons.state.$hobbies = new dataContexts.hobbies(appState.hobbies);
 	appState.hobbies.state.$persons = new dataContexts.persons(appState.persons);
-	Object.freeze(appState.persons.state);
-	Object.freeze(appState.hobbies.state);
-	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
+
+	// Object.freeze(appState.persons.state);
+	// Object.freeze(appState.hobbies.state);
+
 	Object.freeze(appState.state);
-	return Object.freeze(appState);
+	Object.freeze(appState);
+	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
+	return appState;
 };

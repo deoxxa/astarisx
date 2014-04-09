@@ -70,11 +70,20 @@ var HobbiesViewModel = IMVVM.createViewModel({
 
   select: function(id){
     var nextState = {};
-      this.hobbies.forEach(function(hobby){
-        if (hobby.id === id){
-          nextState.selected = this.Hobby(hobby);;
-        }
-      }.bind(this));
+    // var hobbiesArr = this.hobbies.map(function(hobby){
+    //   if (hobby.id === id){
+
+    //     nextState.selected = this.Hobby(hobby);
+    //     return nextState.selected;
+    //   }
+    //  return hobby;
+    // }.bind(this));
+
+    this.hobbies.forEach(function(hobby){
+      if (hobby.id === id){
+        nextState.selected = this.Hobby(hobby);
+      }
+    }.bind(this));
 
     this.setState(nextState);
 
