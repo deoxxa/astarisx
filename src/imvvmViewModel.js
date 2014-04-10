@@ -10,33 +10,40 @@ var IMVVMViewModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(VMName, appState, initialize) {
+      var dataContext = function(VMName, appState) {
 
         //nextState has already been extended with prevState in core
         var nextState = {};
-        nextState[VMName] = {};
-        if(VMName in appState){
-          nextState = ('state' in appState[VMName]) ? appState[VMName].state : appState[VMName];
-        }
         var freezeFields = desc.freezeFields;
         var viewModel = Object.create(desc.proto, desc.descriptor);
         var tempDesc,
           tempModel;
-        
-        // if(nextState.state){
-        //   nextState = extend(nextState.state, nextState);
-        // }
-        
+
         Object.defineProperty(viewModel, 'state', {
           configurable: true,
           enumerable: false,
           writable: true,
           value: nextState
         });
-        
-        if(initialize && ('getInitialState' in viewModel)){
-          nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
+
+        if(appState[VMName] === void(0)){
+          if('getInitialState' in viewModel){
+            nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
+          }
+        } else {
+          nextState = ('state' in appState[VMName] ? appState[VMName].state : appState[VMName]);
         }
+
+        Object.defineProperty(viewModel, 'state', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: nextState
+        });
+
+        appState[VMName] = viewModel;
+        appState.state = appState.state || {};
+        appState.state[VMName] = viewModel;
 
         Object.defineProperty(nextState, '$', {
           configurable: true,

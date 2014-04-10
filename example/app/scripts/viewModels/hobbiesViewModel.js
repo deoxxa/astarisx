@@ -5,21 +5,19 @@
 
 var HobbiesViewModel = IMVVM.createViewModel({
 
-  watchDataContexts: ['persons', 'Fred', 'somthin'],
-  
-  onWatchedDataContextChanged: function(viewModel, nextState){
-    if(this.selected !== void(0) && viewModel === 'persons' &&
+  getWatchList: ['persons'/*, 'busy'*/],
+
+  onWatchedStateChanged: function(nextState, dataContext){
+    if(this.selected !== void(0) && dataContext === 'persons' &&
       nextState.selected.id !== this.state.$.persons.selected.id){
-      return {selected: void(0)};
+      return { selected: void(0) };
     }
+    // if(dataContext === void(0) && this.selected === void(0)){
+    //    nextState.hobbies.selected 
+    //   return { busy: false };
+    // }
   },
   
-  //watchDomainProps: ['busy'],
-  
-  // onWatchedDomainPropChanged: function(nextState){
-
-  // },
-
   hobbies: {
     get: function(){
       return this.state.$.persons.selected.hobbies;
@@ -63,7 +61,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
 
     //Need to batch this so that undo works properly
     this.setState(newState, function(retVal){
-      console.log(retVal);
+      //console.log(retVal);
       this.state.$.persons.selected.hobbies = hobbiesArr;  
     }.bind(this));
 

@@ -17,18 +17,15 @@ var PersonsViewModel = IMVVM.createViewModel({
     return nextState;
   },
 
-  watchDataContexts: ['hobbies', 'other', 'Fred'],
+  getWatchList: ['hobbies', 'online'],  //attach these to the VM. Not there otherwise
+                                        //attach it directly to $ -> this.$.hobbies
   
-  // onWatchedDataContextChanged: function(viewModel, nextState){
-    
+  // onWatchedStateChanged: function(nextState, dataContext){
+  //   if(dataContext === 'hobbies'){
+  //     if(nextState.selected === )
+  //   }
   // },
   
-  watchDomainProps: ['online'],
-  
-  // onWatchedDomainPropChanged: function(nextState){
-
-  // },
-
   Person: function(personState, init){
     return new PersonModel(this.personStateChangedHandler)(personState, init);
   },

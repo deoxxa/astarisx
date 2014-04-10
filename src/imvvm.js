@@ -49,7 +49,7 @@ var IMVVMClass = {
     ConvenienceConstructor.getDescriptor = function(){
       var descriptor = {};
       var proto = this.prototype;
-      //var uid;
+      var viewModels = {};
       var autoFreeze = [];
 
       if('__processedObject__' in this.originalSpec){
@@ -61,11 +61,12 @@ var IMVVMClass = {
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
             //assume it is a descriptor
             this.originalSpec[key].enumerable = true;
-            if('kind' in this.originalSpec[key]){
+            if('viewModel' in this.originalSpec[key]) {
+              viewModels[key] = this.originalSpec[key].viewModel;
+              delete this.originalSpec[key].viewModel;
+            } else if('kind' in this.originalSpec[key]){
               if(this.originalSpec[key].kind === 'pseudo'){
                 this.originalSpec[key].enumerable = false;
-              // } else if(this.originalSpec[key].kind === 'uid'){
-              //   uid = key;
               } else { //'instance' || 'array'
                 autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
               }
@@ -77,16 +78,22 @@ var IMVVMClass = {
           }
         }
       }
+      
       if(!('extend' in proto)){
         proto.extend = utils.extend;      
+      }
+
+      if(!!Object.keys(viewModels).length){
+        proto.getDomainDataContext = function(){
+          return viewModels;
+        }
       }
 
       this.originalSpec.__processedObject__ = { 
         descriptor: descriptor,
         proto: proto,
         originalSpec: this.originalSpec || {},
-        freezeFields: autoFreeze,
-        // uid: uid
+        freezeFields: autoFreeze
       };
 
       return this.originalSpec.__processedObject__;

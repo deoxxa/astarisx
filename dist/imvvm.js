@@ -23,7 +23,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		domain,
 		invokedWithCallback = false,
 		watchedDataContexts = {},
-		watchedDomainProps = {};
+		watchedDomainProps = {},
+		hasWatchedDataContexts = false,
+		hasWatchedDomainProps = false;
 
 	var appStateChangedHandler = function(caller, newState, callback) {
 		
@@ -37,11 +39,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			return;
 		}
 
+		nextState = extend(newState);
+
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangedHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
-			nextState = extend(newState);
+			// nextState = extend(newState);
 			prevState = newState.previousState;
 
 			for(var dc in watchedDataContexts){
@@ -51,45 +55,54 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		} else {
 
 			if(caller !== appNamespace){
-				
 				nextState[caller] = extend(appState[caller], newState);
-				nextState[caller] = new dataContexts[caller](extend(appState, nextState)); //All this should really do is create
-				//a viewModel with the prototype and enable calling initial and onStateChange functions
-				
-				//for each subscriber call onStateChanging(next.hobbies.state) => pass in nextState
-				//also call if for datacontext that is invoking the change
-				nextState = extend(appState, nextState);
-
-				if(caller in watchedDataContexts){
-					watchedDataContexts[caller].forEach(function(vm){
-						if(appState[vm].onWatchedDataContextChanged){
-							nextState[vm] = extend(nextState[vm], appState[vm].onWatchedDataContextChanged(caller, nextState[caller]));
-						}
-						nextState[vm] = new dataContexts[vm](nextState);
-					});
-					nextState[caller] = new dataContexts[caller](extend(appState, nextState));
-					nextState = extend(appState, nextState);
-				}
-
+				nextState[caller] = new dataContexts[caller](extend(appState, nextState));
 			} else {
-				//app called
-				var tmp = {};
-				nextState = extend(appState, newState);
-				newStateKeys.forEach(function(key){
-					if(key in watchedDomainProps){
-						watchedDomainProps[key].forEach(function(prop){
-							tmp[prop] = true;
+				var global = true;
+			}
+
+			nextState = extend(appState, nextState);
+
+			var processed = [];
+			//first check global state
+			if(hasWatchedDomainProps && caller === appNamespace){
+				for (var i = newStateKeys.length - 1; i >= 0; i--) {
+					if(newStateKeys[i] in watchedDomainProps){
+						watchedDomainProps[newStateKeys[i]].forEach(function(vm){
+							if(processed.indexOf(vm) === -1){
+								processed.push(vm);
+								if(appState[vm].onWatchedStateChanged){
+									nextState = extend(nextState,	appState[vm].onWatchedStateChanged(nextState));
+								}
+								nextState[vm] = new dataContexts[vm](nextState);
+								nextState = extend(appState, nextState);
+							}							
 						});
 					}
-				});
-				Object.keys(tmp).forEach(function(vm){
-					if(appState[vm].onWatchedDomainPropsChanged){
-						nextState[vm] = extend(nextState[vm], appState[vm].onWatchedDomainPropsChanged(nextState.state));
+				};
+				//nextState = new ApplicationDataContext(nextState, void(0), enableUndo);
+			}
+			
+			if(caller in watchedDataContexts){
+				watchedDataContexts[caller].forEach(function(vm){
+					if(vm === appNamespace) {
+						if(appState.onWatchedStateChanged){
+							nextState = extend(appState,
+								appState.onWatchedStateChanged(nextState[caller], caller));
+						}
+						//nextState = new ApplicationDataContext(nextState, void(0), enableUndo);
+					} else {
+						if(appState[vm].onWatchedStateChanged){
+							nextState[vm] = extend(nextState[vm],
+								appState[vm].onWatchedStateChanged(nextState[caller], caller));
+						}
+						//adding this worked!
+						nextState = new ApplicationDataContext(nextState, void(0), enableUndo);
+						nextState[vm] = new dataContexts[vm](nextState);
 					}
-					nextState[vm] = new dataContexts[vm](nextState);
-				})
-				nextState = new ApplicationDataContext(nextState, appState, enableUndo);//extend(appState, nextState);
-
+				});
+				nextState[caller] = new dataContexts[caller](nextState);
+				nextState = extend(appState, nextState);	
 			}
 			prevState = invokedWithCallback ? appState.previousState: appState;
 			invokedWithCallback = false;
@@ -119,34 +132,49 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
+	/*Need to look at DomainViewModel state and nextState and Domain Model and updating*/
 	appState = new ApplicationDataContext(void(0), void(0), enableUndo, true);
 
 	domain = appState.getDomainDataContext();
 
+	if('getWatchList' in appState){
+		appState.getWatchList.forEach(function(watchedItem){
+			if(watchedItem in domain){
+				if(!(watchedItem in watchedDataContexts)){
+					watchedDataContexts[watchedItem] = [appNamespace]
+				} else {
+					watchedDataContexts[watchedItem].push(appNamespace);
+				}
+			}
+			//  else if(watchedItem in appState.state){
+			// 	if(!(watchedItem in watchedDomainProps)){
+			// 		watchedDomainProps[watchedItem] = [appNamespace]
+			// 	} else {
+			// 		watchedDomainProps[watchedItem].push(appNamespace);
+			// 	}
+			// }
+		});
+	}
+
+
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangedHandler.bind(this, dataContext)).bind(this, dataContext);
-			appState[dataContext] = new dataContexts[dataContext](appState, true);
+			appState[dataContext] = new dataContexts[dataContext](appState);
 
-			if('watchDataContexts' in appState[dataContext]){
-				appState[dataContext].watchDataContexts.forEach(function(dataContextName){
-					if(dataContextName in domain){
-						if(!(dataContextName in watchedDataContexts)){
-							watchedDataContexts[dataContextName] = [dataContext]
+			if('getWatchList' in appState[dataContext]){
+				appState[dataContext].getWatchList.forEach(function(watchedItem){
+					if(watchedItem in domain){
+						if(!(watchedItem in watchedDataContexts)){
+							watchedDataContexts[watchedItem] = [dataContext]
 						} else {
-							watchedDataContexts[dataContextName].push(dataContext);
-						}						
-					}
-				});
-			}
-
-			if('watchDomainProps' in appState[dataContext]){
-				appState[dataContext].watchDomainProps.forEach(function(propName){
-					if(propName in appState.state){
-						if(!(propName in watchedDomainProps)){
-							watchedDomainProps[propName] = [dataContext]
+							watchedDataContexts[watchedItem].push(dataContext);
+						}
+					} else if(watchedItem in appState.state){
+						if(!(watchedItem in watchedDomainProps)){
+							watchedDomainProps[watchedItem] = [dataContext]
 						} else {
-							watchedDomainProps[propName].push(dataContext);
+							watchedDomainProps[watchedItem].push(dataContext);
 						}
 					}
 				});
@@ -154,7 +182,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		}
 	}
 
-	appState = new ApplicationDataContext(appState, void(0), enableUndo, false);
+	hasWatchedDataContexts = !!Object.keys(watchedDataContexts).length;
+	hasWatchedDomainProps = !!Object.keys(watchedDomainProps).length;
+
+	appState = new ApplicationDataContext(appState, void(0), enableUndo);
 	Object.freeze(appState.state);
 	Object.freeze(appState);
 	return appState;
@@ -211,7 +242,7 @@ var IMVVMClass = {
     ConvenienceConstructor.getDescriptor = function(){
       var descriptor = {};
       var proto = this.prototype;
-      //var uid;
+      var viewModels = {};
       var autoFreeze = [];
 
       if('__processedObject__' in this.originalSpec){
@@ -223,11 +254,12 @@ var IMVVMClass = {
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
             //assume it is a descriptor
             this.originalSpec[key].enumerable = true;
-            if('kind' in this.originalSpec[key]){
+            if('viewModel' in this.originalSpec[key]) {
+              viewModels[key] = this.originalSpec[key].viewModel;
+              delete this.originalSpec[key].viewModel;
+            } else if('kind' in this.originalSpec[key]){
               if(this.originalSpec[key].kind === 'pseudo'){
                 this.originalSpec[key].enumerable = false;
-              // } else if(this.originalSpec[key].kind === 'uid'){
-              //   uid = key;
               } else { //'instance' || 'array'
                 autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
               }
@@ -239,16 +271,22 @@ var IMVVMClass = {
           }
         }
       }
+      
       if(!('extend' in proto)){
         proto.extend = utils.extend;      
+      }
+
+      if(!!Object.keys(viewModels).length){
+        proto.getDomainDataContext = function(){
+          return viewModels;
+        }
       }
 
       this.originalSpec.__processedObject__ = { 
         descriptor: descriptor,
         proto: proto,
         originalSpec: this.originalSpec || {},
-        freezeFields: autoFreeze,
-        // uid: uid
+        freezeFields: autoFreeze
       };
 
       return this.originalSpec.__processedObject__;
@@ -301,25 +339,26 @@ var IMVVMDomainModel = {
         var freezeFields = desc.freezeFields;
         var domainModel = Object.create(desc.proto, desc.descriptor);
         
-        // if(nextState.state){
-        //   nextState = extend(nextState.state, nextState);
-        // }
-
-        // if(nextState){
-        //   //attach the nextState props to domainModel if they don't exist
-        //   var keys = Object.keys(nextState);
-        //   for (var i = keys.length - 1; i >= 0; i--) {
-        //     if(!(keys[i] in domainModel)){
-        //       domainModel[keys[i]] = nextState[keys[i]];
-        //     }
-        //   };
-        // }
-
+        if(nextState === void(0) && ('getInitialState' in domainModel)){
+          //Add state prop so that it can be referenced from within getInitialState
+          nextState = extend(nextState, domainModel.getInitialState.call(domainModel));
+        } else if('state' in nextState){
+          delete nextState.state;
+        
         //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
+        Object.defineProperty(domainModel, 'state', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: nextState
+        });
+        nextState = extend(nextState, domainModel);
+      }
+       //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
         Object.defineProperty(domainModel, 'state', {
           configurable: false,
           enumerable: false,
-          writable: true,
+          writable: false,
           value: nextState
         });
         
@@ -331,30 +370,6 @@ var IMVVMDomainModel = {
             value: prevState
           });
         }
-
-        prevState = prevState || {};
-        
-        nextState = nextState ? extend(nextState, domainModel.state) : {};
-        
-        if(initialize && ('getInitialState' in domainModel)){
-          //Add state prop so that it can be referenced from within getInitialState
-          nextState = extend(nextState, domainModel.getInitialState.call(domainModel));
-        }
-
-        //attach the nextState props to domainModel if they don't exist
-        var keys = Object.keys(nextState);
-        for (var i = keys.length - 1; i >= 0; i--) {
-          if(!(keys[i] in domainModel)){
-            domainModel[keys[i]] = nextState[keys[i]];
-          }
-        };
-
-        Object.defineProperty(domainModel, 'state', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: nextState
-        });
 
         //freeze arrays and domainModel instances
         for (var fld = freezeFields.length - 1; fld >= 0; fld--) {
@@ -443,33 +458,40 @@ var IMVVMViewModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(VMName, appState, initialize) {
+      var dataContext = function(VMName, appState) {
 
         //nextState has already been extended with prevState in core
         var nextState = {};
-        nextState[VMName] = {};
-        if(VMName in appState){
-          nextState = ('state' in appState[VMName]) ? appState[VMName].state : appState[VMName];
-        }
         var freezeFields = desc.freezeFields;
         var viewModel = Object.create(desc.proto, desc.descriptor);
         var tempDesc,
           tempModel;
-        
-        // if(nextState.state){
-        //   nextState = extend(nextState.state, nextState);
-        // }
-        
+
         Object.defineProperty(viewModel, 'state', {
           configurable: true,
           enumerable: false,
           writable: true,
           value: nextState
         });
-        
-        if(initialize && ('getInitialState' in viewModel)){
-          nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
+
+        if(appState[VMName] === void(0)){
+          if('getInitialState' in viewModel){
+            nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
+          }
+        } else {
+          nextState = ('state' in appState[VMName] ? appState[VMName].state : appState[VMName]);
         }
+
+        Object.defineProperty(viewModel, 'state', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: nextState
+        });
+
+        appState[VMName] = viewModel;
+        appState.state = appState.state || {};
+        appState.state[VMName] = viewModel;
 
         Object.defineProperty(nextState, '$', {
           configurable: true,
