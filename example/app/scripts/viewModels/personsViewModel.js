@@ -17,8 +17,10 @@ var PersonsViewModel = IMVVM.createViewModel({
     return nextState;
   },
 
-  getWatchList: ['hobbies', 'online'],  //attach these to the VM. Not there otherwise
-                                        //attach it directly to $ -> this.$.hobbies
+  linkTo: {
+    'hobbies': 'hobbiesContext',
+    'online': 'imOnline'
+  },
   
   // onWatchedStateChanged: function(nextState, dataContext){
   //   if(dataContext === 'hobbies'){
@@ -46,14 +48,9 @@ var PersonsViewModel = IMVVM.createViewModel({
   },
 
   selectedHobby: {
+    kind: 'pseudo',
     get: function() {
-      return this.state.$.hobbies.selected ? this.state.$.hobbies.selected.name: void(0); 
-    }
-  },
-
-  imOnline: {
-    get: function() {
-      return this.state.$.online; 
+      return this.state.hobbiesContext.selected ? this.state.hobbiesContext.selected.name: void(0); 
     }
   },
 

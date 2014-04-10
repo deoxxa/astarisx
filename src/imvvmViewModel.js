@@ -10,7 +10,7 @@ var IMVVMViewModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(VMName, appState) {
+      var dataContext = function(VMName, appState, prevState, subscribers) {
 
         //nextState has already been extended with prevState in core
         var nextState = {};
@@ -18,6 +18,9 @@ var IMVVMViewModel = {
         var viewModel = Object.create(desc.proto, desc.descriptor);
         var tempDesc,
           tempModel;
+        //var prevState = extend(appState);
+
+        var hasLinks = ('linkTo' in desc.proto);
 
         Object.defineProperty(viewModel, 'state', {
           configurable: true,
@@ -31,26 +34,54 @@ var IMVVMViewModel = {
             nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
           }
         } else {
+          if('state' in appState[VMName]){
+            console.log("SOME STATE HERE!!!!");
+          }
           nextState = ('state' in appState[VMName] ? appState[VMName].state : appState[VMName]);
+          
+          Object.defineProperty(viewModel, 'state', {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: nextState
+          });
+
+          if(subscribers){
+            subscribers.forEach(function(subscriber){
+              appState[subscriber].state[appState[subscriber].linkTo[VMName]] = viewModel;
+              if('onWatchedStateChanged' in appState[subscriber]){
+
+                if(hasLinks){
+                  for(var k in desc.proto.linkTo){
+                    if(desc.proto.linkTo.hasOwnProperty(k)){
+                      nextState[desc.proto.linkTo[k]] = appState[k];
+                    }
+                  }
+                }
+
+
+                var tmp = appState[subscriber].onWatchedStateChanged(extend(nextState), prevState, VMName);
+                var tmp2 =  extend(appState[subscriber].state, tmp);
+                for(var updKey in tmp2){
+                  if(tmp2.hasOwnProperty(updKey)){
+                    appState[subscriber].state[updKey] = tmp2[updKey];    
+                  }
+                }
+                
+                // extend(appState[subscriber].state,
+                //   appState[subscriber].onWatchedStateChanged(nextState, prevState, VMName));
+              }
+            });            
+          }
+
+          if(hasLinks){
+            for(var k in desc.proto.linkTo){
+              if(desc.proto.linkTo.hasOwnProperty(k)){
+                nextState[desc.proto.linkTo[k]] = appState[k];
+              }
+            }
+          }
         }
-
-        Object.defineProperty(viewModel, 'state', {
-          configurable: true,
-          enumerable: false,
-          writable: true,
-          value: nextState
-        });
-
-        appState[VMName] = viewModel;
-        appState.state = appState.state || {};
-        appState.state[VMName] = viewModel;
-
-        Object.defineProperty(nextState, '$', {
-          configurable: true,
-          enumerable: false,
-          writable: false,
-          value: appState
-        });
 
         Object.defineProperty(viewModel, 'state', {
           configurable: false,
@@ -58,6 +89,10 @@ var IMVVMViewModel = {
           writable: false,
           value: nextState
         });
+
+
+        // appState.frank = 'test';
+
 
         //freeze arrays and viewModel instances
         for (var i = freezeFields.length - 1; i >= 0; i--) {

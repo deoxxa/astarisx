@@ -5,11 +5,15 @@
 
 var HobbiesViewModel = IMVVM.createViewModel({
 
-  getWatchList: ['persons'/*, 'busy'*/],
+  linkTo: {
+    'persons': 'personsContext',
+    'busy': 'busy'
+  },
 
-  onWatchedStateChanged: function(nextState, dataContext){
+  //Use when this needs change state triggered by others action
+  onWatchedStateChanged: function(nextState, prevState, dataContext){
     if(this.selected !== void(0) && dataContext === 'persons' &&
-      nextState.selected.id !== this.state.$.persons.selected.id){
+      nextState.selected.id !== prevState.selected.id){
       return { selected: void(0) };
     }
     // if(dataContext === void(0) && this.selected === void(0)){
@@ -20,14 +24,14 @@ var HobbiesViewModel = IMVVM.createViewModel({
   
   hobbies: {
     get: function(){
-      return this.state.$.persons.selected.hobbies;
+      return this.state.personsContext.selected.hobbies;
     }
   },
 
   busyText: {
     kind: 'pseudo', //kind: 'pseudo' because its not calculated but is supplied externally
     get: function(){
-      return this.state.$.busy ? 'Im Busy! Go away...' : 'Not doing too much.';
+      return this.state.busy ? 'Im Busy! Go away...' : 'Not doing too much.';
     }
   },
 
@@ -62,7 +66,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
     //Need to batch this so that undo works properly
     this.setState(newState, function(retVal){
       //console.log(retVal);
-      this.state.$.persons.selected.hobbies = hobbiesArr;  
+      this.state.personsContext.selected.hobbies = hobbiesArr;  
     }.bind(this));
 
   },
@@ -80,11 +84,11 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
   
   addHobby: function(value){
-    this.state.$.persons.selected.addHobby({id:'99',name:value});
+    this.state.personsContext.selected.addHobby({id:'99',name:value});
   },
   
   deleteHobby: function(value){
-    this.state.$.persons.selected.deleteHobby(value);
+    this.state.personsContext.selected.deleteHobby(value);
   },
 
 });

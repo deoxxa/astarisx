@@ -39,13 +39,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			return;
 		}
 
-		nextState = extend(newState);
+		//nextState = extend(newState);
 
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangedHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
-			// nextState = extend(newState);
+			nextState = extend(newState);
 			prevState = newState.previousState;
 
 			for(var dc in watchedDataContexts){
@@ -56,14 +56,29 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 			if(caller !== appNamespace){
 				nextState[caller] = extend(appState[caller], newState);
-				nextState[caller] = new dataContexts[caller](extend(appState, nextState));
+				nextState = extend(appState, nextState);
+				nextState[caller] = new dataContexts[caller](nextState, appState[caller].state, watchedDataContexts[caller]);
+				nextState = ApplicationDataContext(extend(appState, nextState), void(0), enableUndo);
+				
+				// for(var linkKey in nextState[caller].linkTo){
+				// 	if(nextState[caller].linkTo.hasOwnProperty(linkKey)){
+				// 		//Just check to see if it's as ViewModel
+				// 		if((linkKey in domain) && (nextState[caller].linkTo[caller] in appState[linkKey])){ //Then we need to update the link
+				// 			nextState[linkKey] = new dataContexts[linkKey](extend(appState, nextState));
+				// 		}
+				// 	}
+				// }
+				// nextState[caller] = new dataContexts[caller](extend(appState, nextState));
+				//nextState = ApplicationDataContext(extend(appState, nextState), void(0), enableUndo);
+
+
 			} else {
 				var global = true;
 			}
 
 			nextState = extend(appState, nextState);
 
-			var processed = [];
+			/*var processed = [];
 			//first check global state
 			if(hasWatchedDomainProps && caller === appNamespace){
 				for (var i = newStateKeys.length - 1; i >= 0; i--) {
@@ -103,7 +118,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				});
 				nextState[caller] = new dataContexts[caller](nextState);
 				nextState = extend(appState, nextState);	
-			}
+			}*/
 			prevState = invokedWithCallback ? appState.previousState: appState;
 			invokedWithCallback = false;
 		}
@@ -134,11 +149,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
 	/*Need to look at DomainViewModel state and nextState and Domain Model and updating*/
 	appState = new ApplicationDataContext(void(0), void(0), enableUndo, true);
+  appState.state = appState.state || {};
 
 	domain = appState.getDomainDataContext();
 
-	if('getWatchList' in appState){
-		appState.getWatchList.forEach(function(watchedItem){
+	if('linkTo' in appState){
+		Object.keys(appState.linkTo).forEach(function(watchedItem){
 			if(watchedItem in domain){
 				if(!(watchedItem in watchedDataContexts)){
 					watchedDataContexts[watchedItem] = [appNamespace]
@@ -146,13 +162,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					watchedDataContexts[watchedItem].push(appNamespace);
 				}
 			}
-			//  else if(watchedItem in appState.state){
-			// 	if(!(watchedItem in watchedDomainProps)){
-			// 		watchedDomainProps[watchedItem] = [appNamespace]
-			// 	} else {
-			// 		watchedDomainProps[watchedItem].push(appNamespace);
-			// 	}
-			// }
 		});
 	}
 
@@ -160,10 +169,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangedHandler.bind(this, dataContext)).bind(this, dataContext);
-			appState[dataContext] = new dataContexts[dataContext](appState);
+      appState.state[dataContext] = new dataContexts[dataContext](appState.state);
 
-			if('getWatchList' in appState[dataContext]){
-				appState[dataContext].getWatchList.forEach(function(watchedItem){
+			if('linkTo' in appState[dataContext]){
+				Object.keys(appState[dataContext].linkTo).forEach(function(watchedItem){
 					if(watchedItem in domain){
 						if(!(watchedItem in watchedDataContexts)){
 							watchedDataContexts[watchedItem] = [dataContext]
@@ -179,6 +188,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					}
 				});
 			}
+		}
+	}
+
+	for(var dataContext in domain){
+		if(domain.hasOwnProperty(dataContext)){
+			appState.state[dataContext] = new dataContexts[dataContext](appState.state);
 		}
 	}
 
@@ -282,6 +297,23 @@ var IMVVMClass = {
         }
       }
 
+      if('linkTo' in proto){
+        for(var link in proto.linkTo){
+          if(proto.linkTo.hasOwnProperty(link)){
+            (function(){
+              descriptor[proto.linkTo[link]] = (function(){
+                  var key = proto.linkTo[link];
+                  return {
+                  get: function(){
+                    return this.state[key]
+                  }
+                }
+              })();
+            })();
+          }
+        }
+      }
+
       this.originalSpec.__processedObject__ = { 
         descriptor: descriptor,
         proto: proto,
@@ -341,7 +373,7 @@ var IMVVMDomainModel = {
         
         if(nextState === void(0) && ('getInitialState' in domainModel)){
           //Add state prop so that it can be referenced from within getInitialState
-          nextState = extend(nextState, domainModel.getInitialState.call(domainModel));
+          nextState = domainModel.getInitialState.call(domainModel);
         } else if('state' in nextState){
           delete nextState.state;
         
@@ -458,7 +490,7 @@ var IMVVMViewModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(VMName, appState) {
+      var dataContext = function(VMName, appState, prevState, subscribers) {
 
         //nextState has already been extended with prevState in core
         var nextState = {};
@@ -466,6 +498,9 @@ var IMVVMViewModel = {
         var viewModel = Object.create(desc.proto, desc.descriptor);
         var tempDesc,
           tempModel;
+        //var prevState = extend(appState);
+
+        var hasLinks = ('linkTo' in desc.proto);
 
         Object.defineProperty(viewModel, 'state', {
           configurable: true,
@@ -479,26 +514,54 @@ var IMVVMViewModel = {
             nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
           }
         } else {
+          if('state' in appState[VMName]){
+            console.log("SOME STATE HERE!!!!");
+          }
           nextState = ('state' in appState[VMName] ? appState[VMName].state : appState[VMName]);
+          
+          Object.defineProperty(viewModel, 'state', {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: nextState
+          });
+
+          if(subscribers){
+            subscribers.forEach(function(subscriber){
+              appState[subscriber].state[appState[subscriber].linkTo[VMName]] = viewModel;
+              if('onWatchedStateChanged' in appState[subscriber]){
+
+                if(hasLinks){
+                  for(var k in desc.proto.linkTo){
+                    if(desc.proto.linkTo.hasOwnProperty(k)){
+                      nextState[desc.proto.linkTo[k]] = appState[k];
+                    }
+                  }
+                }
+
+
+                var tmp = appState[subscriber].onWatchedStateChanged(extend(nextState), prevState, VMName);
+                var tmp2 =  extend(appState[subscriber].state, tmp);
+                for(var updKey in tmp2){
+                  if(tmp2.hasOwnProperty(updKey)){
+                    appState[subscriber].state[updKey] = tmp2[updKey];    
+                  }
+                }
+                
+                // extend(appState[subscriber].state,
+                //   appState[subscriber].onWatchedStateChanged(nextState, prevState, VMName));
+              }
+            });            
+          }
+
+          if(hasLinks){
+            for(var k in desc.proto.linkTo){
+              if(desc.proto.linkTo.hasOwnProperty(k)){
+                nextState[desc.proto.linkTo[k]] = appState[k];
+              }
+            }
+          }
         }
-
-        Object.defineProperty(viewModel, 'state', {
-          configurable: true,
-          enumerable: false,
-          writable: true,
-          value: nextState
-        });
-
-        appState[VMName] = viewModel;
-        appState.state = appState.state || {};
-        appState.state[VMName] = viewModel;
-
-        Object.defineProperty(nextState, '$', {
-          configurable: true,
-          enumerable: false,
-          writable: false,
-          value: appState
-        });
 
         Object.defineProperty(viewModel, 'state', {
           configurable: false,
@@ -506,6 +569,10 @@ var IMVVMViewModel = {
           writable: false,
           value: nextState
         });
+
+
+        // appState.frank = 'test';
+
 
         //freeze arrays and viewModel instances
         for (var i = freezeFields.length - 1; i >= 0; i--) {
