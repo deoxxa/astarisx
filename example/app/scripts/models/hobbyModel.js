@@ -22,6 +22,10 @@ var HobbyModel = IMVVM.createModel({
       return this.state.name;
     },
     set: function(newValue){
+
+      console.log('this ----------');
+      console.log(this);
+
       this.setState({'name': newValue });
     }
   },

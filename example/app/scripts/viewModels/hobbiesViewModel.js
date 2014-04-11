@@ -5,9 +5,26 @@
 
 var HobbiesViewModel = IMVVM.createViewModel({
 
-  linkTo: {
-    'persons': 'personsContext',
-    'busy': 'busy'
+  getWatchedState: function() {
+    return {
+      'persons': {
+        alias: 'personsContext', //optional - if provided then will be added to prototype
+        fields: {
+          'selected': this.onPersonChange
+        }
+      },
+      'busy': {
+        alias: 'busy'
+      }
+    }
+  },
+
+  //Use when this needs change state triggered by others action
+  onPersonChange: function(nextState, prevState, field, context){
+    if(this.selected !== void(0) && context === 'persons' &&
+      nextState.id !== prevState.id){
+      return { selected: void(0) };
+    }
   },
 
   //Use when this needs change state triggered by others action

@@ -22,10 +22,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		dataContexts = {},
 		domain,
 		invokedWithCallback = false,
+		links = {},
 		watchedDataContexts = {},
 		watchedDomainProps = {},
 		hasWatchedDataContexts = false,
 		hasWatchedDomainProps = false;
+
+		var isPreviousState = false;
 
 	var appStateChangedHandler = function(caller, newState, callback) {
 		
@@ -45,10 +48,17 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//pass it straight to the stateChangedHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
+			
 			nextState = extend(newState);
 			prevState = newState.previousState;
 
-			for(var dc in watchedDataContexts){
+			//Need to reset ViewModel with instance object so that setState is associated with
+			//the current ViewModel. This reason this ccurs is that when a ViewModel is created it
+			//assigns a setState function to all instance fields and binds itself to it. When undo is called
+			//the data is rolled back but viewModels are not recreated and therefore the setState functions
+			//are associated with outdated viewModels and returns unexpected output. So to realign the ViewModels
+			//with setState we recreate them.
+			for(var dc in domain){
 				nextState[dc] = new dataContexts[dc](nextState);
 			}
 
@@ -57,8 +67,60 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			if(caller !== appNamespace){
 				nextState[caller] = extend(appState[caller], newState);
 				nextState = extend(appState, nextState);
-				nextState[caller] = new dataContexts[caller](nextState, appState[caller].state, watchedDataContexts[caller]);
-				nextState = ApplicationDataContext(extend(appState, nextState), void(0), enableUndo);
+				nextState[caller] = new dataContexts[caller](nextState);
+				nextState = extend(appState, nextState);
+
+				//It seems that calling
+				// nextState = ApplicationDataContext(nextState, void(0), enableUndo)
+				// freezes nextState. Need to extend it to unfreeze
+				nextState = extend(ApplicationDataContext(nextState, void(0), enableUndo));
+
+				if(caller in watchedDataContexts){
+					for(var watchedField in watchedDataContexts[caller]){
+						if(watchedDataContexts[caller].hasOwnProperty(watchedField)){
+							if(newStateKeys.indexOf(watchedField) !== -1){
+								var subscribers = watchedDataContexts[caller][watchedField];
+								for(var sub in subscribers){
+									if(subscribers.hasOwnProperty(sub)){
+										
+										nextState[sub] = extend(nextState[sub], subscribers[sub].call(appState[sub],
+											nextState[caller][watchedField],
+											appState[caller][watchedField], watchedField, caller));
+										
+										nextState[sub] = new dataContexts[sub](nextState);
+													nextState = extend(appState, nextState);
+													nextState = extend(ApplicationDataContext(nextState, void(0), enableUndo));
+
+										//link
+										if(sub in links){
+							        for(var k2 in links[sub]){
+							          if(links[sub].hasOwnProperty(k2)){
+							            nextState[sub].state[links[sub][k2]] = (k2 in domain) ? extend(nextState[k2].state): nextState[k2];
+							          }
+							        }
+							      }
+									}
+								}
+							}
+						}
+					}
+					nextState[caller] = new dataContexts[caller](nextState);
+				}
+			nextState = extend(appState, nextState);
+			nextState = extend(ApplicationDataContext(nextState, void(0), enableUndo));
+
+			//now link
+			if(caller in links){
+        for(var k in links[caller]){
+          if(links[caller].hasOwnProperty(k)){
+            nextState[caller].state[links[caller][k]] = (k in domain) ? extend(nextState[k].state): nextState[k];
+          }
+        }
+      }
+			nextState = extend(appState, nextState);
+			nextState = ApplicationDataContext(nextState, void(0), enableUndo);
+			//I think I need to pass in watched Items
+			//nextState = ApplicationDataContext(extend(appState, nextState), void(0), enableUndo);
 				
 				// for(var linkKey in nextState[caller].linkTo){
 				// 	if(nextState[caller].linkTo.hasOwnProperty(linkKey)){
@@ -76,7 +138,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				var global = true;
 			}
 
-			nextState = extend(appState, nextState);
+			//nextState = extend(appState, nextState);
 
 			/*var processed = [];
 			//first check global state
@@ -153,17 +215,51 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	domain = appState.getDomainDataContext();
 
-	if('linkTo' in appState){
-		Object.keys(appState.linkTo).forEach(function(watchedItem){
-			if(watchedItem in domain){
-				if(!(watchedItem in watchedDataContexts)){
-					watchedDataContexts[watchedItem] = [appNamespace]
-				} else {
-					watchedDataContexts[watchedItem].push(appNamespace);
-				}
-			}
-		});
-	}
+	// if('linkTo' in appState){
+	// 	Object.keys(appState.linkTo).forEach(function(watchedItem){
+	// 		if(watchedItem in domain){
+	// 			if(!(watchedItem in watchedDataContexts)){
+	// 				watchedDataContexts[watchedItem] = [appNamespace]
+	// 			} else {
+	// 				watchedDataContexts[watchedItem].push(appNamespace);
+	// 			}
+	// 		}
+	// 	});
+	// }
+
+	var watchedState;
+	var watchedItem;
+	var watchedProp;
+	var tmp;
+	// if('getWatchedState' in appState){
+ //  	watchedState = appState.getWatchedState();
+ //  	for(watchedItem in watchedState){
+ //  		if(watchedState.hasOwnProperty(watchedItem)){
+ //  			for(watchedProp in watchedState[watchedItem].fields){
+ //  				if(watchedState[watchedItem].fields.hasOwnProperty(watchedProp)){
+ //      			if(watchedItem in domain){
+	// 						tmp = {};
+	// 						if(!(watchedItem in watchedDataContexts)){
+	// 							watchedDataContexts[watchedItem] = {};
+	// 						}
+	// 						tmp[watchedProp] = {};
+	// 						tmp[watchedProp][appNamespace] = watchedState[watchedItem].fields[watchedProp];
+	// 						watchedDataContexts[watchedItem] = tmp;							
+	// 					}      					
+ //  				}
+ //  			}
+
+	// 			if(watchedItem in appState.state){
+	// 				if(!(watchedItem in watchedDomainProps)){
+	// 					watchedDomainProps[watchedItem] = [appNamespace]
+	// 				} else {
+	// 					watchedDomainProps[watchedItem].push(appNamespace);
+	// 				}
+	// 			}
+
+ //  		}
+ //  	}
+ //  }
 
 
 	for(var dataContext in domain){
@@ -171,29 +267,64 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangedHandler.bind(this, dataContext)).bind(this, dataContext);
       appState.state[dataContext] = new dataContexts[dataContext](appState.state);
 
-			if('linkTo' in appState[dataContext]){
-				Object.keys(appState[dataContext].linkTo).forEach(function(watchedItem){
-					if(watchedItem in domain){
-						if(!(watchedItem in watchedDataContexts)){
-							watchedDataContexts[watchedItem] = [dataContext]
-						} else {
-							watchedDataContexts[watchedItem].push(dataContext);
-						}
-					} else if(watchedItem in appState.state){
-						if(!(watchedItem in watchedDomainProps)){
-							watchedDomainProps[watchedItem] = [dataContext]
-						} else {
-							watchedDomainProps[watchedItem].push(dataContext);
-						}
-					}
-				});
-			}
+      if('getWatchedState' in appState[dataContext]){
+      	watchedState = appState[dataContext].getWatchedState();
+      	for(watchedItem in watchedState){
+      		if(watchedState.hasOwnProperty(watchedItem)){
+      			if(watchedItem in domain || watchedItem in appState.state){
+	      			if('alias' in watchedState[watchedItem]){
+		      			if(!(dataContext in links)){
+		      				links[dataContext] = {};
+		      			}
+		      			links[dataContext][watchedItem] = watchedState[watchedItem].alias;
+	      			}
+	      			for(watchedProp in watchedState[watchedItem].fields){
+	      				if(watchedState[watchedItem].fields.hasOwnProperty(watchedProp)){
+			      			if(watchedItem in domain){
+										tmp = {};
+										if(!(watchedItem in watchedDataContexts)){
+											watchedDataContexts[watchedItem] = {};
+										}
+										tmp[watchedProp] = {};
+										tmp[watchedProp][dataContext] = watchedState[watchedItem].fields[watchedProp];
+										watchedDataContexts[watchedItem] = tmp;
+									}
+	      				}
+	      			}
+      			} /*else if(watchedItem in appState.state){
+							if('alias' in watchedState[watchedItem]){
+		      			if(!(dataContext in links)){
+		      				links[dataContext] = {};
+		      			}
+		      			links[dataContext][watchedItem] = watchedState[watchedItem].alias;
+	      			}
+	      			for(watchedProp in watchedState[watchedItem].fields){
+	      				if(watchedState[watchedItem].fields.hasOwnProperty(watchedProp)){
+			      			if(watchedItem in domain){
+										tmp = {};
+										if(!(watchedItem in watchedDataContexts)){
+											watchedDataContexts[watchedItem] = {};
+										}
+										tmp[watchedProp] = {};
+										tmp[watchedProp][dataContext] = watchedState[watchedItem].fields[watchedProp];
+										watchedDataContexts[watchedItem] = tmp;
+									}
+	      				}
+	      			}				
+						}*/
+      		}
+      	}
+      }
 		}
 	}
 
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
-			appState.state[dataContext] = new dataContexts[dataContext](appState.state);
+			for(var k in links[dataContext]){
+        if(links[dataContext].hasOwnProperty(k)){
+          appState[dataContext].state[links[dataContext][k]] = (k in domain) ? extend(appState[k].state): appState[k];
+        }
+      }
 		}
 	}
 
@@ -297,22 +428,22 @@ var IMVVMClass = {
         }
       }
 
-      if('linkTo' in proto){
-        for(var link in proto.linkTo){
-          if(proto.linkTo.hasOwnProperty(link)){
-            (function(){
-              descriptor[proto.linkTo[link]] = (function(){
-                  var key = proto.linkTo[link];
-                  return {
-                  get: function(){
-                    return this.state[key]
-                  }
-                }
-              })();
-            })();
-          }
-        }
-      }
+      // if('linkTo' in proto){
+      //   for(var link in proto.linkTo){
+      //     if(proto.linkTo.hasOwnProperty(link)){
+      //       (function(){
+      //         descriptor[proto.linkTo[link]] = (function(){
+      //             var key = proto.linkTo[link];
+      //             return {
+      //             get: function(){
+      //               return this.state[key]
+      //             }
+      //           }
+      //         })();
+      //       })();
+      //     }
+      //   }
+      // }
 
       this.originalSpec.__processedObject__ = { 
         descriptor: descriptor,
@@ -490,7 +621,7 @@ var IMVVMViewModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(VMName, appState, prevState, subscribers) {
+      var dataContext = function(VMName, appState) {
 
         //nextState has already been extended with prevState in core
         var nextState = {};
@@ -498,9 +629,6 @@ var IMVVMViewModel = {
         var viewModel = Object.create(desc.proto, desc.descriptor);
         var tempDesc,
           tempModel;
-        //var prevState = extend(appState);
-
-        var hasLinks = ('linkTo' in desc.proto);
 
         Object.defineProperty(viewModel, 'state', {
           configurable: true,
@@ -514,53 +642,7 @@ var IMVVMViewModel = {
             nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
           }
         } else {
-          if('state' in appState[VMName]){
-            console.log("SOME STATE HERE!!!!");
-          }
           nextState = ('state' in appState[VMName] ? appState[VMName].state : appState[VMName]);
-          
-          Object.defineProperty(viewModel, 'state', {
-            configurable: true,
-            enumerable: false,
-            writable: true,
-            value: nextState
-          });
-
-          if(subscribers){
-            subscribers.forEach(function(subscriber){
-              appState[subscriber].state[appState[subscriber].linkTo[VMName]] = viewModel;
-              if('onWatchedStateChanged' in appState[subscriber]){
-
-                if(hasLinks){
-                  for(var k in desc.proto.linkTo){
-                    if(desc.proto.linkTo.hasOwnProperty(k)){
-                      nextState[desc.proto.linkTo[k]] = appState[k];
-                    }
-                  }
-                }
-
-
-                var tmp = appState[subscriber].onWatchedStateChanged(extend(nextState), prevState, VMName);
-                var tmp2 =  extend(appState[subscriber].state, tmp);
-                for(var updKey in tmp2){
-                  if(tmp2.hasOwnProperty(updKey)){
-                    appState[subscriber].state[updKey] = tmp2[updKey];    
-                  }
-                }
-                
-                // extend(appState[subscriber].state,
-                //   appState[subscriber].onWatchedStateChanged(nextState, prevState, VMName));
-              }
-            });            
-          }
-
-          if(hasLinks){
-            for(var k in desc.proto.linkTo){
-              if(desc.proto.linkTo.hasOwnProperty(k)){
-                nextState[desc.proto.linkTo[k]] = appState[k];
-              }
-            }
-          }
         }
 
         Object.defineProperty(viewModel, 'state', {
@@ -569,10 +651,6 @@ var IMVVMViewModel = {
           writable: false,
           value: nextState
         });
-
-
-        // appState.frank = 'test';
-
 
         //freeze arrays and viewModel instances
         for (var i = freezeFields.length - 1; i >= 0; i--) {
@@ -587,11 +665,11 @@ var IMVVMViewModel = {
                   writable: false,
                   value: viewModel[freezeFields[i].fieldName].state
                 });
-                
-                tempModel.__proto__.setState = function(nextState, callback){ //callback may be useful for DB updates
-                    return tempDesc.stateChangedHandler
-                      .call(this, extend(tempModel.state, nextState), tempModel.state, callback);
-                }.bind(viewModel);                
+
+                tempModel.__proto__.setState = function(someState, callback){ //callback may be useful for DB updates
+                    return tempDesc.stateChangedHandler.call(this, extend(tempModel.state, someState), tempModel.state, callback);
+                }.bind(viewModel);
+
                 Object.freeze(viewModel[freezeFields[i].fieldName]);
               }
 

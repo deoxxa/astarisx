@@ -17,16 +17,38 @@ var PersonsViewModel = IMVVM.createViewModel({
     return nextState;
   },
 
-  linkTo: {
-    'hobbies': 'hobbiesContext',
-    'online': 'imOnline'
-  },
-  
-  // onWatchedStateChanged: function(nextState, dataContext){
-  //   if(dataContext === 'hobbies'){
-  //     if(nextState.selected === )
-  //   }
+  // linkTo: {
+  //   'hobbies': 'hobbiesContext',
+  //   'online': 'imOnline'
   // },
+  
+  getWatchedState: function() {
+    return {
+      'hobbies': {
+        alias: 'hobbiesContext', //optional - if provided then will be added to prototype
+        // fields: {              //optional - will be called everytime field is called
+        //   'selected': this.onWatchedStateChanged
+        // }
+      },
+      'online': {
+        alias: 'imOnline'
+      }
+    }
+  },
+
+  imOnline: {
+    kind:'pseudo',
+    get: function(){
+      return this.state.imOnline;
+    }
+  },
+
+  onWatchedStateChanged: function(nextState, prevState){
+
+    // if(dataContext === 'hobbies'){
+    //   if(nextState.selected === )
+    // }
+  },
   
   Person: function(personState, init){
     return new PersonModel(this.personStateChangedHandler)(personState, init);

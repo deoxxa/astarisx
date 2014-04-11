@@ -17,6 +17,15 @@ var DomainViewModel = IMVVM.createDomainViewModel({
     };
   },
 
+  // getWatchedState: function() {
+  //   return {
+  //     'hobbies': {
+  //       //alias: 'hobbiesDC', //optional - if provided then will be added to prototype
+
+  //     },
+  //   }
+  // },
+
   persons: {
     viewModel: PersonsViewModel,
     get: function(){
@@ -30,14 +39,6 @@ var DomainViewModel = IMVVM.createDomainViewModel({
       return this.state.hobbies;
     }
   },
-  // getDependencies: function(){
-  //   return {
-  //     selectedHobby: { 
-  //       property: 'hobbies.selected', 
-  //       onStateChange: this.toggleBusyState
-  //     }
-  //   }
-  // },
 
   //Will not need to call onStateChange
   //simply test the values within a get call
@@ -48,23 +49,16 @@ var DomainViewModel = IMVVM.createDomainViewModel({
       }
     }
   */
-  // toggleBusyState: function(nextState){
-  //   if(!!nextState.selectedHobby){
-  //     return {busy: true};
-  //   } else {
-  //     return {busy: false};
-  //   }
-  // },
 
   undo: function(){
     this.setState(this.previousState);
   },
 
-  // personCount: {
-  //   get: function(){
-  //     return this.state.$persons ? this.state.$persons.collection.length : 0;
-  //   }
-  // },
+  personCount: {
+    get: function(){
+      return this.persons ? this.persons.collection.length : 0;
+    }
+  },
 
   // personName: {
   //   get: function(){
@@ -86,11 +80,12 @@ var DomainViewModel = IMVVM.createDomainViewModel({
   //   }
   // },
   
-  busy: {
-    get: function() {
-      return this.hobbies.selected ? true : false;
-    }
-  },
+  // busy: {
+  //   //kind: 'pseudo',
+  //   get: function() {
+  //     return this.hobbies.selected ? true : false;
+  //   }
+  // },
 
   // busy: {
   //   get: function(){
@@ -102,11 +97,11 @@ var DomainViewModel = IMVVM.createDomainViewModel({
   //   },
   // },
 
-  // busy: {
-  //   get: function(){
-  //     return this.state.busy;
-  //   },
-  // },
+  busy: {
+    get: function(){
+      return this.state.busy;
+    },
+  },
 
   online: {
     get: function(){

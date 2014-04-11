@@ -89,22 +89,22 @@ var IMVVMClass = {
         }
       }
 
-      if('linkTo' in proto){
-        for(var link in proto.linkTo){
-          if(proto.linkTo.hasOwnProperty(link)){
-            (function(){
-              descriptor[proto.linkTo[link]] = (function(){
-                  var key = proto.linkTo[link];
-                  return {
-                  get: function(){
-                    return this.state[key]
-                  }
-                }
-              })();
-            })();
-          }
-        }
-      }
+      // if('linkTo' in proto){
+      //   for(var link in proto.linkTo){
+      //     if(proto.linkTo.hasOwnProperty(link)){
+      //       (function(){
+      //         descriptor[proto.linkTo[link]] = (function(){
+      //             var key = proto.linkTo[link];
+      //             return {
+      //             get: function(){
+      //               return this.state[key]
+      //             }
+      //           }
+      //         })();
+      //       })();
+      //     }
+      //   }
+      // }
 
       this.originalSpec.__processedObject__ = { 
         descriptor: descriptor,
