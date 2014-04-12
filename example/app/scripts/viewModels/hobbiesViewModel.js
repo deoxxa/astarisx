@@ -27,34 +27,6 @@ var HobbiesViewModel = IMVVM.createViewModel({
     }
   },
 
-  //Use when this needs change state triggered by others action
-  onWatchedStateChanged: function(nextState, prevState, dataContext){
-    if(this.selected !== void(0) && dataContext === 'persons' &&
-      nextState.selected.id !== prevState.selected.id){
-      return { selected: void(0) };
-
-    /*
-      return { 
-        hobbies: {selected: void(0)},
-        domain: {busy: false }
-      };
-
-      This would make it much easier for updates
-
-    */
-
-    }
-    /************************************************/
-    /* Maybe I need to look at how I set busy state */
-    /* Maybe something like {domain: {busy: true }} */
-    /************************************************/
-
-    // if(dataContext === void(0) && this.selected === void(0)){
-    //    nextState.hobbies.selected 
-    //   return { busy: false };
-    // }
-  },
-  
   hobbies: {
     get: function(){
       return this.state.personsContext.selected.hobbies;
@@ -106,7 +78,6 @@ var HobbiesViewModel = IMVVM.createViewModel({
       if ((this.selected === void(0) || this.selected.id !== id) && this.hobbies[i].id === id){
         //this.setState({selected: this.Hobby(this.hobbies[i])}, {busy: true});
         this.setState({selected: this.Hobby(this.hobbies[i])}, function(){
-          console.log('called back');
           this.setState(void(0), {busy: true});
         }.bind(this));
         break;

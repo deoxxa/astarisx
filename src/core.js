@@ -15,10 +15,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		dataContexts = {},
 		domain,
 		links = {},
-		watchedDataContexts = {},
-		watchedDomainProps = {},
-		hasWatchedDataContexts = false,
-		hasWatchedDomainProps = false;
+		watchedDataContexts = {};
 
 
 	var transState = {};
@@ -56,9 +53,23 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				nextState[dc] = new dataContexts[dc](nextState);
 			}
 
+			for(var dc2 in domain){
+				if(domain.hasOwnProperty(dc2)){
+					for(var loo in links[dc2]){
+						if(links[dc2].hasOwnProperty(loo)){
+							nextState[dc2].state[links[dc2][loo]] = (loo in domain) ? extend(nextState[loo].state) : nextState[loo];
+						}
+					}
+				}
+			}
+
 		} else {
 			if(!!newStateKeys.length){
-				nextState[caller] = extend(newState);
+				if(caller === appNamespace){
+					nextState = extend(newState);
+				} else {
+					nextState[caller] = extend(newState);
+				}
 			}
 			transState = extend(nextState, transState, newAppState);
 			transStateKeys = Object.keys(transState);
@@ -66,79 +77,88 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				return;
 			}
 
-
 			if(typeof callback === 'function'){
-				//appState = new ApplicationDataContext(nextState, prevState, enableUndo);
-				//Create a new App state context.
-				callback(/*caller !== appNamespace ? appState[caller] : appState*/);
+				callback();
 				return;
 			}
 			var tskIdx;
 			var transStateKeysLen = transStateKeys.length - 1;
-			if(caller !== appNamespace){
-				for (tskIdx = transStateKeysLen; tskIdx >= 0; tskIdx--) {
-					if(transStateKeys[tskIdx] in domain){
-						nextState[transStateKeys[tskIdx]] = extend(appState[transStateKeys[tskIdx]], transState[transStateKeys[tskIdx]]);
-						nextState[transStateKeys[tskIdx]] = new dataContexts[transStateKeys[tskIdx]](nextState);
-					} else {
-						nextState[transStateKeys[tskIdx]] = transState[transStateKeys[tskIdx]];
-					}
-				};
+			
+			for (tskIdx = transStateKeysLen; tskIdx >= 0; tskIdx--) {
+				if(transStateKeys[tskIdx] in domain){
+					nextState[transStateKeys[tskIdx]] = extend(appState[transStateKeys[tskIdx]], transState[transStateKeys[tskIdx]]);
+					nextState[transStateKeys[tskIdx]] = new dataContexts[transStateKeys[tskIdx]](nextState);
+				} else {
+					nextState[transStateKeys[tskIdx]] = transState[transStateKeys[tskIdx]];
+				}
+			};
 
-				processedState = extend(processedState, nextState);
+			processedState = extend(processedState, nextState);
 
-				//Triggers
-				nextState = extend(appState, processedState);
+			//Triggers
+			nextState = extend(appState, processedState);
 
-				transState = {};
-				for (tskIdx = transStateKeysLen; tskIdx >= 0; tskIdx--) {
-					if(transStateKeys[tskIdx] in watchedDataContexts){
-						for(var watchedField in watchedDataContexts[transStateKeys[tskIdx]]){
-							if(watchedDataContexts[transStateKeys[tskIdx]].hasOwnProperty(watchedField)){
-								if(newStateKeys.indexOf(watchedField) !== -1){
-									var subscribers = watchedDataContexts[transStateKeys[tskIdx]][watchedField];
-									for(var sub in subscribers){
-										if(subscribers.hasOwnProperty(sub)){
-											transState = extend(transState, subscribers[sub].call(appState[sub],
-												nextState[transStateKeys[tskIdx]][watchedField],
-												appState[transStateKeys[tskIdx]][watchedField], watchedField, transStateKeys[tskIdx]));
-										}
+			transState = {};
+			for (tskIdx = transStateKeysLen; tskIdx >= 0; tskIdx--) {
+				if(transStateKeys[tskIdx] in watchedDataContexts){
+					for(var watchedField in watchedDataContexts[transStateKeys[tskIdx]]){
+						if(watchedDataContexts[transStateKeys[tskIdx]].hasOwnProperty(watchedField)){
+							if(newStateKeys.indexOf(watchedField) !== -1){
+								var subscribers = watchedDataContexts[transStateKeys[tskIdx]][watchedField];
+								for(var sub in subscribers){
+									if(subscribers.hasOwnProperty(sub)){
+										transState = extend(transState, subscribers[sub].call(appState[sub],
+											nextState[transStateKeys[tskIdx]][watchedField],
+											appState[transStateKeys[tskIdx]][watchedField], watchedField, transStateKeys[tskIdx]));
 									}
 								}
 							}
 						}
 					}
-				};
-				if(!!Object.keys(transState).length){
-					//appState = extend(new ApplicationDataContext(nextState, void(0), enableUndo));
-					appStateChangedHandler(caller, {}, transState);
-					return;
 				}
-				var processedStateKeys = Object.keys(processedState);
-				var processedStateKeysLen = processedStateKeys.length - 1;
-				for (tskIdx = processedStateKeysLen; tskIdx >= 0; tskIdx--) {
-					if(processedStateKeys[tskIdx] in links){
-						for(var lo in links[processedStateKeys[tskIdx]]){
-							if(links[processedStateKeys[tskIdx]].hasOwnProperty(lo)){
-								nextState[processedStateKeys[tskIdx]].state[links[processedStateKeys[tskIdx]][lo]] = (lo in domain) ? nextState[lo].state : nextState[lo];
+			};
+			if(!!Object.keys(transState).length){
+				appStateChangedHandler(void(0), {}, transState);
+				return;
+			}
+			//Link Phase
+			var processedStateKeys = Object.keys(processedState);
+			var processedStateKeysLen = processedStateKeys.length - 1;
+			var tempLinks;
+			var lo, lo2;
+			for (tskIdx = processedStateKeysLen; tskIdx >= 0; tskIdx--) {
+				if(caller === appNamespace){
+					if(processedStateKeys[tskIdx] in links[appNamespace]){
+						for(lo in links[appNamespace][processedStateKeys[tskIdx]]){
+							if(links[appNamespace][processedStateKeys[tskIdx]].hasOwnProperty(lo)){
+								nextState[lo].state[links[appNamespace][processedStateKeys[tskIdx]][lo]] = nextState[processedStateKeys[tskIdx]];
 							}
 							if(lo in links){
-								for(var lo2 in links[lo]){
+								for(lo2 in links[lo]){
 									if(links[lo].hasOwnProperty(lo2)){
-										nextState[lo].state[links[lo][lo2]] = (lo2 in domain) ? nextState[lo2].state : nextState[lo2];
+										nextState[lo].state[links[lo][lo2]] = (lo2 in domain) ? extend(nextState[lo2].state) : nextState[lo2];
 									}
 								}
 							}
 						}
 					}
-		    }
-
-		    
-
-			} else {
-				// var global = true;
-			}
-
+				} else {
+					if(processedStateKeys[tskIdx] in links){
+						for(lo in links[processedStateKeys[tskIdx]]){
+							if(links[processedStateKeys[tskIdx]].hasOwnProperty(lo)){
+								nextState[processedStateKeys[tskIdx]].state[links[processedStateKeys[tskIdx]][lo]] = (lo in domain) ? extend(nextState[lo].state) : nextState[lo];
+							}
+							if(lo in links){
+								for(lo2 in links[lo]){
+									if(links[lo].hasOwnProperty(lo2)){
+										nextState[lo].state[links[lo][lo2]] = (lo2 in domain) ? extend(nextState[lo2].state) : nextState[lo2];
+									}
+								}
+							}
+						}
+					}
+				}
+	    }
 
 			prevState = appState;
 
@@ -170,52 +190,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	domain = appState.getDomainDataContext();
 
-	// if('linkTo' in appState){
-	// 	Object.keys(appState.linkTo).forEach(function(watchedItem){
-	// 		if(watchedItem in domain){
-	// 			if(!(watchedItem in watchedDataContexts)){
-	// 				watchedDataContexts[watchedItem] = [appNamespace]
-	// 			} else {
-	// 				watchedDataContexts[watchedItem].push(appNamespace);
-	// 			}
-	// 		}
-	// 	});
-	// }
-
 	var watchedState;
 	var watchedItem;
 	var watchedProp;
 	var tmp;
-	// if('getWatchedState' in appState){
- //  	watchedState = appState.getWatchedState();
- //  	for(watchedItem in watchedState){
- //  		if(watchedState.hasOwnProperty(watchedItem)){
- //  			for(watchedProp in watchedState[watchedItem].fields){
- //  				if(watchedState[watchedItem].fields.hasOwnProperty(watchedProp)){
- //      			if(watchedItem in domain){
-	// 						tmp = {};
-	// 						if(!(watchedItem in watchedDataContexts)){
-	// 							watchedDataContexts[watchedItem] = {};
-	// 						}
-	// 						tmp[watchedProp] = {};
-	// 						tmp[watchedProp][appNamespace] = watchedState[watchedItem].fields[watchedProp];
-	// 						watchedDataContexts[watchedItem] = tmp;							
-	// 					}      					
- //  				}
- //  			}
-
-	// 			if(watchedItem in appState.state){
-	// 				if(!(watchedItem in watchedDomainProps)){
-	// 					watchedDomainProps[watchedItem] = [appNamespace]
-	// 				} else {
-	// 					watchedDomainProps[watchedItem].push(appNamespace);
-	// 				}
-	// 			}
-
- //  		}
- //  	}
- //  }
-
 
 	for(var dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
@@ -232,26 +210,17 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		      				links[dataContext] = {};
 		      			}
 		      			links[dataContext][watchedItem] = watchedState[watchedItem].alias;
-	      			}
-	      			for(watchedProp in watchedState[watchedItem].fields){
-	      				if(watchedState[watchedItem].fields.hasOwnProperty(watchedProp)){
-			      			if(watchedItem in domain){
-										tmp = {};
-										if(!(watchedItem in watchedDataContexts)){
-											watchedDataContexts[watchedItem] = {};
-										}
-										tmp[watchedProp] = {};
-										tmp[watchedProp][dataContext] = watchedState[watchedItem].fields[watchedProp];
-										watchedDataContexts[watchedItem] = tmp;
-									}
-	      				}
-	      			}
-      			} /*else if(watchedItem in appState.state){
-							if('alias' in watchedState[watchedItem]){
-		      			if(!(dataContext in links)){
-		      				links[dataContext] = {};
+		      			
+		      			if(!(watchedItem in domain)){
+		      				if(!(appNamespace in links)){
+			      				links[appNamespace] = {};
+			      			}
+		      				if(!(dataContext in links[appNamespace])){
+		      					links[appNamespace][watchedItem] = {};
+		      				}
+			      			links[appNamespace][watchedItem][dataContext] = watchedState[watchedItem].alias;
 		      			}
-		      			links[dataContext][watchedItem] = watchedState[watchedItem].alias;
+
 	      			}
 	      			for(watchedProp in watchedState[watchedItem].fields){
 	      				if(watchedState[watchedItem].fields.hasOwnProperty(watchedProp)){
@@ -265,8 +234,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 										watchedDataContexts[watchedItem] = tmp;
 									}
 	      				}
-	      			}				
-						}*/
+	      			}
+      			}
       		}
       	}
       }
@@ -282,10 +251,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
       }
 		}
 	}
-
-	hasWatchedDataContexts = !!Object.keys(watchedDataContexts).length;
-	hasWatchedDomainProps = !!Object.keys(watchedDomainProps).length;
-
+	
 	appState = new ApplicationDataContext(appState, void(0), enableUndo);
 	Object.freeze(appState.state);
 	Object.freeze(appState);
