@@ -21,28 +21,29 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		appState = {},
 		dataContexts = {},
 		domain,
-		invokedWithCallback = false,
 		links = {},
 		watchedDataContexts = {},
 		watchedDomainProps = {},
 		hasWatchedDataContexts = false,
 		hasWatchedDomainProps = false;
 
-		var isPreviousState = false;
 
-	var appStateChangedHandler = function(caller, newState, callback) {
+	var transState = {};
+	var processedState = {};
+
+	var appStateChangedHandler = function(caller, newState, newAppState, callback) {
 		
 		var nextState = {},
 			prevState = {},
 			newStateKeys;
 
-		newState = newState || {};
-		newStateKeys = Object.keys(newState);
-		if(newStateKeys.length === 0){
-			return;
+		if(typeof newAppState === 'function'){
+			callback = newAppState;
+			newAppState = {};
 		}
 
-		//nextState = extend(newState);
+		newState = newState || {};
+		newStateKeys = Object.keys(newState);
 
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangedHandler. If a callback was passed in
@@ -63,145 +64,105 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 
 		} else {
+			if(!!newStateKeys.length){
+				nextState[caller] = extend(newState);
+			}
+			transState = extend(processedState, nextState, transState, newAppState);
+			transStateKeys = Object.keys(transState);
+			if(transStateKeys.length === 0){
+				return;
+			}
 
+			processedState = extend(processedState, transState);
+
+			if(typeof callback === 'function'){
+				//appState = new ApplicationDataContext(nextState, prevState, enableUndo);
+				//Create a new App state context.
+				callback(/*caller !== appNamespace ? appState[caller] : appState*/);
+				return;
+			}
+			var tskIdx;
+			var transStateKeysLen = transStateKeys.length - 1;
 			if(caller !== appNamespace){
-				nextState[caller] = extend(appState[caller], newState);
+				for (tskIdx = transStateKeysLen; tskIdx >= 0; tskIdx--) {
+					if(transStateKeys[tskIdx] in domain){
+						nextState[transStateKeys[tskIdx]] = extend(appState[transStateKeys[tskIdx]], transState[transStateKeys[tskIdx]]);
+						nextState[transStateKeys[tskIdx]] = new dataContexts[transStateKeys[tskIdx]](nextState);
+					} else {
+						nextState[transStateKeys[tskIdx]] = transState[transStateKeys[tskIdx]];
+					}
+				};
+
+				//Triggers
 				nextState = extend(appState, nextState);
-				nextState[caller] = new dataContexts[caller](nextState);
-				nextState = extend(appState, nextState);
 
-				//It seems that calling
-				// nextState = ApplicationDataContext(nextState, void(0), enableUndo)
-				// freezes nextState. Need to extend it to unfreeze
-				nextState = extend(ApplicationDataContext(nextState, void(0), enableUndo));
-
-				if(caller in watchedDataContexts){
-					for(var watchedField in watchedDataContexts[caller]){
-						if(watchedDataContexts[caller].hasOwnProperty(watchedField)){
-							if(newStateKeys.indexOf(watchedField) !== -1){
-								var subscribers = watchedDataContexts[caller][watchedField];
-								for(var sub in subscribers){
-									if(subscribers.hasOwnProperty(sub)){
-										
-										nextState[sub] = extend(nextState[sub], subscribers[sub].call(appState[sub],
-											nextState[caller][watchedField],
-											appState[caller][watchedField], watchedField, caller));
-										
-										nextState[sub] = new dataContexts[sub](nextState);
-													nextState = extend(appState, nextState);
-													nextState = extend(ApplicationDataContext(nextState, void(0), enableUndo));
-
-										//link
-										if(sub in links){
-							        for(var k2 in links[sub]){
-							          if(links[sub].hasOwnProperty(k2)){
-							            nextState[sub].state[links[sub][k2]] = (k2 in domain) ? extend(nextState[k2].state): nextState[k2];
-							          }
-							        }
-							      }
+				transState = {};
+				for (tskIdx = transStateKeysLen; tskIdx >= 0; tskIdx--) {
+					if(transStateKeys[tskIdx] in watchedDataContexts){
+						for(var watchedField in watchedDataContexts[transStateKeys[tskIdx]]){
+							if(watchedDataContexts[transStateKeys[tskIdx]].hasOwnProperty(watchedField)){
+								if(newStateKeys.indexOf(watchedField) !== -1){
+									var subscribers = watchedDataContexts[transStateKeys[tskIdx]][watchedField];
+									for(var sub in subscribers){
+										if(subscribers.hasOwnProperty(sub)){
+											transState = extend(transState, subscribers[sub].call(appState[sub],
+												nextState[transStateKeys[tskIdx]][watchedField],
+												appState[transStateKeys[tskIdx]][watchedField], watchedField, transStateKeys[tskIdx]));
+										}
 									}
 								}
 							}
 						}
 					}
-					nextState[caller] = new dataContexts[caller](nextState);
+				};
+				if(!!Object.keys(transState).length){
+					//appState = extend(new ApplicationDataContext(nextState, void(0), enableUndo));
+					appStateChangedHandler(caller, {}, transState);
+					return;
 				}
-			nextState = extend(appState, nextState);
-			nextState = extend(ApplicationDataContext(nextState, void(0), enableUndo));
+				var processedStateKeys = Object.keys(processedState);
+				var processedStateKeysLen = processedStateKeys.length - 1;
+				for (tskIdx = processedStateKeysLen; tskIdx >= 0; tskIdx--) {
+					if(processedStateKeys[tskIdx] in links){
+						for(var lo in links[processedStateKeys[tskIdx]]){
+							if(links[processedStateKeys[tskIdx]].hasOwnProperty(lo)){
+								nextState[processedStateKeys[tskIdx]].state[links[processedStateKeys[tskIdx]][lo]] = (lo in domain) ? nextState[lo].state : nextState[lo];
+							}
+							if(lo in links){
+								for(var lo2 in links[lo]){
+									if(links[lo].hasOwnProperty(lo2)){
+										nextState[lo].state[links[lo][lo2]] = (lo2 in domain) ? nextState[lo2].state : nextState[lo2];
+									}
+								}
+							}
+						}
+					}
+		    }
 
-			//now link
-			if(caller in links){
-        for(var k in links[caller]){
-          if(links[caller].hasOwnProperty(k)){
-            nextState[caller].state[links[caller][k]] = (k in domain) ? extend(nextState[k].state): nextState[k];
-          }
-        }
-      }
-			nextState = extend(appState, nextState);
-			nextState = ApplicationDataContext(nextState, void(0), enableUndo);
-			//I think I need to pass in watched Items
-			//nextState = ApplicationDataContext(extend(appState, nextState), void(0), enableUndo);
-				
-				// for(var linkKey in nextState[caller].linkTo){
-				// 	if(nextState[caller].linkTo.hasOwnProperty(linkKey)){
-				// 		//Just check to see if it's as ViewModel
-				// 		if((linkKey in domain) && (nextState[caller].linkTo[caller] in appState[linkKey])){ //Then we need to update the link
-				// 			nextState[linkKey] = new dataContexts[linkKey](extend(appState, nextState));
-				// 		}
-				// 	}
-				// }
-				// nextState[caller] = new dataContexts[caller](extend(appState, nextState));
-				//nextState = ApplicationDataContext(extend(appState, nextState), void(0), enableUndo);
-
+		    
 
 			} else {
-				var global = true;
+				// var global = true;
 			}
 
-			//nextState = extend(appState, nextState);
 
-			/*var processed = [];
-			//first check global state
-			if(hasWatchedDomainProps && caller === appNamespace){
-				for (var i = newStateKeys.length - 1; i >= 0; i--) {
-					if(newStateKeys[i] in watchedDomainProps){
-						watchedDomainProps[newStateKeys[i]].forEach(function(vm){
-							if(processed.indexOf(vm) === -1){
-								processed.push(vm);
-								if(appState[vm].onWatchedStateChanged){
-									nextState = extend(nextState,	appState[vm].onWatchedStateChanged(nextState));
-								}
-								nextState[vm] = new dataContexts[vm](nextState);
-								nextState = extend(appState, nextState);
-							}							
-						});
-					}
-				};
-				//nextState = new ApplicationDataContext(nextState, void(0), enableUndo);
-			}
-			
-			if(caller in watchedDataContexts){
-				watchedDataContexts[caller].forEach(function(vm){
-					if(vm === appNamespace) {
-						if(appState.onWatchedStateChanged){
-							nextState = extend(appState,
-								appState.onWatchedStateChanged(nextState[caller], caller));
-						}
-						//nextState = new ApplicationDataContext(nextState, void(0), enableUndo);
-					} else {
-						if(appState[vm].onWatchedStateChanged){
-							nextState[vm] = extend(nextState[vm],
-								appState[vm].onWatchedStateChanged(nextState[caller], caller));
-						}
-						//adding this worked!
-						nextState = new ApplicationDataContext(nextState, void(0), enableUndo);
-						nextState[vm] = new dataContexts[vm](nextState);
-					}
-				});
-				nextState[caller] = new dataContexts[caller](nextState);
-				nextState = extend(appState, nextState);	
-			}*/
-			prevState = invokedWithCallback ? appState.previousState: appState;
-			invokedWithCallback = false;
+			prevState = appState;
+
 		}
 
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
 		
+
 		appState = new ApplicationDataContext(nextState, prevState, enableUndo);
-
-		if(typeof callback === 'function'){
-			//Create a new App state context.
-			invokedWithCallback = true;
-			callback(caller !== appNamespace ? appState[caller] : appState);
-		} else {
-			//All the work is done! -> Notify the View
-			stateChangedHandler(appState);
-		}
-
 		Object.freeze(appState);
 		Object.freeze(appState.state);
+		//All the work is done! -> Notify the View
+		stateChangedHandler(appState);
+		
+		transState = {};
+		processedState = {};
 		
 		//Provided for the main app to return to the View
 		return appState;

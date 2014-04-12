@@ -10,6 +10,8 @@
 
 var HobbyListView = React.createClass({
 	handleSelection: function(uid, e){
+		e.preventDefault();
+		e.stopPropagation();
 		this.props.appContext.hobbies.select(uid);
 	},
 	addHobby: function(value, e){

@@ -5,13 +5,7 @@
 
 var HobbyModel = IMVVM.createModel({
   
-  // getInitialState: function(){
-  //   return {
-  //     //age: this.calculateAge(this.dob),
-  //   };
-  // },
   id: {
-    //kind: 'uid',
     get: function(){
       return this.state.id;
     }    
@@ -22,10 +16,6 @@ var HobbyModel = IMVVM.createModel({
       return this.state.name;
     },
     set: function(newValue){
-
-      console.log('this ----------');
-      console.log(this);
-
       this.setState({'name': newValue });
     }
   },

@@ -16,11 +16,6 @@ var PersonsViewModel = IMVVM.createViewModel({
     }.bind(this));
     return nextState;
   },
-
-  // linkTo: {
-  //   'hobbies': 'hobbiesContext',
-  //   'online': 'imOnline'
-  // },
   
   getWatchedState: function() {
     return {

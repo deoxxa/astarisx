@@ -10,6 +10,8 @@
 
 var ListView = React.createClass({
 	handleSelection: function(uid, e){
+		e.preventDefault();
+		e.stopPropagation();
 		this.props.appContext.persons.select(uid);
 	},
 	deletePerson: function(uid, e){

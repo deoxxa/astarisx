@@ -40,21 +40,12 @@ var DomainViewModel = IMVVM.createDomainViewModel({
     }
   },
 
-  //Will not need to call onStateChange
-  //simply test the values within a get call
-  /*
-    busy: {
-      get: function() {
-        reutrn this.hobbies.selected ? true : false;
-      }
-    }
-  */
-
   undo: function(){
     this.setState(this.previousState);
   },
 
   personCount: {
+    kind:'pseudo',
     get: function(){
       return this.persons ? this.persons.collection.length : 0;
     }
@@ -66,9 +57,6 @@ var DomainViewModel = IMVVM.createDomainViewModel({
   //   }
   // },
 
-
-  // getWatchList: ['hobbies'],
-
   // onWatchedStateChanged: function(nextState, dataContext){
   //   if(this.selected !== void(0) && dataContext === 'persons' &&
   //     nextState.selected.id !== this.state.$.persons.selected.id){
@@ -79,24 +67,11 @@ var DomainViewModel = IMVVM.createDomainViewModel({
   //     return { busy: false };
   //   }
   // },
-  
-  // busy: {
-  //   //kind: 'pseudo',
-  //   get: function() {
-  //     return this.hobbies.selected ? true : false;
-  //   }
-  // },
 
-  // busy: {
-  //   get: function(){
-  //     return this.state.busy;
-  //   },
-  //   set: function(newValue){
-  //     console.log(newValue);
-  //     this.setState({'busy': newValue });
-  //   },
-  // },
-
+  /* Two ways to set busy 
+    1. with a callback. This exposes a set method, which is also accessible from the View
+    2. From a trigger. Return state object i.e. {busy: true}, to domain model to process
+  */
   busy: {
     get: function(){
       return this.state.busy;
