@@ -1,20 +1,20 @@
 
 var model = require('./imvvmModel');
 var viewModel = require('./imvvmViewModel');
-var domainModel = require('./imvvmDomainModel');
+var domainModel = require('./imvvmDomainViewModel');
 var mixin = require('./mixin');
 
 var utils = require('./utils');
 var extend = utils.extend;
 var mixInto = utils.mixInto;
 
-var ModelBase = function() {};
-var ViewModelBase = function() {};
-var DomainModelBase = function() {};
+var ModelBase = function(){};
+var ViewModelBase = function(){};
+var DomainViewModelBase = function(){};
 
 mixInto(ModelBase, model.Mixin);
 mixInto(ViewModelBase, viewModel.Mixin);
-mixInto(DomainModelBase, domainModel.Mixin);
+mixInto(DomainViewModelBase, domainModel.Mixin);
 
 var IMVVMClass = {
   createClass: function(ctor, classType, spec){
@@ -46,21 +46,60 @@ var IMVVMClass = {
     ConvenienceConstructor.classType = classType;
     Constructor.prototype.classType = classType;
 
-/*    // Reduce time spent doing lookups by setting these on the prototype.
-    for (var methodName in IMVVMInterface) {
-      if (!Constructor.prototype[methodName]) {
-        Constructor.prototype[methodName] = null;
-      }
-    }
-*/
+    ConvenienceConstructor.getDescriptor = function(){
+      var descriptor = {},
+        proto = this.prototype,
+        viewModels = {},
+        autoFreeze = [],
+        key;
 
-    /*
-    if (__DEV__) {
-      // In DEV the convenience constructor generates a proxy to another
-      // instance around it to warn about access to properties on the
-      // descriptor.
-      DescriptorConstructor = createDescriptorProxy(Constructor);
-    }*/
+      if('__processedObject__' in this.originalSpec){
+        return this.originalSpec.__processedObject__;
+      }
+
+      for(key in this.originalSpec){
+        if(this.originalSpec.hasOwnProperty(key)){
+          if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
+            //assume it is a descriptor
+            this.originalSpec[key].enumerable = true;
+            if('viewModel' in this.originalSpec[key]) {
+              viewModels[key] = this.originalSpec[key].viewModel;
+              delete this.originalSpec[key].viewModel;
+              delete this.originalSpec[key].set;
+            } else if('kind' in this.originalSpec[key]){
+              if(this.originalSpec[key].kind === 'pseudo'){
+                this.originalSpec[key].enumerable = false;
+              } else { //'instance' || 'array'
+                autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
+              }
+              delete this.originalSpec[key].kind;
+            }
+            descriptor[key] = this.originalSpec[key];
+          } else {
+            proto[key] = this.originalSpec[key];
+          }
+        }
+      }
+      
+      if(!('extend' in proto)){
+        proto.extend = utils.extend;      
+      }
+
+      if(!!Object.keys(viewModels).length){
+        proto.getDomainDataContext = function(){
+          return viewModels;
+        }
+      }
+
+      this.originalSpec.__processedObject__ = { 
+        descriptor: descriptor,
+        proto: proto,
+        originalSpec: this.originalSpec || {},
+        freezeFields: autoFreeze
+      };
+
+      return this.originalSpec.__processedObject__;
+    };
 
     return ConvenienceConstructor;
   },
@@ -69,7 +108,7 @@ var IMVVMClass = {
 var IMVVM = {
   createModel: IMVVMClass.createClass.bind(this, ModelBase, 'Model'),
   createViewModel: IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel'),
-  createDomainModel: IMVVMClass.createClass.bind(this, DomainModelBase, 'DomainModel'),
+  createDomainViewModel: IMVVMClass.createClass.bind(this, DomainViewModelBase, 'DomainViewModel'),
   mixin: mixin
 };
 

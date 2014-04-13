@@ -7,18 +7,18 @@ var IMVVMViewModel = {
   Mixin: {
     construct: function(stateChangedHandler){
 
-      var desc = getDescriptor.call(this);
+      var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
-      
-      var dataContext = function(nextState, dependencies, prevState, initialize) {
-        
+
+      var dataContext = function(VMName, appState) {
+
         //nextState has already been extended with prevState in core
-        nextState = extend(nextState, dependencies);
-        prevState = prevState || {};
-        prevState = ('state' in prevState) ? prevState.state : prevState;
-        
-        var freezeFields = desc.freezeFields;
-        var viewModel = Object.create(desc.proto, desc.descriptor);
+        var nextState = {},
+          freezeFields = desc.freezeFields,
+          fld,
+          viewModel = Object.create(desc.proto, desc.descriptor),
+          tempDesc,
+          tempModel;
 
         Object.defineProperty(viewModel, 'state', {
           configurable: true,
@@ -27,8 +27,12 @@ var IMVVMViewModel = {
           value: nextState
         });
 
-        if(initialize && ('getInitialState' in viewModel)){
-          nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
+        if(appState[VMName] === void(0)){
+          if('getInitialState' in viewModel){
+            nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
+          }
+        } else {
+          nextState = ('state' in appState[VMName] ? appState[VMName].state : appState[VMName]);
         }
 
         Object.defineProperty(viewModel, 'state', {
@@ -39,27 +43,32 @@ var IMVVMViewModel = {
         });
 
         //freeze arrays and viewModel instances
-        for (var i = freezeFields.length - 1; i >= 0; i--) {
-          if(freezeFields[i].kind === 'instance' &&
-              ('context' in viewModel[freezeFields[i].fieldName])){
-            viewModel[freezeFields[i].fieldName].context = viewModel; 
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+          if(freezeFields[fld].kind === 'instance'){
+              if(viewModel[freezeFields[fld].fieldName]){
+                tempDesc = viewModel[freezeFields[fld].fieldName].__getDescriptor();
+                tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
+
+                Object.defineProperty(tempModel, 'state', {
+                  configurable: false,
+                  enumerable: false,
+                  writable: false,
+                  value: viewModel[freezeFields[fld].fieldName].state
+                });
+
+                tempModel.__proto__.setState = function(someState, callback){ //callback may be useful for DB updates
+                    return tempDesc.stateChangedHandler.call(this,
+                      extend(tempModel.state, someState), tempModel.state, callback);
+                }.bind(viewModel);
+
+                Object.freeze(viewModel[freezeFields[fld].fieldName]);
+              }
+
+          } else {
+            Object.freeze(viewModel[freezeFields[fld].fieldName]);
           }
-          Object.freeze(viewModel[freezeFields[i].fieldName]);
         };
-
-        //Add dependencies to viewModel
-        for(var dep in dependencies){
-          if(dependencies.hasOwnProperty(dep) && dep[0] !== '_'){
-            Object.defineProperty(viewModel, dep, {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: dependencies[dep]
-            });
-          }
-        }
-
-        Object.freeze(nextState);
+        
         return Object.freeze(viewModel);
 
       };

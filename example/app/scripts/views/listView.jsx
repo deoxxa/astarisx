@@ -10,7 +10,9 @@
 
 var ListView = React.createClass({
 	handleSelection: function(uid, e){
-		this.props.appContext.persons.select(uid);
+		e.preventDefault();
+		e.stopPropagation();
+		this.props.appContext.persons.selectPerson(uid);
 	},
 	deletePerson: function(uid, e){
 		this.props.appContext.persons.deletePerson(uid);
@@ -18,7 +20,7 @@ var ListView = React.createClass({
 	render: function() {
 		var app = this.props.appContext;
 		var collection = this.props.appContext.persons.collection;
-		var current = this.props.appContext.persons.selected;
+		var current = this.props.appContext.persons.selectedPerson;
 		var selectedHobby = !!this.props.appContext.persons.selectedHobby ? " is " + this.props.appContext.persons.selectedHobby : "";
 
 		var list = collection.map(function(person){

@@ -10,7 +10,7 @@
 
 var DetailsView = React.createClass({
 	render: function() {
-		if(!this.props.appContext.persons.selected){
+		if(!this.props.appContext.persons.selectedPerson){
 			return <div>There's nobody here!!</div>;
 		}
 		return (

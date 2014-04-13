@@ -7,45 +7,22 @@ var IMVVMModel = {
   Mixin: {
     construct: function(stateChangedHandler){
 
-      var desc = getDescriptor.call(this);
-      
-      var dataContext = function(nextState, prevState, withContext) {
-        
-        var freezeFields = desc.freezeFields;
-        var model = Object.create(desc.proto, desc.descriptor);
-        var argCount = arguments.length;
-        var lastArgIsBool = typeof Array.prototype.slice.call(arguments, -1)[0] === 'boolean';
-        var initialize = false;
+      var desc = this.getDescriptor(this);
+      desc.stateChangedHandler = stateChangedHandler;
+      desc.proto.__getDescriptor = function(){
+        return desc;
+      }
 
-        if(argCount === 0){
-          //defaults
-          nextState = {};
-          prevState = {};
-          withContext = false;
-        } else if(argCount === 1){
-          if(lastArgIsBool){
-            withContext = nextState;
-            nextState = {};
-            prevState = {};
-          } else {
-            //assume this is a new Object and there is no prevState
-            prevState = {};
-            withContext = false;
-            initialize = true;
-          }
-        } else if(argCount === 2){
-          if(lastArgIsBool){
-            //assume this is a new Object and there is no prevState
-            withContext = prevState;
-            prevState = {};
-            initialize = true;
-          } else {
-            withContext = false;
-          }
-        }
+      var dataContext = function(nextState, initialize) {
         
-        nextState = ('state' in nextState) ? nextState.state : nextState;
-        prevState = ('state' in prevState) ? prevState.state : prevState;
+        var freezeFields = desc.freezeFields,
+          fld,
+          model = Object.create(desc.proto, desc.descriptor);
+
+        if(nextState === void(0)){
+          initialize = true;
+        }
+        nextState = nextState || {};
 
         Object.defineProperty(model, 'state', {
           configurable: true,
@@ -54,23 +31,10 @@ var IMVVMModel = {
           value: nextState
         });
 
+        nextState = extend(nextState, model);
+        
         if(initialize && ('getInitialState' in model)){
           nextState = extend(nextState, model.getInitialState.call(model));
-        }
-
-        if(withContext){
-          //This will self distruct
-          Object.defineProperty(model, 'context', {
-            configurable: true,
-            enumerable: false,
-            set: function(context){
-              this.setState = function(nextState, callback){ //callback may be useful for DB updates
-                return stateChangedHandler.bind(context)
-                  .call(context, extend(this.state, nextState), this.state, callback);
-              }.bind(this);
-              delete this.context;
-            }
-          });
         }
 
         Object.defineProperty(model, 'state', {
@@ -81,15 +45,10 @@ var IMVVMModel = {
         });
 
         //freeze arrays and model instances
-        for (var i = freezeFields.length - 1; i >= 0; i--) {
-            Object.freeze(model[freezeFields[i].fieldName]);
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+            Object.freeze(model[freezeFields[fld].fieldName]);
         };
-
-        if(!withContext){
-          Object.freeze(model);
-        }
-
-        return model;
+        return Object.freeze(model);
       };
       return dataContext;
     }
