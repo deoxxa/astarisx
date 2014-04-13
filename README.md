@@ -423,10 +423,21 @@ Transition Data Context to the next state.
 *parameters*
 
 __nextState__
+Object containing the next state values.
 
-__nextDomainState__ ***N.B. This parameter is only available in ViewModels***
+__nextDomainState__ ***n.b. This parameter is only available in ViewModels***
+Object containing the next state values which are to be passed to the Domain Data Context.
 
+___example___
+```javascript
+//From PersonsViewModel
+{ 
+  hobbies: { current: void(0) }, 
+  busy: false
+}
+```
 __callback__
+Used to do sequential setState calls.
 
 _Available in:_ DomainViewModel, ViewModel, Model
 ___
@@ -436,18 +447,22 @@ Creates a shallow copy of currentState. Adds/replaces properties with properties
 *parameters*
 
 __currentState__
+Old state object.
 
 __nextState__
+Next state objects.
 
 _Available in:_ DomainViewModel, ViewModel, Model
 
 ####Properties
 ___
 #####state
+Holds object state.
 
 _Available in:_ DomainViewModel, ViewModel, Model
 ___
 #####previousState
+Holds Domain Data Context previous state.
 
 _Available in:_ DomainViewModel
 
@@ -455,6 +470,7 @@ _Available in:_ DomainViewModel
 ####Functions
 ___
 #####object getInitialState()
+Called when initalized in order to initialize state. Returns a state object;
 
 _Available in:_ DomainViewModel, ViewModel, Model
 
@@ -462,6 +478,38 @@ _Optional:_ true
 
 ___
 #####object getWatchedState()
+Provides watched items to domain. Returns a WatchedState object definition.
+
+######Watching ViewModel state
+[dataContext]:{
+  [alias]: [preferred Name],
+  [fields]: {
+    [dataContext field]: ViewModelStateChangedHandler
+  }
+}
+
+######Watching DomainViewModel state
+
+[field]: {
+  [alias]: [preferred Name]
+}
+
+___example___
+```javascript
+  getWatchedState: function() {
+    return {
+      'persons': {
+        alias: 'personsContext',
+        fields: {
+          'selected': this.onPersonChange
+        }
+      },
+      'busy': {
+        alias: 'busy'
+      }
+    }
+  },
+```
 
 _Available in:_ ViewModel
 
@@ -537,13 +585,23 @@ ___
 ####Descriptor
 ___
 #####Functions
-######Any get() { return Any;}
-######void set(Any newValue) {}
-#####Decorators
-######kind:['instance'||'array'||'pseudo']
-######viewModel: ViewModel Class
+######get() { return \*;}
 
 _Available in:_ DomainViewModel, ViewModel, Model
+
+######void set(newValue) {}
+
+_Available in:_ DomainViewModel, ViewModel, Model
+
+#####Decorators
+
+######kind: ['instance'||'array'||'pseudo']
+
+_Available in:_ DomainViewModel, ViewModel, Model
+
+######viewModel: ViewModel Class
+
+_Available in:_ DomainViewModel
 
 ###Mixin
 ####mixin
@@ -573,7 +631,7 @@ domainModel= DomainViewModel Class
 
 ## Browser Support
 Most ECMAScript 5 compliant browsers. 
-__IE8 and below are not supported__
+__IE8 and below are not supported.__
 
 ## Author
 Entrendipity  - [Follow @entrendipity](https://twitter.com/intent/follow?screen_name=entrendipity)
