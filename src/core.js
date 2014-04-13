@@ -66,6 +66,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				nextState[dataContext] = new dataContexts[dataContext](nextState);
 			}
 
+			//relink
 			for(dataContext in domain){
 				if(domain.hasOwnProperty(dataContext)){
 					for(linkedDataContext in links[dataContext]){
@@ -136,6 +137,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				appStateChangedHandler(void(0), {}, transientState);
 				return;
 			}
+			
 			//Link Phase
 			processedStateKeys = Object.keys(processedState);
 			processedStateKeysLen = processedStateKeys.length - 1;
