@@ -11,7 +11,7 @@ React is:
 
 To further quote the website, "people use React as the 'V' in MVC". Well I thought, why not use React as the 'V' in MVVM, and keeping inline with React's philosophy on immutability, lets make it use immutable data. So I created IMVVM.
 
-This is my take on MVVM and immutability using javascript. IMVVM tries to resemble a React application, so that you not only feel like you developing in the same environment, but if your coming from React, you should be able to pick this up quickly.
+This is my take on MVVM and immutability using javascript. IMVVM tries to resemble a React application. So you not only feel like you developing in the same environment, but if your coming from React, you should be able to pick this up quickly.
 
 Anyway, download it, run the example application and try it out. Be sure to raise issues in the Issues Register as you encounter them and please feel free to create pull requests.
 
