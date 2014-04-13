@@ -21,13 +21,14 @@ var HobbiesViewModel = IMVVM.createViewModel({
 
   //Use when this needs change state triggered by others action
   onPersonChange: function(nextState, prevState, field, context){
-    if(this.selected !== void(0) && context === 'persons' &&
+    if(this.current !== void(0) && context === 'persons' &&
       nextState.id !== prevState.id){
-      return { hobbies: { selected: void(0) }, busy: false };
+      return { hobbies: { current: void(0) }, busy: false };
     }
   },
 
   hobbies: {
+    kind: 'pseudo',
     get: function(){
       return this.state.personsContext.selected.hobbies;
     }
@@ -40,10 +41,10 @@ var HobbiesViewModel = IMVVM.createViewModel({
     }
   },
 
-  selected: {
+  current: {
     kind: 'instance',
     get: function(){
-      return this.state.selected;
+      return this.state.current;
     }
   },
 
@@ -57,8 +58,8 @@ var HobbiesViewModel = IMVVM.createViewModel({
     var hobbiesArr = this.hobbies.map(function(hobby){
       if (hobby.id === nextState.id){
 
-        newState.selected = this.Hobby(nextState);
-        return newState.selected;
+        newState.current = this.Hobby(nextState);
+        return newState.current;
       }
      return hobby;
     }.bind(this));
@@ -71,9 +72,9 @@ var HobbiesViewModel = IMVVM.createViewModel({
 
   select: function(id){
     for (var i = this.hobbies.length - 1; i >= 0; i--) {
-      if ((this.selected === void(0) || this.selected.id !== id) && this.hobbies[i].id === id){
+      if ((this.current === void(0) || this.current.id !== id) && this.hobbies[i].id === id){
         
-        this.setState({selected: this.Hobby(this.hobbies[i])}, {busy: true});
+        this.setState({current: this.Hobby(this.hobbies[i])}, {busy: true});
         
         /*
           //OR use a callback
@@ -88,7 +89,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
   
   addHobby: function(value){
-    this.state.personsContext.selected.addHobby(this.Hobby({id:this.uuid() ,name:value }, true));
+    this.state.personsContext.selected.addHobby(this.Hobby({ id:this.uuid(), name:value }, true));
   },
   
   deleteHobby: function(value){

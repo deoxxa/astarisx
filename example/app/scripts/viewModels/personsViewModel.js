@@ -20,10 +20,7 @@ var PersonsViewModel = IMVVM.createViewModel({
   getWatchedState: function() {
     return {
       'hobbies': {
-        alias: 'hobbiesContext', //optional - if provided then will be added to prototype
-        // fields: {              //optional - will be called everytime field is called
-        //   'selected': this.onWatchedStateChanged
-        // }
+        alias: 'hobbiesContext',
       },
       'online': {
         alias: 'imOnline'
@@ -37,13 +34,6 @@ var PersonsViewModel = IMVVM.createViewModel({
       return this.state.imOnline;
     }
   },
-
-  onWatchedStateChanged: function(nextState, prevState){
-
-    // if(dataContext === 'hobbies'){
-    //   if(nextState.selected === )
-    // }
-  },
   
   Person: function(personState, init){
     return new PersonModel(this.personStateChangedHandler)(personState, init);
@@ -51,10 +41,8 @@ var PersonsViewModel = IMVVM.createViewModel({
 
   personStateChangedHandler: function(nextState, prevState/*, callback*/){
     var persons = {};
-    
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
-
         persons.selected = this.Person(nextState);
         return persons.selected;
       }
@@ -67,7 +55,7 @@ var PersonsViewModel = IMVVM.createViewModel({
   selectedHobby: {
     kind: 'pseudo',
     get: function() {
-      return this.state.hobbiesContext.selected ? this.state.hobbiesContext.selected.name: void(0); 
+      return this.state.hobbiesContext.current ? this.state.hobbiesContext.current.name: void(0); 
     }
   },
 

@@ -348,6 +348,7 @@ var IMVVMClass = {
             if('viewModel' in this.originalSpec[key]) {
               viewModels[key] = this.originalSpec[key].viewModel;
               delete this.originalSpec[key].viewModel;
+              delete this.originalSpec[key].set;
             } else if('kind' in this.originalSpec[key]){
               if(this.originalSpec[key].kind === 'pseudo'){
                 this.originalSpec[key].enumerable = false;

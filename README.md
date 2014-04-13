@@ -220,9 +220,9 @@ var PersonsViewModel = IMVVM.createViewModel({
 
 ```
 
-### Create a DomainModel
+### Create a DomainViewModel
 ```javascript
-var DomainModel = IMVVM.createDomainModel({
+var DomainViewModel = IMVVM.createDomainViewModel({
 
   getDomainDataContext: function(){
     return {
@@ -303,7 +303,7 @@ var ApplicationView = React.createClass({
 
 ### Render the View
 ```javascript
-React.renderComponent(<ApplicationView domainModel={DomainModel}/>,
+React.renderComponent(<ApplicationView domainModel={DomainViewModel}/>,
   document.getElementById('container'));
 ```
 
@@ -394,8 +394,8 @@ The example application is a good starting place when figuring out how things wo
 ###Class
 ####Constructors
 ___
-#####function createDomainModel(object specification)
-Creates a DomainModel object.
+#####function createDomainViewModel(object specification)
+Creates a DomainViewModel object.
 
 *parameters*
 
@@ -418,7 +418,7 @@ __specification__ - see [Specification](#specification)
 ###Instance
 ####Functions
 ___
-#####void setState(object nextState[, function callback])
+#####void setState(object nextState[, oject nextDomainState, function callback])
 Transition Data Context to the next state.
 
 *parameters*
@@ -427,7 +427,7 @@ __nextState__
 
 __callback__
 
-_Available in:_ DomainModel, ViewModel, Model
+_Available in:_ DomainViewModel, ViewModel, Model
 ___
 #####object extend(object currentState[, object... nextState])
 Creates a shallow copy of currentState. Adds/replaces properties with properties of subsequent objects.
@@ -438,56 +438,49 @@ __currentState__
 
 __nextState__
 
-_Available in:_ DomainModel, ViewModel, Model
+_Available in:_ DomainViewModel, ViewModel, Model
 
 ####Properties
 ___
 #####state
 
-_Available in:_ DomainModel, ViewModel, Model
+_Available in:_ DomainViewModel, ViewModel, Model
 ___
 #####previousState
 
-_Available in:_ DomainModel
+_Available in:_ DomainViewModel
 
 ###Specification
-####Hooks
-___
-#####function getDomainDataContext()
-
-_Available in:_ DomainModel
-
-_Optional:_ false
+####Functions
 ___
 #####object getInitialState()
 
-_Available in:_ DomainModel, ViewModel
+_Available in:_ DomainViewModel, ViewModel, Model
 
 _Optional:_ true
+
 ___
-#####object getDependencies()
-
-***Public***
-This will be made available to the View from this Data Context
-
-_Available in:_ DomainModel, ViewModel, Model
-
-***Private***
-Hidden from View from this Data Context
+#####object getWatchedState()
 
 _Available in:_ ViewModel
 
 _Optional:_ true
 
-####Field Descriptor
-___
-#####\* get()
-#####void set(\* newValue)
-#####kind:['instance'||'array'||'pseudo']
+<!-- nextState, prevState, field, context -->
+#####object ViewModelStateChangedHandler(object nextState, object previousState, string field, string dataContext)
 
-_Available in:_ DomainModel, ViewModel, Model
+*arguments*
 
-####Model State Change Handlers
+__nextState__
+
+__previousState__
+
+__field__
+
+__dataContext__
+
+_Available in:_ ViewModel
+
 ___
 #####void ModelStateChangedHandler(object nextState,object previousState[, function callback])
 
@@ -516,15 +509,13 @@ __callback__
 
 _Available in:_ ViewModel
 
-####Model Factory Functions
 ___
-_Definition_
 
-#####function ModelFactory(args){ return new ModelClass(this.ModelStateChangeHandler)(args); }
+#####function ModelFactory(object modelObject[, boolean initialize]){ return new ModelClass([function this.ModelStateChangeHandler])(modelObject, initialize); }
 
 _Usage_
 
-#####object ModelFactory(object nextState[, boolean init])
+#####object ModelFactory(object nextState[, boolean initialize])
 
 ```javascript
   Person: function(person, init){
@@ -532,7 +523,16 @@ _Usage_
   },
 ```
 
-_Available in:_ ViewModel
+_Available in:_ ViewModel, Model
+
+####Field Descriptor
+___
+#####\* get()
+#####void set(\* newValue)
+#####kind:['instance'||'array'||'pseudo']
+#####viewModel: ViewModel Class
+
+_Available in:_ DomainViewModel, ViewModel, Model
 
 ###Mixin
 ####mixin
@@ -552,10 +552,13 @@ var ApplicationView = React.createClass({
 
 Point the View to the Domain Model.
 ```javascript
-React.renderComponent(<ApplicationView domainModel={DomainModel}/>,
+React.renderComponent(<ApplicationView domainModel={DomainViewModel}/>,
   document.getElementById('container'));
 ```
 
+props -
+domainModel= DomainViewModel Class
+  enableUndo= boolean //optional: default = false
 
 ## Browser Support
 Most ECMAScript 5 compliant browsers. 

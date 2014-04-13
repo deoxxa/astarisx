@@ -21,12 +21,12 @@ var HobbyListView = React.createClass({
 		this.props.appContext.hobbies.deleteHobby(uid);
 	},
 	updateName: function(e){
-		this.props.appContext.hobbies.selected.name = e.target.value;
+		this.props.appContext.hobbies.current.name = e.target.value;
 	},
 	render: function() {
 		var app = this.props.appContext;
 		var collection = this.props.appContext.hobbies.hobbies;
-		var current = this.props.appContext.hobbies.selected;
+		var current = this.props.appContext.hobbies.current;
 
 		var list = collection.map(function(hobby){
 			if(current && (current.id === hobby.id)){
