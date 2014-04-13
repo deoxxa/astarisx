@@ -520,12 +520,26 @@ ___
 *arguments*
 
 __nextState__
+Next state of the watched field.
 
 __previousState__
+Previous state of the watched field.
 
 __field__
+Watched field name.
 
 __dataContext__
+Watched Data Context name.
+
+___example___
+```javascript
+  onPersonChange: function(nextState, prevState, field, context){
+    if(this.current !== void(0) && context === 'persons' &&
+      nextState.id !== prevState.id){
+      return { hobbies: { current: void(0) }, busy: false };
+    }
+  }
+```
 
 _Available in:_ ViewModel
 
@@ -535,10 +549,13 @@ ___
 *arguments*
 
 __nextState__
+Next state of the model.
 
 __previousState__
+Previous state of the model.
 
 __callback__
+
 
 ```javascript
   personStateChangedHandler: function(nextState, prevState){
@@ -595,19 +612,29 @@ _Available in:_ DomainViewModel, ViewModel, Model
 #####Decorators
 
 ######kind: ['instance'||'array'||'pseudo']
+**instance**
+Specifies that the getter returns a model instance.
+
+**array**
+Specifies that the field holds an array.
+
+**pseudo**
+Specifies that the value for this field is obtained from other properties.
 
 _Available in:_ DomainViewModel, ViewModel, Model
 
 ######viewModel: ViewModel Class
+**viewModel**
+Identifies the ViewModel to be used for the defined data context.
 
 _Available in:_ DomainViewModel
 
 ###Mixin
 ####mixin
 ___
-mixins: [IMVVM.mixin],
+#####mixins: [IMVVM.mixin],
 
-Adds domainDataContext to state.
+Adds domainDataContext to state object.
 
 ```javascript
 var ApplicationView = React.createClass({
@@ -618,15 +645,15 @@ var ApplicationView = React.createClass({
 });
 ```
 
-Point the View to the Domain Model.
+**Point the View to the DomainViewModel.**
 ```javascript
 React.renderComponent(<ApplicationView domainModel={DomainViewModel}/>,
   document.getElementById('container'));
 ```
 
-props -
-domainModel= DomainViewModel Class
-  enableUndo= boolean //optional: default = false
+###props
+####domainModel= DomainViewModel Class
+####[enableUndo]= boolean: default = false
 
 ## Browser Support
 Most ECMAScript 5 compliant browsers. 
