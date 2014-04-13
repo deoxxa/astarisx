@@ -3,17 +3,22 @@ IMVVM
 
 Immutable MVVM for React
 ## Introduction
-IMVVM is designed to compliment the [React](http://facebook.github.io/react/) library, deleveloped by Facebook and Instagram. React is:
+IMVVM is designed to compliment the [React](http://facebook.github.io/react/) library. A Facebook and Instagram collaboration.
+
+React is:
 
 > A Javascript Library for building User Interfaces
 
-And further quoting the website, people use React as the 'V' in MVC. Well I thought, why not use React as the 'V' in MVVM, and keeping inline with REacts philosophy on immutability, lets make it use immutable data. So I created IMVVM.
+And to further quote the website, "people use React as the 'V' in MVC". Well I thought, why not use React as the 'V' in MVVM, and keeping inline with React's philosophy on immutability, lets make it use immutable data. So I created IMVVM.
 
-This is my take on MVVM and immutability using javascript. IMVVM tries to look like a React application, so that you not only feel like you developing in the same environment, but if your coming from React, you should be able to pick this up quickly.
+This is my take on MVVM and immutability using javascript. IMVVM tries to resemble a React application, so that you not only feel like you developing in the same environment, but if your coming from React, you should be able to pick this up quickly.
 
 Anyway, try it out. And be sure to raise issues as you encounter them and please feel free to create pull requests.
 
 Thanks.
+
+___TODO:___
+Write some tests. I know, they should have already been done...
 
 ## Usage
 
