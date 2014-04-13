@@ -3,36 +3,14 @@ var core = require('./core');
 var NAMESPACE = '__IMVVM__';
 
 var mixin = {
-	stateChangedHandler: function(dataContext, caller, callback){
-  	this.setState({domainDataContext: dataContext}, function(){
-	    //send all state back to caller
-	    //useful if you need to know what other parts of the app
-	    //were impacted by your changes. You can also use the returned
-	    //information to display things external to your ApplicationModel
-	    //Allows you to have multiple Application ViewModels in the one app and
-	    //still share the state with other presentation models that may be interested
-	    if(typeof callback === 'function'){
-      	if(this.state === null || !('domainDataContext' in this.state)){
-          callback(void(0));
-        } else {
-					if(caller in this.state.domainDataContext){
-					  callback(this.state.domainDataContext[caller]);
-					} else if(caller === NAMESPACE) {
-					  callback(this.state.domainDataContext);
-					} else {
-					  callback(void(0));
-					}
-				}
-			}
-		}.bind(this));
+	stateChangedHandler: function(dataContext){
+  	this.setState({domainDataContext: dataContext})
   },
-
 	getInitialState: function(){
 		var dataContext = core.getInitialState(NAMESPACE, this.props.domainModel,
 			this.stateChangedHandler, this.props.enableUndo);
 		return {domainDataContext: dataContext};
 	}
-
 };
 
 module.exports = mixin;

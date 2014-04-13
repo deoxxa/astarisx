@@ -10,7 +10,9 @@
 
 var DeleteButton = React.createClass({
 	delete: function(e){
-		e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
+    
 		this.props.funcDelete(e);
 	},
 	render: function(){
