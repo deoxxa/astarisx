@@ -136,29 +136,46 @@ var PersonsViewModel = IMVVM.createViewModel({
     return nextState;
   },
 
-  getDependencies: function(){
+  getWatchedState: function() {
     return {
-      selectedHobby: 'hobbies.selected',
-      imOnline: 'online'
+      'hobbies': {
+        alias: 'hobbiesContext',
+      },
+      'online': {
+        alias: 'imOnline'
+      }
     }
   },
 
+    imOnline: {
+    kind:'pseudo',
+    get: function(){
+      return this.state.imOnline;
+    }
+  },
+  
   Person: function(personState, init){
     return new PersonModel(this.personStateChangedHandler)(personState, init);
   },
 
-  personStateChangedHandler: function(nextState, prevState){
+  personStateChangedHandler: function(nextState, prevState/*, callback*/){
     var persons = {};
-    
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
-
         persons.selected = this.Person(nextState);
         return persons.selected;
       }
       return person;
     }.bind(this));
+
     this.setState(persons);
+  },
+
+  selectedHobby: {
+    kind: 'pseudo',
+    get: function() {
+      return this.state.hobbiesContext.current ? this.state.hobbiesContext.current.name: void(0); 
+    }
   },
 
   selected: {
@@ -172,16 +189,12 @@ var PersonsViewModel = IMVVM.createViewModel({
   },
 
   select: function(id){
-    var nextState = {};
-    nextState.collection = this.collection.map(function(person){
-      if(person.id === id){
-        nextState.selected = this.Person(person);
-        return nextState.selected;
+    for (var i = this.collection.length - 1; i >= 0; i--) {
+      if(this.selected.id !== id && this.collection[i].id === id){
+        this.setState({ selected: this.collection[i] });
+        break;
       }
-      return person;
-    }.bind(this));
-
-    this.setState(nextState);
+    };
   },
 
   addPerson: function(value){
@@ -215,7 +228,6 @@ var PersonsViewModel = IMVVM.createViewModel({
     }
     this.setState(nextState);
   },
-
 });
 
 ```
@@ -224,13 +236,6 @@ var PersonsViewModel = IMVVM.createViewModel({
 ```javascript
 var DomainViewModel = IMVVM.createDomainViewModel({
 
-  getDomainDataContext: function(){
-    return {
-      hobbies: HobbiesViewModel,
-      persons: PersonsViewModel
-    };
-  },
-
   getInitialState: function(){
     return {
       online: true,
@@ -238,28 +243,22 @@ var DomainViewModel = IMVVM.createDomainViewModel({
     };
   },
 
-  getDependencies: function(){
-    return {
-      selectedHobby: { 
-        property: 'hobbies.selected', 
-        onStateChange: this.toggleBusyState
-      }
+  persons: {
+    viewModel: PersonsViewModel,
+    get: function(){
+      return this.state.persons;
     }
   },
 
-  toggleBusyState: function(nextState){
-    if(!!nextState.selectedHobby){
-      return {busy: true};
-    } else {
-      return {busy: false};
+  hobbies: {
+    viewModel: HobbiesViewModel,
+    get: function(){
+      return this.state.hobbies;
     }
-  },
-
-  undo: function(){
-    this.setState(this.previousState);
   },
 
   personCount: {
+    kind:'pseudo',
     get: function(){
       return this.persons ? this.persons.collection.length : 0;
     }
@@ -425,6 +424,8 @@ Transition Data Context to the next state.
 
 __nextState__
 
+__nextDomainState__ ***N.B. This parameter is only available in ViewModels***
+
 __callback__
 
 _Available in:_ DomainViewModel, ViewModel, Model
@@ -466,7 +467,7 @@ _Available in:_ ViewModel
 
 _Optional:_ true
 
-<!-- nextState, prevState, field, context -->
+___
 #####object ViewModelStateChangedHandler(object nextState, object previousState, string field, string dataContext)
 
 *arguments*
@@ -525,12 +526,22 @@ _Usage_
 
 _Available in:_ ViewModel, Model
 
-####Field Descriptor
+####Field
 ___
-#####\* get()
-#####void set(\* newValue)
-#####kind:['instance'||'array'||'pseudo']
-#####viewModel: ViewModel Class
+#####fieldName : [Descriptor](#descriptor)
+
+_Available in:_ DomainViewModel, ViewModel, Model
+
+___
+
+####Descriptor
+___
+#####Functions
+######Any get() { return Any;}
+######void set(Any newValue) {}
+#####Decorators
+######kind:['instance'||'array'||'pseudo']
+######viewModel: ViewModel Class
 
 _Available in:_ DomainViewModel, ViewModel, Model
 
