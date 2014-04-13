@@ -90,6 +90,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
   
   deleteHobby: function(value){
+    console.log(value);
     this.state.personsContext.selected.deleteHobby(value);
   },
 

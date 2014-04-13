@@ -123,6 +123,7 @@ var PersonModel = IMVVM.createModel({
     kind: 'array',
     get: function(){ return this.state.hobbies; },
     set: function(newArray){
+      console.log('dlete');
       this.setState({'hobbies': newArray});
     }
   },
@@ -136,9 +137,12 @@ var PersonModel = IMVVM.createModel({
   },
   
   deleteHobby: function(value){
+    console.log('value in model');
+    console.log(value);
     this.hobbies = this.hobbies.filter(function(hobby){
-      return hobby !== value;
+      return hobby.id !== value;
     });
+    console.log(this.hobbies);
   },
 
   uuid: function () {
