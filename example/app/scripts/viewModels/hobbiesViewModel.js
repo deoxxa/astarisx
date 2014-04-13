@@ -10,7 +10,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
       'persons': {
         alias: 'personsContext', //optional - if provided then will be added to prototype
         fields: { //optional
-          'selected': this.onPersonChangedHandler
+          'selectedPerson': this.onPersonChangedHandler
         }
       },
       'busy': {
@@ -30,7 +30,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
   hobbies: {
     kind: 'pseudo',
     get: function(){
-      return this.state.personsContext.selected.hobbies;
+      return this.state.personsContext.selectedPerson.hobbies;
     }
   },
 
@@ -65,7 +65,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
     }.bind(this));
 
     this.setState(newState, function(){
-      this.state.personsContext.selected.hobbies = hobbiesArr;  
+      this.state.personsContext.selectedPerson.hobbies = hobbiesArr;  
     }.bind(this));
 
   },
@@ -78,7 +78,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
         
         /*
           //OR use a callback
-          this.setState({selected: this.Hobby(this.hobbies[i])}, function(){
+          this.setState({current: this.Hobby(this.hobbies[i])}, function(){
             this.setState(void(0), {busy: true});
           }.bind(this));
         */
@@ -89,11 +89,12 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
   
   addHobby: function(value){
-    this.state.personsContext.selected.addHobby(this.Hobby({ id:this.uuid(), name:value }, true));
+    this.state.personsContext.selectedPerson.
+      addHobby(this.Hobby({ id:this.uuid(), name:value }, true));
   },
   
   deleteHobby: function(value){
-    this.state.personsContext.selected.deleteHobby(value);
+    this.state.personsContext.selectedPerson.deleteHobby(value);
   },
 
   uuid: function () {

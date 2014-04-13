@@ -10,19 +10,19 @@
 
 var FormView = React.createClass({
 	updateName: function(e){
-		this.props.appContext.persons.selected.fullName = e.target.value;
+		this.props.appContext.persons.selectedPerson.fullName = e.target.value;
 	},
 	updateOccupation: function(e){
-		this.props.appContext.persons.selected.occupation = e.target.value;
+		this.props.appContext.persons.selectedPerson.occupation = e.target.value;
 	},
 	updateGender: function(e){
-		this.props.appContext.persons.selected.gender = e.target.value;
+		this.props.appContext.persons.selectedPerson.gender = e.target.value;
 	},
 	updateDOB: function(e){
-		this.props.appContext.persons.selected.dob = e.target.value;
+		this.props.appContext.persons.selectedPerson.dob = e.target.value;
 	},
 	render: function() {
-		var current = this.props.appContext.persons.selected;
+		var current = this.props.appContext.persons.selectedPerson;
 
 		return (
 			<div key={current.id}>

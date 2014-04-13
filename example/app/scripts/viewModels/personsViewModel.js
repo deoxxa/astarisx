@@ -69,7 +69,7 @@ var PersonsViewModel = IMVVM.createViewModel({
     get: function(){ return this.state.collection; },
   },
 
-  select: function(id){
+  selectPerson: function(id){
     for (var i = this.collection.length - 1; i >= 0; i--) {
       if(this.selectedPerson.id !== id && this.collection[i].id === id){
         this.setState({ selectedPerson: this.collection[i] });

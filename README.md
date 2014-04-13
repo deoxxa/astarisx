@@ -3,6 +3,7 @@ IMVVM
 
 Immutable MVVM for React
 ## Introduction
+This library is designed to compliment the React library, deleveloped by Facebook and Instagram. React is 
 ## Usage
 
 IMVVM can be loaded as:
@@ -121,7 +122,6 @@ var PersonModel = IMVVM.createModel({
 });
 ```
 
-####Breakdown
 #####getInitialState()
 The `getInitialState` function initializes any fields that require a value on creation. Such values include, default values and calculated fields. This function has access to state that has been supplied during initializtion, and therefore `this` will be able to refer to the state.
 #####name
@@ -281,7 +281,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
       'persons': {
         alias: 'personsContext',
         fields: {
-          'selected': this.onPersonChangedHandler
+          'selectedPerson': this.onPersonChangedHandler
         }
       },
       'busy': {
@@ -307,7 +307,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
         
         /*
           //OR use a callback
-          this.setState({selected: this.Hobby(this.hobbies[i])}, function(){
+          this.setState({current: this.Hobby(this.hobbies[i])}, function(){
             this.setState(void(0), {busy: true});
           }.bind(this));
         */
@@ -323,7 +323,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
 ```
 
 #####getWatchedState()
-Notice in this instance of the `getWatchedState` function the `persons` object has an extra property called fields. This specifies that we are not only linking to the `persons` data context, but we would also like to be notified when `persons.selected` changes, and if it does change trigger the `onPersonChanged` handler.
+Notice in this instance of the `getWatchedState` function the `persons` object has an extra property called fields. This specifies that we are not only linking to the `persons` data context, but we would also like to be notified when `persons.selectedPerson` changes, and if it does change trigger the `onPersonChanged` handler.
 
 #####onPersonChangedHandler
 `onPersonChangedHandler` will be triggered whenever any of the fields that it is assigned to changes. It is important to note that, if there is a change a state object is returned. If there is no change, return either void(0) or don't return anything. It should also be noted that the returned state object has a property with the data context, `hobbies`, and the associated object next state. This is necessary so that any data context or domain property can be updated from this ViewModel by simply specfying it in the returned object.
