@@ -3,7 +3,7 @@ IMVVM
 
 Immutable MVVM for React
 ## Introduction
-IMVVM is designed to compliment the [React](http://facebook.github.io/react/) library. A Facebook and Instagram collaboration.
+IMVVM is designed to complement the [React](http://facebook.github.io/react/) library. A Facebook and Instagram collaboration.
 
 React is:
 
