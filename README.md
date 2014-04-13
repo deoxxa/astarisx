@@ -67,15 +67,17 @@ var PersonModel = IMVVM.createModel({
       return this.state.dob;
     },
     set: function(newValue){
-      var nextState = {};
+      var age;
       if(newValue.length === 10){
-        nextState.age = this.calculateAge(newValue);
+        age = this.calculateAge(newValue);
       }
       if(newValue.length === 0){
-        nextState.age = 'Enter your Birthday';
+        age = 'Enter your Birthday';
       }
-      nextState.dob = newValue;
-      this.setState(nextState);
+      this.setState({
+        dob: newValue,
+        age: age
+      });
     }
   },
   
@@ -119,6 +121,14 @@ var PersonModel = IMVVM.createModel({
 });
 ```
 
+####Breakdown
+#####getInitialState()
+The `getInitialState` function initializes any fields that require a value on creation. Such values include, default values and calculated fields. This function has access to state that has been supplied during initializtion, and therefore `this` will be able to refer to the state.
+#####name
+`name` is a simple field descriptor. It defines a getter and setter. The getter returns state that resides in the state's property of the same name. The setter uses the passed in value to transition to the model to the next state, by passing the value, as an object to the setState function. This will then notify any ViewModels that have registered a stateChangeHandler with this model.
+#####age
+`age` is a calculated field. It is set by setting `dob`. `dob` uses the calculateAge function to set the value of age and passes both the dob and age values to setState. Please note that `age` needed to be initialized in the getInitialState() function.
+
 ### Create a ViewModel
 
 ```javascript
@@ -128,8 +138,8 @@ var PersonsViewModel = IMVVM.createViewModel({
     var nextState = {};
     nextState.collection = DataService.getData().map(function(person, idx){
       if (idx === 0){
-        nextState.selected = this.Person(person, true);
-        return nextState.selected;
+        nextState.selectedPerson = this.Person(person, true);
+        return nextState.selectedPerson;
       }
       return this.Person(person, true);
     }.bind(this));
@@ -147,28 +157,38 @@ var PersonsViewModel = IMVVM.createViewModel({
     }
   },
 
-    imOnline: {
+  imOnline: {
     kind:'pseudo',
     get: function(){
       return this.state.imOnline;
     }
   },
   
-  Person: function(personState, init){
-    return new PersonModel(this.personStateChangedHandler)(personState, init);
+  selectedPerson: {
+    kind: 'instance',
+    get: function() { return this.state.selectedPerson; }
   },
 
-  personStateChangedHandler: function(nextState, prevState/*, callback*/){
+  collection: {
+    kind: 'array',
+    get: function(){ return this.state.collection; },
+  },
+
+  personStateChangedHandler: function(nextState, prevState){
     var persons = {};
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
-        persons.selected = this.Person(nextState);
-        return persons.selected;
+        persons.selectedPerson = this.Person(nextState);
+        return persons.selectedPerson;
       }
       return person;
     }.bind(this));
 
     this.setState(persons);
+  },
+
+  Person: function(personState, init){
+    return new PersonModel(this.personStateChangedHandler)(personState, init);
   },
 
   selectedHobby: {
@@ -178,20 +198,10 @@ var PersonsViewModel = IMVVM.createViewModel({
     }
   },
 
-  selected: {
-    kind: 'instance',
-    get: function() { return this.state.selected; }
-  },
-
-  collection: {
-    kind: 'array',
-    get: function(){ return this.state.collection; },
-  },
-
-  select: function(id){
+  selectPerson: function(id){
     for (var i = this.collection.length - 1; i >= 0; i--) {
-      if(this.selected.id !== id && this.collection[i].id === id){
-        this.setState({ selected: this.collection[i] });
+      if(this.selectedPerson.id !== id && this.collection[i].id === id){
+        this.setState({ selectedPerson: this.collection[i] });
         break;
       }
     };
@@ -203,12 +213,12 @@ var PersonsViewModel = IMVVM.createViewModel({
 
     if(value && value.length > 0){
       name = value.split(' ');
-      nextState.selected = this.Person({
+      nextState.selectedPerson = this.Person({
         firstName: name[0],
         lastName: name.slice(1).join(' ')
       }, true);
       nextState.collection = this.collection.slice(0);
-      nextState.collection = nextState.collection.concat(nextState.selected);
+      nextState.collection = nextState.collection.concat(nextState.selectedPerson);
       this.setState(nextState);
     }
   },
@@ -218,12 +228,12 @@ var PersonsViewModel = IMVVM.createViewModel({
     nextState.collection = this.collection.filter(function(person){
       return person.id !== uid;
     });
-    nextState.selected = void(0);
+    nextState.selectedPerson = void(0);
     if(nextState.collection.length > 0){
-      if (this.selected.id === uid){
-        nextState.selected = this.Person(nextState.collection[0]);
+      if (this.selectedPerson.id === uid){
+        nextState.selectedPerson = this.Person(nextState.collection[0]);
       } else {
-        nextState.selected = this.Person(this.selected);
+        nextState.selectedPerson = this.Person(this.selectedPerson);
       }
     }
     this.setState(nextState);
@@ -231,6 +241,101 @@ var PersonsViewModel = IMVVM.createViewModel({
 });
 
 ```
+#####getInitialState()
+The `getInitialState` function initializes any fields that require a value and
+initialize models to establish the data for the Viewmodel. Unlike Models, the ViewModel does not have access to `state`.
+#####getWatchedState()
+The `getWatchedState` function establises links between ViewModels. What is happening in this instance, is that we are watching the hobbies data context and refering to it, within this viewModel, with the alias of hobbiesContext. So we are then able to refer to is from teh state object as `this.state.hobbiesContext...`. Enabling us to display fields from other ViewModels and also update thier values.
+
+We can also reference fields from the DomainViewModel. We simply specify the field name and supply an alias. Then it can be refered to within the state object.
+#####imOnline
+The `imOnline` field is referencing the linked DomainModel field `online` with the alias of `imOnline`. It is simply forwarding the online value it recieves from the DomainViewModel to the View and has no influence over its output. It is for this reason that the field descriptor has a `kind` decorator of `pseudo`. Any field that obtains its value from elsewhere, should be flagged with the decorator `kind:'pseudo'`, unless it is an `instance` or `array`.
+#####selectedPerson
+`selectedPerson` is another field that has a `kind` decorator. The `selectedPerson` field is of kind `instance`. Which simply means that it will return a model instance.
+
+#####collection
+`collection` has a `kind` decorator of `array`. Yes, you guessed it, because it returns an array.
+
+_The reason that the kindd decorator is used is because IMVVM does some extra processing with these types._ 
+
+#####personStateChangedHandler
+`personStateChangedHandler` will be invoked anytime `setState` is called within the model that it is registered with. This function processes the change in the ViewModel and notifies the DomainModel so that the DomainModel can transition to the next state.
+
+#####Person
+`Person` is a wrapper around the `PersonModel` constructor. It makes `PersonModel` easier to invoke and acts like a factory of sorts. The parameters passed to `Person` are passed directly to the `PersonModel` constructor, but not before registering the stateChangedHandler `personStateChangedHandler`, to ensure that all state changes in PersonModel and handled approapriately.
+
+#####selectPerson
+#####addPerson
+#####deletePerson
+These functions are exposed to the View and enaable tasks to be performed in the ViewModel. However, most interactions will occur via the `selectedPerson` which exposes the model instance to the View.
+
+I've added a snippet of HobbiesViewModel, from the example application to explain a little more about `getWatchedState`.
+
+__HobbiesViewModel snippet__
+
+```javascript
+var HobbiesViewModel = IMVVM.createViewModel({
+
+  getWatchedState: function() {
+    return {
+      'persons': {
+        alias: 'personsContext',
+        fields: {
+          'selected': this.onPersonChangedHandler
+        }
+      },
+      'busy': {
+        alias: 'busy'
+      }
+    }
+  },
+
+  onPersonChangedHandler: function(nextState, prevState, field, context){
+    if(this.current !== void(0) && context === 'persons' &&
+      nextState.id !== prevState.id){
+      return { hobbies: { current: void(0) }, busy: false };
+    }
+  },
+  
+  ...
+
+  selectHobby: function(id){
+    for (var i = this.hobbies.length - 1; i >= 0; i--) {
+      if ((this.current === void(0) || this.current.id !== id) && this.hobbies[i].id === id){
+        
+        this.setState({current: this.Hobby(this.hobbies[i])}, {busy: true});
+        
+        /*
+          //OR use a callback
+          this.setState({selected: this.Hobby(this.hobbies[i])}, function(){
+            this.setState(void(0), {busy: true});
+          }.bind(this));
+        */
+
+        break;
+      }
+    };
+  },
+
+  ...
+
+  });
+```
+
+#####getWatchedState()
+Notice in this instance of the `getWatchedState` function the `persons` object has an extra property called fields. This specifies that we are not only linking to the `persons` data context, but we would also like to be notified when `persons.selected` changes, and if it does change trigger the `onPersonChanged` handler.
+
+#####onPersonChangedHandler
+`onPersonChangedHandler` will be triggered whenever any of the fields that it is assigned to changes. It is important to note that, if there is a change a state object is returned. If there is no change, return either void(0) or don't return anything. It should also be noted that the returned state object has a property with the data context, `hobbies`, and the associated object next state. This is necessary so that any data context or domain property can be updated from this ViewModel by simply specfying it in the returned object.
+
+#####selectHobby
+The `selectHobby` function is nothing special. What is different about it is the 'setState' function. ViewModels get an extra parameter, which enables the ViewModel to update state in other data contexts. The second parameter takes a state object, not dissimilar to the state object that is returned from `onPersonChangedHandler`. The second parameter accepts an object that specifies the data context\domain property and associated state.
+
+For instance `this.setState({current: this.Hobby(this.hobbies[i])}, {busy: true});`. The first parameter is the next state for `hobbies` data context, the second parameter specifies that `busy`, in the domain data context shold be changed to `true`. This second parameter also accepts `{person: {selectedPerson: firstName: 'Fred'}}`.
+
+Also noted in the comments is that this can be achieved with a callback, ensuring to pass `void(0)` as the first parameter to `setState`.
+
+***n.b. You may have noticed that not all fields have setters, however, the values are still able to be updated. This is what `setState` does. You only need to supply a setter if you would like the View to update the field directly.***
 
 ### Create a DomainViewModel
 ```javascript
@@ -281,8 +386,14 @@ var DomainViewModel = IMVVM.createDomainViewModel({
 
 });
 ```
+#####getInitialState()
+The 'getInitialState' is the same as for the ViewModel.
+#####persons
+The `persons` property is setting up a data context called 'persons'. It has a special decorator called `viewModel` which specifies which ViewModel is associated to this data context.
 
 ### Hook up the View
+Once you have created your Models. ViewModels and DomainViewModel, you're ready to hook it up the the View. All you need to do is specify the mixin and IMVVM will attach a `domainDataContext` to the state object that will be kept in sync with you're ViewModel.
+
 ```javascript
 var ApplicationView = React.createClass({
 
@@ -300,11 +411,34 @@ var ApplicationView = React.createClass({
 });
 ```
 
+The 'domainDataContext' has all the properties that were specified in the DomainViewModel. So this 'domainDataContext' will have the following properties:
+- busy
+- online
+- personCount
+- persons (dataContext)
+  + imOnline
+  + selectedPerson
+    * [model properties and functions...]
+  + collection
+  + selectedHobby
+  + selectPerson
+  + addPerson
+  + deletePerson
+- hobbies (dataContext)
+  + [viewmodel properties and functions...]
+
 ### Render the View
+
+Then you just render the View, specifying a `domainModel` prop, that references the 'DomainViewModel'.
 ```javascript
 React.renderComponent(<ApplicationView domainModel={DomainViewModel}/>,
   document.getElementById('container'));
 ```
+
+***A word on how to use the exposed Model -> selectedPerson***
+As mentioned above, the `PersonsViewModel` has a `persons` data context. This data context exposes a `Person` model instance via the `selectedPerson` property.
+
+To update the `Person` instance, simply assign values to the associated properties on the `selectedPerson` property.
 
 __FormView example__
 ```javascript
@@ -576,17 +710,28 @@ _Available in:_ ViewModel
 
 ___
 
-#####function ModelFactory(object modelObject[, boolean initialize]){ return new ModelClass([function this.ModelStateChangeHandler])(modelObject, initialize); }
+#####ModelInstance Model([function stateChangedHandler])([object nextState, boolean initialize])
+Returns a new model instance. This function is usually wrapped in another function for easier usage. __n.b. This is suggested usage and not part of the API__
 
-_Usage_
+__Usage example__
 
-#####object ModelFactory(object nextState[, boolean initialize])
+######ModelInstance ModelFactory(object nextState[, boolean initialize:false])
 
 ```javascript
   Person: function(person, init){
     return new PersonModel(this.personStateChangedHandler)(person, init);
   },
 ```
+
+*parameters*
+__stateChangedHandler__
+State changed handler which is triggered whenever setState is called from within the model. 
+
+__nextState__
+Object containing the next state values for the model.
+
+__initialize__
+Boolean value indicating the model instance should be initialized. (Calls getInitialState())
 
 _Available in:_ ViewModel, Model
 
@@ -601,17 +746,17 @@ ___
 ####Descriptor
 ___
 #####Functions
-######get() { return \*;}
+######get()
 
 _Available in:_ DomainViewModel, ViewModel, Model
 
-######void set(newValue) {}
+######void set(newValue)
 
 _Available in:_ DomainViewModel, ViewModel, Model
 
 #####Decorators
 
-######kind: ['instance'||'array'||'pseudo']
+######kind: ['instance' || 'array' || 'pseudo']
 **instance**
 Specifies that the getter returns a model instance.
 
@@ -632,7 +777,7 @@ _Available in:_ DomainViewModel
 ###Mixin
 ####mixin
 ___
-#####mixins: [IMVVM.mixin],
+#####mixins: [IMVVM.mixin]
 
 Adds domainDataContext to state object.
 
@@ -645,15 +790,15 @@ var ApplicationView = React.createClass({
 });
 ```
 
+####props
+#####domainModel= DomainViewModel Class
+#####[enableUndo]= boolean: default = false
+
 **Point the View to the DomainViewModel.**
 ```javascript
 React.renderComponent(<ApplicationView domainModel={DomainViewModel}/>,
   document.getElementById('container'));
 ```
-
-###props
-####domainModel= DomainViewModel Class
-####[enableUndo]= boolean: default = false
 
 ## Browser Support
 Most ECMAScript 5 compliant browsers. 

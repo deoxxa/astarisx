@@ -10,7 +10,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
       'persons': {
         alias: 'personsContext', //optional - if provided then will be added to prototype
         fields: { //optional
-          'selected': this.onPersonChange
+          'selected': this.onPersonChangedHandler
         }
       },
       'busy': {
@@ -20,7 +20,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
 
   //Use when this needs change state triggered by others action
-  onPersonChange: function(nextState, prevState, field, context){
+  onPersonChangedHandler: function(nextState, prevState, field, context){
     if(this.current !== void(0) && context === 'persons' &&
       nextState.id !== prevState.id){
       return { hobbies: { current: void(0) }, busy: false };
@@ -70,7 +70,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
 
   },
 
-  select: function(id){
+  selectHobby: function(id){
     for (var i = this.hobbies.length - 1; i >= 0; i--) {
       if ((this.current === void(0) || this.current.id !== id) && this.hobbies[i].id === id){
         

@@ -9,8 +9,8 @@ var PersonsViewModel = IMVVM.createViewModel({
     var nextState = {};
     nextState.collection = DataService.getPersonData().map(function(person, idx){
       if (idx === 0){
-        nextState.selected = this.Person(person, true);
-        return nextState.selected;
+        nextState.selectedPerson = this.Person(person, true);
+        return nextState.selectedPerson;
       }
       return this.Person(person, true);
     }.bind(this));
@@ -43,8 +43,8 @@ var PersonsViewModel = IMVVM.createViewModel({
     var persons = {};
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
-        persons.selected = this.Person(nextState);
-        return persons.selected;
+        persons.selectedPerson = this.Person(nextState);
+        return persons.selectedPerson;
       }
       return person;
     }.bind(this));
@@ -59,9 +59,9 @@ var PersonsViewModel = IMVVM.createViewModel({
     }
   },
 
-  selected: {
+  selectedPerson: {
     kind: 'instance',
-    get: function() { return this.state.selected; }
+    get: function() { return this.state.selectedPerson; }
   },
 
   collection: {
@@ -71,8 +71,8 @@ var PersonsViewModel = IMVVM.createViewModel({
 
   select: function(id){
     for (var i = this.collection.length - 1; i >= 0; i--) {
-      if(this.selected.id !== id && this.collection[i].id === id){
-        this.setState({ selected: this.collection[i] });
+      if(this.selectedPerson.id !== id && this.collection[i].id === id){
+        this.setState({ selectedPerson: this.collection[i] });
         break;
       }
     };
@@ -84,12 +84,12 @@ var PersonsViewModel = IMVVM.createViewModel({
 
     if(value && value.length > 0){
       name = value.split(' ');
-      nextState.selected = this.Person({
+      nextState.selectedPerson = this.Person({
         firstName: name[0],
         lastName: name.slice(1).join(' ')
       }, true);
       nextState.collection = this.collection.slice(0);
-      nextState.collection = nextState.collection.concat(nextState.selected);
+      nextState.collection = nextState.collection.concat(nextState.selectedPerson);
       this.setState(nextState);
     }
   },
@@ -99,12 +99,12 @@ var PersonsViewModel = IMVVM.createViewModel({
     nextState.collection = this.collection.filter(function(person){
       return person.id !== uid;
     });
-    nextState.selected = void(0);
+    nextState.selectedPerson = void(0);
     if(nextState.collection.length > 0){
-      if (this.selected.id === uid){
-        nextState.selected = this.Person(nextState.collection[0]);
+      if (this.selectedPerson.id === uid){
+        nextState.selectedPerson = this.Person(nextState.collection[0]);
       } else {
-        nextState.selected = this.Person(this.selected);
+        nextState.selectedPerson = this.Person(this.selectedPerson);
       }
     }
     this.setState(nextState);
