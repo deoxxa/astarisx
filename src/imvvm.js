@@ -47,16 +47,17 @@ var IMVVMClass = {
     Constructor.prototype.classType = classType;
 
     ConvenienceConstructor.getDescriptor = function(){
-      var descriptor = {};
-      var proto = this.prototype;
-      var viewModels = {};
-      var autoFreeze = [];
+      var descriptor = {},
+        proto = this.prototype,
+        viewModels = {},
+        autoFreeze = [],
+        key;
 
       if('__processedObject__' in this.originalSpec){
         return this.originalSpec.__processedObject__;
       }
 
-      for(var key in this.originalSpec){
+      for(key in this.originalSpec){
         if(this.originalSpec.hasOwnProperty(key)){
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
             //assume it is a descriptor
@@ -89,23 +90,6 @@ var IMVVMClass = {
         }
       }
 
-      // if('linkTo' in proto){
-      //   for(var link in proto.linkTo){
-      //     if(proto.linkTo.hasOwnProperty(link)){
-      //       (function(){
-      //         descriptor[proto.linkTo[link]] = (function(){
-      //             var key = proto.linkTo[link];
-      //             return {
-      //             get: function(){
-      //               return this.state[key]
-      //             }
-      //           }
-      //         })();
-      //       })();
-      //     }
-      //   }
-      // }
-
       this.originalSpec.__processedObject__ = { 
         descriptor: descriptor,
         proto: proto,
@@ -115,22 +99,6 @@ var IMVVMClass = {
 
       return this.originalSpec.__processedObject__;
     };
-
-/*    // Reduce time spent doing lookups by setting these on the prototype.
-    for (var methodName in IMVVMInterface) {
-      if (!Constructor.prototype[methodName]) {
-        Constructor.prototype[methodName] = null;
-      }
-    }
-*/
-
-    /*
-    if (__DEV__) {
-      // In DEV the convenience constructor generates a proxy to another
-      // instance around it to warn about access to properties on the
-      // descriptor.
-      DescriptorConstructor = createDescriptorProxy(Constructor);
-    }*/
 
     return ConvenienceConstructor;
   },

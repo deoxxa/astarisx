@@ -15,8 +15,9 @@ var IMVVMModel = {
 
       var dataContext = function(nextState, initialize) {
         
-        var freezeFields = desc.freezeFields;
-        var model = Object.create(desc.proto, desc.descriptor);
+        var freezeFields = desc.freezeFields,
+          fld,
+          model = Object.create(desc.proto, desc.descriptor);
 
         if(nextState === void(0)){
           initialize = true;
@@ -44,8 +45,8 @@ var IMVVMModel = {
         });
 
         //freeze arrays and model instances
-        for (var i = freezeFields.length - 1; i >= 0; i--) {
-            Object.freeze(model[freezeFields[i].fieldName]);
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+            Object.freeze(model[freezeFields[fld].fieldName]);
         };
         return Object.freeze(model);
       };

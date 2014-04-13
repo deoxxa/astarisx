@@ -15,17 +15,30 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		dataContexts = {},
 		domain,
 		links = {},
-		watchedDataContexts = {};
-
-
-	var transState = {};
-	var processedState = {};
+		watchedDataContexts = {},
+		dataContext,
+		transientState = {},
+		processedState = {},
+		watchedState,
+		watchedItem,
+		watchedProp,
+		watchedDataContext,
+		link;
 
 	var appStateChangedHandler = function(caller, newState, newAppState, callback) {
 		
 		var nextState = {},
 			prevState = {},
-			newStateKeys;
+			newStateKeys,
+			keyIdx,
+			transientStateKeysLen,
+			dataContext,
+			linkedDataContext,
+			processedStateKeys = [],
+			processedStateKeysLen,
+			watchedField,
+			subscribers,
+			subscriber;
 
 		if(typeof newAppState === 'function'){
 			callback = newAppState;
@@ -49,15 +62,17 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			//the data is rolled back but viewModels are not recreated and therefore the setState functions
 			//are associated with outdated viewModels and returns unexpected output. So to realign the ViewModels
 			//with setState we recreate them.
-			for(var dc in domain){
-				nextState[dc] = new dataContexts[dc](nextState);
+			for(dataContext in domain){
+				nextState[dataContext] = new dataContexts[dataContext](nextState);
 			}
 
-			for(var dc2 in domain){
-				if(domain.hasOwnProperty(dc2)){
-					for(var loo in links[dc2]){
-						if(links[dc2].hasOwnProperty(loo)){
-							nextState[dc2].state[links[dc2][loo]] = (loo in domain) ? extend(nextState[loo].state) : nextState[loo];
+			for(dataContext in domain){
+				if(domain.hasOwnProperty(dataContext)){
+					for(linkedDataContext in links[dataContext]){
+						if(links[dataContext].hasOwnProperty(linkedDataContext)){
+							nextState[dataContext].state[links[dataContext][linkedDataContext]] =
+								(linkedDataContext in domain) ? extend(nextState[linkedDataContext].state) :
+									nextState[linkedDataContext];
 						}
 					}
 				}
@@ -71,9 +86,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					nextState[caller] = extend(newState);
 				}
 			}
-			transState = extend(nextState, transState, newAppState);
-			transStateKeys = Object.keys(transState);
-			if(transStateKeys.length === 0){
+			transientState = extend(nextState, transientState, newAppState);
+			transientStateKeys = Object.keys(transientState);
+			if(transientStateKeys.length === 0){
 				return;
 			}
 
@@ -81,15 +96,15 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				callback();
 				return;
 			}
-			var tskIdx;
-			var transStateKeysLen = transStateKeys.length - 1;
 			
-			for (tskIdx = transStateKeysLen; tskIdx >= 0; tskIdx--) {
-				if(transStateKeys[tskIdx] in domain){
-					nextState[transStateKeys[tskIdx]] = extend(appState[transStateKeys[tskIdx]], transState[transStateKeys[tskIdx]]);
-					nextState[transStateKeys[tskIdx]] = new dataContexts[transStateKeys[tskIdx]](nextState);
+			transientStateKeysLen = transientStateKeys.length - 1;
+			
+			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
+				if(transientStateKeys[keyIdx] in domain){
+					nextState[transientStateKeys[keyIdx]] = extend(appState[transientStateKeys[keyIdx]], transientState[transientStateKeys[keyIdx]]);
+					nextState[transientStateKeys[keyIdx]] = new dataContexts[transientStateKeys[keyIdx]](nextState);
 				} else {
-					nextState[transStateKeys[tskIdx]] = transState[transStateKeys[tskIdx]];
+					nextState[transientStateKeys[keyIdx]] = transientState[transientStateKeys[keyIdx]];
 				}
 			};
 
@@ -98,18 +113,18 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			//Triggers
 			nextState = extend(appState, processedState);
 
-			transState = {};
-			for (tskIdx = transStateKeysLen; tskIdx >= 0; tskIdx--) {
-				if(transStateKeys[tskIdx] in watchedDataContexts){
-					for(var watchedField in watchedDataContexts[transStateKeys[tskIdx]]){
-						if(watchedDataContexts[transStateKeys[tskIdx]].hasOwnProperty(watchedField)){
+			transientState = {};
+			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
+				if(transientStateKeys[keyIdx] in watchedDataContexts){
+					for(watchedField in watchedDataContexts[transientStateKeys[keyIdx]]){
+						if(watchedDataContexts[transientStateKeys[keyIdx]].hasOwnProperty(watchedField)){
 							if(newStateKeys.indexOf(watchedField) !== -1){
-								var subscribers = watchedDataContexts[transStateKeys[tskIdx]][watchedField];
-								for(var sub in subscribers){
-									if(subscribers.hasOwnProperty(sub)){
-										transState = extend(transState, subscribers[sub].call(appState[sub],
-											nextState[transStateKeys[tskIdx]][watchedField],
-											appState[transStateKeys[tskIdx]][watchedField], watchedField, transStateKeys[tskIdx]));
+								subscribers = watchedDataContexts[transientStateKeys[keyIdx]][watchedField];
+								for(subscriber in subscribers){
+									if(subscribers.hasOwnProperty(subscriber)){
+										transientState = extend(transientState, subscribers[subscriber].call(appState[subscriber],
+											nextState[transientStateKeys[keyIdx]][watchedField],
+											appState[transientStateKeys[keyIdx]][watchedField], watchedField, transientStateKeys[keyIdx]));
 									}
 								}
 							}
@@ -117,41 +132,45 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					}
 				}
 			};
-			if(!!Object.keys(transState).length){
-				appStateChangedHandler(void(0), {}, transState);
+			if(!!Object.keys(transientState).length){
+				appStateChangedHandler(void(0), {}, transientState);
 				return;
 			}
 			//Link Phase
-			var processedStateKeys = Object.keys(processedState);
-			var processedStateKeysLen = processedStateKeys.length - 1;
-			var tempLinks;
-			var lo, lo2;
-			for (tskIdx = processedStateKeysLen; tskIdx >= 0; tskIdx--) {
+			processedStateKeys = Object.keys(processedState);
+			processedStateKeysLen = processedStateKeys.length - 1;
+			for (keyIdx = processedStateKeysLen; keyIdx >= 0; keyIdx--) {
 				if(caller === appNamespace){
-					if(processedStateKeys[tskIdx] in links[appNamespace]){
-						for(lo in links[appNamespace][processedStateKeys[tskIdx]]){
-							if(links[appNamespace][processedStateKeys[tskIdx]].hasOwnProperty(lo)){
-								nextState[lo].state[links[appNamespace][processedStateKeys[tskIdx]][lo]] = nextState[processedStateKeys[tskIdx]];
+					if(processedStateKeys[keyIdx] in links[appNamespace]){
+						for(dataContext in links[appNamespace][processedStateKeys[keyIdx]]){
+							if(links[appNamespace][processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
+								nextState[dataContext].state[links[appNamespace][processedStateKeys[keyIdx]][dataContext]] = nextState[processedStateKeys[keyIdx]];
 							}
-							if(lo in links){
-								for(lo2 in links[lo]){
-									if(links[lo].hasOwnProperty(lo2)){
-										nextState[lo].state[links[lo][lo2]] = (lo2 in domain) ? extend(nextState[lo2].state) : nextState[lo2];
+							if(dataContext in links){
+								for(dataContext2 in links[dataContext]){
+									if(links[dataContext].hasOwnProperty(dataContext2)){
+										nextState[dataContext].state[links[dataContext][dataContext2]] =
+											(dataContext2 in domain) ? extend(nextState[dataContext2].state) :
+												nextState[dataContext2];
 									}
 								}
 							}
 						}
 					}
 				} else {
-					if(processedStateKeys[tskIdx] in links){
-						for(lo in links[processedStateKeys[tskIdx]]){
-							if(links[processedStateKeys[tskIdx]].hasOwnProperty(lo)){
-								nextState[processedStateKeys[tskIdx]].state[links[processedStateKeys[tskIdx]][lo]] = (lo in domain) ? extend(nextState[lo].state) : nextState[lo];
+					if(processedStateKeys[keyIdx] in links){
+						for(dataContext in links[processedStateKeys[keyIdx]]){
+							if(links[processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
+								nextState[processedStateKeys[keyIdx]].state[links[processedStateKeys[keyIdx]][dataContext]] =
+									(dataContext in domain) ? extend(nextState[dataContext].state) :
+										nextState[dataContext];
 							}
-							if(lo in links){
-								for(lo2 in links[lo]){
-									if(links[lo].hasOwnProperty(lo2)){
-										nextState[lo].state[links[lo][lo2]] = (lo2 in domain) ? extend(nextState[lo2].state) : nextState[lo2];
+							if(dataContext in links){
+								for(dataContext2 in links[dataContext]){
+									if(links[dataContext].hasOwnProperty(dataContext2)){
+										nextState[dataContext].state[links[dataContext][dataContext2]] =
+											(dataContext2 in domain) ? extend(nextState[dataContext2].state) :
+												nextState[dataContext2];
 									}
 								}
 							}
@@ -175,7 +194,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//All the work is done! -> Notify the View
 		stateChangedHandler(appState);
 		
-		transState = {};
+		transientState = {};
 		processedState = {};
 		
 		//Provided for the main app to return to the View
@@ -190,12 +209,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	domain = appState.getDomainDataContext();
 
-	var watchedState;
-	var watchedItem;
-	var watchedProp;
-	var tmp;
-
-	for(var dataContext in domain){
+	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangedHandler.bind(this, dataContext)).bind(this, dataContext);
       appState.state[dataContext] = new dataContexts[dataContext](appState.state);
@@ -225,13 +239,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	      			for(watchedProp in watchedState[watchedItem].fields){
 	      				if(watchedState[watchedItem].fields.hasOwnProperty(watchedProp)){
 			      			if(watchedItem in domain){
-										tmp = {};
+										watchedDataContext = {};
 										if(!(watchedItem in watchedDataContexts)){
 											watchedDataContexts[watchedItem] = {};
 										}
-										tmp[watchedProp] = {};
-										tmp[watchedProp][dataContext] = watchedState[watchedItem].fields[watchedProp];
-										watchedDataContexts[watchedItem] = tmp;
+										watchedDataContext[watchedProp] = {};
+										watchedDataContext[watchedProp][dataContext] = watchedState[watchedItem].fields[watchedProp];
+										watchedDataContexts[watchedItem] = watchedDataContext;
 									}
 	      				}
 	      			}
@@ -242,11 +256,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		}
 	}
 
-	for(var dataContext in domain){
+	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
-			for(var k in links[dataContext]){
-        if(links[dataContext].hasOwnProperty(k)){
-          appState[dataContext].state[links[dataContext][k]] = (k in domain) ? extend(appState[k].state): appState[k];
+			for(link in links[dataContext]){
+        if(links[dataContext].hasOwnProperty(link)){
+          appState[dataContext].state[links[dataContext][link]] = (link in domain) ? extend(appState[link].state): appState[link];
         }
       }
 		}

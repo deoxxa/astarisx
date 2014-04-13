@@ -22,17 +22,30 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		dataContexts = {},
 		domain,
 		links = {},
-		watchedDataContexts = {};
-
-
-	var transState = {};
-	var processedState = {};
+		watchedDataContexts = {},
+		dataContext,
+		transientState = {},
+		processedState = {},
+		watchedState,
+		watchedItem,
+		watchedProp,
+		watchedDataContext,
+		link;
 
 	var appStateChangedHandler = function(caller, newState, newAppState, callback) {
 		
 		var nextState = {},
 			prevState = {},
-			newStateKeys;
+			newStateKeys,
+			keyIdx,
+			transientStateKeysLen,
+			dataContext,
+			linkedDataContext,
+			processedStateKeys = [],
+			processedStateKeysLen,
+			watchedField,
+			subscribers,
+			subscriber;
 
 		if(typeof newAppState === 'function'){
 			callback = newAppState;
@@ -56,15 +69,17 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			//the data is rolled back but viewModels are not recreated and therefore the setState functions
 			//are associated with outdated viewModels and returns unexpected output. So to realign the ViewModels
 			//with setState we recreate them.
-			for(var dc in domain){
-				nextState[dc] = new dataContexts[dc](nextState);
+			for(dataContext in domain){
+				nextState[dataContext] = new dataContexts[dataContext](nextState);
 			}
 
-			for(var dc2 in domain){
-				if(domain.hasOwnProperty(dc2)){
-					for(var loo in links[dc2]){
-						if(links[dc2].hasOwnProperty(loo)){
-							nextState[dc2].state[links[dc2][loo]] = (loo in domain) ? extend(nextState[loo].state) : nextState[loo];
+			for(dataContext in domain){
+				if(domain.hasOwnProperty(dataContext)){
+					for(linkedDataContext in links[dataContext]){
+						if(links[dataContext].hasOwnProperty(linkedDataContext)){
+							nextState[dataContext].state[links[dataContext][linkedDataContext]] =
+								(linkedDataContext in domain) ? extend(nextState[linkedDataContext].state) :
+									nextState[linkedDataContext];
 						}
 					}
 				}
@@ -78,9 +93,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					nextState[caller] = extend(newState);
 				}
 			}
-			transState = extend(nextState, transState, newAppState);
-			transStateKeys = Object.keys(transState);
-			if(transStateKeys.length === 0){
+			transientState = extend(nextState, transientState, newAppState);
+			transientStateKeys = Object.keys(transientState);
+			if(transientStateKeys.length === 0){
 				return;
 			}
 
@@ -88,15 +103,15 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				callback();
 				return;
 			}
-			var tskIdx;
-			var transStateKeysLen = transStateKeys.length - 1;
 			
-			for (tskIdx = transStateKeysLen; tskIdx >= 0; tskIdx--) {
-				if(transStateKeys[tskIdx] in domain){
-					nextState[transStateKeys[tskIdx]] = extend(appState[transStateKeys[tskIdx]], transState[transStateKeys[tskIdx]]);
-					nextState[transStateKeys[tskIdx]] = new dataContexts[transStateKeys[tskIdx]](nextState);
+			transientStateKeysLen = transientStateKeys.length - 1;
+			
+			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
+				if(transientStateKeys[keyIdx] in domain){
+					nextState[transientStateKeys[keyIdx]] = extend(appState[transientStateKeys[keyIdx]], transientState[transientStateKeys[keyIdx]]);
+					nextState[transientStateKeys[keyIdx]] = new dataContexts[transientStateKeys[keyIdx]](nextState);
 				} else {
-					nextState[transStateKeys[tskIdx]] = transState[transStateKeys[tskIdx]];
+					nextState[transientStateKeys[keyIdx]] = transientState[transientStateKeys[keyIdx]];
 				}
 			};
 
@@ -105,18 +120,18 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			//Triggers
 			nextState = extend(appState, processedState);
 
-			transState = {};
-			for (tskIdx = transStateKeysLen; tskIdx >= 0; tskIdx--) {
-				if(transStateKeys[tskIdx] in watchedDataContexts){
-					for(var watchedField in watchedDataContexts[transStateKeys[tskIdx]]){
-						if(watchedDataContexts[transStateKeys[tskIdx]].hasOwnProperty(watchedField)){
+			transientState = {};
+			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
+				if(transientStateKeys[keyIdx] in watchedDataContexts){
+					for(watchedField in watchedDataContexts[transientStateKeys[keyIdx]]){
+						if(watchedDataContexts[transientStateKeys[keyIdx]].hasOwnProperty(watchedField)){
 							if(newStateKeys.indexOf(watchedField) !== -1){
-								var subscribers = watchedDataContexts[transStateKeys[tskIdx]][watchedField];
-								for(var sub in subscribers){
-									if(subscribers.hasOwnProperty(sub)){
-										transState = extend(transState, subscribers[sub].call(appState[sub],
-											nextState[transStateKeys[tskIdx]][watchedField],
-											appState[transStateKeys[tskIdx]][watchedField], watchedField, transStateKeys[tskIdx]));
+								subscribers = watchedDataContexts[transientStateKeys[keyIdx]][watchedField];
+								for(subscriber in subscribers){
+									if(subscribers.hasOwnProperty(subscriber)){
+										transientState = extend(transientState, subscribers[subscriber].call(appState[subscriber],
+											nextState[transientStateKeys[keyIdx]][watchedField],
+											appState[transientStateKeys[keyIdx]][watchedField], watchedField, transientStateKeys[keyIdx]));
 									}
 								}
 							}
@@ -124,41 +139,45 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					}
 				}
 			};
-			if(!!Object.keys(transState).length){
-				appStateChangedHandler(void(0), {}, transState);
+			if(!!Object.keys(transientState).length){
+				appStateChangedHandler(void(0), {}, transientState);
 				return;
 			}
 			//Link Phase
-			var processedStateKeys = Object.keys(processedState);
-			var processedStateKeysLen = processedStateKeys.length - 1;
-			var tempLinks;
-			var lo, lo2;
-			for (tskIdx = processedStateKeysLen; tskIdx >= 0; tskIdx--) {
+			processedStateKeys = Object.keys(processedState);
+			processedStateKeysLen = processedStateKeys.length - 1;
+			for (keyIdx = processedStateKeysLen; keyIdx >= 0; keyIdx--) {
 				if(caller === appNamespace){
-					if(processedStateKeys[tskIdx] in links[appNamespace]){
-						for(lo in links[appNamespace][processedStateKeys[tskIdx]]){
-							if(links[appNamespace][processedStateKeys[tskIdx]].hasOwnProperty(lo)){
-								nextState[lo].state[links[appNamespace][processedStateKeys[tskIdx]][lo]] = nextState[processedStateKeys[tskIdx]];
+					if(processedStateKeys[keyIdx] in links[appNamespace]){
+						for(dataContext in links[appNamespace][processedStateKeys[keyIdx]]){
+							if(links[appNamespace][processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
+								nextState[dataContext].state[links[appNamespace][processedStateKeys[keyIdx]][dataContext]] = nextState[processedStateKeys[keyIdx]];
 							}
-							if(lo in links){
-								for(lo2 in links[lo]){
-									if(links[lo].hasOwnProperty(lo2)){
-										nextState[lo].state[links[lo][lo2]] = (lo2 in domain) ? extend(nextState[lo2].state) : nextState[lo2];
+							if(dataContext in links){
+								for(dataContext2 in links[dataContext]){
+									if(links[dataContext].hasOwnProperty(dataContext2)){
+										nextState[dataContext].state[links[dataContext][dataContext2]] =
+											(dataContext2 in domain) ? extend(nextState[dataContext2].state) :
+												nextState[dataContext2];
 									}
 								}
 							}
 						}
 					}
 				} else {
-					if(processedStateKeys[tskIdx] in links){
-						for(lo in links[processedStateKeys[tskIdx]]){
-							if(links[processedStateKeys[tskIdx]].hasOwnProperty(lo)){
-								nextState[processedStateKeys[tskIdx]].state[links[processedStateKeys[tskIdx]][lo]] = (lo in domain) ? extend(nextState[lo].state) : nextState[lo];
+					if(processedStateKeys[keyIdx] in links){
+						for(dataContext in links[processedStateKeys[keyIdx]]){
+							if(links[processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
+								nextState[processedStateKeys[keyIdx]].state[links[processedStateKeys[keyIdx]][dataContext]] =
+									(dataContext in domain) ? extend(nextState[dataContext].state) :
+										nextState[dataContext];
 							}
-							if(lo in links){
-								for(lo2 in links[lo]){
-									if(links[lo].hasOwnProperty(lo2)){
-										nextState[lo].state[links[lo][lo2]] = (lo2 in domain) ? extend(nextState[lo2].state) : nextState[lo2];
+							if(dataContext in links){
+								for(dataContext2 in links[dataContext]){
+									if(links[dataContext].hasOwnProperty(dataContext2)){
+										nextState[dataContext].state[links[dataContext][dataContext2]] =
+											(dataContext2 in domain) ? extend(nextState[dataContext2].state) :
+												nextState[dataContext2];
 									}
 								}
 							}
@@ -182,7 +201,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//All the work is done! -> Notify the View
 		stateChangedHandler(appState);
 		
-		transState = {};
+		transientState = {};
 		processedState = {};
 		
 		//Provided for the main app to return to the View
@@ -197,12 +216,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	domain = appState.getDomainDataContext();
 
-	var watchedState;
-	var watchedItem;
-	var watchedProp;
-	var tmp;
-
-	for(var dataContext in domain){
+	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangedHandler.bind(this, dataContext)).bind(this, dataContext);
       appState.state[dataContext] = new dataContexts[dataContext](appState.state);
@@ -232,13 +246,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	      			for(watchedProp in watchedState[watchedItem].fields){
 	      				if(watchedState[watchedItem].fields.hasOwnProperty(watchedProp)){
 			      			if(watchedItem in domain){
-										tmp = {};
+										watchedDataContext = {};
 										if(!(watchedItem in watchedDataContexts)){
 											watchedDataContexts[watchedItem] = {};
 										}
-										tmp[watchedProp] = {};
-										tmp[watchedProp][dataContext] = watchedState[watchedItem].fields[watchedProp];
-										watchedDataContexts[watchedItem] = tmp;
+										watchedDataContext[watchedProp] = {};
+										watchedDataContext[watchedProp][dataContext] = watchedState[watchedItem].fields[watchedProp];
+										watchedDataContexts[watchedItem] = watchedDataContext;
 									}
 	      				}
 	      			}
@@ -249,11 +263,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		}
 	}
 
-	for(var dataContext in domain){
+	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
-			for(var k in links[dataContext]){
-        if(links[dataContext].hasOwnProperty(k)){
-          appState[dataContext].state[links[dataContext][k]] = (k in domain) ? extend(appState[k].state): appState[k];
+			for(link in links[dataContext]){
+        if(links[dataContext].hasOwnProperty(link)){
+          appState[dataContext].state[links[dataContext][link]] = (link in domain) ? extend(appState[link].state): appState[link];
         }
       }
 		}
@@ -314,16 +328,17 @@ var IMVVMClass = {
     Constructor.prototype.classType = classType;
 
     ConvenienceConstructor.getDescriptor = function(){
-      var descriptor = {};
-      var proto = this.prototype;
-      var viewModels = {};
-      var autoFreeze = [];
+      var descriptor = {},
+        proto = this.prototype,
+        viewModels = {},
+        autoFreeze = [],
+        key;
 
       if('__processedObject__' in this.originalSpec){
         return this.originalSpec.__processedObject__;
       }
 
-      for(var key in this.originalSpec){
+      for(key in this.originalSpec){
         if(this.originalSpec.hasOwnProperty(key)){
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
             //assume it is a descriptor
@@ -356,23 +371,6 @@ var IMVVMClass = {
         }
       }
 
-      // if('linkTo' in proto){
-      //   for(var link in proto.linkTo){
-      //     if(proto.linkTo.hasOwnProperty(link)){
-      //       (function(){
-      //         descriptor[proto.linkTo[link]] = (function(){
-      //             var key = proto.linkTo[link];
-      //             return {
-      //             get: function(){
-      //               return this.state[key]
-      //             }
-      //           }
-      //         })();
-      //       })();
-      //     }
-      //   }
-      // }
-
       this.originalSpec.__processedObject__ = { 
         descriptor: descriptor,
         proto: proto,
@@ -382,22 +380,6 @@ var IMVVMClass = {
 
       return this.originalSpec.__processedObject__;
     };
-
-/*    // Reduce time spent doing lookups by setting these on the prototype.
-    for (var methodName in IMVVMInterface) {
-      if (!Constructor.prototype[methodName]) {
-        Constructor.prototype[methodName] = null;
-      }
-    }
-*/
-
-    /*
-    if (__DEV__) {
-      // In DEV the convenience constructor generates a proxy to another
-      // instance around it to warn about access to properties on the
-      // descriptor.
-      DescriptorConstructor = createDescriptorProxy(Constructor);
-    }*/
 
     return ConvenienceConstructor;
   },
@@ -427,31 +409,9 @@ var IMVVMDomainModel = {
 
       var dataContext = function(nextState, prevState, enableUndo, initialize) {
         
-        var freezeFields = desc.freezeFields;
-        var domainModel = Object.create(desc.proto, desc.descriptor);
-        
-        if(nextState === void(0) && ('getInitialState' in domainModel)){
-          //Add state prop so that it can be referenced from within getInitialState
-          nextState = domainModel.getInitialState.call(domainModel);
-        } else if('state' in nextState){
-          delete nextState.state;
-        
-        //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
-        Object.defineProperty(domainModel, 'state', {
-          configurable: true,
-          enumerable: false,
-          writable: true,
-          value: nextState
-        });
-        nextState = extend(nextState, domainModel);
-      }
-       //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
-        Object.defineProperty(domainModel, 'state', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: nextState
-        });
+        var freezeFields = desc.freezeFields,
+          domainModel = Object.create(desc.proto, desc.descriptor),
+          fld;
         
         if(!!enableUndo && !!prevState){
           Object.defineProperty(domainModel, 'previousState', {
@@ -462,8 +422,31 @@ var IMVVMDomainModel = {
           });
         }
 
+        if(nextState === void(0) && ('getInitialState' in domainModel)){
+          //Add state prop so that it can be referenced from within getInitialState
+          nextState = domainModel.getInitialState.call(domainModel);
+        } else if('state' in nextState){
+          delete nextState.state;
+        
+          //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
+          Object.defineProperty(domainModel, 'state', {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: nextState
+          });
+          nextState = extend(nextState, domainModel);
+        }
+       //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
+        Object.defineProperty(domainModel, 'state', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: nextState
+        });
+        
         //freeze arrays and domainModel instances
-        for (var fld = freezeFields.length - 1; fld >= 0; fld--) {
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
             Object.freeze(domainModel[freezeFields[fld].fieldName]);
         };
 
@@ -495,8 +478,9 @@ var IMVVMModel = {
 
       var dataContext = function(nextState, initialize) {
         
-        var freezeFields = desc.freezeFields;
-        var model = Object.create(desc.proto, desc.descriptor);
+        var freezeFields = desc.freezeFields,
+          fld,
+          model = Object.create(desc.proto, desc.descriptor);
 
         if(nextState === void(0)){
           initialize = true;
@@ -524,8 +508,8 @@ var IMVVMModel = {
         });
 
         //freeze arrays and model instances
-        for (var i = freezeFields.length - 1; i >= 0; i--) {
-            Object.freeze(model[freezeFields[i].fieldName]);
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+            Object.freeze(model[freezeFields[fld].fieldName]);
         };
         return Object.freeze(model);
       };
@@ -552,10 +536,11 @@ var IMVVMViewModel = {
       var dataContext = function(VMName, appState) {
 
         //nextState has already been extended with prevState in core
-        var nextState = {};
-        var freezeFields = desc.freezeFields;
-        var viewModel = Object.create(desc.proto, desc.descriptor);
-        var tempDesc,
+        var nextState = {},
+          freezeFields = desc.freezeFields,
+          fld,
+          viewModel = Object.create(desc.proto, desc.descriptor),
+          tempDesc,
           tempModel;
 
         Object.defineProperty(viewModel, 'state', {
@@ -581,28 +566,29 @@ var IMVVMViewModel = {
         });
 
         //freeze arrays and viewModel instances
-        for (var i = freezeFields.length - 1; i >= 0; i--) {
-          if(freezeFields[i].kind === 'instance'){
-              if(viewModel[freezeFields[i].fieldName]){
-                tempDesc = viewModel[freezeFields[i].fieldName].__getDescriptor();
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+          if(freezeFields[fld].kind === 'instance'){
+              if(viewModel[freezeFields[fld].fieldName]){
+                tempDesc = viewModel[freezeFields[fld].fieldName].__getDescriptor();
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
 
                 Object.defineProperty(tempModel, 'state', {
                   configurable: false,
                   enumerable: false,
                   writable: false,
-                  value: viewModel[freezeFields[i].fieldName].state
+                  value: viewModel[freezeFields[fld].fieldName].state
                 });
 
                 tempModel.__proto__.setState = function(someState, callback){ //callback may be useful for DB updates
-                    return tempDesc.stateChangedHandler.call(this, extend(tempModel.state, someState), tempModel.state, callback);
+                    return tempDesc.stateChangedHandler.call(this,
+                      extend(tempModel.state, someState), tempModel.state, callback);
                 }.bind(viewModel);
 
-                Object.freeze(viewModel[freezeFields[i].fieldName]);
+                Object.freeze(viewModel[freezeFields[fld].fieldName]);
               }
 
           } else {
-            Object.freeze(viewModel[freezeFields[i].fieldName]);
+            Object.freeze(viewModel[freezeFields[fld].fieldName]);
           }
         };
         
