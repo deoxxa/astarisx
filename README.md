@@ -452,6 +452,7 @@ React.renderComponent(<ApplicationView domainModel={DomainViewModel}/>,
 ```
 
 ***A word on how to use the exposed Model -> selectedPerson***
+
 As mentioned above, the `PersonsViewModel` has a `persons` data context. This data context exposes a `Person` model instance via the `selectedPerson` property.
 
 To update the `Person` instance, simply assign values to the associated properties on the `selectedPerson` property.
@@ -573,9 +574,11 @@ Transition Data Context to the next state.
 *parameters*
 
 __nextState__
+
 Object containing the next state values.
 
 __nextDomainState__ ***n.b. This parameter is only available in ViewModels***
+
 Object containing the next state values which are to be passed to the Domain Data Context.
 
 ___example___
@@ -586,7 +589,9 @@ ___example___
   busy: false
 }
 ```
+
 __callback__
+
 Used to do sequential setState calls.
 
 _Available in:_ DomainViewModel, ViewModel, Model
@@ -597,9 +602,11 @@ Creates a shallow copy of currentState. Adds/replaces properties with properties
 *parameters*
 
 __currentState__
+
 Old state object.
 
 __nextState__
+
 Next state objects.
 
 _Available in:_ DomainViewModel, ViewModel, Model
@@ -670,15 +677,19 @@ ___
 *arguments*
 
 __nextState__
+
 Next state of the watched field.
 
 __previousState__
+
 Previous state of the watched field.
 
 __field__
+
 Watched field name.
 
 __dataContext__
+
 Watched Data Context name.
 
 ___example___
@@ -699,9 +710,11 @@ ___
 *arguments*
 
 __nextState__
+
 Next state of the model.
 
 __previousState__
+
 Previous state of the model.
 
 __callback__
@@ -741,12 +754,15 @@ __Usage example__
 
 *parameters*
 __stateChangedHandler__
+
 State changed handler which is triggered whenever setState is called from within the model. 
 
 __nextState__
+
 Object containing the next state values for the model.
 
 __initialize__
+
 Boolean value indicating the model instance should be initialized. (Calls getInitialState())
 
 _Available in:_ ViewModel, Model
@@ -774,18 +790,22 @@ _Available in:_ DomainViewModel, ViewModel, Model
 
 ######kind: ['instance' || 'array' || 'pseudo']
 **instance**
+
 Specifies that the getter returns a model instance.
 
 **array**
+
 Specifies that the field holds an array.
 
 **pseudo**
+
 Specifies that the value for this field is obtained from other properties.
 
 _Available in:_ DomainViewModel, ViewModel, Model
 
 ######viewModel: ViewModel Class
 **viewModel**
+
 Identifies the ViewModel to be used for the defined data context.
 
 _Available in:_ DomainViewModel
