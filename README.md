@@ -481,20 +481,17 @@ ___
 Provides watched items to domain. Returns a WatchedState object definition.
 
 ######Watching ViewModel state
-```
-[dataContext]:{
+[dataContext]\:{
   [alias]: [preferred Name],
   [fields]: {
     [dataContext field]: ViewModelStateChangedHandler
   }
 }
-```
+
 ######Watching DomainViewModel state
-```
-[field]: {
+[field]\: {
   [alias]: [preferred Name]
 }
-```
 
 ___example___
 ```javascript
