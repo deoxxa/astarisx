@@ -427,7 +427,7 @@ var ApplicationView = React.createClass({
 });
 ```
 
-The 'domainDataContext' has all the properties that were specified in the DomainViewModel. So this 'domainDataContext' will have the following properties:
+The `domainDataContext` has all the properties that were specified in the DomainViewModel. So this `domainDataContext` will have the following properties:
 - busy
 - online
 - personCount
