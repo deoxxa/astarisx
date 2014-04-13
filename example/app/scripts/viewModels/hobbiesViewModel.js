@@ -9,7 +9,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
     return {
       'persons': {
         alias: 'personsContext', //optional - if provided then will be added to prototype
-        fields: {
+        fields: { //optional
           'selected': this.onPersonChange
         }
       },
@@ -63,36 +63,51 @@ var HobbiesViewModel = IMVVM.createViewModel({
      return hobby;
     }.bind(this));
 
-    //Need to batch this so that undo works properly
-    this.setState(newState, function(retVal){
-      //console.log(retVal);
+    this.setState(newState, function(){
       this.state.personsContext.selected.hobbies = hobbiesArr;  
     }.bind(this));
-
-    //this.setState(newState, {persons: {selected: {hobbies: hobbiesArr}}});
 
   },
 
   select: function(id){
     for (var i = this.hobbies.length - 1; i >= 0; i--) {
       if ((this.selected === void(0) || this.selected.id !== id) && this.hobbies[i].id === id){
-        //this.setState({selected: this.Hobby(this.hobbies[i])}, {busy: true});
-        this.setState({selected: this.Hobby(this.hobbies[i])}, function(){
-          this.setState(void(0), {busy: true});
-        }.bind(this));
+        
+        this.setState({selected: this.Hobby(this.hobbies[i])}, {busy: true});
+        
+        /*
+          //OR use a callback
+          this.setState({selected: this.Hobby(this.hobbies[i])}, function(){
+            this.setState(void(0), {busy: true});
+          }.bind(this));
+        */
+
         break;
       }
     };
   },
   
   addHobby: function(value){
-    this.state.personsContext.selected.addHobby({id:'99',name:value});
+    this.state.personsContext.selected.addHobby(this.Hobby({id:this.uuid() ,name:value }, true));
   },
   
   deleteHobby: function(value){
-    console.log('value in vm');
-    console.log(value);
     this.state.personsContext.selected.deleteHobby(value);
   },
 
+  uuid: function () {
+    /*jshint bitwise:false */
+    var i, random;
+    var uuid = '';
+
+    for (i = 0; i < 32; i++) {
+      random = Math.random() * 16 | 0;
+      if (i === 8 || i === 12 || i === 16 || i === 20) {
+        uuid += '-';
+      }
+      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
+        .toString(16);
+    }
+    return uuid;
+  },
 });

@@ -58,8 +58,8 @@ var HobbyListView = React.createClass({
 				<AddControl placeholder="What do you like doing in your spare time?"
 					funcAdd={this.addHobby} />
 				{this.props.appContext.hobbies.busyText}
-				<input key={current ? current.id:-1} className="form-control" type="text" value={current ? current.name : 'no'}
-						    onChange={this.updateName} />
+				<input key={current ? current.id:-1} className="form-control" type="text" value={current ? current.name : ''}
+						    onChange={this.updateName} placeholder="Select hobby to update"/>
 				<div className="list-group">
 				  {list}
 				</div>
