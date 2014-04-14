@@ -9,9 +9,9 @@ React is:
 
 > A Javascript Library for building User Interfaces
 
-To further quote the React website, "people use React as the 'V' in MVC". Well I thought, why not use React as the 'V' in MVVM, and keeping inline with React's philosophy on immutability, lets make it use immutable data. So I created IMVVM.
+To further quote the React website, "lots of people use React as the 'V' in MVC". Well I thought, why not use React as the 'V' in MVVM, and keeping inline with React's philosophy on immutability, lets make it use immutable data. So I created IMVVM.
 
-This is my take on MVVM and immutability using javascript. IMVVM tries to resemble a React application. So it not only feels like your developing in the same environment, but if your coming from React, you should be able to pick IMVVM up quickly.
+This is my take on MVVM and immutability using javascript. IMVVM tries to resemble a React application. So it not only feels like your developing in the same environment, but if your coming from React, you should be able to pick up IMVVM quickly.
 
 Anyway, download it, run the example application and try it out. Maybe avoid production environments for the moment. Be sure to raise issues in the Issues Register as you encounter them and please feel free to create pull requests.
 
