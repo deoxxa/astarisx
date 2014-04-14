@@ -345,7 +345,7 @@ Notice in this instance of the `getWatchedState` function the `persons` object h
 #####selectHobby
 The `selectHobby` function is nothing special. What is different about it is the 'setState' function. ViewModels get an extra parameter, which enables the ViewModel to update state in other data contexts. The second parameter takes a state object, not dissimilar to the state object that is returned from `onPersonChangedHandler`. The second parameter accepts an object that specifies the data context\domain property and associated state.
 
-For instance `this.setState({current: this.Hobby(this.hobbies[i])}, {busy: true});`. The first parameter is the next state for `hobbies` data context, the second parameter specifies that `busy`, in the domain data context shold be changed to `true`. This second parameter also accepts `{person: {selectedPerson: firstName: 'Fred'}}`.
+For instance `this.setState({current: this.Hobby(this.hobbies[i])}, {busy: true});`. The first parameter is the next state for `hobbies` data context, the second parameter specifies that `busy`, in the domain data context shold be changed to `true`. This second parameter also accepts `{persons: {selectedPerson: this.Person(personState)}}`.
 
 Also noted in the comments is that this can be achieved with a callback, ensuring to pass `void(0)` as the first parameter to `setState`.
 

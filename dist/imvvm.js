@@ -536,7 +536,7 @@ var IMVVMViewModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(VMName, appState) {
+      var dataContext = function(VMName, nextAppState) {
 
         //nextState has already been extended with prevState in core
         var nextState = {},
@@ -553,12 +553,12 @@ var IMVVMViewModel = {
           value: nextState
         });
 
-        if(appState[VMName] === void(0)){
+        if(nextAppState[VMName] === void(0)){
           if('getInitialState' in viewModel){
             nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
           }
         } else {
-          nextState = ('state' in appState[VMName] ? appState[VMName].state : appState[VMName]);
+          nextState = ('state' in nextAppState[VMName] ? nextAppState[VMName].state : nextAppState[VMName]);
         }
 
         Object.defineProperty(viewModel, 'state', {
