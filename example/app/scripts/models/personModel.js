@@ -1,5 +1,5 @@
 /*jshint unused: false */
-/* global IMVVM */
+/* global IMVVM, DataService, HobbyModel */
 
 'use strict';
 

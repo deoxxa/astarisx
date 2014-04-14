@@ -8,7 +8,7 @@ var HobbyModel = IMVVM.createModel({
   id: {
     get: function(){
       return this.state.id;
-    }    
+    }
   },
 
   name: {

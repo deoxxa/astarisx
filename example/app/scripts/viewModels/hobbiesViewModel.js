@@ -1,5 +1,5 @@
 /*jshint unused: false */
-/* global IMVVM */
+/* global IMVVM, HobbyModel */
 
 'use strict';
 
@@ -16,7 +16,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
       'busy': {
         alias: 'busy'
       }
-    }
+    };
   },
 
   //Use when this needs change state triggered by others action
@@ -54,18 +54,18 @@ var HobbiesViewModel = IMVVM.createViewModel({
 
   hobbyStateChangedHandler: function(nextState, prevState/*, callback*/){
 
-   var newState = {};
+    var newState = {};
     var hobbiesArr = this.hobbies.map(function(hobby){
       if (hobby.id === nextState.id){
 
         newState.current = this.Hobby(nextState);
         return newState.current;
       }
-     return hobby;
+      return hobby;
     }.bind(this));
 
     this.setState(newState, function(){
-      this.state.personsContext.selectedPerson.hobbies = hobbiesArr;  
+      this.state.personsContext.selectedPerson.hobbies = hobbiesArr;
     }.bind(this));
 
   },
@@ -85,7 +85,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
 
         break;
       }
-    };
+    }
   },
   
   addHobby: function(value){

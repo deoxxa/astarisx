@@ -25,7 +25,7 @@ var PersonsViewModel = IMVVM.createViewModel({
       'online': {
         alias: 'imOnline'
       }
-    }
+    };
   },
 
   imOnline: {
@@ -55,7 +55,7 @@ var PersonsViewModel = IMVVM.createViewModel({
   selectedHobby: {
     kind: 'pseudo',
     get: function() {
-      return this.state.hobbiesContext.current ? this.state.hobbiesContext.current.name: void(0); 
+      return this.state.hobbiesContext.current ? this.state.hobbiesContext.current.name: void(0);
     }
   },
 
@@ -75,7 +75,7 @@ var PersonsViewModel = IMVVM.createViewModel({
         this.setState({ selectedPerson: this.collection[i] });
         break;
       }
-    };
+    }
   },
 
   addPerson: function(value){
