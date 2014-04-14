@@ -280,9 +280,7 @@ _The reason that the kindd decorator is used is because IMVVM does some extra pr
 #####Person
 `Person` is a wrapper around the `PersonModel` constructor. It makes `PersonModel` easier to invoke and acts like a factory of sorts. The parameters passed to `Person` are passed directly to the `PersonModel` constructor, but not before registering the stateChangedHandler `personStateChangedHandler`, to ensure that all state changes in PersonModel and handled approapriately.
 
-#####selectPerson
-#####addPerson
-#####deletePerson
+#####selectPerson, addPerson & deletePerson
 These functions are exposed to the View and enaable tasks to be performed in the ViewModel. However, most interactions will occur via the `selectedPerson` which exposes the model instance to the View.
 
 I've added a snippet of HobbiesViewModel, from the example application to explain a little more about `getWatchedState`.
@@ -441,7 +439,7 @@ The `domainDataContext` has all the properties that were specified in the Domain
   + addPerson
   + deletePerson
 - hobbies (dataContext)
-  + [viewmodel properties and functions...]
+  + [viewModel properties and functions...]
 
 ### Render the View
 
@@ -461,19 +459,19 @@ __FormView example__
 ```javascript
 var FormView = React.createClass({
   updateName: function(e){
-    this.props.appContext.persons.selected.name = e.target.value;
+    this.props.appContext.persons.selectedPerson.name = e.target.value;
   },
   updateGender: function(e){
-    this.props.appContext.persons.selected.gender = e.target.value;
+    this.props.appContext.persons.selectedPerson.gender = e.target.value;
   },
   updateDOB: function(e){
-    this.props.appContext.persons.selected.dob = e.target.value;
+    this.props.appContext.persons.selectedPerson.dob = e.target.value;
   },
   updateDOB: function(e){
-    this.props.appContext.persons.selected.dob = e.target.value;
+    this.props.appContext.persons.selectedPerson.dob = e.target.value;
   },
   render: function() {
-    var current = this.props.appContext.persons.selected;
+    var current = this.props.appContext.persons.selectedPerson;
     return (
       <div key={current.id}>
         <form role="form">
