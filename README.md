@@ -532,8 +532,10 @@ The example application is a good starting place when figuring out how things wo
 
   ```
   $ npm install
+  $ cd app
   $ bower install
   $ bower install imvvm
+  $ cd ..
   $ grunt serve
   ```
 
