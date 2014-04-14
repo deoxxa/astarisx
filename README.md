@@ -737,20 +737,11 @@ _Available in:_ ViewModel
 
 ___
 
-#####ModelInstance Model([function stateChangedHandler])([object nextState, boolean initialize])
-Returns a new model instance. This function is usually wrapped in another function for easier usage. __n.b. This is suggested usage and not part of the API__
-
-__Usage example__
-
-######ModelInstance ModelFactory(object nextState[, boolean initialize:false])
-
-```javascript
-  Person: function(person, init){
-    return new PersonModel(this.personStateChangedHandler)(person, init);
-  },
-```
+#####ModelInstance ModelName([function stateChangedHandler])([object nextState, boolean initialize])
+Returns a new model instance. This function is usually wrapped in another function for easier usage.
 
 *parameters*
+
 __stateChangedHandler__
 
 State changed handler which is triggered whenever setState is called from within the model. 
@@ -765,10 +756,22 @@ Boolean value indicating the model instance should be initialized. (Calls getIni
 
 _Available in:_ ViewModel, Model
 
+__Usage example__
+
+__n.b. This is suggested usage and not part of the API__
+
+######ModelInstance ModelFactory(object nextState[, boolean initialize:false])
+
+```javascript
+  Person: function(person, init){
+    return new PersonModel(this.personStateChangedHandler)(person, init);
+  },
+```
+
 ####Field
 ___
-#####fieldName : [Descriptor](#descriptor)
 
+#####fieldName : [Descriptor](#descriptor)
 _Available in:_ DomainViewModel, ViewModel, Model
 
 ___
