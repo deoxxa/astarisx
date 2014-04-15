@@ -813,7 +813,7 @@ In original data source, key was referenced a `job`, but model will expose it a 
 
 ```javascript
   occupation: {
-    aliasFor: "job",
+    aliasFor: 'job',
     get: function(){
       return this.state.occupation;
     },

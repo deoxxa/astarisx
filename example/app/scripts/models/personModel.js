@@ -73,7 +73,7 @@ var PersonModel = IMVVM.createModel({
   },
 
   occupation: {
-    aliasFor: "job",
+    aliasFor: 'job',
     get: function(){
       return this.state.occupation;
     },
