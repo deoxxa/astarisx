@@ -809,7 +809,8 @@ _Available in:_ DomainViewModel, ViewModel, Model
 Transforms key from original data source to specified field.
 
 __example__
-In original data source, key was referenced a `job`, but model will expose it a `occupation`. This is a one way transformation. If it is required to persist the data as `job`, that will need to be done within the application.
+
+In the original data source, `job` was is property name. However, `aliasFor` will expose `job` as `occupation` to the View. This is a one way transformation. If it is required to persist the data as `job`, that will need to be transformed back within the application.
 
 ```javascript
   occupation: {
