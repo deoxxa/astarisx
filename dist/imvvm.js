@@ -506,7 +506,7 @@ var IMVVMModel = {
 
         nextState = extend(nextState, model);
         
-        if(initialize && ('getInitialState' in model)){
+        if(initialize){
           if(!!nextState){
             for(var aliasFor in desc.aliases){
               if(desc.aliases.hasOwnProperty(aliasFor) && aliasFor in nextState){
@@ -515,7 +515,9 @@ var IMVVMModel = {
               }
             }
           }
-          nextState = extend(nextState, model.getInitialState.call(model));
+          if('getInitialState' in model){
+            nextState = extend(nextState, model.getInitialState.call(model));  
+          }
         }
 
         Object.defineProperty(model, 'state', {
