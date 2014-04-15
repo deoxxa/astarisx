@@ -803,6 +803,28 @@ Specifies that the value for this field is obtained from other properties.
 
 _Available in:_ DomainViewModel, ViewModel, Model
 
+######aliasFor: string originalKey
+**aliasFor**
+
+Transforms key from original data source to specified field.
+
+__example__
+In original data source, key was referenced a `job`, but model will expose it a `occupation`. This is a one way transformation. If it is required to persist the data as `job`, that will need to be done within the application.
+
+```javascript
+  occupation: {
+    aliasFor: "job",
+    get: function(){
+      return this.state.occupation;
+    },
+    set: function(newValue){
+      this.setState({'occupation': newValue });
+    }
+  },
+```
+
+_Available in:_ Model
+
 ######viewModel: ViewModel Class
 **viewModel**
 

@@ -334,6 +334,7 @@ var IMVVMClass = {
         proto = this.prototype,
         viewModels = {},
         autoFreeze = [],
+        aliases = {},
         key;
 
       if('__processedObject__' in this.originalSpec){
@@ -345,6 +346,11 @@ var IMVVMClass = {
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
             //assume it is a descriptor
             this.originalSpec[key].enumerable = true;
+            if('aliasFor' in this.originalSpec[key]){
+              aliases[this.originalSpec[key].aliasFor] = key;
+              delete this.originalSpec[key].aliasFor;
+            }
+
             if('viewModel' in this.originalSpec[key]) {
               viewModels[key] = this.originalSpec[key].viewModel;
               delete this.originalSpec[key].viewModel;
@@ -378,7 +384,8 @@ var IMVVMClass = {
         descriptor: descriptor,
         proto: proto,
         originalSpec: this.originalSpec || {},
-        freezeFields: autoFreeze
+        freezeFields: autoFreeze,
+        aliases: aliases
       };
 
       return this.originalSpec.__processedObject__;
@@ -500,6 +507,12 @@ var IMVVMModel = {
         nextState = extend(nextState, model);
         
         if(initialize && ('getInitialState' in model)){
+          for(var aliasFor in desc.aliases){
+            if(desc.aliases.hasOwnProperty(aliasFor)){
+              nextState[desc.aliases[aliasFor]] = nextState[aliasFor];
+              delete nextState[aliasFor];
+            }
+          }
           nextState = extend(nextState, model.getInitialState.call(model));
         }
 

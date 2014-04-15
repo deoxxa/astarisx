@@ -34,6 +34,12 @@ var IMVVMModel = {
         nextState = extend(nextState, model);
         
         if(initialize && ('getInitialState' in model)){
+          for(var aliasFor in desc.aliases){
+            if(desc.aliases.hasOwnProperty(aliasFor)){
+              nextState[desc.aliases[aliasFor]] = nextState[aliasFor];
+              delete nextState[aliasFor];
+            }
+          }
           nextState = extend(nextState, model.getInitialState.call(model));
         }
 
