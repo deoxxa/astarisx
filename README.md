@@ -139,9 +139,9 @@ var PersonModel = IMVVM.createModel({
 ```
 
 #####getInitialState()
-The `getInitialState` function initializes any fields that require a value on creation. Such values include, default values and calculated fields. This function has access to state that has been supplied during initializtion, and therefore `this` will be able to refer to the state.
+The `getInitialState` function initializes any fields that require a value during initialization. Such values include, default values and calculated fields. This function has access to the state which was passed into the constructor, and is able to reference this state via `this.state.property`.
 #####name
-`name` is a simple field descriptor. It defines a getter and setter. The getter returns state that resides in the state's property of the same name. The setter uses the passed in value to transition to the model to the next state, by passing the value, as an object to the setState function. This will then notify any ViewModels that have registered a stateChangeHandler with this model.
+`name` is a simple field descriptor. It defines a getter and setter. The getter returns state that resides in the state's property of the same name. The setter will transition the model to the next state, when a value is assigned to it. It uses the value and passes it, as an object, to the setState function. This will notify any ViewModels that have registered a stateChangedHandler with this model.
 #####age
 `age` is a calculated field. It is set by setting `dob`. `dob` uses the calculateAge function to set the value of age and passes both the dob and age values to setState. Please note that `age` needed to be initialized in the getInitialState() function.
 
@@ -259,31 +259,31 @@ var PersonsViewModel = IMVVM.createViewModel({
 ```
 #####getInitialState()
 The `getInitialState` function initializes any fields that require a value and
-initialize models to establish the data for the Viewmodel. Unlike Models, the ViewModel does not have access to `state`.
+can initialize models to establish the data for the Viewmodel. Unlike Models, the ViewModel does not have access to `state`.
 #####getWatchedState()
-The `getWatchedState` function establises links between ViewModels. What is happening in this instance, is that we are watching the hobbies data context and refering to it, within this viewModel, with the alias of hobbiesContext. So we are then able to refer to is from teh state object as `this.state.hobbiesContext...`. Enabling us to display fields from other ViewModels and also update thier values.
+The `getWatchedState` function establises links between ViewModels. In the code above, `getWatchedState` is referencing the `hobbies` data context with the alias of hobbiesContext. This enables the ViewModel to refer to `hobbies` as `hobbiesContext` (i.e. `this.state.hobbiesContext...`). Enabling fields to be displayed from other ViewModels and will be automatically update thier values.
 
-We can also reference fields from the DomainViewModel. We simply specify the field name and supply an alias. Then it can be refered to within the state object.
+We can also reference fields from the DomainViewModel. We simply specify the field name and supply an alias. Then it can be referred to from the state object.
 #####imOnline
-The `imOnline` field is referencing the linked DomainModel field `online` with the alias of `imOnline`. It is simply forwarding the online value it recieves from the DomainViewModel to the View and has no influence over its output. It is for this reason that the field descriptor has a `kind` decorator of `pseudo`. Any field that obtains its value from elsewhere, should be flagged with the decorator `kind:'pseudo'`, unless it is an `instance` or `array`.
+The `imOnline` field is referencing the linked DomainModel field `online` with an alias of `imOnline`. It simply forwards the online value it recieves from the DomainViewModel to the View and has no influence over its output. It is for this reason that the field descriptor has a `kind` decorator of `pseudo`. Fields that obtain their value from other sources and have no influence on the output value, should be flagged with the decorator `kind:'pseudo'`, unless it is a calculated field, a `kind:'instance'` field or a `kind:'array'`.
 #####selectedPerson
 `selectedPerson` is another field that has a `kind` decorator. The `selectedPerson` field is of kind `instance`. Which simply means that it will return a model instance.
 
 #####collection
 `collection` has a `kind` decorator of `array`. Yes, you guessed it, because it returns an array.
 
-_The reason that the kindd decorator is used is because IMVVM does some extra processing with these types._ 
+_The reason that the kind decorator is used is because IMVVM does some extra processing with these types._ 
 
 #####personStateChangedHandler
-`personStateChangedHandler` will be invoked anytime `setState` is called within the model that it is registered with. This function processes the change in the ViewModel and notifies the DomainModel so that the DomainModel can transition to the next state.
+`personStateChangedHandler` will be invoked anytime `setState` is called within the model that it is registered to. This function processes changes in the ViewModel and notifies the DomainModel of any changes so that the DomainModel can transition to the next state.
 
 #####Person
-`Person` is a wrapper around the `PersonModel` constructor. It makes `PersonModel` easier to invoke and acts like a factory of sorts. The parameters passed to `Person` are passed directly to the `PersonModel` constructor, but not before registering the stateChangedHandler `personStateChangedHandler`, to ensure that all state changes in PersonModel and handled approapriately.
+`Person` is a wrapper around the `PersonModel` constructor. It makes `PersonModel` easier to invoke and acts like a Model Factory of sorts. The parameters passed to `Person` are passed directly to the `PersonModel` constructor, but not before registering the stateChangedHandler `personStateChangedHandler`, to ensure that all state changes in PersonModel notify interested Models/ViewModels and is handled approapriately.
 
 #####selectPerson, addPerson & deletePerson
-These functions are exposed to the View and enaable tasks to be performed in the ViewModel. However, most interactions will occur via the `selectedPerson` which exposes the model instance to the View.
+These functions are exposed to the View and enable tasks to be performed in the ViewModel. However, the View will also interact with any Models the ViewModel exposes to it. In this instance the ViewModel exposes the PersonModel via the `selectedPerson` property. See [A word on how to update a Model from the View](#awordonhowtoupdateamodelfromtheview)
 
-I've added a snippet of HobbiesViewModel, from the example application to explain a little more about `getWatchedState`.
+I've added a code snippet of HobbiesViewModel, from the example application to help explain a little more about `getWatchedState`.
 
 __HobbiesViewModel snippet__
 
@@ -337,17 +337,19 @@ var HobbiesViewModel = IMVVM.createViewModel({
 ```
 
 #####getWatchedState()
-Notice in this instance of the `getWatchedState` function the `persons` object has an extra property called fields. This specifies that we are not only linking to the `persons` data context, but we would also like to be notified when `persons.selectedPerson` changes, and if it does change trigger the `onPersonChanged` handler.
+Notice in this instance of the `getWatchedState` function, the `persons` object has an extra property called `fields`. `fields` the ViewModel should be notified when `persons.selectedPerson` changes, and if it does change trigger the `onPersonChanged` handler.
+
+Both the `alias` and `fields` properties are optional.
 
 #####onPersonChangedHandler
-`onPersonChangedHandler` will be triggered whenever any of the fields that it is assigned to changes. It is important to note that, if there is a change a state object is returned. If there is no change, return either void(0) or don't return anything. It should also be noted that the returned state object has a property with the data context, `hobbies`, and the associated object next state. This is necessary so that any data context or domain property can be updated from this ViewModel by simply specfying it in the returned object.
+`onPersonChangedHandler` will be triggered whenever any of the fields that it is assigned to changes. It is important to note that if there is a change, `onPersonChangedHandler` must return a state object. If no change has occurred, return either void(0) or don't return anything. It should also be noted that the returned state object has a property with the data context, `hobbies`, and the associated next state object. This is necessary so that any data context or domain property can be updated from this ViewModel by specfying it in the returned object.
 
 #####selectHobby
-The `selectHobby` function is nothing special. What is different about it is the 'setState' function. ViewModels get an extra parameter, which enables the ViewModel to update state in other data contexts. The second parameter takes a state object, not dissimilar to the state object that is returned from `onPersonChangedHandler`. The second parameter accepts an object that specifies the data context\domain property and associated state.
+The `selectHobby` function is nothing special. What is different about it, is the `setState` function. A ViewModel's `setState` function has an extra parameter which enables the ViewModel to update state in other data contexts. The second parameter takes a state object, not dissimilar to the state object that is returned from `onPersonChangedHandler`. The second parameter accepts an object that specifies the data context or domain property and its associated state.
 
-For instance `this.setState({current: this.Hobby(this.hobbies[i])}, {busy: true});`. The first parameter is the next state for `hobbies` data context, the second parameter specifies that `busy`, in the domain data context should be changed to `true`. This second parameter also accepts, for example, `{persons: {selectedPerson: this.Person(personState)}}`.
+For instance `this.setState({current: this.Hobby(this.hobbies[i])}, {busy: true});`. The first parameter is the next state for the `hobbies` data context, the second parameter specifies that `busy`, a property in the domain data context, should be changed to `true`. This second parameter also accepts other data contexts (e.g. `{persons: {selectedPerson: this.Person(personState)}}`).
 
-Also noted in the comments is that this can be achieved with a callback, ensuring to pass `void(0)` as the first parameter to `setState`.
+Also noted within comments, is that this can be achieved within a callback, ensuring to pass `void(0)` as the first parameter to `setState`.
 
 ***n.b. You may have noticed that not all fields have setters, however, the values are still able to be updated. This is what `setState` does. You only need to supply a setter if you would like the View to update the field directly.***
 
@@ -422,6 +424,7 @@ var ApplicationView = React.createClass({
       </div>
     );    
   }
+
 });
 ```
 
@@ -449,7 +452,7 @@ React.renderComponent(<ApplicationView domainModel={DomainViewModel}/>,
   document.getElementById('container'));
 ```
 
-***A word on how to use the exposed Model -> selectedPerson***
+#####A word on how to update a Model from the View
 
 As mentioned above, the `PersonsViewModel` has a `persons` data context. This data context exposes a `Person` model instance via the `selectedPerson` property.
 
@@ -525,7 +528,7 @@ var FormView = React.createClass({
 ```
 
 ##Running the example application
-The example application is a good starting place when figuring out how things work. So to get it running, navigate to the `./example` directory and run the following commands.
+The example application is a good starting place when figuring out how things work. To get it running, navigate to the `./example` directory and run the following commands.
 
   ```
   $ npm install

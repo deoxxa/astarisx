@@ -9,7 +9,7 @@
 'use strict';
 /* Kick of the App*/
 
-//noUndo is optional - default is false
+//enableUndo is optional - default is false
 React.renderComponent(<ApplicationView 
 	domainModel={DomainViewModel}
   enableUndo={true} />,
