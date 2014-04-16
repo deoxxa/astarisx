@@ -638,6 +638,19 @@ ___
 Holds Domain Data Context next state.
 
 _Available in:_ DomainViewModel
+___
+#####canUndo
+`true` = previous state exists.
+`false` = previous state does not exists.
+
+_Available in:_ DomainViewModel
+
+___
+#####canRedo
+`true` = next state exists.
+`false` = next state does not exists.
+
+_Available in:_ DomainViewModel
 
 ###Specification
 ####Functions

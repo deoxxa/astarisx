@@ -11,12 +11,12 @@ var IMVVMDomainModel = {
       desc.proto.setState = stateChangedHandler;
 
       desc.proto.undo = function(){
-        this.setState(this.previousState, this);
+        this.setState(this.previousState, !!this.previousState ? this : void(0));
       };
 
       desc.proto.redo = function(){
-        if(this.nextState && !!Object.keys(this.nextState).length){
-          this.setState(this.nextState, this.nextState.nextState);      
+        if(this.canRedo){
+          this.setState(this.nextState, this.nextState.nextState);
         }
       };
 
@@ -34,14 +34,40 @@ var IMVVMDomainModel = {
               writable: false,
               value: prevState
             });
+            Object.defineProperty(domainModel, 'canUndo', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: true
+            });
+          } else {
+            Object.defineProperty(domainModel, 'canUndo', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: false
+            });
           }
-          if(!!redoState){
+          if(!!redoState && 'state' in redoState){
             Object.defineProperty(domainModel, 'nextState', {
               configurable: false,
               enumerable: false,
               writable: false,
               value: redoState
-            });            
+            });
+            Object.defineProperty(domainModel, 'canRedo', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: true
+            });
+          } else {
+            Object.defineProperty(domainModel, 'canRedo', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: false
+            });
           }
         }
 

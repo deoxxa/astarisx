@@ -56,8 +56,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		newState = newState || {};
 		newStateKeys = Object.keys(newState);
 
-		newAppState = newAppState || {};
-
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangedHandler. If a callback was passed in
 		//it would be assigned to newState
@@ -90,9 +88,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 
 		} else {
-			if(Object.getPrototypeOf(newAppState).constructor.classType === "DomainViewModel"){
-				return;
-			}
 			if(!!newStateKeys.length){
 				if(caller === appNamespace){
 					nextState = extend(newState);
@@ -424,12 +419,12 @@ var IMVVMDomainModel = {
       desc.proto.setState = stateChangedHandler;
 
       desc.proto.undo = function(){
-        this.setState(this.previousState, this);
+        this.setState(this.previousState, !!this.previousState ? this : void(0));
       };
 
       desc.proto.redo = function(){
-        if(this.nextState && !!Object.keys(this.nextState).length){
-          this.setState(this.nextState, this.nextState.nextState);      
+        if(this.canRedo){
+          this.setState(this.nextState, this.nextState.nextState);
         }
       };
 
@@ -447,14 +442,40 @@ var IMVVMDomainModel = {
               writable: false,
               value: prevState
             });
+            Object.defineProperty(domainModel, 'canUndo', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: true
+            });
+          } else {
+            Object.defineProperty(domainModel, 'canUndo', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: false
+            });
           }
-          if(!!redoState){
+          if(!!redoState && 'state' in redoState){
             Object.defineProperty(domainModel, 'nextState', {
               configurable: false,
               enumerable: false,
               writable: false,
               value: redoState
-            });            
+            });
+            Object.defineProperty(domainModel, 'canRedo', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: true
+            });
+          } else {
+            Object.defineProperty(domainModel, 'canRedo', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: false
+            });
           }
         }
 

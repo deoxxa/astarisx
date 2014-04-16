@@ -49,8 +49,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		newState = newState || {};
 		newStateKeys = Object.keys(newState);
 
-		newAppState = newAppState || {};
-
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangedHandler. If a callback was passed in
 		//it would be assigned to newState
@@ -83,9 +81,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 
 		} else {
-			if(Object.getPrototypeOf(newAppState).constructor.classType === "DomainViewModel"){
-				return;
-			}
 			if(!!newStateKeys.length){
 				if(caller === appNamespace){
 					nextState = extend(newState);
