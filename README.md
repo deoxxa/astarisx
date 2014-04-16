@@ -612,12 +612,12 @@ Next state objects.
 _Available in:_ DomainViewModel, ViewModel, Model
 ___
 #####object undo()
-`undo` will transition to the previous state. Requires [`enableUndo`](#enableundo-boolean-default--false) to be `true` to enable this functionality.
+`undo` transitions state to the previous state. Requires [`enableUndo`](#enableundo-boolean-default--false) to be `true` to enable this functionality.
 
 _Available in:_ DomainViewModel
 ___
 #####object redo()
-`redo` will transition to the next state. Requires [`enableUndo`](#enableundo-boolean-default--false) to be `true` to enable this functionality.
+`redo` transitions state to the next state. Requires [`enableUndo`](#enableundo-boolean-default--false) to be `true` to enable this functionality.
 
 _Available in:_ DomainViewModel
 
