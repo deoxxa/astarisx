@@ -3,13 +3,13 @@
   "description": "Immutable MVVM for React",
   "version": "0.6.11",
   "keywords": [
-    "imvvm",
-    "react",
     "mvvm",
     "mvc",
+    "react",
     "immutable",
     "node",
     "presentation model"
+    "imvvm",
   ],
   "homepage": "https://github.com/entrendipity/imvvm",
   "author": "Frank Panetta <frank.panetta@entrendipity.com.au>",
