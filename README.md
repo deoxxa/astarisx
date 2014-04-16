@@ -640,15 +640,15 @@ Holds Domain Data Context next state.
 _Available in:_ DomainViewModel
 ___
 #####canUndo
-`true` = previous state exists.
-`false` = previous state does not exists.
+`true` - can transition to previous state.
+`false` - can not transition to previous state.
 
 _Available in:_ DomainViewModel
 
 ___
 #####canRedo
-`true` = next state exists.
-`false` = next state does not exists.
+`true` - can revert back to next state.
+`false` - can not revert back to next state.
 
 _Available in:_ DomainViewModel
 
