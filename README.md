@@ -633,6 +633,12 @@ Holds Domain Data Context previous state.
 
 _Available in:_ DomainViewModel
 
+___
+#####nextState
+Holds Domain Data Context next state.
+
+_Available in:_ DomainViewModel
+
 ###Specification
 ####Functions
 ___
