@@ -779,6 +779,14 @@ __stateChangedHandler__
 
 State changed handler which is triggered whenever setState is called from within the model. 
 
+___n.b. Only use stateChangedHandlers in ViewModels. Do not use stateChangedHandlers in Models. You can still use Model within Models. Below is an example of how you would initialize Model instances inside other Models.___
+
+```javascript
+Hobby: function(hobbyState, init){
+  return new HobbyModel()(hobbyState, init);
+},
+```
+
 __nextState__
 
 Object containing the next state values for the model.
@@ -791,7 +799,7 @@ _Available in:_ ViewModel, Model
 
 __Usage example__
 
-__n.b. This is suggested usage and not part of the API__
+___n.b. This is suggested usage and not part of the API___
 
 ######ModelInstance ModelFactory(object nextState[, boolean initialize:false])
 
