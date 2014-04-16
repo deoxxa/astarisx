@@ -35,7 +35,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	var appStateChangedHandler = function(caller, newState, newAppState, callback) {
 		
 		var nextState = {},
-			prevState = {},
+			prevState = void(0),
+			redoState = void(0),
 			newStateKeys,
 			keyIdx,
 			transientStateKeysLen,
@@ -55,14 +56,16 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		newState = newState || {};
 		newStateKeys = Object.keys(newState);
 
+		newAppState = newAppState || {};
+
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangedHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
-			
+
 			nextState = extend(newState);
 			prevState = newState.previousState;
-
+			redoState = newAppState;
 			//Need to reset ViewModel with instance object so that setState is associated with
 			//the current ViewModel. This reason this ccurs is that when a ViewModel is created it
 			//assigns a setState function to all instance fields and binds itself to it. When undo is called
@@ -87,6 +90,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 
 		} else {
+			if(Object.getPrototypeOf(newAppState).constructor.classType === "DomainViewModel"){
+				return;
+			}
 			if(!!newStateKeys.length){
 				if(caller === appNamespace){
 					nextState = extend(newState);
@@ -197,7 +203,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		}
 		
 
-		appState = new ApplicationDataContext(nextState, prevState, enableUndo);
+		appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo);
 		Object.freeze(appState);
 		Object.freeze(appState.state);
 		//All the work is done! -> Notify the View
@@ -213,7 +219,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
 	/*Need to look at DomainViewModel state and nextState and Domain Model and updating*/
-	appState = new ApplicationDataContext(void(0), void(0), enableUndo, true);
+	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, true);
   appState.state = appState.state || {};
 
 	domain = appState.getDomainDataContext();
@@ -275,7 +281,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		}
 	}
 	
-	appState = new ApplicationDataContext(appState, void(0), enableUndo);
+	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo);
 	Object.freeze(appState.state);
 	Object.freeze(appState);
 	return appState;
@@ -417,19 +423,39 @@ var IMVVMDomainModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(nextState, prevState, enableUndo, initialize) {
+      desc.proto.undo = function(){
+        this.setState(this.previousState, this);
+      };
+
+      desc.proto.redo = function(){
+        if(this.nextState && !!Object.keys(this.nextState).length){
+          this.setState(this.nextState, this.nextState.nextState);      
+        }
+      };
+
+      var dataContext = function(nextState, prevState, redoState, enableUndo, initialize) {
         
         var freezeFields = desc.freezeFields,
           domainModel = Object.create(desc.proto, desc.descriptor),
           fld;
         
-        if(!!enableUndo && !!prevState){
-          Object.defineProperty(domainModel, 'previousState', {
-            configurable: false,
-            enumerable: false,
-            writable: false,
-            value: prevState
-          });
+        if(!!enableUndo){
+          if(!!prevState){
+            Object.defineProperty(domainModel, 'previousState', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: prevState
+            });
+          }
+          if(!!redoState){
+            Object.defineProperty(domainModel, 'nextState', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: redoState
+            });            
+          }
         }
 
         if(nextState === void(0) && ('getInitialState' in domainModel)){

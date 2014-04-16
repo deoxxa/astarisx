@@ -281,7 +281,7 @@ _The reason that the kind decorator is used is because IMVVM does some extra pro
 `Person` is a wrapper around the `PersonModel` constructor. It makes `PersonModel` easier to invoke and acts like a Model Factory of sorts. The parameters passed to `Person` are passed directly to the `PersonModel` constructor, but not before registering the stateChangedHandler `personStateChangedHandler`, to ensure that all state changes in PersonModel notify interested Models/ViewModels and is handled approapriately.
 
 #####selectPerson, addPerson & deletePerson
-These functions are exposed to the View and enable tasks to be performed in the ViewModel. However, the View will also interact with any Models the ViewModel exposes to it. In this instance the ViewModel exposes the PersonModel via the `selectedPerson` property. See [A word on how to update a Model from the View](#awordonhowtoupdateamodelfromtheview)
+These functions are exposed to the View and enable tasks to be performed in the ViewModel. However, the View will also interact with any Models the ViewModel exposes to it. In this instance the ViewModel exposes the PersonModel via the `selectedPerson` property. See [A word on how to update a Model from the View](#a-word-on-how-to-update-a-model-from-the-view)
 
 I've added a code snippet of HobbiesViewModel, from the example application to help explain a little more about `getWatchedState`.
 
@@ -610,6 +610,16 @@ __nextState__
 Next state objects.
 
 _Available in:_ DomainViewModel, ViewModel, Model
+___
+#####object undo()
+`undo` transitions state to the previous state. Requires [`enableUndo`](#enableundo-boolean-default--false) to be `true` to enable this functionality.
+
+_Available in:_ DomainViewModel
+___
+#####object redo()
+`redo` transitions state to the next state. Requires [`enableUndo`](#enableundo-boolean-default--false) to be `true` to enable this functionality.
+
+_Available in:_ DomainViewModel
 
 ####Properties
 ___

@@ -17,6 +17,11 @@ var NavBarView = React.createClass({
 		e.stopPropagation();
 		this.props.appContext.undo();
 	},
+	redo: function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		this.props.appContext.redo();
+	},
 	toggleOnlineState: function(e){
 		e.preventDefault();
 		e.stopPropagation();
@@ -48,6 +53,9 @@ var NavBarView = React.createClass({
 			      <form className="navbar-form navbar-left" role="search">
 			        <button onClick={this.undo} className="btn btn-default">
 			        Undo
+			        </button>
+			         <button onClick={this.redo} className="btn btn-default">
+			        Redo
 			        </button>
 			        <button onClick={this.toggleOnlineState} className={onlineBtnClass}>
 			        	{onlineBtnTxt}

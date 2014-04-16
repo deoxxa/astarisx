@@ -30,10 +30,6 @@ var DomainViewModel = IMVVM.createDomainViewModel({
     }
   },
 
-  undo: function(){
-    this.setState(this.previousState);
-  },
-
   personCount: {
     kind:'pseudo',
     get: function(){

@@ -10,19 +10,39 @@ var IMVVMDomainModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(nextState, prevState, enableUndo, initialize) {
+      desc.proto.undo = function(){
+        this.setState(this.previousState, this);
+      };
+
+      desc.proto.redo = function(){
+        if(this.nextState && !!Object.keys(this.nextState).length){
+          this.setState(this.nextState, this.nextState.nextState);      
+        }
+      };
+
+      var dataContext = function(nextState, prevState, redoState, enableUndo, initialize) {
         
         var freezeFields = desc.freezeFields,
           domainModel = Object.create(desc.proto, desc.descriptor),
           fld;
         
-        if(!!enableUndo && !!prevState){
-          Object.defineProperty(domainModel, 'previousState', {
-            configurable: false,
-            enumerable: false,
-            writable: false,
-            value: prevState
-          });
+        if(!!enableUndo){
+          if(!!prevState){
+            Object.defineProperty(domainModel, 'previousState', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: prevState
+            });
+          }
+          if(!!redoState){
+            Object.defineProperty(domainModel, 'nextState', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: redoState
+            });            
+          }
         }
 
         if(nextState === void(0) && ('getInitialState' in domainModel)){
