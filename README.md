@@ -641,6 +641,7 @@ _Available in:_ DomainViewModel
 ___
 #####canUndo
 `true` - can transition to previous state.
+
 `false` - can not transition to previous state.
 
 _Available in:_ DomainViewModel
@@ -648,6 +649,7 @@ _Available in:_ DomainViewModel
 ___
 #####canRedo
 `true` - can revert back to next state.
+
 `false` - can not revert back to next state.
 
 _Available in:_ DomainViewModel
