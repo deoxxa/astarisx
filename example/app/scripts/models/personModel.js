@@ -110,7 +110,7 @@ var PersonModel = IMVVM.createModel({
     var DOB = new Date(dob);
     var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from 
     var age = Math.abs(ageDate.getFullYear() - 1970);
-    return Number.isNaN(age) ? 'Enter your Birthday' : age + ' years old';
+    return isNaN(age) ? 'Enter your Birthday' : age + ' years old';
   },
 
   gender: {
