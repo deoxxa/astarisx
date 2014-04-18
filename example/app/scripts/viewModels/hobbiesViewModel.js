@@ -89,8 +89,10 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
   
   addHobby: function(value){
-    this.state.personsContext.selectedPerson.
-      addHobby(this.Hobby({ id:this.uuid(), name:value }, true));
+    if(value !== ''){
+      this.state.personsContext.selectedPerson.
+      addHobby(this.Hobby({ id:this.uuid(), name:value }, true));      
+    }
   },
   
   deleteHobby: function(value){

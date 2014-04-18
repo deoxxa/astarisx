@@ -1,6 +1,6 @@
 {
   "name": "imvvm",
-  "version": "0.6.11",
+  "version": "0.6.12",
   "homepage": "https://github.com/entrendipity/imvvm",
   "authors": [
     "Frank Panetta <entrendipity[at]gmail.com>"
@@ -18,8 +18,8 @@
     "react",
     "immutable",
     "node",
-    "presentation model"
-    "imvvm",
+    "presentation model",
+    "imvvm"
   ],
   "license": "MIT",
   "ignore": [

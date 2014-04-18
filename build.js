@@ -17,7 +17,7 @@ writer.on('finish', function() {
     }, function(err, data, extra) {
       fs.writeFile("./dist/imvvm.min.js", data, function(err) {
         if(err) {
-            console.log(err);
+            console.error(err);
         } else {
             console.log("Files saved!");
         }

@@ -130,17 +130,19 @@ var PersonModel = IMVVM.createModel({
 
   addHobby: function(value){
     var arr;
-    if(this.hobbies.indexOf(value) === -1){
-      arr = this.hobbies.slice(0);
-      this.hobbies = arr.concat(value);
-    }
+    for (var i = this.hobbies.length - 1; i >= 0; i--) {
+      if(this.hobbies[i].name === value.name){
+        return;        
+      }
+    };
+    arr = this.hobbies.slice(0);
+    this.hobbies = arr.concat(value);
   },
   
   deleteHobby: function(value){
     this.hobbies = this.hobbies.filter(function(hobby){
       return hobby.id !== value;
     });
-    console.log(this.hobbies);
   },
 
   uuid: function () {
