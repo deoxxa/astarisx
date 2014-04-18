@@ -50,9 +50,9 @@ var IMVVMViewModel = {
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
 
                 Object.defineProperty(tempModel, 'state', {
-                  configurable: false,
+                  configurable: true,
                   enumerable: false,
-                  writable: false,
+                  writable: true,
                   value: viewModel[freezeFields[fld].fieldName].state
                 });
 
@@ -65,9 +65,17 @@ var IMVVMViewModel = {
               }
 
           } else {
-            Object.freeze(viewModel[freezeFields[fld].fieldName]);
+            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+            Object.freeze(nextState[freezeFields[fld].fieldName]);
           }
         };
+
+        Object.defineProperty(viewModel, 'state', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: nextState
+        });
         
         return Object.freeze(viewModel);
 

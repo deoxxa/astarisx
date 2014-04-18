@@ -86,18 +86,23 @@ var IMVVMDomainModel = {
           });
           nextState = extend(nextState, domainModel);
         }
-       //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
+
+        //freeze arrays and model instances and initialize if necessary
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+          if(freezeFields[fld].kind === 'array'){
+            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+            Object.freeze(nextState[freezeFields[fld].fieldName]);
+          } else {
+            throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
+          }
+        };
+
         Object.defineProperty(domainModel, 'state', {
           configurable: false,
           enumerable: false,
           writable: false,
           value: nextState
         });
-        
-        //freeze arrays and domainModel instances
-        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
-            Object.freeze(domainModel[freezeFields[fld].fieldName]);
-        };
 
         return domainModel;
       };

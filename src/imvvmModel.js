@@ -47,6 +47,16 @@ var IMVVMModel = {
           }
         }
 
+        //freeze arrays and model instances and initialize if necessary
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+          if(freezeFields[fld].kind === 'array'){
+            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+            Object.freeze(nextState[freezeFields[fld].fieldName]);
+          } else {
+            throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
+          }
+        };
+
         Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,
@@ -54,10 +64,6 @@ var IMVVMModel = {
           value: nextState
         });
 
-        //freeze arrays and model instances
-        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
-            Object.freeze(model[freezeFields[fld].fieldName]);
-        };
         return Object.freeze(model);
       };
       return dataContext;

@@ -5,7 +5,7 @@ var extend = utils.extend;
 exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, enableUndo) {
 
 	if(typeof stateChangedHandler !== 'function'){
-		throw new TypeError();
+		throw new TypeError('stateChangedHandler must be a function!');
 	}
 
 	enableUndo === void(0) ? true : enableUndo;

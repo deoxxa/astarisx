@@ -12,7 +12,7 @@ var extend = utils.extend;
 exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, enableUndo) {
 
 	if(typeof stateChangedHandler !== 'function'){
-		throw new TypeError();
+		throw new TypeError('stateChangedHandler must be a function!');
 	}
 
 	enableUndo === void(0) ? true : enableUndo;
@@ -494,18 +494,23 @@ var IMVVMDomainModel = {
           });
           nextState = extend(nextState, domainModel);
         }
-       //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
+
+        //freeze arrays and model instances and initialize if necessary
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+          if(freezeFields[fld].kind === 'array'){
+            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+            Object.freeze(nextState[freezeFields[fld].fieldName]);
+          } else {
+            throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
+          }
+        };
+
         Object.defineProperty(domainModel, 'state', {
           configurable: false,
           enumerable: false,
           writable: false,
           value: nextState
         });
-        
-        //freeze arrays and domainModel instances
-        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
-            Object.freeze(domainModel[freezeFields[fld].fieldName]);
-        };
 
         return domainModel;
       };
@@ -567,6 +572,16 @@ var IMVVMModel = {
           }
         }
 
+        //freeze arrays and model instances and initialize if necessary
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+          if(freezeFields[fld].kind === 'array'){
+            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+            Object.freeze(nextState[freezeFields[fld].fieldName]);
+          } else {
+            throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
+          }
+        };
+
         Object.defineProperty(model, 'state', {
           configurable: false,
           enumerable: false,
@@ -574,10 +589,6 @@ var IMVVMModel = {
           value: nextState
         });
 
-        //freeze arrays and model instances
-        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
-            Object.freeze(model[freezeFields[fld].fieldName]);
-        };
         return Object.freeze(model);
       };
       return dataContext;
@@ -640,9 +651,9 @@ var IMVVMViewModel = {
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
 
                 Object.defineProperty(tempModel, 'state', {
-                  configurable: false,
+                  configurable: true,
                   enumerable: false,
-                  writable: false,
+                  writable: true,
                   value: viewModel[freezeFields[fld].fieldName].state
                 });
 
@@ -655,9 +666,17 @@ var IMVVMViewModel = {
               }
 
           } else {
-            Object.freeze(viewModel[freezeFields[fld].fieldName]);
+            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+            Object.freeze(nextState[freezeFields[fld].fieldName]);
           }
         };
+
+        Object.defineProperty(viewModel, 'state', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: nextState
+        });
         
         return Object.freeze(viewModel);
 

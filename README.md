@@ -835,9 +835,13 @@ _Available in:_ DomainViewModel, ViewModel, Model
 
 Specifies that the getter returns a model instance.
 
+_Available in:_ ViewModel
+
 **array**
 
 Specifies that the field holds an array.
+
+_Available in:_ DomainViewModel, ViewModel, Model
 
 **pseudo**
 
