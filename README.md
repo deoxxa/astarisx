@@ -839,7 +839,7 @@ _Available in:_ ViewModel
 
 **array**
 
-Specifies that the field holds an array.
+Specifies that the field holds an array. This will initialize the array, if it hasn't already been initialized.
 
 _Available in:_ DomainViewModel, ViewModel, Model
 
