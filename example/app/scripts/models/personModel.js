@@ -132,9 +132,9 @@ var PersonModel = IMVVM.createModel({
     var arr;
     for (var i = this.hobbies.length - 1; i >= 0; i--) {
       if(this.hobbies[i].name === value.name){
-        return;        
+        return;
       }
-    };
+    }
     arr = this.hobbies.slice(0);
     this.hobbies = arr.concat(value);
   },
