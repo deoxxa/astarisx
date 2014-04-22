@@ -13,7 +13,7 @@ var IMVVMModel = {
         return desc;
       }
 
-      var dataContext = function(nextState, initialize) {
+      var dataContext = function(nextState, extendState, initialize) {
         
         var freezeFields = desc.freezeFields,
           fld,
@@ -21,8 +21,14 @@ var IMVVMModel = {
 
         if(nextState === void(0)){
           initialize = true;
+        } else if(typeof nextState === 'boolean'){
+          initialize = nextState;
+          nextState = void(0);
+        } else if(typeof extendState === 'boolean'){
+          initialize = extendState;
+          extendState = void(0);
         }
-        nextState = nextState || {};
+        nextState = extend(nextState, extendState);
 
         Object.defineProperty(model, 'state', {
           configurable: true,
@@ -34,12 +40,10 @@ var IMVVMModel = {
         nextState = extend(nextState, model);
         
         if(initialize){
-          if(!!nextState){
-            for(var aliasFor in desc.aliases){
-              if(desc.aliases.hasOwnProperty(aliasFor) && aliasFor in nextState){
-                nextState[desc.aliases[aliasFor]] = nextState[aliasFor];
-                delete nextState[aliasFor];
-              }
+          for(var aliasFor in desc.aliases){
+            if(desc.aliases.hasOwnProperty(aliasFor) && aliasFor in nextState){
+              nextState[desc.aliases[aliasFor]] = nextState[aliasFor];
+              delete nextState[aliasFor];
             }
           }
           if('getInitialState' in model){

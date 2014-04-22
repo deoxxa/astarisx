@@ -217,7 +217,7 @@ var PersonsViewModel = IMVVM.createViewModel({
   selectPerson: function(id){
     for (var i = this.collection.length - 1; i >= 0; i--) {
       if(this.selectedPerson.id !== id && this.collection[i].id === id){
-        this.setState({ selectedPerson: this.collection[i] });
+        this.setState({ selectedPerson: this.Person(this.collection[i]) });
         break;
       }
     }
@@ -770,7 +770,7 @@ _Available in:_ ViewModel
 
 ___
 
-#####ModelInstance ModelName([function stateChangedHandler])([object nextState, boolean initialize])
+#####ModelInstance ModelName([function stateChangedHandler])([object nextState, object extendState, boolean initialize])
 Returns a new model instance. This function is usually wrapped in another function for easier usage.
 
 *parameters*
@@ -790,6 +790,19 @@ Hobby: function(hobbyState, init){
 __nextState__
 
 Object containing the next state values for the model.
+
+__extendState__
+
+Object containing more next state values for the model. This parameter is for convenience, so that there is no need to call extend to update a model. The examples below both update `personObj.firstName` to 'Fred'.
+
+```javascript
+var nextState = this.extend(personObj, {firstName: 'Fred'});
+persons.selectedPerson = this.Person(nextState);
+```
+
+```javascript
+persons.selectedPerson = this.Person(personObj, {firstName: 'Fred'});
+```
 
 __initialize__
 
