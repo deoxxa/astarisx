@@ -479,9 +479,9 @@ var IMVVMDomainModel = {
           }
         }
 
-        if(nextState === void(0) && ('getInitialState' in domainModel)){
+        if(nextState === void(0)){
           //Add state prop so that it can be referenced from within getInitialState
-          nextState = domainModel.getInitialState.call(domainModel);
+          nextState = ('getInitialState' in domainModel) ? domainModel.getInitialState.call(domainModel) : {};            
         } else if('state' in nextState){
           delete nextState.state;
         
@@ -628,12 +628,13 @@ var IMVVMViewModel = {
           value: nextState
         });
 
-        if(nextAppState[VMName] === void(0)){
-          if('getInitialState' in viewModel){
-            nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
+        if(!!nextAppState){
+          if(nextAppState[VMName] === void(0)){
+            nextState = ('getInitialState' in viewModel) ?
+              extend(nextState, viewModel.getInitialState.call(viewModel)) : nextState;
+          } else {
+            nextState = ('state' in nextAppState[VMName] ? nextAppState[VMName].state : nextAppState[VMName]);
           }
-        } else {
-          nextState = ('state' in nextAppState[VMName] ? nextAppState[VMName].state : nextAppState[VMName]);
         }
 
         Object.defineProperty(viewModel, 'state', {

@@ -147,7 +147,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					if(processedStateKeys[keyIdx] in links[appNamespace]){
 						for(dataContext in links[appNamespace][processedStateKeys[keyIdx]]){
 							if(links[appNamespace][processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
-								nextState[dataContext].state[links[appNamespace][processedStateKeys[keyIdx]][dataContext]] = nextState[processedStateKeys[keyIdx]];
+								nextState[dataContext].state[links[appNamespace][processedStateKeys[keyIdx]][dataContext]] =
+									nextState[processedStateKeys[keyIdx]];
 							}
 							if(dataContext in links){
 								for(dataContext2 in links[dataContext]){

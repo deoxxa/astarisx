@@ -27,12 +27,13 @@ var IMVVMViewModel = {
           value: nextState
         });
 
-        if(nextAppState[VMName] === void(0)){
-          if('getInitialState' in viewModel){
-            nextState = extend(nextState, viewModel.getInitialState.call(viewModel));          
+        if(!!nextAppState){
+          if(nextAppState[VMName] === void(0)){
+            nextState = ('getInitialState' in viewModel) ?
+              extend(nextState, viewModel.getInitialState.call(viewModel)) : nextState;
+          } else {
+            nextState = ('state' in nextAppState[VMName] ? nextAppState[VMName].state : nextAppState[VMName]);
           }
-        } else {
-          nextState = ('state' in nextAppState[VMName] ? nextAppState[VMName].state : nextAppState[VMName]);
         }
 
         Object.defineProperty(viewModel, 'state', {

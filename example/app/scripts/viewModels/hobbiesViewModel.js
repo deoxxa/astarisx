@@ -96,7 +96,28 @@ var HobbiesViewModel = IMVVM.createViewModel({
   },
   
   deleteHobby: function(value){
-    this.state.personsContext.selectedPerson.deleteHobby(value);
+    /* 
+
+      If we were to simply call
+
+            this.state.personsContext.selectedPerson.deleteHobby(value);
+
+      then IMVVM is notified that the call was made from the 'persons' context
+      and not from the 'hobbies' context. Therefore any subscribers to 'hobbies.current'
+      are unaware of changes to 'hobbies.current'.
+
+      If the selected hobby is deleted, then call setState from 'hobbies' ViewModel, 
+      so that the 'persons' context gets updated and busy can be set on the 'domain'
+
+     */
+
+    if(this.current.id === value){
+      this.setState({ current: void(0) }, { busy: false }, function(){
+        this.state.personsContext.selectedPerson.deleteHobby(value);
+      }.bind(this));
+    } else {
+      this.state.personsContext.selectedPerson.deleteHobby(value);
+    }
   },
 
   uuid: function () {
