@@ -22,8 +22,8 @@ var PersonModel = IMVVM.createModel({
     };
   },
 
-  Hobby: function(hobbyState, init){
-    return new HobbyModel()(hobbyState, init);
+  Hobby: function(){
+    return new HobbyModel().apply(this, arguments);
   },
 
   id: {

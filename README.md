@@ -203,8 +203,8 @@ var PersonsViewModel = IMVVM.createViewModel({
     this.setState(persons);
   },
 
-  Person: function(personState, init){
-    return new PersonModel(this.personStateChangedHandler)(personState, init);
+  Person: function(){
+    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
   },
 
   selectedHobby: {
@@ -814,11 +814,9 @@ __Usage example__
 
 ___n.b. This is suggested usage and not part of the API___
 
-######ModelInstance ModelFactory(object nextState[, boolean initialize:false])
-
 ```javascript
-  Person: function(person, init){
-    return new PersonModel(this.personStateChangedHandler)(person, init);
+  Person: function(){
+    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
   },
 ```
 
