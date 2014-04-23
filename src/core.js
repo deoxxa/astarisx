@@ -64,7 +64,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			//are associated with outdated viewModels and returns unexpected output. So to realign the ViewModels
 			//with setState we recreate them.
 			for(dataContext in domain){
-				nextState[dataContext] = new dataContexts[dataContext](nextState);
+				nextState[dataContext] = new dataContexts[dataContext](nextState[dataContext]);
 			}
 
 			//relink
@@ -104,7 +104,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
 				if(transientStateKeys[keyIdx] in domain){
 					nextState[transientStateKeys[keyIdx]] = extend(appState[transientStateKeys[keyIdx]], transientState[transientStateKeys[keyIdx]]);
-					nextState[transientStateKeys[keyIdx]] = new dataContexts[transientStateKeys[keyIdx]](nextState);
+					nextState[transientStateKeys[keyIdx]] = new dataContexts[transientStateKeys[keyIdx]](nextState[transientStateKeys[keyIdx]]);
 				} else {
 					nextState[transientStateKeys[keyIdx]] = transientState[transientStateKeys[keyIdx]];
 				}
@@ -207,7 +207,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	/*Need to look at DomainViewModel state and nextState and Domain Model and updating*/
 	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, true);
   appState.state = appState.state || {};
 
@@ -215,8 +214,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
-			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangedHandler.bind(this, dataContext)).bind(this, dataContext);
-      appState.state[dataContext] = new dataContexts[dataContext](appState.state);
+			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangedHandler.bind(this, dataContext));
+      appState.state[dataContext] = new dataContexts[dataContext](appState.state[dataContext]);
 
       if('getWatchedState' in appState[dataContext]){
       	watchedState = appState[dataContext].getWatchedState();

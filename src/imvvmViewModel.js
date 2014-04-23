@@ -10,7 +10,7 @@ var IMVVMViewModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(VMName, nextAppState) {
+      var dataContext = function(nextAppState) {
 
         //nextState has already been extended with prevState in core
         var nextState = {},
@@ -27,13 +27,11 @@ var IMVVMViewModel = {
           value: nextState
         });
 
-        if(!!nextAppState){
-          if(nextAppState[VMName] === void(0)){
-            nextState = ('getInitialState' in viewModel) ?
-              extend(nextState, viewModel.getInitialState.call(viewModel)) : nextState;
-          } else {
-            nextState = ('state' in nextAppState[VMName] ? nextAppState[VMName].state : nextAppState[VMName]);
-          }
+        if(nextAppState === void(0)){
+          nextState = ('getInitialState' in viewModel) ?
+            extend(nextState, viewModel.getInitialState.call(viewModel)) : nextState;
+        } else {
+          nextState = ('state' in nextAppState ? nextAppState.state : nextAppState);
         }
 
         Object.defineProperty(viewModel, 'state', {
