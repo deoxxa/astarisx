@@ -811,8 +811,6 @@ ___
 #####fieldName : [Descriptor](#descriptor)
 _Available in:_ DomainViewModel, ViewModel, Model
 
-___
-
 ####Descriptor
 ___
 #####Functions
@@ -902,6 +900,8 @@ React.renderComponent(<ApplicationView domainModel={DomainViewModel}/>,
 ```
 
 ###Helpers
+####extend
+___
 #####object extend(object currentState[, object... nextState])
 Creates a shallow copy of currentState. Adds/replaces properties with properties of subsequent objects.
 
