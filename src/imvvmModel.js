@@ -10,10 +10,6 @@ var IMVVMModel = {
       var desc = this.getDescriptor(this);
       desc.stateChangedHandler = stateChangedHandler;
 
-      desc.proto.__getDescriptor = function(){
-        return desc;
-      }
-
       if('getInitialState' in desc.originalSpec){
         desc.proto.getInitialState = desc.originalSpec.getInitialState;
       }

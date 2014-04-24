@@ -92,7 +92,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				callback();
 				return;
 			}
+		
 		} else {
+
 			if(!!newStateKeys.length){
 				if(caller === appNamespace){
 					nextState = extend(newState);
@@ -202,7 +204,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
-		
 
 		appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo);
 		Object.freeze(appState);
@@ -212,9 +213,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		
 		transientState = {};
 		processedState = {};
-		
-		//Provided for the main app to return to the View
-		return appState;
+
 	};
 
 	//Initialize Application Data Context
@@ -548,10 +547,6 @@ var IMVVMModel = {
       var desc = this.getDescriptor(this);
       desc.stateChangedHandler = stateChangedHandler;
 
-      desc.proto.__getDescriptor = function(){
-        return desc;
-      }
-
       if('getInitialState' in desc.originalSpec){
         desc.proto.getInitialState = desc.originalSpec.getInitialState;
       }
@@ -670,9 +665,8 @@ var IMVVMViewModel = {
         for (fld = freezeFields.length - 1; fld >= 0; fld--) {
           if(freezeFields[fld].kind === 'instance'){
               if(viewModel[freezeFields[fld].fieldName]){
-                tempDesc = viewModel[freezeFields[fld].fieldName].__getDescriptor();
+                tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedObject__;
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
-                delete tempModel.__proto__.__getDescriptor;
                 delete tempModel.__proto__.getInitialState;
                 
                 Object.defineProperty(tempModel, 'state', {

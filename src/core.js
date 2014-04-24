@@ -85,7 +85,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				callback();
 				return;
 			}
+		
 		} else {
+
 			if(!!newStateKeys.length){
 				if(caller === appNamespace){
 					nextState = extend(newState);
@@ -195,7 +197,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
-		
 
 		appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo);
 		Object.freeze(appState);
@@ -205,9 +206,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		
 		transientState = {};
 		processedState = {};
-		
-		//Provided for the main app to return to the View
-		return appState;
+
 	};
 
 	//Initialize Application Data Context
