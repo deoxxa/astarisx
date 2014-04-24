@@ -596,21 +596,6 @@ Used to do sequential setState calls.
 
 _Available in:_ DomainViewModel, ViewModel, Model
 ___
-#####object extend(object currentState[, object... nextState])
-Creates a shallow copy of currentState. Adds/replaces properties with properties of subsequent objects.
-
-*parameters*
-
-__currentState__
-
-Old state object.
-
-__nextState__
-
-Next state objects.
-
-_Available in:_ DomainViewModel, ViewModel, Model
-___
 #####object undo()
 `undo` transitions state to the previous state. Requires [`enableUndo`](#enableundo-boolean-default--false) to be `true` to enable this functionality.
 
@@ -810,14 +795,14 @@ Boolean value indicating the model instance should be initialized. (Calls getIni
 
 _Available in:_ ViewModel, Model
 
-__Usage example__
+___Usage example___
 
 ___n.b. This is suggested usage and not part of the API___
 
 ```javascript
-  Person: function(){
-    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
-  },
+Person: function(){
+  return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
+},
 ```
 
 ####Field
@@ -870,15 +855,15 @@ __example__
 In the original data source, `job` was is property name. However, `aliasFor` will expose `job` as `occupation` to the View. This is a one way transformation. If it is required to persist the data as `job`, that will need to be transformed back within the application.
 
 ```javascript
-  occupation: {
-    aliasFor: 'job',
-    get: function(){
-      return this.state.occupation;
-    },
-    set: function(newValue){
-      this.setState({'occupation': newValue });
-    }
+occupation: {
+  aliasFor: 'job',
+  get: function(){
+    return this.state.occupation;
   },
+  set: function(newValue){
+    this.setState({'occupation': newValue });
+  }
+},
 ```
 
 _Available in:_ Model
@@ -915,6 +900,28 @@ var ApplicationView = React.createClass({
 React.renderComponent(<ApplicationView domainModel={DomainViewModel}/>,
   document.getElementById('container'));
 ```
+
+###Helpers
+#####object extend(object currentState[, object... nextState])
+Creates a shallow copy of currentState. Adds/replaces properties with properties of subsequent objects.
+
+*parameters*
+
+__currentState__
+
+Old state object.
+
+__nextState__
+
+Next state objects.
+
+___Usage example___
+
+```javascript
+var nextState = IMVVM.extend(currentState, nextState);
+```
+
+_Available in:_ DomainViewModel, ViewModel, Model
 
 ## Browser Support
 Most ECMAScript 5 compliant browsers. 
