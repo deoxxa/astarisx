@@ -347,22 +347,24 @@ var IMVVMClass = {
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
             //assume it is a descriptor
             this.originalSpec[key].enumerable = true;
-            if('aliasFor' in this.originalSpec[key]){
-              aliases[this.originalSpec[key].aliasFor] = key;
-              delete this.originalSpec[key].aliasFor;
-            }
-
             if('viewModel' in this.originalSpec[key]) {
               viewModels[key] = this.originalSpec[key].viewModel;
               delete this.originalSpec[key].viewModel;
               delete this.originalSpec[key].set;
-            } else if('kind' in this.originalSpec[key]){
-              if(this.originalSpec[key].kind === 'pseudo'){
-                this.originalSpec[key].enumerable = false;
-              } else { //'instance' || 'array'
-                autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
+            } else {
+              if('aliasFor' in this.originalSpec[key]){
+                aliases[this.originalSpec[key].aliasFor] = key;
+                delete this.originalSpec[key].aliasFor;
               }
-              delete this.originalSpec[key].kind;
+
+              if('kind' in this.originalSpec[key]){
+                if(this.originalSpec[key].kind === 'pseudo'){
+                  this.originalSpec[key].enumerable = false;
+                } else { //'instance' || 'array'
+                  autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
+                }
+                delete this.originalSpec[key].kind;
+              }
             }
             descriptor[key] = this.originalSpec[key];
           } else {
@@ -370,6 +372,7 @@ var IMVVMClass = {
           }
         }
       }
+
       
       if(!('extend' in proto)){
         proto.extend = utils.extend;      
@@ -615,7 +618,7 @@ var IMVVMViewModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(nextAppState) {
+      var dataContext = function(nextVMState) {
 
         //nextState has already been extended with prevState in core
         var nextState = {},
@@ -632,11 +635,11 @@ var IMVVMViewModel = {
           value: nextState
         });
 
-        if(nextAppState === void(0)){
+        if(nextVMState === void(0)){
           nextState = ('getInitialState' in viewModel) ?
             extend(nextState, viewModel.getInitialState.call(viewModel)) : nextState;
         } else {
-          nextState = ('state' in nextAppState ? nextAppState.state : nextAppState);
+          nextState = ('state' in nextVMState ? nextVMState.state : nextVMState);
         }
 
         Object.defineProperty(viewModel, 'state', {
