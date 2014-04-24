@@ -86,7 +86,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					}
 				}
 			}
-
+			
+			if(typeof callback === 'function'){
+				appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo);
+				callback();
+				return;
+			}
 		} else {
 			if(!!newStateKeys.length){
 				if(caller === appNamespace){
