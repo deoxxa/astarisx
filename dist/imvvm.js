@@ -86,7 +86,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					}
 				}
 			}
-			
+
 			if(typeof callback === 'function'){
 				appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo);
 				callback();
@@ -223,6 +223,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
   appState.state = appState.state || {};
 
 	domain = appState.getDomainDataContext();
+	delete appState.__proto__.getDomainDataContext;
 
 	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
@@ -231,6 +232,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
       if('getWatchedState' in appState[dataContext]){
       	watchedState = appState[dataContext].getWatchedState();
+      	delete appState[dataContext].__proto__.getWatchedState;
       	for(watchedItem in watchedState){
       		if(watchedState.hasOwnProperty(watchedItem)){
       			if(watchedItem in domain || watchedItem in appState.state){
@@ -284,6 +286,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo);
 	Object.freeze(appState.state);
 	Object.freeze(appState);
+
+	console.warn('\"this.extend\" has been deprecated. Please use \"IMVVM.extend\".');
 	return appState;
 };
 },{"./utils":8}],3:[function(_dereq_,module,exports){
@@ -377,7 +381,6 @@ var IMVVMClass = {
           }
         }
       }
-
       
       if(!('extend' in proto)){
         proto.extend = utils.extend;      
@@ -408,7 +411,8 @@ var IMVVM = {
   createModel: IMVVMClass.createClass.bind(this, ModelBase, 'Model'),
   createViewModel: IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel'),
   createDomainViewModel: IMVVMClass.createClass.bind(this, DomainViewModelBase, 'DomainViewModel'),
-  mixin: mixin
+  mixin: mixin,
+  extend: extend
 };
 
 module.exports = IMVVM;
@@ -489,7 +493,8 @@ var IMVVMDomainModel = {
 
         if(nextState === void(0)){
           //Add state prop so that it can be referenced from within getInitialState
-          nextState = ('getInitialState' in domainModel) ? domainModel.getInitialState.call(domainModel) : {};            
+          nextState = ('getInitialState' in domainModel) ? domainModel.getInitialState.call(domainModel) : {};
+          delete domainModel.__proto__.getInitialState;
         } else if('state' in nextState){
           delete nextState.state;
         
@@ -643,6 +648,7 @@ var IMVVMViewModel = {
         if(nextVMState === void(0)){
           nextState = ('getInitialState' in viewModel) ?
             extend(nextState, viewModel.getInitialState.call(viewModel)) : nextState;
+            delete viewModel.__proto__.getInitialState;
         } else {
           nextState = ('state' in nextVMState ? nextVMState.state : nextVMState);
         }

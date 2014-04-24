@@ -73,7 +73,8 @@ var IMVVMDomainModel = {
 
         if(nextState === void(0)){
           //Add state prop so that it can be referenced from within getInitialState
-          nextState = ('getInitialState' in domainModel) ? domainModel.getInitialState.call(domainModel) : {};            
+          nextState = ('getInitialState' in domainModel) ? domainModel.getInitialState.call(domainModel) : {};
+          delete domainModel.__proto__.getInitialState;
         } else if('state' in nextState){
           delete nextState.state;
         

@@ -79,7 +79,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					}
 				}
 			}
-			
+
 			if(typeof callback === 'function'){
 				appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo);
 				callback();
@@ -216,6 +216,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
   appState.state = appState.state || {};
 
 	domain = appState.getDomainDataContext();
+	delete appState.__proto__.getDomainDataContext;
 
 	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
@@ -224,6 +225,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
       if('getWatchedState' in appState[dataContext]){
       	watchedState = appState[dataContext].getWatchedState();
+      	delete appState[dataContext].__proto__.getWatchedState;
       	for(watchedItem in watchedState){
       		if(watchedState.hasOwnProperty(watchedItem)){
       			if(watchedItem in domain || watchedItem in appState.state){
@@ -277,5 +279,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo);
 	Object.freeze(appState.state);
 	Object.freeze(appState);
+
+	console.warn('\"this.extend\" has been deprecated. Please use \"IMVVM.extend\".');
 	return appState;
 };

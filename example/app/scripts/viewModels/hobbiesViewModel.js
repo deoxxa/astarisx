@@ -111,7 +111,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
 
      */
 
-    if(this.current.id === value){
+    if(this.current && this.current.id === value){
       this.setState({ current: void(0) }, { busy: false }, function(){
         this.state.personsContext.selectedPerson.deleteHobby(value);
       }.bind(this));

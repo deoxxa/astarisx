@@ -88,7 +88,6 @@ var IMVVMClass = {
           }
         }
       }
-
       
       if(!('extend' in proto)){
         proto.extend = utils.extend;      
@@ -119,7 +118,8 @@ var IMVVM = {
   createModel: IMVVMClass.createClass.bind(this, ModelBase, 'Model'),
   createViewModel: IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel'),
   createDomainViewModel: IMVVMClass.createClass.bind(this, DomainViewModelBase, 'DomainViewModel'),
-  mixin: mixin
+  mixin: mixin,
+  extend: extend
 };
 
 module.exports = IMVVM;

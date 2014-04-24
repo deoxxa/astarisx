@@ -30,6 +30,7 @@ var IMVVMViewModel = {
         if(nextVMState === void(0)){
           nextState = ('getInitialState' in viewModel) ?
             extend(nextState, viewModel.getInitialState.call(viewModel)) : nextState;
+            delete viewModel.__proto__.getInitialState;
         } else {
           nextState = ('state' in nextVMState ? nextVMState.state : nextVMState);
         }
