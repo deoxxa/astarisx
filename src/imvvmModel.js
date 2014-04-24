@@ -18,8 +18,6 @@ var IMVVMModel = {
         desc.proto.getInitialState = desc.originalSpec.getInitialState;
       }
 
-      console.log(desc);
-
       var dataContext = function(nextState, extendState, initialize) {
         
         var freezeFields = desc.freezeFields,
