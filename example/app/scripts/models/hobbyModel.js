@@ -12,6 +12,7 @@ var HobbyModel = IMVVM.createModel({
   },
 
   name: {
+    aliasFor: 'hobby',
     get: function(){
       return this.state.name;
     },
