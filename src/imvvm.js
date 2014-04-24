@@ -90,7 +90,7 @@ var IMVVMClass = {
       }
       
       if(!('extend' in proto)){
-        proto.extend = utils.extend;      
+        proto.extend = utils.extend;
       }
 
       if(!!Object.keys(viewModels).length){
