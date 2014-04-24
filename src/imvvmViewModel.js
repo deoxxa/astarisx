@@ -48,7 +48,9 @@ var IMVVMViewModel = {
               if(viewModel[freezeFields[fld].fieldName]){
                 tempDesc = viewModel[freezeFields[fld].fieldName].__getDescriptor();
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
-
+                delete tempModel.__proto__.__getDescriptor;
+                delete tempModel.__proto__.getInitialState;
+                
                 Object.defineProperty(tempModel, 'state', {
                   configurable: true,
                   enumerable: false,

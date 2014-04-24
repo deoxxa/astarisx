@@ -9,9 +9,16 @@ var IMVVMModel = {
 
       var desc = this.getDescriptor(this);
       desc.stateChangedHandler = stateChangedHandler;
+
       desc.proto.__getDescriptor = function(){
         return desc;
       }
+
+      if('getInitialState' in desc.originalSpec){
+        desc.proto.getInitialState = desc.originalSpec.getInitialState;
+      }
+
+      console.log(desc);
 
       var dataContext = function(nextState, extendState, initialize) {
         
@@ -47,7 +54,8 @@ var IMVVMModel = {
             }
           }
           if('getInitialState' in model){
-            nextState = extend(nextState, model.getInitialState.call(model));  
+            nextState = extend(nextState, model.getInitialState.call(model));
+            delete model.__proto__.getInitialState;
           }
         }
 

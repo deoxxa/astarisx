@@ -383,7 +383,7 @@ var IMVVMClass = {
       }
       
       if(!('extend' in proto)){
-        proto.extend = utils.extend;      
+        proto.extend = utils.extend;
       }
 
       if(!!Object.keys(viewModels).length){
@@ -547,9 +547,16 @@ var IMVVMModel = {
 
       var desc = this.getDescriptor(this);
       desc.stateChangedHandler = stateChangedHandler;
+
       desc.proto.__getDescriptor = function(){
         return desc;
       }
+
+      if('getInitialState' in desc.originalSpec){
+        desc.proto.getInitialState = desc.originalSpec.getInitialState;
+      }
+
+      console.log(desc);
 
       var dataContext = function(nextState, extendState, initialize) {
         
@@ -585,7 +592,8 @@ var IMVVMModel = {
             }
           }
           if('getInitialState' in model){
-            nextState = extend(nextState, model.getInitialState.call(model));  
+            nextState = extend(nextState, model.getInitialState.call(model));
+            delete model.__proto__.getInitialState;
           }
         }
 
@@ -666,7 +674,9 @@ var IMVVMViewModel = {
               if(viewModel[freezeFields[fld].fieldName]){
                 tempDesc = viewModel[freezeFields[fld].fieldName].__getDescriptor();
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
-
+                delete tempModel.__proto__.__getDescriptor;
+                delete tempModel.__proto__.getInitialState;
+                
                 Object.defineProperty(tempModel, 'state', {
                   configurable: true,
                   enumerable: false,
