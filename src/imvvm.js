@@ -54,8 +54,8 @@ var IMVVMClass = {
         aliases = {},
         key;
 
-      if('__processedObject__' in this.originalSpec){
-        return this.originalSpec.__processedObject__;
+      if('__processedSpec__' in this.originalSpec){
+        return this.originalSpec.__processedSpec__;
       }
 
       for(key in this.originalSpec){
@@ -99,7 +99,7 @@ var IMVVMClass = {
         }
       }
 
-      this.originalSpec.__processedObject__ = { 
+      this.originalSpec.__processedSpec__ = { 
         descriptor: descriptor,
         proto: proto,
         originalSpec: this.originalSpec || {},
@@ -107,7 +107,7 @@ var IMVVMClass = {
         aliases: aliases
       };
 
-      return this.originalSpec.__processedObject__;
+      return this.originalSpec.__processedSpec__;
     };
 
     return ConvenienceConstructor;

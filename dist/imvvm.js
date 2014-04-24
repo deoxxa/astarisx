@@ -346,8 +346,8 @@ var IMVVMClass = {
         aliases = {},
         key;
 
-      if('__processedObject__' in this.originalSpec){
-        return this.originalSpec.__processedObject__;
+      if('__processedSpec__' in this.originalSpec){
+        return this.originalSpec.__processedSpec__;
       }
 
       for(key in this.originalSpec){
@@ -391,7 +391,7 @@ var IMVVMClass = {
         }
       }
 
-      this.originalSpec.__processedObject__ = { 
+      this.originalSpec.__processedSpec__ = { 
         descriptor: descriptor,
         proto: proto,
         originalSpec: this.originalSpec || {},
@@ -399,7 +399,7 @@ var IMVVMClass = {
         aliases: aliases
       };
 
-      return this.originalSpec.__processedObject__;
+      return this.originalSpec.__processedSpec__;
     };
 
     return ConvenienceConstructor;
@@ -665,7 +665,7 @@ var IMVVMViewModel = {
         for (fld = freezeFields.length - 1; fld >= 0; fld--) {
           if(freezeFields[fld].kind === 'instance'){
               if(viewModel[freezeFields[fld].fieldName]){
-                tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedObject__;
+                tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
                 delete tempModel.__proto__.getInitialState;
                 
