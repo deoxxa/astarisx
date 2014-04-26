@@ -286,7 +286,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	Object.freeze(appState.state);
 	Object.freeze(appState);
 
-	console.warn('\"this.extend\" has been deprecated. Please use \"IMVVM.extend\".');
+	console.warn('\"this.extend\" has been deprecated and will not be available in 0.7. Please use \"IMVVM.extend\".');
 	return appState;
 };
 },{"./utils":8}],3:[function(_dereq_,module,exports){
