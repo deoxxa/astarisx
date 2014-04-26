@@ -51,8 +51,6 @@ require(['./imvvm.min.js'], function (IMVVM) {
 ```
 
 ## Getting Started
-(which is intended to act as a reference implementation) 
-
 ###Install and start the example application (which is intended to act as a reference implementation).
 The example application is a good starting place when figuring out how things work. To get it running, navigate to the `./example` directory and run the following commands.
 
