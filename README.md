@@ -51,6 +51,19 @@ require(['./imvvm.min.js'], function (IMVVM) {
 ```
 
 ## Getting Started
+(which is intended to act as a reference implementation) 
+
+###Install and start the example application (which is intended to act as a reference implementation).
+The example application is a good starting place when figuring out how things work. To get it running, navigate to the `./example` directory and run the following commands.
+
+  ```
+  $ npm install
+  $ cd app
+  $ bower install
+  $ bower install imvvm
+  $ cd ..
+  $ grunt serve
+  ```
 
 ### Create a Model
 
@@ -59,8 +72,8 @@ var PersonModel = IMVVM.createModel({
   
   getInitialState: function(){
     return {
-      age: this.calculateAge(this.dob),
-      id: this.id ? this.id : this.uuid()
+      age: calculateAge(this.dob),
+      id: this.id ? this.id : uuid()
     };
   },
 
@@ -86,7 +99,7 @@ var PersonModel = IMVVM.createModel({
     set: function(newValue){
       var age;
       if(newValue.length === 10){
-        age = this.calculateAge(newValue);
+        age = calculateAge(newValue);
       }
       if(newValue.length === 0){
         age = 'Enter your Birthday';
@@ -112,28 +125,6 @@ var PersonModel = IMVVM.createModel({
       return this.state.age;
     }
   },
-  
-  calculateAge: function(dob){
-    var DOB = new Date(dob);
-    var ageDate = new Date(Date.now() - DOB.getTime()); 
-    var age = Math.abs(ageDate.getFullYear() - 1970);
-    return isNaN(age) ? 'Enter your Birthday' : age + ' years old';
-  },
-
-  uuid: function () {
-    var i, random;
-    var uuid = '';
-
-    for (i = 0; i < 32; i++) {
-      random = Math.random() * 16 | 0;
-      if (i === 8 || i === 12 || i === 16 || i === 20) {
-        uuid += '-';
-      }
-      uuid += (i === 12 ? 4 : (i === 16 ? (random & 3 | 8) : random))
-        .toString(16);
-    }
-    return uuid;
-  },
 
 });
 ```
@@ -143,21 +134,38 @@ The `getInitialState` function initializes any fields that require a value durin
 #####name
 `name` is a simple field descriptor. It defines a getter and setter. The getter returns state that resides in the state's property of the same name. The setter will transition the model to the next state, when a value is assigned to it. It uses the value and passes it, as an object, to the setState function. This will notify any ViewModels that have registered a stateChangedHandler with this model.
 #####age
-`age` is a calculated field. It is set by setting `dob`. `dob` uses the calculateAge function to set the value of age and passes both the dob and age values to setState. Please note that `age` needed to be initialized in the getInitialState() function.
+`age` is a calculated field. It is set by setting `dob`. `dob` uses a calculateAge function to set the value of age and passes both the dob and age values to setState. Please note that `age` needed to be initialized in the getInitialState() function.
 
 ### Create a ViewModel
 
 ```javascript
+var personStateChangedHandler = function(nextState, prevState){
+  var persons = {};
+  persons.collection = this.collection.map(function(person){
+    if(person.id === nextState.id){
+      persons.selectedPerson = new Person(nextState);
+      return persons.selectedPerson;
+    }
+    return person;
+  }.bind(this));
+
+  this.setState(persons);
+};
+
+var Person = function(){
+  return new PersonModel(personStateChangedHandler).apply(this, arguments);
+};
+
 var PersonsViewModel = IMVVM.createViewModel({
 
   getInitialState: function(){
     var nextState = {};
     nextState.collection = DataService.getData().map(function(person, idx){
       if (idx === 0){
-        nextState.selectedPerson = this.Person(person, true);
+        nextState.selectedPerson = new Person(person, true);
         return nextState.selectedPerson;
       }
-      return this.Person(person, true);
+      return new Person(person, true);
     }.bind(this));
     return nextState;
   },
@@ -190,23 +198,6 @@ var PersonsViewModel = IMVVM.createViewModel({
     get: function(){ return this.state.collection; },
   },
 
-  personStateChangedHandler: function(nextState, prevState){
-    var persons = {};
-    persons.collection = this.collection.map(function(person){
-      if(person.id === nextState.id){
-        persons.selectedPerson = this.Person(nextState);
-        return persons.selectedPerson;
-      }
-      return person;
-    }.bind(this));
-
-    this.setState(persons);
-  },
-
-  Person: function(){
-    return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
-  },
-
   selectedHobby: {
     kind: 'pseudo',
     get: function() {
@@ -217,7 +208,7 @@ var PersonsViewModel = IMVVM.createViewModel({
   selectPerson: function(id){
     for (var i = this.collection.length - 1; i >= 0; i--) {
       if(this.selectedPerson.id !== id && this.collection[i].id === id){
-        this.setState({ selectedPerson: this.Person(this.collection[i]) });
+        this.setState({ selectedPerson: new Person(this.collection[i]) });
         break;
       }
     }
@@ -229,7 +220,7 @@ var PersonsViewModel = IMVVM.createViewModel({
 
     if(value && value.length > 0){
       name = value.split(' ');
-      nextState.selectedPerson = this.Person({
+      nextState.selectedPerson = new Person({
         firstName: name[0],
         lastName: name.slice(1).join(' ')
       }, true);
@@ -247,9 +238,9 @@ var PersonsViewModel = IMVVM.createViewModel({
     nextState.selectedPerson = void(0);
     if(nextState.collection.length > 0){
       if (this.selectedPerson.id === uid){
-        nextState.selectedPerson = this.Person(nextState.collection[0]);
+        nextState.selectedPerson = new Person(nextState.collection[0]);
       } else {
-        nextState.selectedPerson = this.Person(this.selectedPerson);
+        nextState.selectedPerson = new Person(this.selectedPerson);
       }
     }
     this.setState(nextState);
@@ -288,6 +279,13 @@ I've added a code snippet of HobbiesViewModel, from the example application to h
 __HobbiesViewModel snippet__
 
 ```javascript
+var onPersonChangedHandler = function(nextState, prevState, field, context){
+  if(this.current !== void(0) && context === 'persons' &&
+    nextState.id !== prevState.id){
+    return { hobbies: { current: void(0) }, busy: false };
+  }
+};
+
 var HobbiesViewModel = IMVVM.createViewModel({
 
   getWatchedState: function() {
@@ -295,20 +293,13 @@ var HobbiesViewModel = IMVVM.createViewModel({
       'persons': {
         alias: 'personsContext',
         fields: {
-          'selectedPerson': this.onPersonChangedHandler
+          'selectedPerson': onPersonChangedHandler
         }
       },
       'busy': {
         alias: 'busy'
       }
     };
-  },
-
-  onPersonChangedHandler: function(nextState, prevState, field, context){
-    if(this.current !== void(0) && context === 'persons' &&
-      nextState.id !== prevState.id){
-      return { hobbies: { current: void(0) }, busy: false };
-    }
   },
   
   ...
@@ -317,11 +308,11 @@ var HobbiesViewModel = IMVVM.createViewModel({
     for (var i = this.hobbies.length - 1; i >= 0; i--) {
       if ((this.current === void(0) || this.current.id !== id) && this.hobbies[i].id === id){
         
-        this.setState({current: this.Hobby(this.hobbies[i])}, {busy: true});
+        this.setState({current: new Hobby(this.hobbies[i])}, {busy: true});
         
         /*
           //OR use a callback
-          this.setState({current: this.Hobby(this.hobbies[i])}, function(){
+          this.setState({current: new Hobby(this.hobbies[i])}, function(){
             this.setState(void(0), {busy: true});
           }.bind(this));
         */
@@ -444,6 +435,14 @@ The `domainDataContext` has all the properties that were specified in the Domain
 - hobbies (dataContext)
   + [viewModel properties and functions...]
 
+>___This is probably a good time to explain a little about what's going on.___
+>
+>When a Model, ViewModel or DomainViewModel is instantiated, IMVVM takes all the defined functions and places them on the Object's prototype and takes all the field descriptors and assigns them as properties for the newly created object.
+>
+>So whatever is defined within a Model, ViewModel or DomainModel, is visible to other objects. This means that the View has visibility and access to all the functions and properties, including any implementation specific functions and properties, which probably should be kept separate from the View.
+>
+>What would be preferred, is to only expose the properties and functions the View needs. To accomplish this, define any variables, properties or functions outside of your Models, ViewModels and DomainViewModels, and simply reference them. That way the View API is kept nice and clean and your implementation is kept separate. 
+
 ### Render the View
 
 Then you just render the View, specifying a `domainModel` prop, that references the 'DomainViewModel'.
@@ -526,18 +525,6 @@ var FormView = React.createClass({
   }
 });
 ```
-
-##Running the example application
-The example application is a good starting place when figuring out how things work. To get it running, navigate to the `./example` directory and run the following commands.
-
-  ```
-  $ npm install
-  $ cd app
-  $ bower install
-  $ bower install imvvm
-  $ cd ..
-  $ grunt serve
-  ```
 
 ##API
 
