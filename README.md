@@ -406,7 +406,7 @@ The `persons` property is setting up a data context called 'persons'. It has a s
 >
 >What would be preferred, is to only expose the properties and functions the View needs. To accomplish this, define any variables, properties or functions outside of your Models, ViewModels and DomainViewModels, and simply reference them. That way the View API is kept nice and clean and your implementation is kept separate.
 >
->Refer to the reference implementation (i.e. example application), which uses this above technique.
+>Refer to the reference implementation (i.e. example application), which uses this technique.
 
 ### Hook up the View
 Once you have created your Models. ViewModels and DomainViewModel, you're ready to hook it up the the View. All you need to do is specify the mixin and IMVVM will attach a `domainDataContext` to the state object that will be kept in sync with you're ViewModel.
