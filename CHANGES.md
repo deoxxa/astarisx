@@ -1,6 +1,6 @@
 ## 0.6.17
 
- - `this.extend` dreprecated. Replaced with `IMVVM.extend`. Will no longer be available in version `0.7.0+`
+ - `this.extend` dreprecated. Replaced with `IMVVM.extend`. Will not be available in version `0.7.0+`
  - The following functions are no longer exposed to the View
      + getDomainDataContext
      + getInitialState
