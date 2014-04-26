@@ -41,7 +41,7 @@ var PersonModel = (function(){
       id = this.id || uuid();
       
       hobbies = DataService.getHobbiesData(this.id).map(function(hobby){
-        return Hobby(hobby, true);
+        return new Hobby(hobby, true);
       }.bind(this));
 
       return {
@@ -165,5 +165,5 @@ var PersonModel = (function(){
 
   });
   return personModel;
-}()); 
+}());
 

@@ -27,7 +27,7 @@ var HobbiesViewModel = (function(){
     var hobbiesArr = this.hobbies.map(function(hobby){
       if (hobby.id === nextState.id){
 
-        newState.current = Hobby(nextState);
+        newState.current = new Hobby(nextState);
         return newState.current;
       }
       return hobby;
@@ -92,7 +92,7 @@ var HobbiesViewModel = (function(){
       for (var i = this.hobbies.length - 1; i >= 0; i--) {
         if ((this.current === void(0) || this.current.id !== id) && this.hobbies[i].id === id){
           
-          this.setState({current: Hobby(this.hobbies[i])}, {busy: true});
+          this.setState({current: new Hobby(this.hobbies[i])}, {busy: true});
           
           /*
             //OR use a callback
@@ -109,7 +109,7 @@ var HobbiesViewModel = (function(){
     addHobby: function(value){
       if(value !== ''){
         this.state.personsContext.selectedPerson.
-        addHobby(Hobby({ id: uuid(), name:value }, true));
+        addHobby(new Hobby({ id: uuid(), name:value }, true));
       }
     },
     

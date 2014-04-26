@@ -9,7 +9,7 @@ var PersonsViewModel = (function(){
     var persons = {};
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
-        persons.selectedPerson = Person(nextState);
+        persons.selectedPerson = new Person(nextState);
         return persons.selectedPerson;
       }
       return person;
@@ -27,10 +27,10 @@ var PersonsViewModel = (function(){
       var nextState = {};
       nextState.collection = DataService.getPersonData().map(function(person, idx){
         if (idx === 0){
-          nextState.selectedPerson = Person(person, true);
+          nextState.selectedPerson = new Person(person, true);
           return nextState.selectedPerson;
         }
-        return Person(person, true);
+        return new Person(person, true);
       }.bind(this));
       return nextState;
     },
@@ -73,7 +73,7 @@ var PersonsViewModel = (function(){
     selectPerson: function(id){
       for (var i = this.collection.length - 1; i >= 0; i--) {
         if(this.selectedPerson.id !== id && this.collection[i].id === id){
-          this.setState({ selectedPerson: Person(this.collection[i]) });
+          this.setState({ selectedPerson: new Person(this.collection[i]) });
           break;
         }
       }
@@ -85,7 +85,7 @@ var PersonsViewModel = (function(){
 
       if(value && value.length > 0){
         name = value.split(' ');
-        nextState.selectedPerson = Person({
+        nextState.selectedPerson = new Person({
           firstName: name[0],
           lastName: name.slice(1).join(' ')
         }, true);
@@ -103,9 +103,9 @@ var PersonsViewModel = (function(){
       nextState.selectedPerson = void(0);
       if(nextState.collection.length > 0){
         if (this.selectedPerson.id === uid){
-          nextState.selectedPerson = Person(nextState.collection[0]);
+          nextState.selectedPerson = new Person(nextState.collection[0]);
         } else {
-          nextState.selectedPerson = Person(this.selectedPerson);
+          nextState.selectedPerson = new Person(this.selectedPerson);
         }
       }
       this.setState(nextState);
