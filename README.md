@@ -396,7 +396,7 @@ The 'getInitialState' is the same as for the ViewModel.
 #####persons
 The `persons` property is setting up a data context called 'persons'. It has a special decorator called `viewModel` which specifies which ViewModel is associated to this data context.
 
->___This is probably a good time to explain a little about what's gets exposed to the View.___
+>___This is probably a good time to explain a little about what gets exposed to the View.___
 >
 >When a Model, ViewModel or DomainViewModel is instantiated, IMVVM takes all the defined functions and places them on the Object's prototype and takes all the field descriptors and assigns them as properties for the newly created object.
 >
