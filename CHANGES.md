@@ -6,7 +6,7 @@
      + getInitialState
      + getWatchedState
      + \_\_getDescriptor - this has been entirely removed
- - Started promoting the use of the module pattern in order to hide implementation specific descriptor definitions/functions from the View. This is prodominately reflected in the reference implementation.
+ - Started promoting the use of the module pattern in order to hide implementation specific descriptor definitions/functions from the View. This is reflected in the reference implementation.
  - Updated reference implementation.
 
 
