@@ -3,7 +3,7 @@
   "version": "0.6.19",
   "homepage": "https://github.com/entrendipity/imvvm",
   "authors": [
-    "Frank Panetta <entrendipity[at]gmail.com>"
+    "Frank Panetta <frank.panetta@entrendipity.com.au>"
   ],
   "description": "Immutable MVVM for React",
   "main": "dist/imvvm.js",
