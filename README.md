@@ -394,7 +394,9 @@ var DomainViewModel = IMVVM.createDomainViewModel({
 #####getInitialState()
 The 'getInitialState' is the same as for the ViewModel.
 #####persons
-The `persons` property is setting up a data context called 'persons'. It has a special decorator called `viewModel` which specifies which ViewModel is associated to this data context.
+The `persons` property sets up a data context called 'persons'. It has a special decorator called `viewModel`, which specifies the associated ViewModel to this data context.
+
+___
 
 >___This is probably a good time to explain a little about what gets exposed to the View.___
 >
@@ -406,6 +408,7 @@ The `persons` property is setting up a data context called 'persons'. It has a s
 >
 >Refer to the reference implementation (i.e. example application), which uses this technique.
 
+___
 ### Hook up the View
 Once you have created your Models. ViewModels and DomainViewModel, you're ready to hook it up the the View. All you need to do is specify the mixin and IMVVM will attach a `domainDataContext` to the state object that will be kept in sync with you're ViewModel.
 
@@ -544,6 +547,7 @@ Creates a ViewModel object.
 *parameters*
 
 __specification__ - see [Specification](#specification)
+
 ___
 #####function createModel(object specification)
 Creates a Model object.
@@ -582,6 +586,7 @@ __callback__
 Used to do sequential setState calls.
 
 _Available in:_ DomainViewModel, ViewModel, Model
+
 ___
 #####object undo()
 `undo` transitions state to the previous state. Requires [`enableUndo`](#enableundo-boolean-default--false) to be `true` to enable this functionality.
@@ -610,6 +615,7 @@ ___
 Holds Domain Data Context next state.
 
 _Available in:_ DomainViewModel
+
 ___
 #####canUndo
 `true` - can transition to previous state.
@@ -721,7 +727,6 @@ __previousState__
 Previous state of the model.
 
 __callback__
-
 
 ```javascript
   personStateChangedHandler: function(nextState, prevState){
