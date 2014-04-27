@@ -336,7 +336,7 @@ Both the `alias` and `fields` properties are optional.
 #####selectHobby
 The `selectHobby` function is nothing special. What is different about it, is the `setState` function. A ViewModel's `setState` function has an extra parameter which enables the ViewModel to update state in other data contexts. The second parameter takes a state object, not dissimilar to the state object that is returned from `onPersonChangedHandler`. The second parameter accepts an object that specifies the data context or domain property and its associated state.
 
-For instance `this.setState({current: this.Hobby(this.hobbies[i])}, {busy: true});`. The first parameter is the next state for the `hobbies` data context, the second parameter specifies that `busy`, a property in the domain data context, should be changed to `true`. This second parameter also accepts other data contexts (e.g. `{persons: {selectedPerson: this.Person(personState)}}`).
+For instance `this.setState({current: this.Hobby(this.hobbies[i])}, {busy: true});`. The first parameter is the next state for the `hobbies` data context, the second parameter specifies that `busy`, a property in the domain data context, should be changed to `true`. This second parameter also accepts other data contexts (e.g. `{persons: {selectedPerson: new Person(personState)}}`).
 
 Also noted within comments, is that this can be achieved within a callback, ensuring to pass `void(0)` as the first parameter to `setState`.
 
@@ -734,7 +734,7 @@ __callback__
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
 
-        persons.selected = this.Person(nextState, person, true);
+        persons.selected = new Person(nextState, person, true);
         return persons.selected;
       }
       return person;
@@ -774,11 +774,11 @@ Object containing more next state values for the model. This parameter is for co
 
 ```javascript
 var nextState = this.extend(personObj, {firstName: 'Fred'});
-persons.selectedPerson = this.Person(nextState);
+persons.selectedPerson = new Person(nextState);
 ```
 
 ```javascript
-persons.selectedPerson = this.Person(personObj, {firstName: 'Fred'});
+persons.selectedPerson = new Person(personObj, {firstName: 'Fred'});
 ```
 
 __initialize__
@@ -792,8 +792,8 @@ ___Usage example___
 ___n.b. This is suggested usage and not part of the API___
 
 ```javascript
-Person: function(){
-  return new PersonModel(this.personStateChangedHandler).apply(this, arguments);
+var Person: function(){
+  return new PersonModel(personStateChangedHandler).apply(this, arguments);
 },
 ```
 
