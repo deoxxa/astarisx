@@ -328,7 +328,7 @@ var HobbiesViewModel = IMVVM.createViewModel({
 #####getWatchedState()
 Notice in this instance of the `getWatchedState` function, the `persons` object has an extra property called `fields`. `fields` the ViewModel should be notified when `persons.selectedPerson` changes, and if it does change trigger the `onPersonChanged` handler.
 
-Both the `alias` and `fields` properties are optional.
+Both the `alias` and `fields` properties are optional. However at least one must be present.
 
 #####onPersonChangedHandler
 `onPersonChangedHandler` will be triggered whenever any of the fields that it is assigned to changes. It is important to note that if there is a change, `onPersonChangedHandler` must return a state object. If no change has occurred, return either void(0) or don't return anything. It should also be noted that the returned state object has a property with the data context, `hobbies`, and the associated next state object. This is necessary so that any data context or domain property can be updated from this ViewModel by specfying it in the returned object.
@@ -654,10 +654,14 @@ dataContext\: \{
   \}
 \}
 
-######Watching DomainViewModel state
+___n.b. `alias` and `fields` are optional, however at least one must be present. This is intentional. `alias` is an indicator that the ViewModel should attach the specified dataContext to the `state` object. If `alias` is not specified then it will not be attached.___
+
+######Watching Domain Data Context state
 field\: \{
   alias\: preferredName
 \}
+
+___n.b. `alias` is not optional, in this istance, as only fields can be referenced to the Domain dataContext.___
 
 ___example___
 ```javascript
