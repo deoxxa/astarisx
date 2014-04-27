@@ -661,7 +661,7 @@ field\: \{
   alias\: preferredName
 \}
 
-___n.b. `alias` is not optional, in this istance, as only fields can be referenced to the Domain dataContext.___
+___n.b. `alias` is not optional, in this instance, as only fields can be referenced to the Domain dataContext.___
 
 ___example___
 ```javascript
@@ -670,7 +670,7 @@ ___example___
       'persons': {
         alias: 'personsContext',
         fields: {
-          'selected': this.onPersonChange
+          'selected': onPersonChange
         }
       },
       'busy': {
