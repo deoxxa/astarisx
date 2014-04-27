@@ -394,17 +394,17 @@ var DomainViewModel = IMVVM.createDomainViewModel({
 #####getInitialState()
 The 'getInitialState' is the same as for the ViewModel.
 #####persons
-The `persons` property sets up a data context called 'persons'. It has a special decorator called `viewModel`, which specifies the associated ViewModel to this data context.
+The `persons` property sets up a data context called 'persons'. It has a special decorator called `viewModel`, which specifies the associated ViewModel for this data context.
 
 ___
 
 >___This is probably a good time to explain a little about what gets exposed to the View.___
 >
->When a Model, ViewModel or DomainViewModel is instantiated, IMVVM takes all the defined functions and places them on the Object's prototype and takes all the field descriptors and assigns them as properties for the newly created object.
+>When a Model, ViewModel or DomainViewModel is instantiated, IMVVM takes all the defined functions and places them on the Object's prototype. It also takes all the field descriptors and assigns them as properties for the newly created object.
 >
->So whatever is defined within a Model, ViewModel or DomainModel, is visible to other objects. This means that the View has visibility and access to all the functions and properties, including any implementation specific functions and properties, which probably should be kept separate from the View.
+>So all functions and fields defined within a Model, ViewModel or DomainModel, are visible to other objects. This means that the View has visibility and access to these functions and fields, including any implementation specific functions, which probably should be kept separate from the View.
 >
->What would be preferred, is to only expose the properties and functions the View needs. To accomplish this, define any variables, properties or functions outside of your Models, ViewModels and DomainViewModels, and simply reference them. That way the View API is kept nice and clean and your implementation is kept separate.
+>What would be preferred, is to only expose the properties and functions the View needs. To accomplish this, define variables, properties or functions outside of your Models, ViewModels and DomainViewModels, and simply reference them. That way the View API is kept nice and clean and your implementation is kept separate.
 >
 >Refer to the reference implementation (i.e. example application), which uses this technique.
 
