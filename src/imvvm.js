@@ -76,8 +76,12 @@ var IMVVMClass = {
               if('kind' in this.originalSpec[key]){
                 if(this.originalSpec[key].kind === 'pseudo'){
                   this.originalSpec[key].enumerable = false;
-                } else { //'instance' || 'array'
+                } else if (this.originalSpec[key].kind === 'instance' ||
+                  this.originalSpec[key].kind === 'array') { //'instance' || 'array'
                   autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
+                } else {
+                  throw new TypeError('"'+this.originalSpec[key].kind +'" '+
+                    'is not a valid "kind" value. Valid values are "pseudo","instance" and "array". Please review field "' + key + '".');
                 }
                 delete this.originalSpec[key].kind;
               }

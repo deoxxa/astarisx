@@ -12,4 +12,8 @@
 
  - Nothing changed from 0.6.17. Issues with NPM meant I had to bump version.
 
+## 0.6.20
+
+ - Catch error for invalid 'kind' value
+
 

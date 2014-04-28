@@ -336,7 +336,7 @@ Both the `alias` and `fields` properties are optional. However at least one must
 #####selectHobby
 The `selectHobby` function is nothing special. What is different about it, is the `setState` function. A ViewModel's `setState` function has an extra parameter which enables the ViewModel to update state in other data contexts. The second parameter takes a state object, not dissimilar to the state object that is returned from `onPersonChangedHandler`. The second parameter accepts an object that specifies the data context or domain property and its associated state.
 
-For instance `this.setState({current: this.Hobby(this.hobbies[i])}, {busy: true});`. The first parameter is the next state for the `hobbies` data context, the second parameter specifies that `busy`, a property in the domain data context, should be changed to `true`. This second parameter also accepts other data contexts (e.g. `{persons: {selectedPerson: new Person(personState)}}`).
+For instance `this.setState({current: new Hobby(this.hobbies[i])}, {busy: true});`. The first parameter is the next state for the `hobbies` data context, the second parameter specifies that `busy`, a property in the domain data context, should be changed to `true`. This second parameter also accepts other data contexts (e.g. `{persons: {selectedPerson: new Person(personState)}}`).
 
 Also noted within comments, is that this can be achieved within a callback, ensuring to pass `void(0)` as the first parameter to `setState`.
 
@@ -763,8 +763,8 @@ State changed handler which is triggered whenever setState is called from within
 ___n.b. Only use stateChangedHandlers in ViewModels. Do not use stateChangedHandlers in Models. You can still use Model within Models. Below is an example of how you would initialize Model instances inside other Models.___
 
 ```javascript
-Hobby: function(hobbyState, init){
-  return new HobbyModel()(hobbyState, init);
+var Hobby: function(){
+  return new HobbyModel().apply(this, arguments);
 },
 ```
 
