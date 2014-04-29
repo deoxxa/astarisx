@@ -131,6 +131,26 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								subscribers = watchedDataContexts[transientStateKeys[keyIdx]][watchedField];
 								for(subscriber in subscribers){
 									if(subscribers.hasOwnProperty(subscriber)){
+										
+										//Cross reference dataContext link Phase
+										if(subscriber in links){
+											for(dataContext in links[subscriber]){
+												if(links[subscriber].hasOwnProperty(dataContext)){
+													nextState[subscriber].state[links[subscriber][dataContext]] =
+														(dataContext in domain) ? extend(nextState[dataContext].state) :
+															nextState[dataContext];
+												}
+												if(dataContext in links){
+													for(dataContext2 in links[dataContext]){
+														if(links[dataContext].hasOwnProperty(dataContext2)){
+															nextState[dataContext].state[links[dataContext][dataContext2]] =
+																(dataContext2 in domain) ? extend(nextState[dataContext2].state) :
+																	nextState[dataContext2];
+														}
+													}
+												}
+											}
+										}
 										transientState = extend(transientState, subscribers[subscriber].call(appState[subscriber],
 											nextState[transientStateKeys[keyIdx]][watchedField],
 											appState[transientStateKeys[keyIdx]][watchedField], watchedField, transientStateKeys[keyIdx]));
@@ -211,43 +231,48 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, true);
+	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo);
   appState.state = appState.state || {};
 
-	domain = appState.getDomainDataContext();
-	delete appState.__proto__.getDomainDataContext;
+	domain = appState.constructor.originalSpec.getDomainDataContext();
+	delete appState.constructor.originalSpec.getDomainDataContext;
 
+	//Initialize all dataContexts
 	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangedHandler.bind(this, dataContext));
-      appState.state[dataContext] = new dataContexts[dataContext](appState.state[dataContext]);
+			appState.state[dataContext] = new dataContexts[dataContext](appState.state[dataContext], true);
+    }
+  }
 
-      if('getWatchedState' in appState[dataContext]){
-      	watchedState = appState[dataContext].getWatchedState();
-      	delete appState[dataContext].__proto__.getWatchedState;
-      	for(watchedItem in watchedState){
-      		if(watchedState.hasOwnProperty(watchedItem)){
-      			if(watchedItem in domain || watchedItem in appState.state){
-	      			if('alias' in watchedState[watchedItem]){
-		      			if(!(dataContext in links)){
-		      				links[dataContext] = {};
-		      			}
-		      			links[dataContext][watchedItem] = watchedState[watchedItem].alias;
-		      			
-		      			if(!(watchedItem in domain)){
-		      				if(!(appNamespace in links)){
-			      				links[appNamespace] = {};
-			      			}
-		      				if(!(dataContext in links[appNamespace])){
-		      					links[appNamespace][watchedItem] = {};
-		      				}
-			      			links[appNamespace][watchedItem][dataContext] = watchedState[watchedItem].alias;
-		      			}
+  //Store links
+	for(dataContext in domain){
+		if(domain.hasOwnProperty(dataContext)){
+			if('getWatchedState' in appState[dataContext].constructor.originalSpec){
+				watchedState = appState[dataContext].constructor.originalSpec.getWatchedState();
+				for(watchedItem in watchedState){
+					if(watchedState.hasOwnProperty(watchedItem)){
+						if(watchedItem in domain || watchedItem in appState.state){
+							if('alias' in watchedState[watchedItem]){
+								if(!(dataContext in links)){
+									links[dataContext] = {};
+								}
+								links[dataContext][watchedItem] = watchedState[watchedItem].alias;	
 
-	      			}
-	      			for(watchedProp in watchedState[watchedItem].fields){
-	      				if(watchedState[watchedItem].fields.hasOwnProperty(watchedProp)){
-			      			if(watchedItem in domain){
+								if(!(watchedItem in domain)){
+									if(!(appNamespace in links)){
+										links[appNamespace] = {};
+									}
+									if(!(dataContext in links[appNamespace])){
+										links[appNamespace][watchedItem] = {};
+									}
+									links[appNamespace][watchedItem][dataContext] = watchedState[watchedItem].alias;
+								}
+
+							}
+							for(watchedProp in watchedState[watchedItem].fields){
+								if(watchedState[watchedItem].fields.hasOwnProperty(watchedProp)){
+									if(watchedItem in domain){
 										watchedDataContext = {};
 										if(!(watchedItem in watchedDataContexts)){
 											watchedDataContexts[watchedItem] = {};
@@ -256,25 +281,33 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 										watchedDataContext[watchedProp][dataContext] = watchedState[watchedItem].fields[watchedProp];
 										watchedDataContexts[watchedItem] = watchedDataContext;
 									}
-	      				}
-	      			}
-      			}
-      		}
-      	}
-      }
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
+	//apply links
 	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			for(link in links[dataContext]){
-        if(links[dataContext].hasOwnProperty(link)){
-          appState[dataContext].state[links[dataContext][link]] = (link in domain) ? extend(appState[link].state): appState[link];
-        }
-      }
+			  if(links[dataContext].hasOwnProperty(link)){
+			    appState[dataContext].state[links[dataContext][link]] = (link in domain) ? extend(appState[link].state): appState[link];
+			  }
+			}
 		}
 	}
 	
+	//reinitialize with all data in place
+	for(dataContext in domain){
+		if(domain.hasOwnProperty(dataContext)){
+			appState.state[dataContext] = new dataContexts[dataContext](appState.state[dataContext], true);
+    }
+  }
+
 	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo);
 	Object.freeze(appState.state);
 	Object.freeze(appState);

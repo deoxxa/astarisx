@@ -1,9 +1,8 @@
 
 var utils = require('./utils');
 var extend = utils.extend;
-var getDescriptor = utils.getDescriptor;
 
-var IMVVMDomainModel = {
+var IMVVMDomainViewModel = {
   Mixin: {
     construct: function(stateChangedHandler){
       
@@ -20,7 +19,7 @@ var IMVVMDomainModel = {
         }
       };
 
-      var dataContext = function(nextState, prevState, redoState, enableUndo, initialize) {
+      var dataContext = function(nextState, prevState, redoState, enableUndo) {
         
         var freezeFields = desc.freezeFields,
           domainModel = Object.create(desc.proto, desc.descriptor),
@@ -73,8 +72,7 @@ var IMVVMDomainModel = {
 
         if(nextState === void(0)){
           //Add state prop so that it can be referenced from within getInitialState
-          nextState = ('getInitialState' in domainModel) ? domainModel.getInitialState.call(domainModel) : {};
-          delete domainModel.__proto__.getInitialState;
+          nextState = ('getInitialState' in desc.originalSpec) ? desc.originalSpec.getInitialState.call(domainModel) : {};
         } else if('state' in nextState){
           delete nextState.state;
         
@@ -113,4 +111,4 @@ var IMVVMDomainModel = {
   }
 };
 
-module.exports = IMVVMDomainModel;
+module.exports = IMVVMDomainViewModel;

@@ -39,7 +39,7 @@ var HobbiesViewModel = (function(){
 
   };
 
-  //Use when this needs change state triggered by others action
+  //Use this if change state triggered by others action
   var onPersonChangedHandler = function(nextState, prevState, field, context){
     if(this.current !== void(0) && context === 'persons' &&
       nextState.id !== prevState.id){

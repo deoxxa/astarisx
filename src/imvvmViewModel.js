@@ -1,7 +1,6 @@
 
 var utils = require('./utils');
 var extend = utils.extend;
-var getDescriptor = utils.getDescriptor;
 
 var IMVVMViewModel = {
   Mixin: {
@@ -10,11 +9,13 @@ var IMVVMViewModel = {
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(nextVMState) {
+      var dataContext = function(nextState, initialize) {
 
         //nextState has already been extended with prevState in core
-        var nextState = {},
-          freezeFields = desc.freezeFields,
+        nextState = nextState || {};
+        nextState = ('state' in nextState ? nextState.state : nextState);
+        
+        var freezeFields = desc.freezeFields,
           fld,
           viewModel = Object.create(desc.proto, desc.descriptor),
           tempDesc,
@@ -27,20 +28,18 @@ var IMVVMViewModel = {
           value: nextState
         });
 
-        if(nextVMState === void(0)){
-          nextState = ('getInitialState' in viewModel) ?
-            extend(nextState, viewModel.getInitialState.call(viewModel)) : nextState;
-            delete viewModel.__proto__.getInitialState;
-        } else {
-          nextState = ('state' in nextVMState ? nextVMState.state : nextVMState);
-        }
+        if(initialize){
+          nextState = ('getInitialState' in desc.originalSpec) ?
+            extend(nextState, desc.originalSpec.getInitialState.call(viewModel)) : nextState;
+          
+          Object.defineProperty(viewModel, 'state', {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: nextState
+          });
 
-        Object.defineProperty(viewModel, 'state', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: nextState
-        });
+        }
 
         //freeze arrays and viewModel instances
         for (fld = freezeFields.length - 1; fld >= 0; fld--) {
@@ -48,7 +47,6 @@ var IMVVMViewModel = {
               if(viewModel[freezeFields[fld].fieldName]){
                 tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
-                delete tempModel.__proto__.getInitialState;
                 
                 Object.defineProperty(tempModel, 'state', {
                   configurable: true,

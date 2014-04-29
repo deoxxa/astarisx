@@ -1,7 +1,6 @@
 
 var utils = require('./utils');
 var extend = utils.extend;
-var getDescriptor = utils.getDescriptor;
 
 var IMVVMModel = {
   Mixin: {
@@ -9,10 +8,6 @@ var IMVVMModel = {
 
       var desc = this.getDescriptor(this);
       desc.stateChangedHandler = stateChangedHandler;
-
-      if('getInitialState' in desc.originalSpec){
-        desc.proto.getInitialState = desc.originalSpec.getInitialState;
-      }
 
       var dataContext = function(nextState, extendState, initialize) {
         
@@ -47,9 +42,8 @@ var IMVVMModel = {
               delete nextState[aliasFor];
             }
           }
-          if('getInitialState' in model){
-            nextState = extend(nextState, model.getInitialState.call(model));
-            delete model.__proto__.getInitialState;
+          if('getInitialState' in desc.originalSpec){
+            nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
           }
         }
 

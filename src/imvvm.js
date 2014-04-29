@@ -88,17 +88,19 @@ var IMVVMClass = {
             }
             descriptor[key] = this.originalSpec[key];
           } else {
-            proto[key] = this.originalSpec[key];
+            if(key !== 'getInitialState' && key !== 'getWatchedState'){
+              proto[key] = this.originalSpec[key];
+            }
           }
         }
       }
-      
+      /* deprecated - to be removed */
       if(!('extend' in proto)){
         proto.extend = utils.extend;
       }
 
       if(!!Object.keys(viewModels).length){
-        proto.getDomainDataContext = function(){
+        this.originalSpec.getDomainDataContext = function(){
           return viewModels;
         }
       }
