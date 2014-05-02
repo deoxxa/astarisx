@@ -89,7 +89,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 			if(typeof callback === 'function'){
 				appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo);
-				callback();
+				callback(appState);
 				return;
 			}
 		
@@ -108,11 +108,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				return;
 			}
 
-			if(typeof callback === 'function'){
-				callback();
-				return;
-			}
-			
 			transientStateKeysLen = transientStateKeys.length - 1;
 			
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
@@ -228,6 +223,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo);
 		Object.freeze(appState);
 		Object.freeze(appState.state);
+
+		if(typeof callback === 'function'){
+			callback(appState);
+			return;
+		}
+			
 		//All the work is done! -> Notify the View
 		stateChangedHandler(appState);
 		

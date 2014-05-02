@@ -24,4 +24,8 @@
 - `this.extend` removed. Use IMVVM.extend.
 - Enabled multiple models within one ViewModel.
 
+## 0.7.1
+
+- callbacks return domainDataContext
+
 

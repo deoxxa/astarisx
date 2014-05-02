@@ -583,7 +583,15 @@ ___example___
 
 __callback__
 
-Used to do sequential setState calls.
+Used to do sequential setState calls and returns latest Domain Data Context state.
+___example___ ***n.b. This example is not part of the reference implementation.It demonstrates how a callback can be used. Here the callback updates an amount property on a currentTarget object, which had been selected by the calling function `selectTarget` and passed back as `returnedAppContext`. Notice that you do not need to bind to `this` using this approach.***
+```javascript
+handleChange: function(target, e){
+  this.props.appContext.positionsContext.selectTarget(target, function(returnedAppContext){
+    returnedAppContext.positionsContext.currentTarget.amount = Utils.unformat(e.target.value);
+  });     
+},
+```
 
 _Available in:_ DomainViewModel, ViewModel, Model
 
@@ -727,6 +735,8 @@ __nextState__
 Next state of the model.
 
 __callback__
+
+Returns latest Domain Data Context state.
 
 ```javascript
   personStateChangedHandler: function(nextState){
