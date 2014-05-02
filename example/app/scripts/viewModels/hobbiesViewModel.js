@@ -21,7 +21,7 @@ var HobbiesViewModel = (function(){
     return uuid;
   };
 
-  var hobbyStateChangedHandler = function(nextState, prevState/*, callback*/){
+  var hobbyStateChangedHandler = function(nextState/*, callback*/){
 
     var newState = {};
     var hobbiesArr = this.hobbies.map(function(hobby){
@@ -96,7 +96,7 @@ var HobbiesViewModel = (function(){
           
           /*
             //OR use a callback
-            this.setState({current: Hobby(this.hobbies[i])}, function(){
+            this.setState({current: new Hobby(this.hobbies[i])}, function(){
               this.setState(void(0), {busy: true});
             }.bind(this));
           */
@@ -111,6 +111,12 @@ var HobbiesViewModel = (function(){
         this.state.personsContext.selectedPerson.
         addHobby(new Hobby({ id: uuid(), name:value }, true));
       }
+    },
+    
+    getHobbies: function(person){
+        return DataService.getHobbiesData(person.id).map(function(hobby){
+          return new Hobby(hobby, true);
+        }.bind(this));
     },
     
     deleteHobby: function(value){
@@ -139,4 +145,4 @@ var HobbiesViewModel = (function(){
     }
   });
   return hobbiesViewModel;
-}());
+})();

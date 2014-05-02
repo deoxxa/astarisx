@@ -268,7 +268,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 									}
 									links[appNamespace][watchedItem][dataContext] = watchedState[watchedItem].alias;
 								}
-
 							}
 							for(watchedProp in watchedState[watchedItem].fields){
 								if(watchedState[watchedItem].fields.hasOwnProperty(watchedProp)){
@@ -311,7 +310,5 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo);
 	Object.freeze(appState.state);
 	Object.freeze(appState);
-
-	console.warn('\"this.extend\" has been deprecated and will not be available in 0.7. Please use \"IMVVM.extend\".');
 	return appState;
 };

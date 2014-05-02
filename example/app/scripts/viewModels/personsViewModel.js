@@ -5,7 +5,7 @@
 
 var PersonsViewModel = (function(){
 
-  var personStateChangedHandler = function(nextState, prevState/*, callback*/){
+  var personStateChangedHandler = function(nextState/*, callback*/){
     var persons = {};
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
@@ -13,7 +13,7 @@ var PersonsViewModel = (function(){
         return persons.selectedPerson;
       }
       return person;
-    }.bind(this));
+    });
     this.setState(persons);
   };
   
@@ -25,6 +25,7 @@ var PersonsViewModel = (function(){
 
     getInitialState: function(){
       var nextState = {};
+
       nextState.collection = DataService.getPersonData().map(function(person, idx){
         if (idx === 0){
           nextState.selectedPerson = new Person(person, true);
@@ -113,4 +114,4 @@ var PersonsViewModel = (function(){
 
   });
   return personsViewModel;
-}());
+})();

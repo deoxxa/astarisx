@@ -48,6 +48,10 @@ var IMVVMViewModel = {
                 tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
                 
+                tempModel.__stateChangedHandler = (function(fld){
+                  return viewModel[fld].__stateChangedHandler;
+                })(freezeFields[fld].fieldName);
+
                 Object.defineProperty(tempModel, 'state', {
                   configurable: true,
                   enumerable: false,
@@ -55,10 +59,9 @@ var IMVVMViewModel = {
                   value: viewModel[freezeFields[fld].fieldName].state
                 });
 
-                tempModel.__proto__.setState = function(someState, callback){ //callback may be useful for DB updates
-                    return tempDesc.stateChangedHandler.call(this,
-                      extend(tempModel.state, someState), tempModel.state, callback);
-                }.bind(viewModel);
+                tempModel.__proto__.setState = function(state, callback){ //callback may be useful for DB updates
+                  this.__stateChangedHandler.call(viewModel, extend(this.state, state), callback);
+                };
 
                 Object.freeze(viewModel[freezeFields[fld].fieldName]);
               }

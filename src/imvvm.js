@@ -94,10 +94,6 @@ var IMVVMClass = {
           }
         }
       }
-      /* deprecated - to be removed */
-      if(!('extend' in proto)){
-        proto.extend = utils.extend;
-      }
 
       if(!!Object.keys(viewModels).length){
         this.originalSpec.getDomainDataContext = function(){

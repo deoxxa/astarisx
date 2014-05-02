@@ -165,5 +165,5 @@ var PersonModel = (function(){
 
   });
   return personModel;
-}());
+})();
 

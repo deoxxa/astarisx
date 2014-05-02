@@ -18,4 +18,10 @@
  - Bug Fix: Data Context gets relinked before trigger event is called. This ensures that the ViewModel has the latest state.
  - Calling implementation specific functions from originalSpec object, rather than attaching to prototype then deleting them 
 
+## 0.7.0
+
+- stateChangedHandler now only provides `nextState` argument. `prevState` has been removed
+- `this.extend` removed. Use IMVVM.extend.
+- Enabled multiple models within one ViewModel.
+
 

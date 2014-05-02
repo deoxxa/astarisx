@@ -6,7 +6,7 @@ var IMVVMDomainViewModel = {
   Mixin: {
     construct: function(stateChangedHandler){
       
-      var desc = this.getDescriptor(this);
+      var desc = this.getDescriptor();
       desc.proto.setState = stateChangedHandler;
 
       desc.proto.undo = function(){

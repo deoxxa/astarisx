@@ -6,11 +6,9 @@ var IMVVMModel = {
   Mixin: {
     construct: function(stateChangedHandler){
 
-      var desc = this.getDescriptor(this);
-      desc.stateChangedHandler = stateChangedHandler;
-
+      var desc = this.getDescriptor();
+      
       var dataContext = function(nextState, extendState, initialize) {
-        
         var freezeFields = desc.freezeFields,
           fld,
           model = Object.create(desc.proto, desc.descriptor);
@@ -63,6 +61,10 @@ var IMVVMModel = {
           writable: false,
           value: nextState
         });
+
+        model.__stateChangedHandler = (function(){
+            return stateChangedHandler;
+        })();
 
         return Object.freeze(model);
       };

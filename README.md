@@ -137,7 +137,7 @@ The `getInitialState` function initializes any fields that require a value durin
 ### Create a ViewModel
 
 ```javascript
-var personStateChangedHandler = function(nextState, prevState){
+var personStateChangedHandler = function(nextState){
   var persons = {};
   persons.collection = this.collection.map(function(person){
     if(person.id === nextState.id){
@@ -718,7 +718,7 @@ ___example___
 _Available in:_ ViewModel
 
 ___
-#####void ModelStateChangedHandler(object nextState,object previousState[, function callback])
+#####void ModelStateChangedHandler(object nextState[, function callback])
 
 *arguments*
 
@@ -726,14 +726,10 @@ __nextState__
 
 Next state of the model.
 
-__previousState__
-
-Previous state of the model.
-
 __callback__
 
 ```javascript
-  personStateChangedHandler: function(nextState, prevState){
+  personStateChangedHandler: function(nextState){
     var persons = {};
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){

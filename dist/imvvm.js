@@ -275,7 +275,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 									}
 									links[appNamespace][watchedItem][dataContext] = watchedState[watchedItem].alias;
 								}
-
 							}
 							for(watchedProp in watchedState[watchedItem].fields){
 								if(watchedState[watchedItem].fields.hasOwnProperty(watchedProp)){
@@ -318,8 +317,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo);
 	Object.freeze(appState.state);
 	Object.freeze(appState);
-
-	console.warn('\"this.extend\" has been deprecated and will not be available in 0.7. Please use \"IMVVM.extend\".');
 	return appState;
 };
 },{"./utils":8}],3:[function(_dereq_,module,exports){
@@ -419,10 +416,6 @@ var IMVVMClass = {
           }
         }
       }
-      /* deprecated - to be removed */
-      if(!('extend' in proto)){
-        proto.extend = utils.extend;
-      }
 
       if(!!Object.keys(viewModels).length){
         this.originalSpec.getDomainDataContext = function(){
@@ -464,7 +457,7 @@ var IMVVMDomainViewModel = {
   Mixin: {
     construct: function(stateChangedHandler){
       
-      var desc = this.getDescriptor(this);
+      var desc = this.getDescriptor();
       desc.proto.setState = stateChangedHandler;
 
       desc.proto.undo = function(){
@@ -580,11 +573,9 @@ var IMVVMModel = {
   Mixin: {
     construct: function(stateChangedHandler){
 
-      var desc = this.getDescriptor(this);
-      desc.stateChangedHandler = stateChangedHandler;
-
+      var desc = this.getDescriptor();
+      
       var dataContext = function(nextState, extendState, initialize) {
-        
         var freezeFields = desc.freezeFields,
           fld,
           model = Object.create(desc.proto, desc.descriptor);
@@ -637,6 +628,10 @@ var IMVVMModel = {
           writable: false,
           value: nextState
         });
+
+        model.__stateChangedHandler = (function(){
+            return stateChangedHandler;
+        })();
 
         return Object.freeze(model);
       };
@@ -698,6 +693,10 @@ var IMVVMViewModel = {
                 tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
                 
+                tempModel.__stateChangedHandler = (function(fld){
+                  return viewModel[fld].__stateChangedHandler;
+                })(freezeFields[fld].fieldName);
+
                 Object.defineProperty(tempModel, 'state', {
                   configurable: true,
                   enumerable: false,
@@ -705,10 +704,9 @@ var IMVVMViewModel = {
                   value: viewModel[freezeFields[fld].fieldName].state
                 });
 
-                tempModel.__proto__.setState = function(someState, callback){ //callback may be useful for DB updates
-                    return tempDesc.stateChangedHandler.call(this,
-                      extend(tempModel.state, someState), tempModel.state, callback);
-                }.bind(viewModel);
+                tempModel.__proto__.setState = function(state, callback){ //callback may be useful for DB updates
+                  this.__stateChangedHandler.call(viewModel, extend(this.state, state), callback);
+                };
 
                 Object.freeze(viewModel[freezeFields[fld].fieldName]);
               }
