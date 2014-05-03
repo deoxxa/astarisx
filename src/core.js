@@ -23,7 +23,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		watchedItem,
 		watchedProp,
 		watchedDataContext,
-		link;
+		link,
+		calledBack = false;
 
 	var appStateChangedHandler = function(caller, newState, newAppState, callback) {
 		
@@ -205,7 +206,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				}
 	    }
 
-			prevState = appState;
+			prevState = calledBack ? appState.previousState : appState;
 
 		}
 
@@ -218,13 +219,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		Object.freeze(appState.state);
 
 		if(typeof callback === 'function'){
+			calledBack = true;
 			callback(appState);
 			return;
 		}
-			
 		//All the work is done! -> Notify the View
 		stateChangedHandler(appState);
-		
+		calledBack = false;
 		transientState = {};
 		processedState = {};
 
