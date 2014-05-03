@@ -596,13 +596,13 @@ handleChange: function(target, e){
 _Available in:_ DomainViewModel, ViewModel, Model
 
 ___
-#####object undo()
-`undo` transitions state to the previous state. Requires [`enableUndo`](#enableundo-boolean-default--false) to be `true` to enable this functionality.
+#####object revert()
+`revert` transitions state to the previous state. Requires [`enableUndo`](#enableundo-boolean-default--false) to be `true` to enable this functionality.
 
 _Available in:_ DomainViewModel
 ___
-#####object redo()
-`redo` transitions state to the next state. Requires [`enableUndo`](#enableundo-boolean-default--false) to be `true` to enable this functionality.
+#####object advance()
+`advance` transitions state to the next state. Requires [`enableUndo`](#enableundo-boolean-default--false) to be `true` to enable this functionality.
 
 _Available in:_ DomainViewModel
 
@@ -625,18 +625,18 @@ Holds Domain Data Context next state.
 _Available in:_ DomainViewModel
 
 ___
-#####canUndo
-`true` - can transition to previous state.
+#####canRevert
+`true` - can revert to previous state.
 
-`false` - can not transition to previous state.
+`false` - can not revert to previous state.
 
 _Available in:_ DomainViewModel
 
 ___
-#####canRedo
-`true` - can revert back to next state.
+#####canAdvance
+`true` - can advance to next state.
 
-`false` - can not revert back to next state.
+`false` - can not advance to next state.
 
 _Available in:_ DomainViewModel
 

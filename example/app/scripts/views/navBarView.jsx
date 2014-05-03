@@ -15,12 +15,12 @@ var NavBarView = React.createClass({
 	undo: function(e){
 		e.preventDefault();
 		e.stopPropagation();
-		this.props.appContext.undo();
+		this.props.appContext.revert();
 	},
 	redo: function(e){
 		e.preventDefault();
 		e.stopPropagation();
-		this.props.appContext.redo();
+		this.props.appContext.advance();
 	},
 	toggleOnlineState: function(e){
 		e.preventDefault();
@@ -51,10 +51,10 @@ var NavBarView = React.createClass({
 
 			    <div ref="menu" className="collapse navbar-collapse pull-right">
 			      <form className="navbar-form navbar-left" role="search">
-			        <button onClick={this.undo} disabled={!this.props.appContext.canUndo} className="btn btn-default">
+			        <button onClick={this.undo} disabled={!this.props.appContext.canRevert} className="btn btn-default">
 			        Undo
 			        </button>
-			         <button onClick={this.redo} disabled={!this.props.appContext.canRedo} className="btn btn-default">
+			         <button onClick={this.redo} disabled={!this.props.appContext.canAdvance} className="btn btn-default">
 			        Redo
 			        </button>
 			        <button onClick={this.toggleOnlineState} className={onlineBtnClass}>

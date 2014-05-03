@@ -27,5 +27,9 @@
 ## 0.7.1
 
 - callbacks return domainDataContext
+- rename `undo` to `revert`
+- rename `redo` to `advance`
+- rename `canUndo` to `canRevert`
+- rename `canRedo` to `canAdvance`
 
 

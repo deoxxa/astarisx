@@ -462,12 +462,12 @@ var IMVVMDomainViewModel = {
       var desc = this.getDescriptor();
       desc.proto.setState = stateChangedHandler;
 
-      desc.proto.undo = function(){
+      desc.proto.revert = function(){
         this.setState(this.previousState, !!this.previousState ? this : void(0));
       };
 
-      desc.proto.redo = function(){
-        if(this.canRedo){
+      desc.proto.advance = function(){
+        if(this.canAdvance){
           this.setState(this.nextState, this.nextState.nextState);
         }
       };
@@ -486,14 +486,14 @@ var IMVVMDomainViewModel = {
               writable: false,
               value: prevState
             });
-            Object.defineProperty(domainModel, 'canUndo', {
+            Object.defineProperty(domainModel, 'canRevert', {
               configurable: false,
               enumerable: false,
               writable: false,
               value: true
             });
           } else {
-            Object.defineProperty(domainModel, 'canUndo', {
+            Object.defineProperty(domainModel, 'canRevert', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -507,14 +507,14 @@ var IMVVMDomainViewModel = {
               writable: false,
               value: redoState
             });
-            Object.defineProperty(domainModel, 'canRedo', {
+            Object.defineProperty(domainModel, 'canAdvance', {
               configurable: false,
               enumerable: false,
               writable: false,
               value: true
             });
           } else {
-            Object.defineProperty(domainModel, 'canRedo', {
+            Object.defineProperty(domainModel, 'canAdvance', {
               configurable: false,
               enumerable: false,
               writable: false,
