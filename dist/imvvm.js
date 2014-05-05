@@ -312,7 +312,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	//reinitialize with all data in place
 	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
-			appState.state[dataContext] = new dataContexts[dataContext](appState.state[dataContext]/*, true*/);
+			appState.state[dataContext] = new dataContexts[dataContext](appState.state[dataContext]);
     }
   }
 
