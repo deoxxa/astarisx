@@ -32,4 +32,6 @@
 - rename `canUndo` to `canRevert`
 - rename `canRedo` to `canAdvance`
 
+## 0.7.2
 
+- only call getInitialState on ViewModels once
