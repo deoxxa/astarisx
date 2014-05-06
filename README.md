@@ -829,7 +829,7 @@ _Available in:_ DomainViewModel, ViewModel, Model
 ######kind: ['instance' || 'array' || 'pseudo']
 **instance**
 
-Specifies that the getter returns a model instance.
+Specifies that the getter returns a model instance. This needs to be specified if the View interacts with the returned model object. i.e. It will update values on the model.
 
 _Available in:_ ViewModel
 
