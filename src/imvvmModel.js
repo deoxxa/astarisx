@@ -7,7 +7,7 @@ var IMVVMModel = {
     construct: function(stateChangedHandler){
 
       var desc = this.getDescriptor();
-      
+
       var dataContext = function(nextState, extendState, initialize) {
         var freezeFields = desc.freezeFields,
           fld,
@@ -32,7 +32,7 @@ var IMVVMModel = {
         });
 
         nextState = extend(nextState, model);
-        
+
         if(initialize){
           for(var aliasFor in desc.aliases){
             if(desc.aliases.hasOwnProperty(aliasFor) && aliasFor in nextState){
@@ -40,6 +40,16 @@ var IMVVMModel = {
               delete nextState[aliasFor];
             }
           }
+
+          Object.defineProperty(model, 'state', {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: nextState
+          });
+
+          nextState = extend(nextState, model);
+
           if('getInitialState' in desc.originalSpec){
             nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
           }

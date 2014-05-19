@@ -1,5 +1,5 @@
 /** 
- * @jsx React.DOM 
+ * @jsx React.DOM
  */
 /*jshint quotmark:false */
 /*jshint white:false */
@@ -10,9 +10,7 @@
 /* Kick of the App*/
 
 //enableUndo is optional - default is false
-React.renderComponent(<ApplicationView 
+React.renderComponent(<ApplicationView
 	domainModel={DomainViewModel}
   enableUndo={true} />,
 	document.getElementById('container'));
-
-

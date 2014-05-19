@@ -876,7 +876,7 @@ Identifies the ViewModel to be used for the defined data context.
 _Available in:_ DomainViewModel
 
 ###Mixin
-####mixin
+####IMVVM.mixin
 ___
 #####mixins: [IMVVM.mixin]
 
@@ -901,8 +901,8 @@ React.renderComponent(<ApplicationView domainModel={DomainViewModel}/>,
   document.getElementById('container'));
 ```
 
-###Helpers
-####extend
+###Static methods
+####IMVVM.extend()
 ___
 #####object extend(object currentState[, object... nextState])
 Creates a shallow copy of currentState. Adds/replaces properties with properties of subsequent objects.

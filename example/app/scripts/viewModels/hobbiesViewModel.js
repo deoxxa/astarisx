@@ -91,9 +91,9 @@ var HobbiesViewModel = (function(){
     selectHobby: function(id){
       for (var i = this.hobbies.length - 1; i >= 0; i--) {
         if ((this.current === void(0) || this.current.id !== id) && this.hobbies[i].id === id){
-          
+
           this.setState({current: new Hobby(this.hobbies[i])}, {busy: true});
-          
+
           /*
             //OR use a callback
             this.setState({current: new Hobby(this.hobbies[i])}, function(){
@@ -105,22 +105,22 @@ var HobbiesViewModel = (function(){
         }
       }
     },
-    
+
     addHobby: function(value){
       if(value !== ''){
         this.state.personsContext.selectedPerson.
         addHobby(new Hobby({ id: uuid(), name:value }, true));
       }
     },
-    
+
     getHobbies: function(person){
         return DataService.getHobbiesData(person.id).map(function(hobby){
           return new Hobby(hobby, true);
         }.bind(this));
     },
-    
+
     deleteHobby: function(value){
-      /* 
+      /*
 
         If we were to simply call
 
@@ -130,7 +130,7 @@ var HobbiesViewModel = (function(){
         and not from the 'hobbies' context. Therefore any subscribers to 'hobbies.current'
         are unaware of changes to 'hobbies.current'.
 
-        If the selected hobby is deleted, then call setState from 'hobbies' ViewModel, 
+        If the selected hobby is deleted, then call setState from 'hobbies' ViewModel,
         so that the 'persons' context gets updated and busy can be set on the 'domain'
 
        */

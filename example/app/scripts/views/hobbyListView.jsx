@@ -1,5 +1,5 @@
 /** 
- * @jsx React.DOM 
+ * @jsx React.DOM
  */
 /*jshint quotmark:false */
 /*jshint white:false */
@@ -31,7 +31,7 @@ var HobbyListView = React.createClass({
 		var list = collection.map(function(hobby){
 			if(current && (current.id === hobby.id)){
 				return (
-					<a 
+					<a
 					onClick={this.handleSelection.bind(this, hobby.id)}
 					key={hobby.id}
 					href="#"
@@ -42,7 +42,7 @@ var HobbyListView = React.createClass({
 				);
 			}
 			return (
-				<a 
+				<a
 				onClick={this.handleSelection.bind(this, hobby.id)}
 				key={hobby.id}
 				href="#"

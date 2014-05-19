@@ -16,7 +16,7 @@
 
  - Catch error for invalid 'kind' value
  - Bug Fix: Data Context gets relinked before trigger event is called. This ensures that the ViewModel has the latest state.
- - Calling implementation specific functions from originalSpec object, rather than attaching to prototype then deleting them 
+ - Calling implementation specific functions from originalSpec object, rather than attaching to prototype then deleting them
 
 ## 0.7.0
 
@@ -35,3 +35,7 @@
 ## 0.7.2
 
 - only call getInitialState on ViewModels once
+
+## 0.7.3
+
+- aliasFor alias now is able to be referenced in Model getInitialState

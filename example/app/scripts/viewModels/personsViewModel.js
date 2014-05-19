@@ -16,7 +16,7 @@ var PersonsViewModel = (function(){
     });
     this.setState(persons);
   };
-  
+
   var Person = function(){
     return new PersonModel(personStateChangedHandler).apply(this, arguments);
   };
@@ -35,7 +35,7 @@ var PersonsViewModel = (function(){
       }.bind(this));
       return nextState;
     },
-    
+
     getWatchedState: function() {
       return {
         'hobbies': {
