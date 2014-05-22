@@ -33,7 +33,10 @@ var HobbiesViewModel = (function(){
       return hobby;
     }.bind(this));
 
-    this.setState(newState, function(){
+    this.setState(newState, {
+      path: '/user/'+ this.state.personsContext.selectedPerson.id +
+      '/hobby/'+ newState.current.id
+    }, function(){
       //This will invoke setState within the persons Data Context
       this.state.personsContext.selectedPerson.hobbies = hobbiesArr;
     }.bind(this));
@@ -71,7 +74,7 @@ var HobbiesViewModel = (function(){
 
     getRoutes: function(){
       return {
-        '/user/*/hobby/:hobbyId': this.selectHobby
+        '[/user/:id]/hobby/:hobbyId': this.selectHobby
       }
     },
 

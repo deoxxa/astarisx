@@ -57,6 +57,17 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			return;
 		}
 
+		//Ensure the original path is persisted during state change
+		//when a callback is made
+		if(calledBack){
+			if(('path' in newAppState) && ('path' in processedState)){
+				newAppState.path = processedState.path;
+			} else if(caller === appNamespace && ('path' in newState) &&
+				('path' in processedState)){
+				newState.path = processedState.path;
+			}
+		}
+
 		if(typeof newAppState === 'function'){
 			callback = newAppState;
 			newAppState = {};
@@ -222,7 +233,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				}
 	    }
 
-			prevState = calledBack ? appState.previousState : appState;
+			if(appState.previousState && calledBack){
+				prevState = appState.previousState;
+			} else {
+				prevState = appState;
+			}
+			//prevState = calledBack ? appState.previousState : appState;
 
 		}
 
