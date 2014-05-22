@@ -10,7 +10,8 @@ var DomainViewModel = IMVVM.createDomainViewModel({
   getInitialState: function(){ //optional
     return {
       online: true,
-      busy: false
+      busy: false,
+      path: '/user/1'
     };
   },
 
@@ -41,7 +42,7 @@ var DomainViewModel = IMVVM.createDomainViewModel({
   // Sets the intial path
   path: {
     get: function(){
-      return '/user/' + this.persons.selectedPerson.id;
+      return this.state.path;
     }
   },
 
@@ -58,7 +59,7 @@ var DomainViewModel = IMVVM.createDomainViewModel({
       return this.state.page404;
     },
   },
-  
+
   /* Four ways to set busy
     1. set directly with a setter. This exposes a set method, which is also accessible from the View
     2. set directly within a callback in a ViewModel. Needs setter to be present

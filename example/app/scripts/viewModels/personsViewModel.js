@@ -80,7 +80,7 @@ var PersonsViewModel = (function(){
     selectPerson: function(id){
       var selectedPerson;
       for (var i = this.collection.length - 1; i >= 0; i--) {
-        if(this.selectedPerson.id !== id && this.collection[i].id === id){
+        if(this.collection[i].id === id){
           selectedPerson = new Person(this.collection[i]);
           this.setState({ selectedPerson: selectedPerson}, {path: '/user/' + selectedPerson.id });
           break;

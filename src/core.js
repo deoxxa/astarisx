@@ -26,6 +26,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		link,
 		calledBack = false,
 		routingEnabled = false,
+		routeMapping = {},
+		routePath,
 		external = false,
 		internal = false;
 
@@ -159,9 +161,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 												}
 											}
 										}
-										transientState = extend(transientState, subscribers[subscriber].call(appState[subscriber],
+										transientState = extend(transientState,
+											subscribers[subscriber].call(appState[subscriber],
 											nextState[transientStateKeys[keyIdx]][watchedField],
-											appState[transientStateKeys[keyIdx]][watchedField], watchedField, transientStateKeys[keyIdx]));
+											appState[transientStateKeys[keyIdx]][watchedField],
+											watchedField, transientStateKeys[keyIdx],
+											nextState.path, appState.path));
 									}
 								}
 							}
@@ -260,9 +265,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	};
 
 	//Initialize Application Data Context
-	var routeMapping = {};
-	var routePath;
-
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
 	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
   appState.state = appState.state || {};
@@ -359,6 +361,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 						}.bind(this, dataContext, routePath));
 					}
 				}
+				delete appState[dataContext].constructor.originalSpec.getRoutes;
 			}
     }
   }
@@ -389,6 +392,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				}.bind(this, routePath));
 			}
 		}
+		delete appState.constructor.originalSpec.getRoutes;
 	}
 
 	Object.freeze(appState.state);

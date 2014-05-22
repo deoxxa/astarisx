@@ -40,10 +40,11 @@ var HobbiesViewModel = (function(){
 
   };
 
-  //Use this if change state triggered by others action
-  var onPersonChangedHandler = function(nextState, prevState, field, context){
+  //Use this if state change is triggered by others action
+  var onPersonChangedHandler = function(nextState, prevState, field, context,
+      nextPath, prevPath){
     if(this.current !== void(0) && context === 'persons' &&
-      nextState.id !== prevState.id){
+      (nextState.id !== prevState.id || nextPath.length != prevPath.length)){
       return { hobbies: { current: void(0) }, busy: false };
     }
   };
@@ -68,6 +69,12 @@ var HobbiesViewModel = (function(){
       };
     },
 
+    getRoutes: function(){
+      return {
+        '/user/*/hobby/:hobbyId': this.selectHobby
+      }
+    },
+
     hobbies: {
       kind: 'pseudo',
       get: function(){
@@ -90,10 +97,18 @@ var HobbiesViewModel = (function(){
     },
 
     selectHobby: function(id){
+
       for (var i = this.hobbies.length - 1; i >= 0; i--) {
         if ((this.current === void(0) || this.current.id !== id) && this.hobbies[i].id === id){
 
-          this.setState({current: new Hobby(this.hobbies[i])}, {busy: true});
+          this.setState({
+            current: new Hobby(this.hobbies[i])
+          },
+          {
+            busy: true,
+            path: '/user/'+ this.state.personsContext.selectedPerson.id +
+            '/hobby/'+this.hobbies[i].id
+          });
 
           /*
             //OR use a callback

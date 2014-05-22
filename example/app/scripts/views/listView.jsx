@@ -11,7 +11,9 @@
 var ListView = React.createClass({
 	handleSelection: function(uid, e){
 		e.preventDefault();
-		this.props.appContext.persons.selectPerson(uid);
+    if(this.props.appContext.persons.selectedPerson.id != uid){
+  		this.props.appContext.persons.selectPerson(uid);
+    }
 	},
 	deletePerson: function(uid, e){
 		this.props.appContext.persons.deletePerson(uid);
