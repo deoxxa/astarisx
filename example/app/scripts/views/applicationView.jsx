@@ -1,5 +1,5 @@
-/** 
- * @jsx React.DOM 
+/**
+ * @jsx React.DOM
  */
 /*jshint quotmark:false */
 /*jshint white:false */
@@ -10,12 +10,14 @@
 
 var ApplicationView = React.createClass({
   mixins: [IMVVM.mixin],
-  
+
   render: function(){
 
     console.log('------------------------------------------ Current Application State ------------------------------------------')
     console.log(this.state.domainDataContext);
-
+    if(this.state.domainDataContext.page404){
+      return (<div>Page Not Found</div>);
+    }
     return (
       <div>
         <NavBarView appContext={this.state.domainDataContext} />
@@ -30,6 +32,6 @@ var ApplicationView = React.createClass({
           </div>
         </div>
       </div>
-    );    
+    );
   }
 });

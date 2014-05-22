@@ -451,7 +451,7 @@ module.exports = IMVVM;
 })();
 
 },{}],3:[function(_dereq_,module,exports){
-var page;// = require('page');
+var page = _dereq_('page');
 var utils = _dereq_('./utils');
 var extend = utils.extend;
 
@@ -713,6 +713,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	};
 
 	//Initialize Application Data Context
+	var routeMapping = {};
+	var routePath;
+
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
 	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
   appState.state = appState.state || {};
@@ -793,10 +796,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 			if('getRoutes' in appState[dataContext].constructor.originalSpec){
 				routingEnabled = true;
-				//this must be enabled for routing to work
-				page = _dereq_('page');
-				var routeMapping = appState[dataContext].constructor.originalSpec.getRoutes();
-				for(var routePath in routeMapping){
+				routeMapping = extend(routeMapping, appState[dataContext].constructor.originalSpec.getRoutes());
+				for(routePath in routeMapping){
 					if(routeMapping.hasOwnProperty(routePath)){
 						page(routePath, function(dataContextName, route, ctx){
 							external = true;
@@ -822,6 +823,25 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		internal = true;
 		page(appState.path);
 		external = false;
+	}
+
+	if('getRoutes' in appState.constructor.originalSpec){
+		routeMapping = extend(routeMapping, appState.constructor.originalSpec.getRoutes());
+		for(routePath in routeMapping){
+			if(routeMapping.hasOwnProperty(routePath)){
+				page(routePath, function(route, ctx){
+					external = true;
+					if(!internal){
+						routeMapping[route].apply(appState,
+							Object.keys(ctx.params).map(function(key){
+								return ctx.params[key];
+							})
+						);
+					}
+					internal = false;
+				}.bind(this, routePath));
+			}
+		}
 	}
 
 	Object.freeze(appState.state);

@@ -45,6 +45,20 @@ var DomainViewModel = IMVVM.createDomainViewModel({
     }
   },
 
+  getRoutes: function(){
+    return {
+      '*': function(){
+        this.setState({'page404':true});
+      }
+    }
+  },
+
+  page404: {
+    get: function(){
+      return this.state.page404;
+    },
+  },
+  
   /* Four ways to set busy
     1. set directly with a setter. This exposes a set method, which is also accessible from the View
     2. set directly within a callback in a ViewModel. Needs setter to be present
