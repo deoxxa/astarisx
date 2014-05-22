@@ -14,7 +14,7 @@ var PersonsViewModel = (function(){
       }
       return person;
     });
-    this.setState(persons);
+    this.setState(persons, {path: '/user/' + persons.selectedPerson.id });
   };
 
   var Person = function(){
@@ -34,6 +34,12 @@ var PersonsViewModel = (function(){
         return new Person(person, true);
       }.bind(this));
       return nextState;
+    },
+
+    getRoutes: function(){
+      return {
+        '/user/:id': this.selectPerson
+      };
     },
 
     getWatchedState: function() {
@@ -72,9 +78,11 @@ var PersonsViewModel = (function(){
     },
 
     selectPerson: function(id){
+      var selectedPerson;
       for (var i = this.collection.length - 1; i >= 0; i--) {
         if(this.selectedPerson.id !== id && this.collection[i].id === id){
-          this.setState({ selectedPerson: new Person(this.collection[i]) });
+          selectedPerson = new Person(this.collection[i]);
+          this.setState({ selectedPerson: selectedPerson}, {path: '/user/' + selectedPerson.id });
           break;
         }
       }

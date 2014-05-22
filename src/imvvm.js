@@ -20,7 +20,7 @@ var IMVVMClass = {
   createClass: function(ctor, classType, spec){
 
     var Constructor = function(){};
-    Constructor.prototype = new ctor();      
+    Constructor.prototype = new ctor();
     Constructor.prototype.constructor = Constructor;
 
     var DescriptorConstructor = Constructor;
@@ -32,7 +32,7 @@ var IMVVMClass = {
 
     ConvenienceConstructor.componentConstructor = Constructor;
     Constructor.ConvenienceConstructor = ConvenienceConstructor;
-    
+
     ConvenienceConstructor.originalSpec = spec;
 
     // Expose the convience constructor on the prototype so that it can be
@@ -88,7 +88,8 @@ var IMVVMClass = {
             }
             descriptor[key] = this.originalSpec[key];
           } else {
-            if(key !== 'getInitialState' && key !== 'getWatchedState'){
+            if(key !== 'getInitialState' && key !== 'getWatchedState' &&
+              key !== 'getRoutes'){
               proto[key] = this.originalSpec[key];
             }
           }
@@ -101,7 +102,7 @@ var IMVVMClass = {
         }
       }
 
-      this.originalSpec.__processedSpec__ = { 
+      this.originalSpec.__processedSpec__ = {
         descriptor: descriptor,
         proto: proto,
         originalSpec: this.originalSpec || {},

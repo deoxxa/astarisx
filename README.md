@@ -13,7 +13,7 @@ To further quote the React website, "lots of people use React as the 'V' in MVC"
 
 This is my take on MVVM and immutability using javascript. IMVVM tries to resemble a React application. So it not only feels like your developing in the same environment, but if your coming from React, you should be able to pick up IMVVM quickly.
 
-Anyway, download it, run the example application and try it out. Maybe avoid production environments for the moment. Be sure to raise issues in the Issues Register as you encounter them and please feel free to create pull requests.
+Anyway, download it, run the example application and try it out. Maybe avoid production environments for the moment. Be sure to raise issues in the Issues Register as you encounter them and please feel free to submit pull requests.
 
 Thanks.
 
@@ -67,7 +67,7 @@ The example application is a good starting place when figuring out how things wo
 
 ```javascript
 var PersonModel = IMVVM.createModel({
-  
+
   getInitialState: function(){
     return {
       age: calculateAge(this.dob),
@@ -108,7 +108,7 @@ var PersonModel = IMVVM.createModel({
       });
     }
   },
-  
+
   gender: {
     get: function(){
       return this.state.gender;
@@ -185,7 +185,7 @@ var PersonsViewModel = IMVVM.createViewModel({
       return this.state.imOnline;
     }
   },
-  
+
   selectedPerson: {
     kind: 'instance',
     get: function() { return this.state.selectedPerson; }
@@ -199,7 +199,7 @@ var PersonsViewModel = IMVVM.createViewModel({
   selectedHobby: {
     kind: 'pseudo',
     get: function() {
-      return this.state.hobbiesContext.current ? this.state.hobbiesContext.current.name: void(0); 
+      return this.state.hobbiesContext.current ? this.state.hobbiesContext.current.name: void(0);
     }
   },
 
@@ -261,7 +261,7 @@ The `imOnline` field is referencing the linked DomainModel field `online` with a
 #####collection
 `collection` has a `kind` decorator of `array`. Yes, you guessed it, because it returns an array.
 
-_The reason that the kind decorator is used is because IMVVM does some extra processing with these types._ 
+_The reason that the kind decorator is used is because IMVVM does some extra processing with these types._
 
 #####personStateChangedHandler
 `personStateChangedHandler` will be invoked anytime `setState` is called within the model that it is registered to. This function processes changes in the ViewModel and notifies the DomainModel of any changes so that the DomainModel can transition to the next state.
@@ -299,15 +299,15 @@ var HobbiesViewModel = IMVVM.createViewModel({
       }
     };
   },
-  
+
   ...
 
   selectHobby: function(id){
     for (var i = this.hobbies.length - 1; i >= 0; i--) {
       if ((this.current === void(0) || this.current.id !== id) && this.hobbies[i].id === id){
-        
+
         this.setState({current: new Hobby(this.hobbies[i])}, {busy: true});
-        
+
         /*
           //OR use a callback
           this.setState({current: new Hobby(this.hobbies[i])}, function(){
@@ -416,7 +416,7 @@ Once you have created your Models. ViewModels and DomainViewModel, you're ready 
 var ApplicationView = React.createClass({
 
   mixins: [IMVVM.mixin],
-  
+
   render: function(){
     return (
       <div>
@@ -424,7 +424,7 @@ var ApplicationView = React.createClass({
         <SideBarView appContext={this.state.domainDataContext} />
         <DetailsView appContext={this.state.domainDataContext} />
       </div>
-    );    
+    );
   }
 
 });
@@ -508,7 +508,7 @@ var FormView = React.createClass({
           <div>
               <label>Birthday</label>
               <div>
-                <input type="text" 
+                <input type="text"
                 placeholder="yyyy-mm-dd"
                 value={current.dob}
                 onChange={this.updateDOB} />
@@ -559,7 +559,7 @@ __specification__ - see [Specification](#specification)
 ###Instance
 ####Functions
 ___
-#####void setState(object nextState[, oject nextDomainState, function callback])
+#####void setState(object nextState[, object nextDomainState, function callback])
 Transition Data Context to the next state.
 
 *parameters*
@@ -575,8 +575,8 @@ Object containing the next state values which are to be passed to the Domain Dat
 ___example___
 ```javascript
 //From PersonsViewModel
-{ 
-  hobbies: { current: void(0) }, 
+{
+  hobbies: { current: void(0) },
   busy: false
 }
 ```
@@ -587,9 +587,10 @@ Used to do sequential setState calls and returns latest Domain Data Context stat
 ___example___ ***n.b. This example is not part of the reference implementation.It demonstrates how a callback can be used. Here the callback updates an amount property on a currentTarget object, which had been selected by the calling function `selectTarget` and passed back as `returnedAppContext`. Notice that you do not need to bind to `this` using this approach.***
 ```javascript
 handleChange: function(target, e){
-  this.props.appContext.positionsContext.selectTarget(target, function(returnedAppContext){
-    returnedAppContext.positionsContext.currentTarget.amount = Utils.unformat(e.target.value);
-  });     
+  this.props.appContext.positionsContext.selectTarget(target,
+    function(returnedAppContext){
+      returnedAppContext.positionsContext.currentTarget.amount = e.target.value;
+  });
 },
 ```
 
@@ -764,7 +765,7 @@ Returns a new model instance. This function is usually wrapped in another functi
 
 __stateChangedHandler__
 
-State changed handler which is triggered whenever setState is called from within the model. 
+State changed handler which is triggered whenever setState is called from within the model.
 
 ___n.b. Only use stateChangedHandlers in ViewModels. Do not use stateChangedHandlers in Models. You can still use Model within Models. Below is an example of how you would initialize Model instances inside other Models.___
 
@@ -886,7 +887,7 @@ Adds domainDataContext to state object.
 var ApplicationView = React.createClass({
   mixins: [IMVVM.mixin],
   render: function(){
-    return <DetailsView appContext={this.state.domainDataContext} />;    
+    return <DetailsView appContext={this.state.domainDataContext} />;
   }
 });
 ```
@@ -926,7 +927,7 @@ var nextState = IMVVM.extend(currentState, nextState);
 _Available in:_ DomainViewModel, ViewModel, Model
 
 ## Browser Support
-Most ECMAScript 5 compliant browsers. 
+Most ECMAScript 5 compliant browsers.
 __IE8 and below are not supported.__
 
 ## Author

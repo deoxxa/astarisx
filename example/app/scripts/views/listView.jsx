@@ -1,5 +1,5 @@
-/** 
- * @jsx React.DOM 
+/**
+ * @jsx React.DOM
  */
 /*jshint quotmark:false */
 /*jshint white:false */
@@ -11,7 +11,6 @@
 var ListView = React.createClass({
 	handleSelection: function(uid, e){
 		e.preventDefault();
-		e.stopPropagation();
 		this.props.appContext.persons.selectPerson(uid);
 	},
 	deletePerson: function(uid, e){
@@ -26,7 +25,7 @@ var ListView = React.createClass({
 		var list = collection.map(function(person){
 			if(current.id === person.id){
 				return (
-					<a 
+					<a
 					onClick={this.handleSelection.bind(this, person.id)}
 					key={person.id}
 					href="#"

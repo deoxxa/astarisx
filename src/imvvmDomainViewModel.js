@@ -5,7 +5,7 @@ var extend = utils.extend;
 var IMVVMDomainViewModel = {
   Mixin: {
     construct: function(stateChangedHandler){
-      
+
       var desc = this.getDescriptor();
       desc.proto.setState = stateChangedHandler;
 
@@ -19,26 +19,35 @@ var IMVVMDomainViewModel = {
         }
       };
 
-      var dataContext = function(nextState, prevState, redoState, enableUndo) {
-        
+      var dataContext = function(nextState, prevState, redoState, enableUndo, routingEnabled) {
+
         var freezeFields = desc.freezeFields,
           domainModel = Object.create(desc.proto, desc.descriptor),
           fld;
-        
-        if(!!enableUndo){
+
+        if(enableUndo || routingEnabled){
           if(!!prevState){
-            Object.defineProperty(domainModel, 'previousState', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: prevState
-            });
-            Object.defineProperty(domainModel, 'canRevert', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: true
-            });
+            if(routingEnabled && prevState.path !== nextState.path){
+              Object.defineProperty(domainModel, 'canRevert', {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: false
+              });
+            } else {
+              Object.defineProperty(domainModel, 'previousState', {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: prevState
+              });
+              Object.defineProperty(domainModel, 'canRevert', {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: true
+              });
+            }
           } else {
             Object.defineProperty(domainModel, 'canRevert', {
               configurable: false,
@@ -75,7 +84,7 @@ var IMVVMDomainViewModel = {
           nextState = ('getInitialState' in desc.originalSpec) ? desc.originalSpec.getInitialState.call(domainModel) : {};
         } else if('state' in nextState){
           delete nextState.state;
-        
+
           //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
           Object.defineProperty(domainModel, 'state', {
             configurable: true,
@@ -105,7 +114,7 @@ var IMVVMDomainViewModel = {
 
         return domainModel;
       };
-      
+
       return dataContext;
     }
   }

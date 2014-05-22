@@ -1,5 +1,5 @@
 /*jshint unused: false */
-/* global IMVVM, HobbyModel */
+/* global IMVVM, HobbyModel, DataService */
 
 'use strict';
 
@@ -34,6 +34,7 @@ var HobbiesViewModel = (function(){
     }.bind(this));
 
     this.setState(newState, function(){
+      //This will invoke setState within the persons Data Context
       this.state.personsContext.selectedPerson.hobbies = hobbiesArr;
     }.bind(this));
 
@@ -114,9 +115,9 @@ var HobbiesViewModel = (function(){
     },
 
     getHobbies: function(person){
-        return DataService.getHobbiesData(person.id).map(function(hobby){
-          return new Hobby(hobby, true);
-        }.bind(this));
+      return DataService.getHobbiesData(person.id).map(function(hobby){
+        return new Hobby(hobby, true);
+      }.bind(this));
     },
 
     deleteHobby: function(value){

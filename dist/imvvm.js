@@ -4,8 +4,454 @@
 var IMVVM = _dereq_('./src/imvvm.js');
 
 module.exports = IMVVM;
-},{"./src/imvvm.js":3}],2:[function(_dereq_,module,exports){
+},{"./src/imvvm.js":4}],2:[function(_dereq_,module,exports){
 
+;(function(){
+
+  /**
+   * Perform initial dispatch.
+   */
+
+  var dispatch = true;
+
+  /**
+   * Base path.
+   */
+
+  var base = '';
+
+  /**
+   * Running flag.
+   */
+
+  var running;
+
+  /**
+   * Register `path` with callback `fn()`,
+   * or route `path`, or `page.start()`.
+   *
+   *   page(fn);
+   *   page('*', fn);
+   *   page('/user/:id', load, user);
+   *   page('/user/' + user.id, { some: 'thing' });
+   *   page('/user/' + user.id);
+   *   page();
+   *
+   * @param {String|Function} path
+   * @param {Function} fn...
+   * @api public
+   */
+
+  function page(path, fn) {
+    // <callback>
+    if ('function' == typeof path) {
+      return page('*', path);
+    }
+
+    // route <path> to <callback ...>
+    if ('function' == typeof fn) {
+      var route = new Route(path);
+      for (var i = 1; i < arguments.length; ++i) {
+        page.callbacks.push(route.middleware(arguments[i]));
+      }
+    // show <path> with [state]
+    } else if ('string' == typeof path) {
+      page.show(path, fn);
+    // start [options]
+    } else {
+      page.start(path);
+    }
+  }
+
+  /**
+   * Callback functions.
+   */
+
+  page.callbacks = [];
+
+  /**
+   * Get or set basepath to `path`.
+   *
+   * @param {String} path
+   * @api public
+   */
+
+  page.base = function(path){
+    if (0 == arguments.length) return base;
+    base = path;
+  };
+
+  /**
+   * Bind with the given `options`.
+   *
+   * Options:
+   *
+   *    - `click` bind to click events [true]
+   *    - `popstate` bind to popstate [true]
+   *    - `dispatch` perform initial dispatch [true]
+   *
+   * @param {Object} options
+   * @api public
+   */
+
+  page.start = function(options){
+    options = options || {};
+    if (running) return;
+    running = true;
+    if (false === options.dispatch) dispatch = false;
+    if (false !== options.popstate) window.addEventListener('popstate', onpopstate, false);
+    if (false !== options.click) window.addEventListener('click', onclick, false);
+    if (!dispatch) return;
+    var url = location.pathname + location.search + location.hash;
+    page.replace(url, null, true, dispatch);
+  };
+
+  /**
+   * Unbind click and popstate event handlers.
+   *
+   * @api public
+   */
+
+  page.stop = function(){
+    running = false;
+    removeEventListener('click', onclick, false);
+    removeEventListener('popstate', onpopstate, false);
+  };
+
+  /**
+   * Show `path` with optional `state` object.
+   *
+   * @param {String} path
+   * @param {Object} state
+   * @param {Boolean} dispatch
+   * @return {Context}
+   * @api public
+   */
+
+  page.show = function(path, state, dispatch){
+    var ctx = new Context(path, state);
+    if (false !== dispatch) page.dispatch(ctx);
+    if (!ctx.unhandled) ctx.pushState();
+    return ctx;
+  };
+
+  /**
+   * Replace `path` with optional `state` object.
+   *
+   * @param {String} path
+   * @param {Object} state
+   * @return {Context}
+   * @api public
+   */
+
+  page.replace = function(path, state, init, dispatch){
+    var ctx = new Context(path, state);
+    ctx.init = init;
+    if (null == dispatch) dispatch = true;
+    if (dispatch) page.dispatch(ctx);
+    ctx.save();
+    return ctx;
+  };
+
+  /**
+   * Dispatch the given `ctx`.
+   *
+   * @param {Object} ctx
+   * @api private
+   */
+
+  page.dispatch = function(ctx){
+    var i = 0;
+
+    function next() {
+      var fn = page.callbacks[i++];
+      if (!fn) return unhandled(ctx);
+      fn(ctx, next);
+    }
+
+    next();
+  };
+
+  /**
+   * Unhandled `ctx`. When it's not the initial
+   * popstate then redirect. If you wish to handle
+   * 404s on your own use `page('*', callback)`.
+   *
+   * @param {Context} ctx
+   * @api private
+   */
+
+  function unhandled(ctx) {
+    var current = window.location.pathname + window.location.search;
+    if (current == ctx.canonicalPath) return;
+    page.stop();
+    ctx.unhandled = true;
+    window.location = ctx.canonicalPath;
+  }
+
+  /**
+   * Initialize a new "request" `Context`
+   * with the given `path` and optional initial `state`.
+   *
+   * @param {String} path
+   * @param {Object} state
+   * @api public
+   */
+
+  function Context(path, state) {
+    if ('/' == path[0] && 0 != path.indexOf(base)) path = base + path;
+    var i = path.indexOf('?');
+
+    this.canonicalPath = path;
+    this.path = path.replace(base, '') || '/';
+
+    this.title = document.title;
+    this.state = state || {};
+    this.state.path = path;
+    this.querystring = ~i ? path.slice(i + 1) : '';
+    this.pathname = ~i ? path.slice(0, i) : path;
+    this.params = [];
+
+    // fragment
+    this.hash = '';
+    if (!~this.path.indexOf('#')) return;
+    var parts = this.path.split('#');
+    this.path = parts[0];
+    this.hash = parts[1] || '';
+    this.querystring = this.querystring.split('#')[0];
+  }
+
+  /**
+   * Expose `Context`.
+   */
+
+  page.Context = Context;
+
+  /**
+   * Push state.
+   *
+   * @api private
+   */
+
+  Context.prototype.pushState = function(){
+    history.pushState(this.state, this.title, this.canonicalPath);
+  };
+
+  /**
+   * Save the context state.
+   *
+   * @api public
+   */
+
+  Context.prototype.save = function(){
+    history.replaceState(this.state, this.title, this.canonicalPath);
+  };
+
+  /**
+   * Initialize `Route` with the given HTTP `path`,
+   * and an array of `callbacks` and `options`.
+   *
+   * Options:
+   *
+   *   - `sensitive`    enable case-sensitive routes
+   *   - `strict`       enable strict matching for trailing slashes
+   *
+   * @param {String} path
+   * @param {Object} options.
+   * @api private
+   */
+
+  function Route(path, options) {
+    options = options || {};
+    this.path = path;
+    this.method = 'GET';
+    this.regexp = pathtoRegexp(path
+      , this.keys = []
+      , options.sensitive
+      , options.strict);
+  }
+
+  /**
+   * Expose `Route`.
+   */
+
+  page.Route = Route;
+
+  /**
+   * Return route middleware with
+   * the given callback `fn()`.
+   *
+   * @param {Function} fn
+   * @return {Function}
+   * @api public
+   */
+
+  Route.prototype.middleware = function(fn){
+    var self = this;
+    return function(ctx, next){
+      if (self.match(ctx.path, ctx.params)) return fn(ctx, next);
+      next();
+    };
+  };
+
+  /**
+   * Check if this route matches `path`, if so
+   * populate `params`.
+   *
+   * @param {String} path
+   * @param {Array} params
+   * @return {Boolean}
+   * @api private
+   */
+
+  Route.prototype.match = function(path, params){
+    var keys = this.keys
+      , qsIndex = path.indexOf('?')
+      , pathname = ~qsIndex ? path.slice(0, qsIndex) : path
+      , m = this.regexp.exec(pathname);
+
+    if (!m) return false;
+
+    for (var i = 1, len = m.length; i < len; ++i) {
+      var key = keys[i - 1];
+
+      var val = 'string' == typeof m[i]
+        ? decodeURIComponent(m[i])
+        : m[i];
+
+      if (key) {
+        params[key.name] = undefined !== params[key.name]
+          ? params[key.name]
+          : val;
+      } else {
+        params.push(val);
+      }
+    }
+
+    return true;
+  };
+
+  /**
+   * Normalize the given path string,
+   * returning a regular expression.
+   *
+   * An empty array should be passed,
+   * which will contain the placeholder
+   * key names. For example "/user/:id" will
+   * then contain ["id"].
+   *
+   * @param  {String|RegExp|Array} path
+   * @param  {Array} keys
+   * @param  {Boolean} sensitive
+   * @param  {Boolean} strict
+   * @return {RegExp}
+   * @api private
+   */
+
+  function pathtoRegexp(path, keys, sensitive, strict) {
+    if (path instanceof RegExp) return path;
+    if (path instanceof Array) path = '(' + path.join('|') + ')';
+    path = path
+      .concat(strict ? '' : '/?')
+      .replace(/\/\(/g, '(?:/')
+      .replace(/(\/)?(\.)?:(\w+)(?:(\(.*?\)))?(\?)?/g, function(_, slash, format, key, capture, optional){
+        keys.push({ name: key, optional: !! optional });
+        slash = slash || '';
+        return ''
+          + (optional ? '' : slash)
+          + '(?:'
+          + (optional ? slash : '')
+          + (format || '') + (capture || (format && '([^/.]+?)' || '([^/]+?)')) + ')'
+          + (optional || '');
+      })
+      .replace(/([\/.])/g, '\\$1')
+      .replace(/\*/g, '(.*)');
+    return new RegExp('^' + path + '$', sensitive ? '' : 'i');
+  }
+
+  /**
+   * Handle "populate" events.
+   */
+
+  function onpopstate(e) {
+    if (e.state) {
+      var path = e.state.path;
+      page.replace(path, e.state);
+    }
+  }
+
+  /**
+   * Handle "click" events.
+   */
+
+  function onclick(e) {
+    if (1 != which(e)) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+    if (e.defaultPrevented) return;
+
+    // ensure link
+    var el = e.target;
+    while (el && 'A' != el.nodeName) el = el.parentNode;
+    if (!el || 'A' != el.nodeName) return;
+
+    // ensure non-hash for the same path
+    var link = el.getAttribute('href');
+    if (el.pathname == location.pathname && (el.hash || '#' == link)) return;
+
+    // check target
+    if (el.target) return;
+
+    // x-origin
+    if (!sameOrigin(el.href)) return;
+
+    // rebuild path
+    var path = el.pathname + el.search + (el.hash || '');
+
+    // same page
+    var orig = path + el.hash;
+
+    path = path.replace(base, '');
+    if (base && orig == path) return;
+
+    e.preventDefault();
+    page.show(orig);
+  }
+
+  /**
+   * Event button.
+   */
+
+  function which(e) {
+    e = e || window.event;
+    return null == e.which
+      ? e.button
+      : e.which;
+  }
+
+  /**
+   * Check if `href` is the same origin.
+   */
+
+  function sameOrigin(href) {
+    var origin = location.protocol + '//' + location.hostname;
+    if (location.port) origin += ':' + location.port;
+    return 0 == href.indexOf(origin);
+  }
+
+  /**
+   * Expose `page`.
+   */
+
+  if ('undefined' == typeof module) {
+    window.page = page;
+  } else {
+    module.exports = page;
+  }
+
+})();
+
+},{}],3:[function(_dereq_,module,exports){
+var page;// = require('page');
 var utils = _dereq_('./utils');
 var extend = utils.extend;
 
@@ -15,7 +461,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		throw new TypeError('stateChangedHandler must be a function!');
 	}
 
-	enableUndo === void(0) ? true : enableUndo;
+	enableUndo === void(0) ? false : enableUndo;
 
 	var ApplicationDataContext,
 		appState = {},
@@ -31,10 +477,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		watchedProp,
 		watchedDataContext,
 		link,
-		calledBack = false;
+		calledBack = false,
+		routingEnabled = false,
+		external = false,
+		internal = false;
 
 	var appStateChangedHandler = function(caller, newState, newAppState, callback) {
-		
+
 		var nextState = {},
 			prevState = void(0),
 			redoState = void(0),
@@ -49,12 +498,22 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			subscribers,
 			subscriber;
 
+		if(newState === void(0)){
+			stateChangedHandler(appState);
+			calledBack = false;
+			transientState = {};
+			processedState = {};
+			external = false;
+			internal = false;
+			return;
+		}
+
 		if(typeof newAppState === 'function'){
 			callback = newAppState;
 			newAppState = {};
 		}
 
-		newState = newState || {};
+		//newState = newState || {};
 		newStateKeys = Object.keys(newState);
 
 		//Check to see if appState is a ready made state object. If so
@@ -89,11 +548,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 
 			if(typeof callback === 'function'){
-				appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo);
+				appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo, routingEnabled);
 				callback(appState);
 				return;
 			}
-		
+
 		} else {
 
 			if(!!newStateKeys.length){
@@ -110,7 +569,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 
 			transientStateKeysLen = transientStateKeys.length - 1;
-			
+
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
 				if(transientStateKeys[keyIdx] in domain){
 					nextState[transientStateKeys[keyIdx]] = extend(appState[transientStateKeys[keyIdx]], transientState[transientStateKeys[keyIdx]]);
@@ -134,7 +593,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								subscribers = watchedDataContexts[transientStateKeys[keyIdx]][watchedField];
 								for(subscriber in subscribers){
 									if(subscribers.hasOwnProperty(subscriber)){
-										
 										//Cross reference dataContext link Phase
 										if(subscriber in links){
 											for(dataContext in links[subscriber]){
@@ -168,7 +626,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				appStateChangedHandler(void(0), {}, transientState);
 				return;
 			}
-			
 			//Link Phase
 			processedStateKeys = Object.keys(processedState);
 			processedStateKeysLen = processedStateKeys.length - 1;
@@ -221,7 +678,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			Object.freeze(prevState);
 		}
 
-		appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo);
+		appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo, routingEnabled);
 		Object.freeze(appState);
 		Object.freeze(appState.state);
 
@@ -236,11 +693,28 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		transientState = {};
 		processedState = {};
 
+		if(routingEnabled){
+			if(('path' in appState) && !external){
+				internal = true;
+				/*
+					--> || caller === appNamespace
+					When the Domain invokes a state change just replace the state
+				*/
+				if(appState.previousState && appState.previousState.path &&
+						appState.previousState.path === appState.path ||
+						caller === appNamespace){
+					page.replace(appState.path);
+				} else {
+					page(appState.path);
+				}
+			}
+			external = false;
+		}
 	};
 
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo);
+	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
   appState.state = appState.state || {};
 
 	domain = appState.constructor.originalSpec.getDomainDataContext();
@@ -266,7 +740,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								if(!(dataContext in links)){
 									links[dataContext] = {};
 								}
-								links[dataContext][watchedItem] = watchedState[watchedItem].alias;	
+								links[dataContext][watchedItem] = watchedState[watchedItem].alias;
 
 								if(!(watchedItem in domain)){
 									if(!(appNamespace in links)){
@@ -286,7 +760,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 											watchedDataContexts[watchedItem] = {};
 										}
 										watchedDataContext[watchedProp] = {};
-										watchedDataContext[watchedProp][dataContext] = watchedState[watchedItem].fields[watchedProp];
+										watchedDataContext[watchedProp][dataContext] =
+											watchedState[watchedItem].fields[watchedProp];
 										watchedDataContexts[watchedItem] = watchedDataContext;
 									}
 								}
@@ -303,25 +778,58 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		if(domain.hasOwnProperty(dataContext)){
 			for(link in links[dataContext]){
 			  if(links[dataContext].hasOwnProperty(link)){
-			    appState[dataContext].state[links[dataContext][link]] = (link in domain) ? extend(appState[link].state): appState[link];
+			    appState[dataContext].state[links[dataContext][link]] =
+						(link in domain) ? extend(appState[link].state): appState[link];
 			  }
 			}
 		}
 	}
-	
+
 	//reinitialize with all data in place
 	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
-			appState.state[dataContext] = new dataContexts[dataContext](appState.state[dataContext]);
+			appState.state[dataContext] =
+				new dataContexts[dataContext](appState.state[dataContext]);
+
+			if('getRoutes' in appState[dataContext].constructor.originalSpec){
+				routingEnabled = true;
+				//this must be enabled for routing to work
+				page = _dereq_('page');
+				var routeMapping = appState[dataContext].constructor.originalSpec.getRoutes();
+				for(var routePath in routeMapping){
+					if(routeMapping.hasOwnProperty(routePath)){
+						page(routePath, function(dataContextName, route, ctx){
+							external = true;
+							if(!internal){
+								routeMapping[route].apply(appState[dataContextName],
+									Object.keys(ctx.params).map(function(key){
+										return ctx.params[key];
+									})
+								);
+							}
+							internal = false;
+						}.bind(this, dataContext, routePath));
+					}
+				}
+			}
     }
   }
 
-	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo);
+	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo, routingEnabled);
+
+	if(routingEnabled){
+		page.start({click: false});
+		internal = true;
+		page(appState.path);
+		external = false;
+	}
+
 	Object.freeze(appState.state);
 	Object.freeze(appState);
 	return appState;
 };
-},{"./utils":8}],3:[function(_dereq_,module,exports){
+
+},{"./utils":9,"page":2}],4:[function(_dereq_,module,exports){
 
 var model = _dereq_('./imvvmModel');
 var viewModel = _dereq_('./imvvmViewModel');
@@ -344,7 +852,7 @@ var IMVVMClass = {
   createClass: function(ctor, classType, spec){
 
     var Constructor = function(){};
-    Constructor.prototype = new ctor();      
+    Constructor.prototype = new ctor();
     Constructor.prototype.constructor = Constructor;
 
     var DescriptorConstructor = Constructor;
@@ -356,7 +864,7 @@ var IMVVMClass = {
 
     ConvenienceConstructor.componentConstructor = Constructor;
     Constructor.ConvenienceConstructor = ConvenienceConstructor;
-    
+
     ConvenienceConstructor.originalSpec = spec;
 
     // Expose the convience constructor on the prototype so that it can be
@@ -412,7 +920,8 @@ var IMVVMClass = {
             }
             descriptor[key] = this.originalSpec[key];
           } else {
-            if(key !== 'getInitialState' && key !== 'getWatchedState'){
+            if(key !== 'getInitialState' && key !== 'getWatchedState' &&
+              key !== 'getRoutes'){
               proto[key] = this.originalSpec[key];
             }
           }
@@ -425,7 +934,7 @@ var IMVVMClass = {
         }
       }
 
-      this.originalSpec.__processedSpec__ = { 
+      this.originalSpec.__processedSpec__ = {
         descriptor: descriptor,
         proto: proto,
         originalSpec: this.originalSpec || {},
@@ -450,7 +959,7 @@ var IMVVM = {
 
 module.exports = IMVVM;
 
-},{"./imvvmDomainViewModel":4,"./imvvmModel":5,"./imvvmViewModel":6,"./mixin":7,"./utils":8}],4:[function(_dereq_,module,exports){
+},{"./imvvmDomainViewModel":5,"./imvvmModel":6,"./imvvmViewModel":7,"./mixin":8,"./utils":9}],5:[function(_dereq_,module,exports){
 
 var utils = _dereq_('./utils');
 var extend = utils.extend;
@@ -458,7 +967,7 @@ var extend = utils.extend;
 var IMVVMDomainViewModel = {
   Mixin: {
     construct: function(stateChangedHandler){
-      
+
       var desc = this.getDescriptor();
       desc.proto.setState = stateChangedHandler;
 
@@ -472,26 +981,35 @@ var IMVVMDomainViewModel = {
         }
       };
 
-      var dataContext = function(nextState, prevState, redoState, enableUndo) {
-        
+      var dataContext = function(nextState, prevState, redoState, enableUndo, routingEnabled) {
+
         var freezeFields = desc.freezeFields,
           domainModel = Object.create(desc.proto, desc.descriptor),
           fld;
-        
-        if(!!enableUndo){
+
+        if(enableUndo || routingEnabled){
           if(!!prevState){
-            Object.defineProperty(domainModel, 'previousState', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: prevState
-            });
-            Object.defineProperty(domainModel, 'canRevert', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: true
-            });
+            if(routingEnabled && prevState.path !== nextState.path){
+              Object.defineProperty(domainModel, 'canRevert', {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: false
+              });
+            } else {
+              Object.defineProperty(domainModel, 'previousState', {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: prevState
+              });
+              Object.defineProperty(domainModel, 'canRevert', {
+                configurable: false,
+                enumerable: false,
+                writable: false,
+                value: true
+              });
+            }
           } else {
             Object.defineProperty(domainModel, 'canRevert', {
               configurable: false,
@@ -528,7 +1046,7 @@ var IMVVMDomainViewModel = {
           nextState = ('getInitialState' in desc.originalSpec) ? desc.originalSpec.getInitialState.call(domainModel) : {};
         } else if('state' in nextState){
           delete nextState.state;
-        
+
           //Need to have 'state' prop in domainModel before can extend domainModel to get correct state
           Object.defineProperty(domainModel, 'state', {
             configurable: true,
@@ -558,7 +1076,7 @@ var IMVVMDomainViewModel = {
 
         return domainModel;
       };
-      
+
       return dataContext;
     }
   }
@@ -566,7 +1084,7 @@ var IMVVMDomainViewModel = {
 
 module.exports = IMVVMDomainViewModel;
 
-},{"./utils":8}],5:[function(_dereq_,module,exports){
+},{"./utils":9}],6:[function(_dereq_,module,exports){
 
 var utils = _dereq_('./utils');
 var extend = utils.extend;
@@ -654,7 +1172,7 @@ var IMVVMModel = {
 
 module.exports = IMVVMModel;
 
-},{"./utils":8}],6:[function(_dereq_,module,exports){
+},{"./utils":9}],7:[function(_dereq_,module,exports){
 
 var utils = _dereq_('./utils');
 var extend = utils.extend;
@@ -746,7 +1264,7 @@ var IMVVMViewModel = {
 
 module.exports = IMVVMViewModel;
 
-},{"./utils":8}],7:[function(_dereq_,module,exports){
+},{"./utils":9}],8:[function(_dereq_,module,exports){
 
 var core = _dereq_('./core');
 var NAMESPACE = '__IMVVM__';
@@ -764,7 +1282,7 @@ var mixin = {
 
 module.exports = mixin;
 
-},{"./core":2}],8:[function(_dereq_,module,exports){
+},{"./core":3}],9:[function(_dereq_,module,exports){
 
 var utils = {
   

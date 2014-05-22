@@ -37,6 +37,14 @@ var DomainViewModel = IMVVM.createDomainViewModel({
     }
   },
 
+  // Framework reserved property name
+  // Sets the intial path
+  path: {
+    get: function(){
+      return '/user/' + this.persons.selectedPerson.id;
+    }
+  },
+
   /* Four ways to set busy
     1. set directly with a setter. This exposes a set method, which is also accessible from the View
     2. set directly within a callback in a ViewModel. Needs setter to be present

@@ -1,4 +1,4 @@
-
+var page;// = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
 
@@ -8,7 +8,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		throw new TypeError('stateChangedHandler must be a function!');
 	}
 
-	enableUndo === void(0) ? true : enableUndo;
+	enableUndo === void(0) ? false : enableUndo;
 
 	var ApplicationDataContext,
 		appState = {},
@@ -24,10 +24,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		watchedProp,
 		watchedDataContext,
 		link,
-		calledBack = false;
+		calledBack = false,
+		routingEnabled = false,
+		external = false,
+		internal = false;
 
 	var appStateChangedHandler = function(caller, newState, newAppState, callback) {
-		
+
 		var nextState = {},
 			prevState = void(0),
 			redoState = void(0),
@@ -42,12 +45,22 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			subscribers,
 			subscriber;
 
+		if(newState === void(0)){
+			stateChangedHandler(appState);
+			calledBack = false;
+			transientState = {};
+			processedState = {};
+			external = false;
+			internal = false;
+			return;
+		}
+
 		if(typeof newAppState === 'function'){
 			callback = newAppState;
 			newAppState = {};
 		}
 
-		newState = newState || {};
+		//newState = newState || {};
 		newStateKeys = Object.keys(newState);
 
 		//Check to see if appState is a ready made state object. If so
@@ -82,11 +95,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 
 			if(typeof callback === 'function'){
-				appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo);
+				appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo, routingEnabled);
 				callback(appState);
 				return;
 			}
-		
+
 		} else {
 
 			if(!!newStateKeys.length){
@@ -103,7 +116,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 
 			transientStateKeysLen = transientStateKeys.length - 1;
-			
+
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
 				if(transientStateKeys[keyIdx] in domain){
 					nextState[transientStateKeys[keyIdx]] = extend(appState[transientStateKeys[keyIdx]], transientState[transientStateKeys[keyIdx]]);
@@ -127,7 +140,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								subscribers = watchedDataContexts[transientStateKeys[keyIdx]][watchedField];
 								for(subscriber in subscribers){
 									if(subscribers.hasOwnProperty(subscriber)){
-										
 										//Cross reference dataContext link Phase
 										if(subscriber in links){
 											for(dataContext in links[subscriber]){
@@ -161,7 +173,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				appStateChangedHandler(void(0), {}, transientState);
 				return;
 			}
-			
 			//Link Phase
 			processedStateKeys = Object.keys(processedState);
 			processedStateKeysLen = processedStateKeys.length - 1;
@@ -214,7 +225,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			Object.freeze(prevState);
 		}
 
-		appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo);
+		appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo, routingEnabled);
 		Object.freeze(appState);
 		Object.freeze(appState.state);
 
@@ -229,11 +240,28 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		transientState = {};
 		processedState = {};
 
+		if(routingEnabled){
+			if(('path' in appState) && !external){
+				internal = true;
+				/*
+					--> || caller === appNamespace
+					When the Domain invokes a state change just replace the state
+				*/
+				if(appState.previousState && appState.previousState.path &&
+						appState.previousState.path === appState.path ||
+						caller === appNamespace){
+					page.replace(appState.path);
+				} else {
+					page(appState.path);
+				}
+			}
+			external = false;
+		}
 	};
 
 	//Initialize Application Data Context
 	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
-	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo);
+	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
   appState.state = appState.state || {};
 
 	domain = appState.constructor.originalSpec.getDomainDataContext();
@@ -259,7 +287,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								if(!(dataContext in links)){
 									links[dataContext] = {};
 								}
-								links[dataContext][watchedItem] = watchedState[watchedItem].alias;	
+								links[dataContext][watchedItem] = watchedState[watchedItem].alias;
 
 								if(!(watchedItem in domain)){
 									if(!(appNamespace in links)){
@@ -279,7 +307,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 											watchedDataContexts[watchedItem] = {};
 										}
 										watchedDataContext[watchedProp] = {};
-										watchedDataContext[watchedProp][dataContext] = watchedState[watchedItem].fields[watchedProp];
+										watchedDataContext[watchedProp][dataContext] =
+											watchedState[watchedItem].fields[watchedProp];
 										watchedDataContexts[watchedItem] = watchedDataContext;
 									}
 								}
@@ -296,20 +325,52 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		if(domain.hasOwnProperty(dataContext)){
 			for(link in links[dataContext]){
 			  if(links[dataContext].hasOwnProperty(link)){
-			    appState[dataContext].state[links[dataContext][link]] = (link in domain) ? extend(appState[link].state): appState[link];
+			    appState[dataContext].state[links[dataContext][link]] =
+						(link in domain) ? extend(appState[link].state): appState[link];
 			  }
 			}
 		}
 	}
-	
+
 	//reinitialize with all data in place
 	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
-			appState.state[dataContext] = new dataContexts[dataContext](appState.state[dataContext]);
+			appState.state[dataContext] =
+				new dataContexts[dataContext](appState.state[dataContext]);
+
+			if('getRoutes' in appState[dataContext].constructor.originalSpec){
+				routingEnabled = true;
+				//this must be enabled for routing to work
+				page = require('page');
+				var routeMapping = appState[dataContext].constructor.originalSpec.getRoutes();
+				for(var routePath in routeMapping){
+					if(routeMapping.hasOwnProperty(routePath)){
+						page(routePath, function(dataContextName, route, ctx){
+							external = true;
+							if(!internal){
+								routeMapping[route].apply(appState[dataContextName],
+									Object.keys(ctx.params).map(function(key){
+										return ctx.params[key];
+									})
+								);
+							}
+							internal = false;
+						}.bind(this, dataContext, routePath));
+					}
+				}
+			}
     }
   }
 
-	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo);
+	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo, routingEnabled);
+
+	if(routingEnabled){
+		page.start({click: false});
+		internal = true;
+		page(appState.path);
+		external = false;
+	}
+
 	Object.freeze(appState.state);
 	Object.freeze(appState);
 	return appState;
