@@ -14,11 +14,15 @@ var PersonsViewModel = (function(){
       }
       return person;
     });
-    this.setState(persons, {path: '/user/' + persons.selectedPerson.id });
+  this.setState(persons/*, {path: '/user/' + persons.selectedPerson.id }*/);
   };
 
   var Person = function(){
     return new PersonModel(personStateChangedHandler).apply(this, arguments);
+  };
+
+  var personRouteHandler = function(params, path, ctx){
+    this.selectPerson(params.id);
   };
 
   var personsViewModel = IMVVM.createViewModel({
@@ -38,7 +42,7 @@ var PersonsViewModel = (function(){
 
     getRoutes: function(){
       return {
-        '/user/:id': this.selectPerson
+        '/user/:id': personRouteHandler
       };
     },
 

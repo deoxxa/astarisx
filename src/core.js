@@ -8,7 +8,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		throw new TypeError('stateChangedHandler must be a function!');
 	}
 
-	enableUndo === void(0) ? false : enableUndo;
+	if(enableUndo === void(0)){
+		enableUndo = false;
+	}
 
 	var ApplicationDataContext,
 		appState = {},
@@ -29,7 +31,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		routeMapping = {},
 		routePath,
 		external = false,
-		internal = false;
+		internal = true;
 
 	var appStateChangedHandler = function(caller, newState, newAppState, callback) {
 
@@ -57,16 +59,16 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			return;
 		}
 
-		//Ensure the original path is persisted during state change
-		//when a callback is made
-		if(calledBack){
-			if(('path' in newAppState) && ('path' in processedState)){
-				newAppState.path = processedState.path;
-			} else if(caller === appNamespace && ('path' in newState) &&
-				('path' in processedState)){
-				newState.path = processedState.path;
-			}
-		}
+		// //Ensure the original path is persisted during state change
+		// //when a callback is made
+		// if(calledBack){
+		// 	if(('path' in newAppState) && ('path' in processedState)){
+		// 		newAppState.path = processedState.path;
+		// 	} else if(caller === appNamespace && ('path' in newState) &&
+		// 		('path' in processedState)){
+		// 		newState.path = processedState.path;
+		// 	}
+		// }
 
 		if(typeof newAppState === 'function'){
 			callback = newAppState;
@@ -233,7 +235,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				}
 	    }
 
-			if(appState.previousState && calledBack){
+			if(appState.canRevert && calledBack){
 				prevState = appState.previousState;
 			} else {
 				prevState = appState;
@@ -263,14 +265,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 		if(routingEnabled){
 			if(('path' in appState) && !external){
-				internal = true;
 				/*
 					--> || caller === appNamespace
 					When the Domain invokes a state change just replace the state
 				*/
-				if(appState.previousState && appState.previousState.path &&
-						appState.previousState.path === appState.path ||
-						caller === appNamespace){
+				internal = true;
+				if(appState.canRevert || caller === appNamespace){
 					page.replace(appState.path);
 				} else {
 					page(appState.path);
@@ -353,6 +353,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		}
 	}
 
+//regex ->  /\{(.*?)\}/g
+//test.slice(test.lastIndexOf('}')+1);
+
 	//reinitialize with all data in place
 	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
@@ -361,17 +364,49 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 			if('getRoutes' in appState[dataContext].constructor.originalSpec){
 				routingEnabled = true;
-				routeMapping = extend(routeMapping, appState[dataContext].constructor.originalSpec.getRoutes());
+				routeMapping = extend(routeMapping,
+					appState[dataContext].constructor.originalSpec.getRoutes());
 				for(routePath in routeMapping){
 					if(routeMapping.hasOwnProperty(routePath)){
+						//console.log(routePath.replace('~',''));
 						page(routePath, function(dataContextName, route, ctx){
+							// console.log('in here');
+							// console.log(route.split('~'));
+
+							//var routeArr = route.split('~');
+
 							external = true;
+
+								// if(routeArr.length > 1){
+								// 	//get the array from the route
+								// 	var pathArr = routeMapping[route];
+								// 	var pathArrLen = pathArr.length;
+								// 	//loop through each
+								// 	//last index is the function call for the data context
+								//
+								// 	for(var i = 0;i<pathArrLen;i++){
+								// 		if(i < pathArrLen-1){
+								// 			//last idx
+								// 			routeMapping[routeArr[i]].apply(appState[pathArr[i]],
+								// 				Object.keys(ctx.params).map(function(key){
+								// 					return ctx.params[key];
+								// 				})
+								// 			);
+								// 		} else {
+								// 			routeMapping[route][i].apply(appState[dataContextName],
+								// 				Object.keys(ctx.params).map(function(key){
+								// 					return ctx.params[key];
+								// 				})
+								// 			);
+								// 		}
+								// 	}
+								//
+								//
+							//internal indicates that the popstate event was not triggered
+							//by the back key
 							if(!internal){
-								routeMapping[route].apply(appState[dataContextName],
-									Object.keys(ctx.params).map(function(key){
-										return ctx.params[key];
-									})
-								);
+								routeMapping[route].call(appState[dataContextName], ctx.params,
+								ctx.path, ctx);
 							}
 							internal = false;
 						}.bind(this, dataContext, routePath));
@@ -381,15 +416,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
     }
   }
-
 	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo, routingEnabled);
-
-	if(routingEnabled){
-		page.start({click: false});
-		internal = true;
-		page(appState.path);
-		external = false;
-	}
 
 	if('getRoutes' in appState.constructor.originalSpec){
 		routeMapping = extend(routeMapping, appState.constructor.originalSpec.getRoutes());
@@ -398,17 +425,23 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				page(routePath, function(route, ctx){
 					external = true;
 					if(!internal){
-						routeMapping[route].apply(appState,
-							Object.keys(ctx.params).map(function(key){
-								return ctx.params[key];
-							})
-						);
+						routeMapping[route].call(appState, ctx.params, ctx.path, ctx);
 					}
 					internal = false;
 				}.bind(this, routePath));
 			}
 		}
 		delete appState.constructor.originalSpec.getRoutes;
+	}
+
+	if(routingEnabled){
+		page.replace(appState.path);
+		//Need a set internal = true to intialise
+		//so that it does not update state again and
+		//add previousState
+		internal = true;
+		page.start({click: false, dispatch: false});
+		external = false;
 	}
 
 	Object.freeze(appState.state);

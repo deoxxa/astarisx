@@ -33,10 +33,7 @@ var HobbiesViewModel = (function(){
       return hobby;
     }.bind(this));
 
-    this.setState(newState, {
-      path: '/user/'+ this.state.personsContext.selectedPerson.id +
-      '/hobby/'+ newState.current.id
-    }, function(){
+    this.setState(newState, function(){
       //This will invoke setState within the persons Data Context
       this.state.personsContext.selectedPerson.hobbies = hobbiesArr;
     }.bind(this));
@@ -47,13 +44,17 @@ var HobbiesViewModel = (function(){
   var onPersonChangedHandler = function(nextState, prevState, field, context,
       nextPath, prevPath){
     if(this.current !== void(0) && context === 'persons' &&
-      (nextState.id !== prevState.id || nextPath.length != prevPath.length)){
+  (nextState.id !== prevState.id || nextPath !== prevPath)){
       return { hobbies: { current: void(0) }, busy: false };
     }
   };
 
   var Hobby = function(){
     return new HobbyModel(hobbyStateChangedHandler).apply(this, arguments);
+  };
+
+  var hobbyRouteHandler = function(params, path, ctx){
+    this.selectHobby(params.hobbyId);
   };
 
   var hobbiesViewModel = IMVVM.createViewModel({
@@ -74,7 +75,7 @@ var HobbiesViewModel = (function(){
 
     getRoutes: function(){
       return {
-        '[/user/:id]/hobby/:hobbyId': this.selectHobby
+        '/user/:id/hobby/:hobbyId': hobbyRouteHandler
       }
     },
 
