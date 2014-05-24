@@ -107,7 +107,7 @@ var PersonsViewModel = (function(){
         }, true);
         nextState.collection = this.collection.slice(0);
         nextState.collection = nextState.collection.concat(nextState.selectedPerson);
-        this.setState(nextState);
+        this.setState(nextState, {path: '/user/' + nextState.selectedPerson.id });
       }
     },
 
@@ -124,7 +124,7 @@ var PersonsViewModel = (function(){
           nextState.selectedPerson = new Person(this.selectedPerson);
         }
       }
-      this.setState(nextState);
+      this.setState(nextState, {path: '/user/' + nextState.selectedPerson.id});
     },
 
   });
