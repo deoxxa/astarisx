@@ -481,6 +481,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		link,
 		calledBack = false,
 		routingEnabled = false,
+		routeHash = {},
 		routeMapping = {},
 		routePath,
 		external = false,
@@ -671,15 +672,19 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 						for(dataContext in links[processedStateKeys[keyIdx]]){
 							if(links[processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
 								nextState[processedStateKeys[keyIdx]].state[links[processedStateKeys[keyIdx]][dataContext]] =
-									(dataContext in domain) ? extend(nextState[dataContext].state) :
-										nextState[dataContext];
+									nextState[dataContext];
+								// nextState[processedStateKeys[keyIdx]].state[links[processedStateKeys[keyIdx]][dataContext]] =
+								// 	(dataContext in domain) ? extend(nextState[dataContext].state) :
+								// 		nextState[dataContext];
 							}
 							if(dataContext in links){
 								for(dataContext2 in links[dataContext]){
 									if(links[dataContext].hasOwnProperty(dataContext2)){
 										nextState[dataContext].state[links[dataContext][dataContext2]] =
-											(dataContext2 in domain) ? extend(nextState[dataContext2].state) :
-												nextState[dataContext2];
+											nextState[dataContext2];
+										// nextState[dataContext].state[links[dataContext][dataContext2]] =
+										// 	(dataContext2 in domain) ? extend(nextState[dataContext2].state) :
+										// 		nextState[dataContext2];
 									}
 								}
 							}
@@ -799,15 +804,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		if(domain.hasOwnProperty(dataContext)){
 			for(link in links[dataContext]){
 			  if(links[dataContext].hasOwnProperty(link)){
-			    appState[dataContext].state[links[dataContext][link]] =
-						(link in domain) ? extend(appState[link].state): appState[link];
+					appState[dataContext].state[links[dataContext][link]] = appState[link];
+			    // appState[dataContext].state[links[dataContext][link]] =
+					// 	(link in domain) ? extend(appState[link].state): appState[link];
 			  }
 			}
 		}
 	}
-
-//regex ->  /\{(.*?)\}/g
-//test.slice(test.lastIndexOf('}')+1);
 
 	//reinitialize with all data in place
 	for(dataContext in domain){
@@ -817,52 +820,18 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 			if('getRoutes' in appState[dataContext].constructor.originalSpec){
 				routingEnabled = true;
-				routeMapping = extend(routeMapping,
-					appState[dataContext].constructor.originalSpec.getRoutes());
-				for(routePath in routeMapping){
-					if(routeMapping.hasOwnProperty(routePath)){
-						//console.log(routePath.replace('~',''));
-						page(routePath, function(dataContextName, route, ctx){
-							// console.log('in here');
-							// console.log(route.split('~'));
-
-							//var routeArr = route.split('~');
-
+				routeHash = appState[dataContext].constructor.originalSpec.getRoutes();
+				for(routePath in routeHash){
+					if(routeHash.hasOwnProperty(routePath)){
+						routeMapping[routeHash[routePath].path] = routeHash[routePath].handler;
+						page(routeHash[routePath].path, function(dataContextName, route, ctx){
 							external = true;
-
-								// if(routeArr.length > 1){
-								// 	//get the array from the route
-								// 	var pathArr = routeMapping[route];
-								// 	var pathArrLen = pathArr.length;
-								// 	//loop through each
-								// 	//last index is the function call for the data context
-								//
-								// 	for(var i = 0;i<pathArrLen;i++){
-								// 		if(i < pathArrLen-1){
-								// 			//last idx
-								// 			routeMapping[routeArr[i]].apply(appState[pathArr[i]],
-								// 				Object.keys(ctx.params).map(function(key){
-								// 					return ctx.params[key];
-								// 				})
-								// 			);
-								// 		} else {
-								// 			routeMapping[route][i].apply(appState[dataContextName],
-								// 				Object.keys(ctx.params).map(function(key){
-								// 					return ctx.params[key];
-								// 				})
-								// 			);
-								// 		}
-								// 	}
-								//
-								//
-							//internal indicates that the popstate event was not triggered
-							//by the back key
-							if(!internal){
+							if(!internal) {
 								routeMapping[route].call(appState[dataContextName], ctx.params,
 								ctx.path, ctx);
 							}
 							internal = false;
-						}.bind(this, dataContext, routePath));
+						}.bind(this, dataContext, routeHash[routePath].path));
 					}
 				}
 				delete appState[dataContext].constructor.originalSpec.getRoutes;
@@ -871,21 +840,22 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
   }
 	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo, routingEnabled);
 
-	if('getRoutes' in appState.constructor.originalSpec){
-		routeMapping = extend(routeMapping, appState.constructor.originalSpec.getRoutes());
-		for(routePath in routeMapping){
-			if(routeMapping.hasOwnProperty(routePath)){
-				page(routePath, function(route, ctx){
-					external = true;
-					if(!internal){
-						routeMapping[route].call(appState, ctx.params, ctx.path, ctx);
-					}
-					internal = false;
-				}.bind(this, routePath));
-			}
-		}
-		delete appState.constructor.originalSpec.getRoutes;
-	}
+	// //Domain Routes
+	// if('getRoutes' in appState.constructor.originalSpec){
+	// 	routeMapping = extend(routeMapping, appState.constructor.originalSpec.getRoutes());
+	// 	for(routePath in routeMapping){
+	// 		if(routeMapping.hasOwnProperty(routePath)){
+	// 			page(routePath, function(route, ctx){
+	// 				external = true;
+	// 				if(!internal){
+	// 					routeMapping[route].call(appState, ctx.params, ctx.path, ctx);
+	// 				}
+	// 				internal = false;
+	// 			}.bind(this, routePath));
+	// 		}
+	// 	}
+	// 	delete appState.constructor.originalSpec.getRoutes;
+	// }
 
 	if(routingEnabled){
 		page.replace(appState.path);

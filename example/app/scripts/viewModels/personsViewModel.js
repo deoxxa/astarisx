@@ -42,7 +42,10 @@ var PersonsViewModel = (function(){
 
     getRoutes: function(){
       return {
-        '/user/:id': personRouteHandler
+        displayPerson: {
+          path: '/user/:id',
+          handler: personRouteHandler
+        }
       };
     },
 
@@ -81,12 +84,12 @@ var PersonsViewModel = (function(){
       get: function(){ return this.state.collection; },
     },
 
-    selectPerson: function(id){
+    selectPerson: function(id, next){
       var selectedPerson;
       for (var i = this.collection.length - 1; i >= 0; i--) {
         if(this.collection[i].id === id){
           selectedPerson = new Person(this.collection[i]);
-          this.setState({ selectedPerson: selectedPerson}, {path: '/user/' + selectedPerson.id });
+          this.setState({ selectedPerson: selectedPerson}, {path: '/user/' + selectedPerson.id }, next);
           break;
         }
       }

@@ -54,7 +54,9 @@ var HobbiesViewModel = (function(){
   };
 
   var hobbyRouteHandler = function(params, path, ctx){
-    this.selectHobby(params.hobbyId);
+    this.state.personsContext.selectPerson(params.id, function(){
+      this.selectHobby(params.hobbyId);
+    }.bind(this));
   };
 
   var hobbiesViewModel = IMVVM.createViewModel({
@@ -75,7 +77,10 @@ var HobbiesViewModel = (function(){
 
     getRoutes: function(){
       return {
-        '/user/:id/hobby/:hobbyId': hobbyRouteHandler
+        selectHobby : {
+          path: '/user/:id/hobby/:hobbyId',
+          handler: hobbyRouteHandler
+        }
       }
     },
 

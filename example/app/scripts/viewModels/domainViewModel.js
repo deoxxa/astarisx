@@ -46,13 +46,13 @@ var DomainViewModel = IMVVM.createDomainViewModel({
     }
   },
 
-  getRoutes: function(){
-    return {
-      '*': function(){
-        this.setState({'page404':true});
-      }
-    }
-  },
+  // getRoutes: function(){
+  //   return {
+  //     '*': function(){
+  //       this.setState({'page404':true});
+  //     }
+  //   }
+  // },
 
   page404: {
     get: function(){
