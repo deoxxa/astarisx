@@ -513,17 +513,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			return;
 		}
 
-		// //Ensure the original path is persisted during state change
-		// //when a callback is made
-		// if(calledBack){
-		// 	if(('path' in newAppState) && ('path' in processedState)){
-		// 		newAppState.path = processedState.path;
-		// 	} else if(caller === appNamespace && ('path' in newState) &&
-		// 		('path' in processedState)){
-		// 		newState.path = processedState.path;
-		// 	}
-		// }
-
 		if(typeof newAppState === 'function'){
 			callback = newAppState;
 			newAppState = {};
@@ -564,7 +553,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 
 			if(typeof callback === 'function'){
-				appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo, routingEnabled);
+				appState = new ApplicationDataContext(nextState, prevState, redoState,
+					enableUndo, routingEnabled);
 				callback(appState);
 				return;
 			}
@@ -699,14 +689,14 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				prevState = appState;
 			}
 			//prevState = calledBack ? appState.previousState : appState;
-
 		}
 
 		if(!!prevState){
 			Object.freeze(prevState);
 		}
 
-		appState = new ApplicationDataContext(nextState, prevState, redoState, enableUndo, routingEnabled);
+		appState = new ApplicationDataContext(nextState, prevState, redoState,
+			enableUndo, routingEnabled);
 		Object.freeze(appState);
 		Object.freeze(appState.state);
 
@@ -728,7 +718,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 					When the Domain invokes a state change just replace the state
 				*/
 				internal = true;
-				if(appState.canRevert || caller === appNamespace){
+				if(nextState.enableUndo || appState.canRevert || caller === appNamespace){
 					page.replace(appState.path);
 				} else {
 					page(appState.path);
@@ -838,24 +828,27 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
     }
   }
+	// //Domain Routes
+	if('getRoutes' in appState.constructor.originalSpec){
+		routingEnabled = true;
+		routeHash = appState.constructor.originalSpec.getRoutes();
+		for(routePath in routeHash){
+			if(routeHash.hasOwnProperty(routePath)){
+				routeMapping[routeHash[routePath].path] = routeHash[routePath].handler;
+				page(routeHash[routePath].path, function(route, ctx){
+					external = true;
+					if(!internal) {
+						routeMapping[route].call(appState, ctx.params,
+						ctx.path, ctx);
+					}
+					internal = false;
+				}.bind(this, routeHash[routePath].path));
+			}
+		}
+		delete appState.constructor.originalSpec.getRoutes;
+	}
 	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo, routingEnabled);
 
-	// //Domain Routes
-	// if('getRoutes' in appState.constructor.originalSpec){
-	// 	routeMapping = extend(routeMapping, appState.constructor.originalSpec.getRoutes());
-	// 	for(routePath in routeMapping){
-	// 		if(routeMapping.hasOwnProperty(routePath)){
-	// 			page(routePath, function(route, ctx){
-	// 				external = true;
-	// 				if(!internal){
-	// 					routeMapping[route].call(appState, ctx.params, ctx.path, ctx);
-	// 				}
-	// 				internal = false;
-	// 			}.bind(this, routePath));
-	// 		}
-	// 	}
-	// 	delete appState.constructor.originalSpec.getRoutes;
-	// }
 
 	if(routingEnabled){
 		page.replace(appState.path);
@@ -1029,10 +1022,11 @@ var IMVVMDomainViewModel = {
         var freezeFields = desc.freezeFields,
           domainModel = Object.create(desc.proto, desc.descriptor),
           fld;
+        var adhocUndo = !!nextState ? nextState.enableUndo : false;
 
-        if(enableUndo || routingEnabled){
+        if(enableUndo || routingEnabled || adhocUndo){
           if(!!prevState){
-            if(routingEnabled && prevState.path !== nextState.path){
+            if(!adhocUndo && routingEnabled && prevState.path !== nextState.path){
               Object.defineProperty(domainModel, 'canRevert', {
                 configurable: false,
                 enumerable: false,

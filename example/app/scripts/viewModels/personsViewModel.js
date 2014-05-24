@@ -22,6 +22,8 @@ var PersonsViewModel = (function(){
   };
 
   var personRouteHandler = function(params, path, ctx){
+    //Do some validation on whether item exists and if not
+    //throw 404
     this.selectPerson(params.id);
   };
 
@@ -89,7 +91,8 @@ var PersonsViewModel = (function(){
       for (var i = this.collection.length - 1; i >= 0; i--) {
         if(this.collection[i].id === id){
           selectedPerson = new Person(this.collection[i]);
-          this.setState({ selectedPerson: selectedPerson}, {path: '/user/' + selectedPerson.id }, next);
+          this.setState({ selectedPerson: selectedPerson},
+            {path: '/user/' + selectedPerson.id }, next);
           break;
         }
       }
@@ -107,7 +110,8 @@ var PersonsViewModel = (function(){
         }, true);
         nextState.collection = this.collection.slice(0);
         nextState.collection = nextState.collection.concat(nextState.selectedPerson);
-        this.setState(nextState, {path: '/user/' + nextState.selectedPerson.id });
+        this.setState(nextState,
+          {path: '/user/' + nextState.selectedPerson.id });
       }
     },
 
@@ -124,7 +128,7 @@ var PersonsViewModel = (function(){
           nextState.selectedPerson = new Person(this.selectedPerson);
         }
       }
-      this.setState(nextState, {path: '/user/' + nextState.selectedPerson.id});
+      this.setState(nextState, {enableUndo: true, path: '/user/' + nextState.selectedPerson.id});
     },
 
   });

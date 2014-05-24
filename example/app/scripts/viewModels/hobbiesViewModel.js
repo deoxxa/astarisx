@@ -54,6 +54,8 @@ var HobbiesViewModel = (function(){
   };
 
   var hobbyRouteHandler = function(params, path, ctx){
+    //Do some validation on whether item exists and if not
+    //throw 404
     this.state.personsContext.selectPerson(params.id, function(){
       this.selectHobby(params.hobbyId);
     }.bind(this));
@@ -131,6 +133,8 @@ var HobbiesViewModel = (function(){
       }
     },
 
+    // Not necessarily how I would code this
+    // It probably should be in the persons data context
     addHobby: function(value){
       if(value !== ''){
         this.state.personsContext.selectedPerson.
@@ -144,6 +148,8 @@ var HobbiesViewModel = (function(){
       }.bind(this));
     },
 
+    // Not necessarily how I would code this
+    // It probably should be in the persons data context
     deleteHobby: function(value){
       /*
 
@@ -161,8 +167,10 @@ var HobbiesViewModel = (function(){
        */
 
       if(this.current && this.current.id === value){
-        this.setState({ current: void(0) }, { busy: false }, function(){
-          this.state.personsContext.selectedPerson.deleteHobby(value);
+        this.setState({ current: void(0) }, { busy: false,
+          path: '/user/' + this.state.personsContext.selectedPerson.id },
+          function(){
+            this.state.personsContext.selectedPerson.deleteHobby(value);
         }.bind(this));
       } else {
         this.state.personsContext.selectedPerson.deleteHobby(value);

@@ -24,10 +24,11 @@ var IMVVMDomainViewModel = {
         var freezeFields = desc.freezeFields,
           domainModel = Object.create(desc.proto, desc.descriptor),
           fld;
+        var adhocUndo = !!nextState ? nextState.enableUndo : false;
 
-        if(enableUndo || routingEnabled){
+        if(enableUndo || routingEnabled || adhocUndo){
           if(!!prevState){
-            if(routingEnabled && prevState.path !== nextState.path){
+            if(!adhocUndo && routingEnabled && prevState.path !== nextState.path){
               Object.defineProperty(domainModel, 'canRevert', {
                 configurable: false,
                 enumerable: false,
