@@ -14,7 +14,7 @@ var PersonsViewModel = (function(){
       }
       return person;
     });
-  this.setState(persons/*, {path: '/user/' + persons.selectedPerson.id }*/);
+  this.setState(persons);
   };
 
   var Person = function(){

@@ -58,6 +58,7 @@ var DomainViewModel = IMVVM.createDomainViewModel({
   },
 
   page404: {
+    kind: 'pseudo',
     get: function(){
       return this.state.page404;
     },

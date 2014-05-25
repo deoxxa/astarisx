@@ -368,7 +368,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
     }
   }
-	// //Domain Routes
+
+	//Domain Routes
 	if('getRoutes' in appState.constructor.originalSpec){
 		routingEnabled = true;
 		routeHash = appState.constructor.originalSpec.getRoutes();
@@ -377,10 +378,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				routeMapping[routeHash[routePath].path] = routeHash[routePath].handler;
 				page(routeHash[routePath].path, function(route, pathKey, ctx){
 					external = true;
-					if(!internal) {
-						routeMapping[route].call(appState, ctx.params,
-						ctx.path, pathKey, ctx);
-					}
+					routeMapping[route].call(appState, ctx.params,
+					ctx.path, pathKey, ctx);
 					internal = false;
 				}.bind(this, routeHash[routePath].path, routePath));
 			}
