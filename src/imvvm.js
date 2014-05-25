@@ -4,6 +4,8 @@ var viewModel = require('./imvvmViewModel');
 var domainModel = require('./imvvmDomainViewModel');
 var mixin = require('./mixin');
 
+var page = require('page');
+
 var utils = require('./utils');
 var extend = utils.extend;
 var mixInto = utils.mixInto;
@@ -122,7 +124,8 @@ var IMVVM = {
   createViewModel: IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel'),
   createDomainViewModel: IMVVMClass.createClass.bind(this, DomainViewModelBase, 'DomainViewModel'),
   mixin: mixin,
-  extend: extend
+  extend: extend,
+  page: page
 };
 
 module.exports = IMVVM;

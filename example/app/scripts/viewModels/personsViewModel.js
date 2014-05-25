@@ -21,9 +21,10 @@ var PersonsViewModel = (function(){
     return new PersonModel(personStateChangedHandler).apply(this, arguments);
   };
 
-  var personRouteHandler = function(params, path, ctx){
+  var personRouteHandler = function(params, path, pathKey, ctx){
     //Do some validation on whether item exists and if not
     //throw 404
+
     this.selectPerson(params.id);
   };
 
@@ -128,7 +129,8 @@ var PersonsViewModel = (function(){
           nextState.selectedPerson = new Person(this.selectedPerson);
         }
       }
-      this.setState(nextState, {enableUndo: true, path: '/user/' + nextState.selectedPerson.id});
+      this.setState(nextState, { enableUndo: true,
+        path: '/user/' + nextState.selectedPerson.id});
     },
 
   });

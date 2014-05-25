@@ -53,7 +53,7 @@ var HobbiesViewModel = (function(){
     return new HobbyModel(hobbyStateChangedHandler).apply(this, arguments);
   };
 
-  var hobbyRouteHandler = function(params, path, ctx){
+  var hobbyRouteHandler = function(params, path, pathKey, ctx){
     //Do some validation on whether item exists and if not
     //throw 404
     this.state.personsContext.selectPerson(params.id, function(){

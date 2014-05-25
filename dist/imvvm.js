@@ -663,18 +663,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 							if(links[processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
 								nextState[processedStateKeys[keyIdx]].state[links[processedStateKeys[keyIdx]][dataContext]] =
 									nextState[dataContext];
-								// nextState[processedStateKeys[keyIdx]].state[links[processedStateKeys[keyIdx]][dataContext]] =
-								// 	(dataContext in domain) ? extend(nextState[dataContext].state) :
-								// 		nextState[dataContext];
 							}
 							if(dataContext in links){
 								for(dataContext2 in links[dataContext]){
 									if(links[dataContext].hasOwnProperty(dataContext2)){
 										nextState[dataContext].state[links[dataContext][dataContext2]] =
 											nextState[dataContext2];
-										// nextState[dataContext].state[links[dataContext][dataContext2]] =
-										// 	(dataContext2 in domain) ? extend(nextState[dataContext2].state) :
-										// 		nextState[dataContext2];
 									}
 								}
 							}
@@ -688,7 +682,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			} else {
 				prevState = appState;
 			}
-			//prevState = calledBack ? appState.previousState : appState;
 		}
 
 		if(!!prevState){
@@ -716,6 +709,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				/*
 					--> || caller === appNamespace
 					When the Domain invokes a state change just replace the state
+					--> nextState.enableUndo is adhoc dynamic undo flag
 				*/
 				internal = true;
 				if(nextState.enableUndo || appState.canRevert || caller === appNamespace){
@@ -795,8 +789,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			for(link in links[dataContext]){
 			  if(links[dataContext].hasOwnProperty(link)){
 					appState[dataContext].state[links[dataContext][link]] = appState[link];
-			    // appState[dataContext].state[links[dataContext][link]] =
-					// 	(link in domain) ? extend(appState[link].state): appState[link];
 			  }
 			}
 		}
@@ -814,14 +806,15 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				for(routePath in routeHash){
 					if(routeHash.hasOwnProperty(routePath)){
 						routeMapping[routeHash[routePath].path] = routeHash[routePath].handler;
-						page(routeHash[routePath].path, function(dataContextName, route, ctx){
+						page(routeHash[routePath].path, function(dataContextName, route,
+								pathKey, ctx){
 							external = true;
 							if(!internal) {
 								routeMapping[route].call(appState[dataContextName], ctx.params,
-								ctx.path, ctx);
+								ctx.path, pathKey, ctx);
 							}
 							internal = false;
-						}.bind(this, dataContext, routeHash[routePath].path));
+						}.bind(this, dataContext, routeHash[routePath].path, routePath));
 					}
 				}
 				delete appState[dataContext].constructor.originalSpec.getRoutes;
@@ -835,19 +828,20 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		for(routePath in routeHash){
 			if(routeHash.hasOwnProperty(routePath)){
 				routeMapping[routeHash[routePath].path] = routeHash[routePath].handler;
-				page(routeHash[routePath].path, function(route, ctx){
+				page(routeHash[routePath].path, function(route, pathKey, ctx){
 					external = true;
 					if(!internal) {
 						routeMapping[route].call(appState, ctx.params,
-						ctx.path, ctx);
+						ctx.path, pathKey, ctx);
 					}
 					internal = false;
-				}.bind(this, routeHash[routePath].path));
+				}.bind(this, routeHash[routePath].path, routePath));
 			}
 		}
 		delete appState.constructor.originalSpec.getRoutes;
 	}
-	appState = new ApplicationDataContext(appState, void(0), void(0), enableUndo, routingEnabled);
+	appState = new ApplicationDataContext(appState, void(0), void(0),
+			enableUndo, routingEnabled);
 
 
 	if(routingEnabled){
@@ -871,6 +865,8 @@ var model = _dereq_('./imvvmModel');
 var viewModel = _dereq_('./imvvmViewModel');
 var domainModel = _dereq_('./imvvmDomainViewModel');
 var mixin = _dereq_('./mixin');
+
+var page = _dereq_('page');
 
 var utils = _dereq_('./utils');
 var extend = utils.extend;
@@ -990,12 +986,13 @@ var IMVVM = {
   createViewModel: IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel'),
   createDomainViewModel: IMVVMClass.createClass.bind(this, DomainViewModelBase, 'DomainViewModel'),
   mixin: mixin,
-  extend: extend
+  extend: extend,
+  page: page
 };
 
 module.exports = IMVVM;
 
-},{"./imvvmDomainViewModel":5,"./imvvmModel":6,"./imvvmViewModel":7,"./mixin":8,"./utils":9}],5:[function(_dereq_,module,exports){
+},{"./imvvmDomainViewModel":5,"./imvvmModel":6,"./imvvmViewModel":7,"./mixin":8,"./utils":9,"page":2}],5:[function(_dereq_,module,exports){
 
 var utils = _dereq_('./utils');
 var extend = utils.extend;
