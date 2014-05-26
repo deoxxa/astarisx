@@ -51,7 +51,7 @@ var NavBarView = React.createClass({
 
 			    <div ref="menu" className="collapse navbar-collapse">
             <ul className="nav navbar-nav">
-              <li><a href="/person/1">Nav to 1</a></li>
+              <li><a href="/broken/link">Bad Link</a></li>
               <li><a href="/person/3">Nav to 3</a></li>
             </ul>
 			      <form className="navbar-form pull-right" role="search">

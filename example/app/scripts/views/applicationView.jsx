@@ -9,15 +9,13 @@
 'use strict';
 
 var ApplicationView = React.createClass({
-  mixins: [IMVVM.mixin],
+  mixins: [IMVVM.mixin.main, IMVVM.mixin.router],
 
   render: function(){
 
     console.log('------------------------------------------ Current Application State ------------------------------------------')
     console.log(this.state.domainDataContext);
-    if(this.state.domainDataContext.pageNotFound){
-      return (<div>Page Not Found</div>);
-    }
+
     return (
       <div>
         <NavBarView appContext={this.state.domainDataContext} />
@@ -29,6 +27,8 @@ var ApplicationView = React.createClass({
             <div className="col-md-8">
               <DetailsView appContext={this.state.domainDataContext} />
             </div>
+            <h1>{this.state.domainDataContext.pageNotFound ?
+              this.state.domainDataContext.path + ': Page Not Found' : ''}</h1>
           </div>
         </div>
       </div>

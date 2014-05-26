@@ -364,9 +364,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 	if(routingEnabled){
 		//Setup 'pageNotFound' route
-		page('*', function(){
+		page(function(ctx){
 			external = true;
-			appState.setState({'pageNotFound':true});
+			appState.setState({'pageNotFound':true, path: ctx.path});
 			internal = false;
 		});
 		//Initilize first path
