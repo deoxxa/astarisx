@@ -1,5 +1,5 @@
-/** 
- * @jsx React.DOM 
+/**
+ * @jsx React.DOM
  */
 /*jshint quotmark:false */
 /*jshint white:false */
@@ -49,8 +49,12 @@ var NavBarView = React.createClass({
 			      </a>
 			    </div>
 
-			    <div ref="menu" className="collapse navbar-collapse pull-right">
-			      <form className="navbar-form navbar-left" role="search">
+			    <div ref="menu" className="collapse navbar-collapse">
+            <ul className="nav navbar-nav">
+              <li><a href="/user/1">Nav to 1</a></li>
+              <li><a href="/user/3">Nav to 3</a></li>
+            </ul>
+			      <form className="navbar-form pull-right" role="search">
 			        <button onClick={this.undo} disabled={!this.props.appContext.canRevert} className="btn btn-default">
 			        Undo
 			        </button>
@@ -65,6 +69,6 @@ var NavBarView = React.createClass({
 
 			  </div>
 			</nav>
-		);		
-	}		
+		);
+	}
 });

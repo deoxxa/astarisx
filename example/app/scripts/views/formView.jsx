@@ -1,5 +1,5 @@
 /** 
- * @jsx React.DOM 
+ * @jsx React.DOM
  */
 /*jshint quotmark:false */
 /*jshint white:false */
@@ -61,7 +61,7 @@ var FormView = React.createClass({
 					<div className="form-group">
 					    <label className="col-md-2 control-label">Birthday</label>
 					    <div className="col-md-3">
-						    <input className="form-control" type="text" 
+						    <input className="form-control" type="text"
 						    placeholder="yyyy-mm-dd"
 						    value={current.dob}
 						    onChange={this.updateDOB} />

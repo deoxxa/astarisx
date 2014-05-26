@@ -32,7 +32,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		routeMapping = {},
 		routePath,
 		external = false,
-		internal = true;
+		internal = false;
 
 	var appStateChangedHandler = function(caller, newState, newAppState, callback) {
 
@@ -240,7 +240,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		calledBack = false;
 		transientState = {};
 		processedState = {};
-
+		// Internal call routing
 		if(routingEnabled){
 			if(('path' in appState) && !external){
 				/*
@@ -370,11 +370,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			internal = false;
 		});
 		//Initilize first path
+		internal = true;
 		page.replace(appState.path);
 		//Need a set internal = true to intialise
 		//so that it does not update state again and
 		//add previousState
-		internal = true;
 		page.start({click: false, dispatch: false});
 		external = false;
 	}
