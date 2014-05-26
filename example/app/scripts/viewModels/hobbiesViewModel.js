@@ -54,8 +54,8 @@ var HobbiesViewModel = (function(){
   };
 
   var hobbyRouteHandler = function(params, path, pathKey, ctx){
-    //Do some validation on whether item exists and if not
-    //throw 404
+    // Do some validation on whether item exists and if not
+    // get it OR throw 404 -> this.setState({}, {pageNotFound: true});
     this.state.personsContext.selectPerson(params.id, function(){
       this.selectHobby(params.hobbyId);
     }.bind(this));

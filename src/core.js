@@ -50,22 +50,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			subscribers,
 			subscriber;
 
-		if(newState === void(0)){
-			stateChangedHandler(appState);
-			calledBack = false;
-			transientState = {};
-			processedState = {};
-			external = false;
-			internal = false;
-			return;
-		}
-
 		if(typeof newAppState === 'function'){
 			callback = newAppState;
 			newAppState = {};
 		}
 
-		//newState = newState || {};
+		newState = newState || {};
 		newStateKeys = Object.keys(newState);
 
 		//Check to see if appState is a ready made state object. If so
@@ -369,28 +359,17 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
     }
   }
 
-	//Domain Routes
-	if('getRoutes' in appState.constructor.originalSpec){
-		routingEnabled = true;
-		routeHash = appState.constructor.originalSpec.getRoutes();
-		for(routePath in routeHash){
-			if(routeHash.hasOwnProperty(routePath)){
-				routeMapping[routeHash[routePath].path] = routeHash[routePath].handler;
-				page(routeHash[routePath].path, function(route, pathKey, ctx){
-					external = true;
-					routeMapping[route].call(appState, ctx.params,
-					ctx.path, pathKey, ctx);
-					internal = false;
-				}.bind(this, routeHash[routePath].path, routePath));
-			}
-		}
-		delete appState.constructor.originalSpec.getRoutes;
-	}
 	appState = new ApplicationDataContext(appState, void(0), void(0),
 			enableUndo, routingEnabled);
 
-
 	if(routingEnabled){
+		//Setup 'pageNotFound' route
+		page('*', function(){
+			external = true;
+			appState.setState({'pageNotFound':true});
+			internal = false;
+		});
+		//Initilize first path
 		page.replace(appState.path);
 		//Need a set internal = true to intialise
 		//so that it does not update state again and

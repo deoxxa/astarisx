@@ -15,7 +15,7 @@ var ApplicationView = React.createClass({
 
     console.log('------------------------------------------ Current Application State ------------------------------------------')
     console.log(this.state.domainDataContext);
-    if(this.state.domainDataContext.page404){
+    if(this.state.domainDataContext.pageNotFound){
       return (<div>Page Not Found</div>);
     }
     return (

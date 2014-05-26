@@ -24,11 +24,36 @@ var IMVVMDomainViewModel = {
         var freezeFields = desc.freezeFields,
           domainModel = Object.create(desc.proto, desc.descriptor),
           fld;
-        var adhocUndo = !!nextState ? nextState.enableUndo : false;
+        var init = nextState === void(0);
+
+        var adhocUndo = init || nextState.enableUndo === void(0) ? false :
+          nextState.enableUndo;
+
+        var pageNotFound = init || nextState.pageNotFound === void(0) ? false :
+          nextState.pageNotFound;
+
+        if(routingEnabled){
+          Object.defineProperty(domainModel, 'pageNotFound', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: pageNotFound
+          });
+          if(!('path' in domainModel) && ('path' in nextState)){
+            Object.defineProperty(domainModel, 'path', {
+              configurable: false,
+              enumerable: true,
+              writable: false,
+              value: nextState.path
+            });
+          }
+        }
 
         if(enableUndo || routingEnabled || adhocUndo){
           if(!!prevState){
-            if(!adhocUndo && routingEnabled && prevState.path !== nextState.path){
+            if(pageNotFound ||
+              (!adhocUndo && routingEnabled &&
+                prevState.path !== nextState.path)){
               Object.defineProperty(domainModel, 'canRevert', {
                 configurable: false,
                 enumerable: false,
@@ -80,9 +105,19 @@ var IMVVMDomainViewModel = {
           }
         }
 
-        if(nextState === void(0)){
+        if(init){
           //Add state prop so that it can be referenced from within getInitialState
-          nextState = ('getInitialState' in desc.originalSpec) ? desc.originalSpec.getInitialState.call(domainModel) : {};
+          nextState = ('getInitialState' in desc.originalSpec) ?
+            desc.originalSpec.getInitialState.call(domainModel) : {};
+          if('path' in nextState){
+            Object.defineProperty(domainModel, 'path', {
+              configurable: false,
+              enumerable: true,
+              writable: false,
+              value: nextState.path
+            });
+          }
+
         } else if('state' in nextState){
           delete nextState.state;
 

@@ -10,8 +10,7 @@ var DomainViewModel = IMVVM.createDomainViewModel({
   getInitialState: function(){ //optional
     return {
       online: true,
-      busy: false,
-      path: '/user/1'
+      busy: false
     };
   },
 
@@ -38,30 +37,19 @@ var DomainViewModel = IMVVM.createDomainViewModel({
     }
   },
 
-  // Framework reserved property name
   // Sets the intial path
+  // N.B. If the initial path needed to be '/users' then it could be set in
+  // getInitialState as { path: '/users' } and it would automatically set a
+  // 'path' property in the Domain data context, but because a reference
+  // to this.state.persons is needed we override 'path' with a getter
+  // path: Framework reserved property name
   path: {
     get: function(){
-      return this.state.path;
-    }
-  },
-
-  getRoutes: function(){
-    return {
-      pageNotFound : {
-        path: '*',
-        handler: function(){
-          this.setState({'page404':true});
-        }
+      if(this.state.path){
+        return this.state.path;
       }
+      return '/user/' + this.state.persons.selectedPerson.id;
     }
-  },
-
-  page404: {
-    kind: 'pseudo',
-    get: function(){
-      return this.state.page404;
-    },
   },
 
   /* Four ways to set busy
