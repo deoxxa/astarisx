@@ -80,7 +80,7 @@ var HobbiesViewModel = (function(){
     getRoutes: function(){
       return {
         selectHobby : {
-          path: '/user/:id/hobby/:hobbyId',
+          path: '/person/:id/hobby/:hobbyId',
           handler: hobbyRouteHandler
         }
       }
@@ -117,7 +117,7 @@ var HobbiesViewModel = (function(){
           },
           {
             busy: true,
-            path: '/user/'+ this.state.personsContext.selectedPerson.id +
+            path: '/person/'+ this.state.personsContext.selectedPerson.id +
             '/hobby/'+this.hobbies[i].id
           });
 
@@ -168,7 +168,7 @@ var HobbiesViewModel = (function(){
 
       if(this.current && this.current.id === value){
         this.setState({ current: void(0) }, { busy: false,
-          path: '/user/' + this.state.personsContext.selectedPerson.id },
+          path: '/person/' + this.state.personsContext.selectedPerson.id },
           function(){
             this.state.personsContext.selectedPerson.deleteHobby(value);
         }.bind(this));

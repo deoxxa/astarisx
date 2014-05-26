@@ -46,7 +46,7 @@ var PersonsViewModel = (function(){
     getRoutes: function(){
       return {
         displayPerson: {
-          path: '/user/:id',
+          path: '/person/:id',
           handler: personRouteHandler
         }
       };
@@ -93,7 +93,7 @@ var PersonsViewModel = (function(){
         if(this.collection[i].id === id){
           selectedPerson = new Person(this.collection[i]);
           this.setState({ selectedPerson: selectedPerson},
-            {path: '/user/' + selectedPerson.id }, next);
+            {path: '/person/' + selectedPerson.id }, next);
           break;
         }
       }
@@ -112,7 +112,7 @@ var PersonsViewModel = (function(){
         nextState.collection = this.collection.slice(0);
         nextState.collection = nextState.collection.concat(nextState.selectedPerson);
         this.setState(nextState,
-          {path: '/user/' + nextState.selectedPerson.id });
+          {path: '/person/' + nextState.selectedPerson.id });
       }
     },
 
@@ -130,7 +130,7 @@ var PersonsViewModel = (function(){
         }
       }
       this.setState(nextState, { enableUndo: true,
-        path: '/user/' + nextState.selectedPerson.id});
+        path: '/person/' + nextState.selectedPerson.id});
     },
 
   });

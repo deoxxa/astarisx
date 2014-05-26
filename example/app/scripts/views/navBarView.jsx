@@ -51,8 +51,8 @@ var NavBarView = React.createClass({
 
 			    <div ref="menu" className="collapse navbar-collapse">
             <ul className="nav navbar-nav">
-              <li><a href="/user/1">Nav to 1</a></li>
-              <li><a href="/user/3">Nav to 3</a></li>
+              <li><a href="/person/1">Nav to 1</a></li>
+              <li><a href="/person/3">Nav to 3</a></li>
             </ul>
 			      <form className="navbar-form pull-right" role="search">
 			        <button onClick={this.undo} disabled={!this.props.appContext.canRevert} className="btn btn-default">
