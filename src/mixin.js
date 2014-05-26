@@ -13,7 +13,7 @@ var mixin = {
 			return {domainDataContext: dataContext};
 		}
 	},
-	router: {
+	pushState: {
 		componentDidMount: function(){
 			if('path' in this.state.domainDataContext){
 				$(this.getDOMNode()).click(this.onclick);
