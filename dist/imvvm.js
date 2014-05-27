@@ -698,10 +698,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		transientState = {};
 		processedState = {};
 		// Internal call routing
-		if(routingEnabled){
+		if(routingEnabled && appState.pushState){
 			if(('path' in appState) && !external){
 				internal = true;
-			if(pushStateChanged){
+				if(pushStateChanged && !appState.forceReplace){
 					page(appState.path);
 				} else {
 					page.replace(appState.path);
@@ -998,12 +998,24 @@ var IMVVMDomainViewModel = {
           domainModel = Object.create(desc.proto, desc.descriptor),
           fld,
           init = nextState === void(0),
+          adhocUndo,
+          forceReplace,
+          pushState,
+          pageNotFound;
 
-          adhocUndo = init || nextState.enableUndo === void(0) ? false :
-          nextState.enableUndo,
+        if(!init){
+          adhocUndo = nextState.enableUndo === void(0) ? false :
+            nextState.enableUndo;
 
-          pageNotFound = init || nextState.pageNotFound === void(0) ? false :
-          nextState.pageNotFound;
+          forceReplace = nextState.forceReplace === void(0) ? false :
+            nextState.forceReplace;
+
+          pushState = nextState.pushState === void(0) ? true :
+            nextState.pushState;
+
+          pageNotFound = nextState.pageNotFound === void(0) ? false :
+            nextState.pageNotFound;
+        }
 
         if(routingEnabled){
           Object.defineProperty(domainModel, 'pageNotFound', {
@@ -1011,6 +1023,18 @@ var IMVVMDomainViewModel = {
             enumerable: false,
             writable: false,
             value: pageNotFound
+          });
+          Object.defineProperty(domainModel, 'forceReplace', {
+            configurable: false,
+            enumerable: true,
+            writable: false,
+            value: forceReplace
+          });
+          Object.defineProperty(domainModel, 'pushState', {
+            configurable: false,
+            enumerable: true,
+            writable: false,
+            value: pushState
           });
           if(!('path' in domainModel) && ('path' in nextState)){
             Object.defineProperty(domainModel, 'path', {

@@ -245,10 +245,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		transientState = {};
 		processedState = {};
 		// Internal call routing
-		if(routingEnabled){
+		if(routingEnabled && appState.pushState){
 			if(('path' in appState) && !external){
 				internal = true;
-			if(pushStateChanged){
+				if(pushStateChanged && !appState.forceReplace){
 					page(appState.path);
 				} else {
 					page.replace(appState.path);
