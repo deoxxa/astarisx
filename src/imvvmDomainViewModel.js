@@ -6,6 +6,7 @@ var IMVVMDomainViewModel = {
   Mixin: {
     construct: function(stateChangedHandler){
 
+      var prevAdhocUndo = false;
       var desc = this.getDescriptor();
       desc.proto.setState = stateChangedHandler;
 
@@ -18,18 +19,18 @@ var IMVVMDomainViewModel = {
           this.setState(this.nextState, this.nextState.nextState);
         }
       };
-
-      var dataContext = function(nextState, prevState, redoState, enableUndo, routingEnabled) {
+      var dataContext = function(nextState, prevState, redoState, enableUndo,
+        routingEnabled, pushStateChanged, internal) {
 
         var freezeFields = desc.freezeFields,
           domainModel = Object.create(desc.proto, desc.descriptor),
-          fld;
-        var init = nextState === void(0);
+          fld,
+          init = nextState === void(0),
 
-        var adhocUndo = init || nextState.enableUndo === void(0) ? false :
-          nextState.enableUndo;
+          adhocUndo = init || nextState.enableUndo === void(0) ? false :
+          nextState.enableUndo,
 
-        var pageNotFound = init || nextState.pageNotFound === void(0) ? false :
+          pageNotFound = init || nextState.pageNotFound === void(0) ? false :
           nextState.pageNotFound;
 
         if(routingEnabled){
@@ -49,31 +50,23 @@ var IMVVMDomainViewModel = {
           }
         }
 
-        if(enableUndo || routingEnabled || adhocUndo){
-          if(!!prevState){
-            if(pageNotFound ||
-              (!adhocUndo && routingEnabled &&
-                prevState.path !== nextState.path)){
-              Object.defineProperty(domainModel, 'canRevert', {
-                configurable: false,
-                enumerable: false,
-                writable: false,
-                value: false
-              });
-            } else {
-              Object.defineProperty(domainModel, 'previousState', {
-                configurable: false,
-                enumerable: false,
-                writable: false,
-                value: prevState
-              });
-              Object.defineProperty(domainModel, 'canRevert', {
-                configurable: false,
-                enumerable: false,
-                writable: false,
-                value: true
-              });
-            }
+        //need routingEnabled flag because it depends on prevState
+        if(enableUndo || routingEnabled){
+          if(!!prevState && (!pushStateChanged || adhocUndo) &&
+            !previousAdhoc && internal){
+            previousAdhoc = adhocUndo;
+            Object.defineProperty(domainModel, 'previousState', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: prevState
+            });
+            Object.defineProperty(domainModel, 'canRevert', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: true
+            });
           } else {
             Object.defineProperty(domainModel, 'canRevert', {
               configurable: false,
@@ -82,7 +75,7 @@ var IMVVMDomainViewModel = {
               value: false
             });
           }
-          if(!!redoState && 'state' in redoState){
+          if(!!redoState && ('state' in redoState) && !previousAdhoc){
             Object.defineProperty(domainModel, 'nextState', {
               configurable: false,
               enumerable: false,
@@ -96,6 +89,7 @@ var IMVVMDomainViewModel = {
               value: true
             });
           } else {
+            previousAdhoc = adhocUndo;
             Object.defineProperty(domainModel, 'canAdvance', {
               configurable: false,
               enumerable: false,

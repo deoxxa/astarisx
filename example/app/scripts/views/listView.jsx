@@ -11,8 +11,11 @@
 var ListView = React.createClass({
 	handleSelection: function(uid, e){
 		e.preventDefault();
-    if(this.props.appContext.persons.selectedPerson.id != uid){
+    if(this.props.appContext.persons.selectedPerson &&
+      this.props.appContext.persons.selectedPerson.id != uid){
   		this.props.appContext.persons.selectPerson(uid);
+    } else {
+      this.props.appContext.persons.selectPerson(uid);
     }
 	},
 	deletePerson: function(uid, e){
@@ -25,7 +28,7 @@ var ListView = React.createClass({
 		var selectedHobby = !!this.props.appContext.persons.selectedHobby ? " is " + this.props.appContext.persons.selectedHobby : "";
 
 		var list = collection.map(function(person){
-			if(current.id === person.id){
+			if(!!current && current.id === person.id){
 				return (
 					<a
 					onClick={this.handleSelection.bind(this, person.id)}

@@ -24,8 +24,11 @@ var PersonsViewModel = (function(){
   var personRouteHandler = function(params, path, pathKey, ctx){
     //Do some validation on whether item exists and if not
     //throw 404
-
-    this.selectPerson(params.id);
+    // if(pathKey === 'list'){
+    //   this.selectPerson();
+    // } else {
+      this.selectPerson(params.id);
+    //}
   };
 
   var personsViewModel = IMVVM.createViewModel({
@@ -34,10 +37,10 @@ var PersonsViewModel = (function(){
       var nextState = {};
 
       nextState.collection = DataService.getPersonData().map(function(person, idx){
-        if (idx === 0){
-          nextState.selectedPerson = new Person(person, true);
-          return nextState.selectedPerson;
-        }
+        // if (idx === 0){
+        //   nextState.selectedPerson = new Person(person, true);
+        //   return nextState.selectedPerson;
+        // }
         return new Person(person, true);
       }.bind(this));
       return nextState;
@@ -47,6 +50,10 @@ var PersonsViewModel = (function(){
       return {
         displayPerson: {
           path: '/person/:id',
+          handler: personRouteHandler
+        },
+        list: {
+          path: '/people',
           handler: personRouteHandler
         }
       };
@@ -89,13 +96,22 @@ var PersonsViewModel = (function(){
 
     selectPerson: function(id, next){
       var selectedPerson;
+      if(!id){
+          this.setState({selectedPerson: selectedPerson },
+            {path: '/people' }, next);
+            return;
+      }
       for (var i = this.collection.length - 1; i >= 0; i--) {
         if(this.collection[i].id === id){
           selectedPerson = new Person(this.collection[i]);
-          this.setState({ selectedPerson: selectedPerson},
+          this.setState({ selectedPerson: selectedPerson },
             {path: '/person/' + selectedPerson.id }, next);
           break;
         }
+      }
+      if(!selectedPerson){
+          this.setState({selectedPerson: selectedPerson },
+            {pageNotFound: true }, next);
       }
     },
 
@@ -124,13 +140,16 @@ var PersonsViewModel = (function(){
       nextState.selectedPerson = void(0);
       if(nextState.collection.length > 0){
         if (this.selectedPerson.id === uid){
-          nextState.selectedPerson = new Person(nextState.collection[0]);
+          nextState.selectedPerson = void(0);
+          this.setState(nextState, { enableUndo: true,
+            path: '/people'});
         } else {
           nextState.selectedPerson = new Person(this.selectedPerson);
+          this.setState(nextState,
+            {path: '/person/' + nextState.selectedPerson.id});
         }
       }
-      this.setState(nextState, { enableUndo: true,
-        path: '/person/' + nextState.selectedPerson.id});
+
     },
 
   });

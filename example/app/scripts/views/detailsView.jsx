@@ -1,5 +1,5 @@
-/** 
- * @jsx React.DOM 
+/**
+ * @jsx React.DOM
  */
 /*jshint quotmark:false */
 /*jshint white:false */
@@ -11,7 +11,7 @@
 var DetailsView = React.createClass({
 	render: function() {
 		if(!this.props.appContext.persons.selectedPerson){
-			return <div>There's nobody here!!</div>;
+			return <div>Select or add a person</div>;
 		}
 		return (
 			<div>
