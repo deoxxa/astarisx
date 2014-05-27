@@ -39,3 +39,7 @@
 ## 0.7.3
 
 - aliasFor alias now is able to be referenced in Model getInitialState
+
+## 0.7.4
+
+- Bug fix: error if appNamespace not in links

@@ -34,7 +34,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		calledBack = false;
 
 	var appStateChangedHandler = function(caller, newState, newAppState, callback) {
-		
+
 		var nextState = {},
 			prevState = void(0),
 			redoState = void(0),
@@ -93,7 +93,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				callback(appState);
 				return;
 			}
-		
+
 		} else {
 
 			if(!!newStateKeys.length){
@@ -110,7 +110,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 
 			transientStateKeysLen = transientStateKeys.length - 1;
-			
+
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
 				if(transientStateKeys[keyIdx] in domain){
 					nextState[transientStateKeys[keyIdx]] = extend(appState[transientStateKeys[keyIdx]], transientState[transientStateKeys[keyIdx]]);
@@ -134,7 +134,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								subscribers = watchedDataContexts[transientStateKeys[keyIdx]][watchedField];
 								for(subscriber in subscribers){
 									if(subscribers.hasOwnProperty(subscriber)){
-										
+
 										//Cross reference dataContext link Phase
 										if(subscriber in links){
 											for(dataContext in links[subscriber]){
@@ -168,12 +168,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				appStateChangedHandler(void(0), {}, transientState);
 				return;
 			}
-			
+
 			//Link Phase
 			processedStateKeys = Object.keys(processedState);
 			processedStateKeysLen = processedStateKeys.length - 1;
 			for (keyIdx = processedStateKeysLen; keyIdx >= 0; keyIdx--) {
-				if(caller === appNamespace){
+				if(caller === appNamespace && (appNamespace in links)){
 					if(processedStateKeys[keyIdx] in links[appNamespace]){
 						for(dataContext in links[appNamespace][processedStateKeys[keyIdx]]){
 							if(links[appNamespace][processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
@@ -266,7 +266,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								if(!(dataContext in links)){
 									links[dataContext] = {};
 								}
-								links[dataContext][watchedItem] = watchedState[watchedItem].alias;	
+								links[dataContext][watchedItem] = watchedState[watchedItem].alias;
 
 								if(!(watchedItem in domain)){
 									if(!(appNamespace in links)){
@@ -308,7 +308,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 		}
 	}
-	
+
 	//reinitialize with all data in place
 	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
@@ -321,6 +321,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	Object.freeze(appState);
 	return appState;
 };
+
 },{"./utils":8}],3:[function(_dereq_,module,exports){
 
 var model = _dereq_('./imvvmModel');
