@@ -176,7 +176,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			processedStateKeys = Object.keys(processedState);
 			processedStateKeysLen = processedStateKeys.length - 1;
 			for (keyIdx = processedStateKeysLen; keyIdx >= 0; keyIdx--) {
-				if(caller === appNamespace){
+				if(caller === appNamespace && (appNamespace in links)){
 					if(processedStateKeys[keyIdx] in links[appNamespace]){
 						for(dataContext in links[appNamespace][processedStateKeys[keyIdx]]){
 							if(links[appNamespace][processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
