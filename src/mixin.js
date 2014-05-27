@@ -5,7 +5,7 @@ var NAMESPACE = '__IMVVM__';
 var mixin = {
 	main: {
 		stateChangedHandler: function(dataContext){
-	  	this.setState({domainDataContext: dataContext})
+	  	this.setState({domainDataContext: dataContext});
 	  },
 		getInitialState: function(){
 			var dataContext = core.getInitialState(NAMESPACE, this.props.domainModel,

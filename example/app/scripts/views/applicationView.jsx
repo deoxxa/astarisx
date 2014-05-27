@@ -16,8 +16,12 @@ var ApplicationView = React.createClass({
     console.log('------------------------------------------ Current Application State ------------------------------------------')
     console.log(this.state.domainDataContext);
 
-    return (
-      <div>
+    var display;
+
+    if(this.state.domainDataContext.pageNotFound){
+      display = <PageNotFound />;
+    } else {
+      display = (<div>
         <NavBarView appContext={this.state.domainDataContext} />
         <div className="container">
           <div className="row">
@@ -27,10 +31,13 @@ var ApplicationView = React.createClass({
             <div className="col-md-8">
               <DetailsView appContext={this.state.domainDataContext} />
             </div>
-            <h1>{this.state.domainDataContext.pageNotFound ?
-              this.state.domainDataContext.path + ': Page Not Found' : ''}</h1>
           </div>
         </div>
+      </div>);
+    }
+    return (
+      <div>
+        {display}
       </div>
     );
   }

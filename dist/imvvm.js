@@ -1319,7 +1319,7 @@ var NAMESPACE = '__IMVVM__';
 var mixin = {
 	main: {
 		stateChangedHandler: function(dataContext){
-	  	this.setState({domainDataContext: dataContext})
+	  	this.setState({domainDataContext: dataContext});
 	  },
 		getInitialState: function(){
 			var dataContext = core.getInitialState(NAMESPACE, this.props.domainModel,
@@ -1327,7 +1327,7 @@ var mixin = {
 			return {domainDataContext: dataContext};
 		}
 	},
-	router: {
+	pushState: {
 		componentDidMount: function(){
 			if('path' in this.state.domainDataContext){
 				$(this.getDOMNode()).click(this.onclick);
