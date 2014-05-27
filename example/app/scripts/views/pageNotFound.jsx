@@ -9,12 +9,19 @@
 'use strict';
 
 var PageNotFound = React.createClass({
-
+  goBack: function(){
+    history.back();
+  },
   render: function(){
     return (
-      <h1>
-        Page Not Found
-      </h1>
+      <div className="jumbotron">
+        <div className="container">
+          <h1>404: Page Not Found!</h1>
+          <p>something went wrong...</p>
+          <p><a className="btn btn-primary btn-lg" role="button"
+          onClick={this.goBack}>Go back</a></p>
+        </div>
+      </div>
     );
   }
 });
