@@ -80,7 +80,8 @@ var PersonsViewModel = (function(){
     selectedHobby: {
       kind: 'pseudo',
       get: function() {
-        return this.state.hobbiesContext.current ? this.state.hobbiesContext.current.name: void(0);
+        return this.state.hobbiesContext.current ?
+          this.state.hobbiesContext.current.name: void(0);
       }
     },
 
@@ -139,14 +140,19 @@ var PersonsViewModel = (function(){
       });
       nextState.selectedPerson = void(0);
       if(nextState.collection.length > 0){
-        if (this.selectedPerson.id === uid){
+        if (!!this.selectedPerson && this.selectedPerson.id === uid){
           nextState.selectedPerson = void(0);
           this.setState(nextState, { enableUndo: true,
             path: '/people'});
         } else {
-          nextState.selectedPerson = new Person(this.selectedPerson);
-          this.setState(nextState,
-            {path: '/person/' + nextState.selectedPerson.id});
+          if(this.selectedPerson){
+            nextState.selectedPerson = new Person(this.selectedPerson);
+            this.setState(nextState,
+              {path: '/person/' + nextState.selectedPerson.id});
+          } else {
+            this.setState(nextState,
+              {path: '/people'});
+          }
         }
       }
 
