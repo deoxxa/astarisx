@@ -13,12 +13,14 @@
     "node"
   ],
   "keywords": [
+    "react",
     "mvvm",
     "mvc",
-    "react",
     "immutable",
     "presentation model",
-    "imvvm"
+    "imvvm",
+    "routing",
+    "pushState"
   ],
   "license": "MIT",
   "ignore": [

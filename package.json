@@ -3,12 +3,14 @@
   "description": "Immutable MVVM for React",
   "version": "0.8.0",
   "keywords": [
+    "react",
     "mvvm",
     "mvc",
-    "react",
     "immutable",
     "presentation model",
-    "imvvm"
+    "imvvm",
+    "routing",
+    "pushState"
   ],
   "homepage": "https://github.com/entrendipity/imvvm",
   "author": {
