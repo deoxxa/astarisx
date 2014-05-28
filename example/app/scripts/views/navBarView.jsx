@@ -44,7 +44,7 @@ var NavBarView = React.createClass({
 			        <span className="icon-bar"></span>
 			        <span className="icon-bar"></span>
 			      </button>
-			      <a className="navbar-brand" href="#">
+			      <a className="navbar-brand" href="/people">
 			      	IMVVM Demo has {noOfPeople} {noOfPeople === 1 ? "person" : "people"}
 			      </a>
 			    </div>
