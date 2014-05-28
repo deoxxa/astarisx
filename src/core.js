@@ -49,7 +49,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			watchedField,
 			subscribers,
 			subscriber,
-			pushStateChanged =false;
+			pushStateChanged = false;
 
 		if(typeof newAppState === 'function'){
 			callback = newAppState;

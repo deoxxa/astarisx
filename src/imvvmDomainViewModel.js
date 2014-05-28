@@ -31,7 +31,9 @@ var IMVVMDomainViewModel = {
           pushState,
           pageNotFound;
 
-        if(!init){
+        pushStateChanged = routingEnabled ? pushStateChanged : false;
+        
+        if(!init && routingEnabled){
           adhocUndo = nextState.enableUndo === void(0) ? false :
             nextState.enableUndo;
 
@@ -43,9 +45,7 @@ var IMVVMDomainViewModel = {
 
           pageNotFound = nextState.pageNotFound === void(0) ? false :
             nextState.pageNotFound;
-        }
 
-        if(routingEnabled){
           Object.defineProperty(domainModel, 'pageNotFound', {
             configurable: false,
             enumerable: false,

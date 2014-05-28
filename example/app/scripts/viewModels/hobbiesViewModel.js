@@ -54,9 +54,15 @@ var HobbiesViewModel = (function(){
   };
 
   var hobbyRouteHandler = function(params, path, pathKey, ctx){
-    this.state.personsContext.selectPerson(params.id, function(){
+
+    if(this.state.personsContext.selectedPerson.id != params.id){
+      this.state.personsContext.selectPerson(params.id, function(){
+        this.selectHobby(params.hobbyId);
+      }.bind(this));
+    } else {
       this.selectHobby(params.hobbyId);
-    }.bind(this));
+    }
+
   };
 
   var hobbiesViewModel = IMVVM.createViewModel({
