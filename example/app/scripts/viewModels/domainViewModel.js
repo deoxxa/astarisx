@@ -40,7 +40,7 @@ var DomainViewModel = IMVVM.createDomainViewModel({
 
   /*
     If the initial path needs to be '/person/:id' then it could be set in
-    the path getter. Therefore would not need to be set in getInitialState
+    the path getter and therefore wouldn't need to be set in getInitialState
 
     path: Framework reserved property name
   */

@@ -54,8 +54,6 @@ var HobbiesViewModel = (function(){
   };
 
   var hobbyRouteHandler = function(params, path, pathKey, ctx){
-    // Do some validation on whether item exists and if not
-    // get it OR throw 404 -> this.setState({}, {pageNotFound: true});
     this.state.personsContext.selectPerson(params.id, function(){
       this.selectHobby(params.hobbyId);
     }.bind(this));
@@ -66,7 +64,7 @@ var HobbiesViewModel = (function(){
     getWatchedState: function() {
       return {
         'persons': {
-          alias: 'personsContext', //optional - if provided then will be added to prototype
+          alias: 'personsContext', //optional - will be added to prototype
           fields: { //optional
             'selectedPerson': onPersonChangedHandler
           }
@@ -94,7 +92,7 @@ var HobbiesViewModel = (function(){
     },
 
     busyText: {
-      kind: 'pseudo', //kind: 'pseudo' because its not calculated but is supplied externally
+      kind: 'pseudo', //kind: 'pseudo' because its value is supplied externally
       get: function(){
         return this.state.busy ? 'Im Busy! Go away...' : 'Not doing too much.';
       }
@@ -167,10 +165,12 @@ var HobbiesViewModel = (function(){
        */
 
       if(this.current && this.current.id === value){
-        this.setState({ current: void(0) }, { busy: false,
-          path: '/person/' + this.state.personsContext.selectedPerson.id },
-          function(){
-            this.state.personsContext.selectedPerson.deleteHobby(value);
+        this.setState({ current: void(0) }, {
+          busy: false,
+          path: '/person/' + this.state.personsContext.selectedPerson.id
+        },
+        function(){
+          this.state.personsContext.selectedPerson.deleteHobby(value);
         }.bind(this));
       } else {
         this.state.personsContext.selectedPerson.deleteHobby(value);

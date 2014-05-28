@@ -22,13 +22,7 @@ var PersonsViewModel = (function(){
   };
 
   var personRouteHandler = function(params, path, pathKey, ctx){
-    //Do some validation on whether item exists and if not
-    //throw 404
-    // if(pathKey === 'list'){
-    //   this.selectPerson();
-    // } else {
       this.selectPerson(params.id);
-    //}
   };
 
   var personsViewModel = IMVVM.createViewModel({
@@ -37,10 +31,6 @@ var PersonsViewModel = (function(){
       var nextState = {};
 
       nextState.collection = DataService.getPersonData().map(function(person, idx){
-        // if (idx === 0){
-        //   nextState.selectedPerson = new Person(person, true);
-        //   return nextState.selectedPerson;
-        // }
         return new Person(person, true);
       }.bind(this));
       return nextState;
@@ -155,7 +145,6 @@ var PersonsViewModel = (function(){
           }
         }
       }
-
     },
 
   });
