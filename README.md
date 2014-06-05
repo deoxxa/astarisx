@@ -877,15 +877,31 @@ Identifies the ViewModel to be used for the defined data context.
 _Available in:_ DomainViewModel
 
 ###Mixin
-####IMVVM.mixin
 ___
-#####mixins: [IMVVM.mixin]
+####main
+#####IMVVM.mixin.main
 
 Adds domainDataContext to state object.
 
 ```javascript
 var ApplicationView = React.createClass({
-  mixins: [IMVVM.mixin],
+  mixins: [IMVVM.mixin.main],
+  render: function(){
+    return <DetailsView appContext={this.state.domainDataContext} />;
+  }
+});
+```
+___
+####pushState
+#####IMVVM.mixin.pushState
+
+Enables automatic handling of pushState for <a> tags. You can still use the
+built in pushState functionality without this mixin. This mixin is only required
+if <a> tags are used.
+
+```javascript
+var ApplicationView = React.createClass({
+  mixins: [IMVVM.mixin.main, IMVVM.mixin.pushState],
   render: function(){
     return <DetailsView appContext={this.state.domainDataContext} />;
   }
@@ -928,7 +944,10 @@ _Available in:_ DomainViewModel, ViewModel, Model
 
 ## Browser Support
 Most ECMAScript 5 compliant browsers.
+
 __IE8 and below are not supported.__
+
+__IE9 and below is not supported if using pushState option.__
 
 ## Author
 Entrendipity  - [Follow @entrendipity](https://twitter.com/intent/follow?screen_name=entrendipity)

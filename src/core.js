@@ -5,7 +5,7 @@ var extend = utils.extend;
 exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, enableUndo) {
 
 	if(typeof stateChangedHandler !== 'function'){
-		throw new TypeError('stateChangedHandler must be a function!');
+		throw new TypeError('stateChangedHandler must be a function.');
 	}
 
 	if(enableUndo === void(0)){
@@ -371,10 +371,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//Initilize first path
 		internal = true;
 		page.replace(appState.path);
-		//Need a set internal = true to intialise
-		//so that it does not update state again and
-		//add previousState
-		page.start({click: false, dispatch: false});
+		page.start({click: false});
 		external = false;
 	}
 

@@ -15,12 +15,12 @@
   "keywords": [
     "react",
     "mvvm",
+    "react",
     "mvc",
-    "immutable",
-    "presentation model",
-    "imvvm",
+    "react",
     "routing",
-    "pushState"
+    "pushState",
+    "imvvm"
   ],
   "license": "MIT",
   "ignore": [

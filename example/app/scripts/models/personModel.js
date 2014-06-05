@@ -4,11 +4,11 @@
 'use strict';
 
 var PersonModel = (function(){
-  
+
   var Hobby = function(){
     return new HobbyModel().apply(this, arguments);
   };
-  
+
   var uuid = function () {
     /*jshint bitwise:false */
     var i, random;
@@ -27,19 +27,19 @@ var PersonModel = (function(){
 
   var calculateAge = function(dob){ // dob is a date
     var DOB = new Date(dob);
-    var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from 
+    var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from
     var age = Math.abs(ageDate.getFullYear() - 1970);
     return isNaN(age) ? 'Enter your Birthday' : age + ' years old';
   };
 
   var personModel = IMVVM.createModel({
-  
+
     getInitialState: function(){
 
       var id, hobbies = [];
-      
+
       id = this.id || uuid();
-      
+
       hobbies = DataService.getHobbiesData(this.id).map(function(hobby){
         return new Hobby(hobby, true);
       }.bind(this));
@@ -74,7 +74,7 @@ var PersonModel = (function(){
         this.setState(nextState);
       }
     },
-    
+
     fullName: {
       kind: 'pseudo',
       get: function(){
@@ -89,7 +89,7 @@ var PersonModel = (function(){
         var isSpace = newValue.slice(-1)[0] === ' ';
         var firstname = nameArr[0];
         var lastname = nameArr.slice(1).join(' ');
-        
+
         nextState.firstName = firstname.length === 0 ? void(0) : firstname;
         nextState.lastName = lastname.length === 0 && !isSpace ? void(0) : lastname;
 
@@ -106,7 +106,7 @@ var PersonModel = (function(){
         this.setState({'occupation': newValue });
       }
     },
-    
+
     dob: {
       get: function(){
         return this.state.dob;
@@ -123,14 +123,14 @@ var PersonModel = (function(){
         this.setState(nextState);
       }
     },
-    
+
     //Calculated field <- dob
     age: {
       get: function(){
         return this.state.age;
       }
     },
-    
+
     gender: {
       get: function(){ return this.state.gender; },
       set: function(newValue){
@@ -156,7 +156,7 @@ var PersonModel = (function(){
       arr = this.hobbies.slice(0);
       this.hobbies = arr.concat(value);
     },
-    
+
     deleteHobby: function(value){
       this.hobbies = this.hobbies.filter(function(hobby){
         return hobby.id !== value;
@@ -166,4 +166,3 @@ var PersonModel = (function(){
   });
   return personModel;
 })();
-

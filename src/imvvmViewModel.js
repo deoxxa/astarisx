@@ -14,7 +14,7 @@ var IMVVMViewModel = {
         //nextState has already been extended with prevState in core
         nextState = nextState || {};
         nextState = ('state' in nextState ? nextState.state : nextState);
-        
+
         var freezeFields = desc.freezeFields,
           fld,
           viewModel = Object.create(desc.proto, desc.descriptor),
@@ -31,7 +31,7 @@ var IMVVMViewModel = {
         if(initialize){
           nextState = ('getInitialState' in desc.originalSpec) ?
             extend(nextState, desc.originalSpec.getInitialState.call(viewModel)) : nextState;
-          
+
           Object.defineProperty(viewModel, 'state', {
             configurable: true,
             enumerable: false,
@@ -47,7 +47,7 @@ var IMVVMViewModel = {
               if(viewModel[freezeFields[fld].fieldName]){
                 tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
-                
+
                 tempModel.__stateChangedHandler = (function(fld){
                   return viewModel[fld].__stateChangedHandler;
                 })(freezeFields[fld].fieldName);
@@ -78,7 +78,7 @@ var IMVVMViewModel = {
           writable: false,
           value: nextState
         });
-        
+
         return Object.freeze(viewModel);
 
       };
