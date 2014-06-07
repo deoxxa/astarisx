@@ -7,6 +7,7 @@ var IMVVMDomainViewModel = {
     construct: function(stateChangedHandler){
 
       var prevAdhocUndo = false;
+      var previousPageNotFound = false;
       var desc = this.getDescriptor();
       desc.proto.setState = stateChangedHandler;
 
@@ -82,16 +83,14 @@ var IMVVMDomainViewModel = {
               routingEnabled = false;
             }
           }
-          // adhocUndo = nextState.enableUndo === void(0) ? false :
-          //   nextState.enableUndo;
-
         }
 
         //need routingEnabled flag because it depends on prevState
         if(enableUndo || routingEnabled){
-          if(!!prevState && (!pushStateChanged || adhocUndo) &&
+          if(!!prevState && (!pushStateChanged || adhocUndo || pageNotFound) &&
             !previousAdhoc && internal){
             previousAdhoc = adhocUndo;
+            previousPageNotFound = pageNotFound;
             Object.defineProperty(domainModel, 'previousState', {
               configurable: false,
               enumerable: false,
@@ -112,7 +111,8 @@ var IMVVMDomainViewModel = {
               value: false
             });
           }
-          if(!!redoState && ('state' in redoState) && !previousAdhoc){
+          if(!!redoState && ('state' in redoState) && !previousAdhoc &&
+            !previousPageNotFound){
             Object.defineProperty(domainModel, 'nextState', {
               configurable: false,
               enumerable: false,
@@ -127,6 +127,7 @@ var IMVVMDomainViewModel = {
             });
           } else {
             previousAdhoc = adhocUndo;
+            previousPageNotFound = pageNotFound;
             Object.defineProperty(domainModel, 'canAdvance', {
               configurable: false,
               enumerable: false,

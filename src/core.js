@@ -92,7 +92,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 			if(typeof callback === 'function'){
 				appState = new ApplicationDataContext(nextState, prevState, redoState,
-					enableUndo, routingEnabled, nextState.path !== appState.path, !external);
+					enableUndo, routingEnabled, nextState.path !== appState.path,
+					!external || nextState.pageNotFound);
 				callback(appState);
 				return;
 			}
@@ -230,7 +231,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		pushStateChanged = nextState.path !== appState.path;
 
 		appState = new ApplicationDataContext(nextState, prevState, redoState,
-			enableUndo, routingEnabled, pushStateChanged, !external);
+			enableUndo, routingEnabled, pushStateChanged,
+			!external || nextState.pageNotFound);
 		Object.freeze(appState);
 		Object.freeze(appState.state);
 
@@ -346,6 +348,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								pathKey, ctx){
 							external = true;
 							if(!internal) {
+								if(appState.canRevert && appState.pageNotFound){
+                  ctx.rollbackRequest = true;
+									ctx.revert = function(){
+                    this.revert.bind(this);
+                    this.setState({},{path:ctx.path});
+                  }.bind(appState);
+                }
 								routeMapping[route].call(appState[dataContextName], ctx.params,
 								ctx.path, pathKey, ctx);
 							}
@@ -365,7 +374,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//Setup 'pageNotFound' route
 		page(function(ctx){
 			external = true;
-			appState.setState({'pageNotFound':true, path: ctx.path});
+			appState.setState({'pageNotFound':true});
 			internal = false;
 		});
 		//Initilize first path

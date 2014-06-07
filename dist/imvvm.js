@@ -545,7 +545,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 			if(typeof callback === 'function'){
 				appState = new ApplicationDataContext(nextState, prevState, redoState,
-					enableUndo, routingEnabled, nextState.path !== appState.path, !external);
+					enableUndo, routingEnabled, nextState.path !== appState.path,
+					!external || nextState.pageNotFound);
 				callback(appState);
 				return;
 			}
@@ -683,7 +684,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		pushStateChanged = nextState.path !== appState.path;
 
 		appState = new ApplicationDataContext(nextState, prevState, redoState,
-			enableUndo, routingEnabled, pushStateChanged, !external);
+			enableUndo, routingEnabled, pushStateChanged,
+			!external || nextState.pageNotFound);
 		Object.freeze(appState);
 		Object.freeze(appState.state);
 
@@ -799,6 +801,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 								pathKey, ctx){
 							external = true;
 							if(!internal) {
+								if(appState.canRevert && appState.pageNotFound){
+                  ctx.rollbackRequest = true;
+									ctx.revert = function(){
+                    this.revert.bind(this);
+                    this.setState({},{path:ctx.path});
+                  }.bind(appState);
+                }
 								routeMapping[route].call(appState[dataContextName], ctx.params,
 								ctx.path, pathKey, ctx);
 							}
@@ -818,7 +827,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//Setup 'pageNotFound' route
 		page(function(ctx){
 			external = true;
-			appState.setState({'pageNotFound':true, path: ctx.path});
+			appState.setState({'pageNotFound':true});
 			internal = false;
 		});
 		//Initilize first path
@@ -976,6 +985,7 @@ var IMVVMDomainViewModel = {
     construct: function(stateChangedHandler){
 
       var prevAdhocUndo = false;
+      var previousPageNotFound = false;
       var desc = this.getDescriptor();
       desc.proto.setState = stateChangedHandler;
 
@@ -1051,16 +1061,14 @@ var IMVVMDomainViewModel = {
               routingEnabled = false;
             }
           }
-          // adhocUndo = nextState.enableUndo === void(0) ? false :
-          //   nextState.enableUndo;
-
         }
 
         //need routingEnabled flag because it depends on prevState
         if(enableUndo || routingEnabled){
-          if(!!prevState && (!pushStateChanged || adhocUndo) &&
+          if(!!prevState && (!pushStateChanged || adhocUndo || pageNotFound) &&
             !previousAdhoc && internal){
             previousAdhoc = adhocUndo;
+            previousPageNotFound = pageNotFound;
             Object.defineProperty(domainModel, 'previousState', {
               configurable: false,
               enumerable: false,
@@ -1081,7 +1089,8 @@ var IMVVMDomainViewModel = {
               value: false
             });
           }
-          if(!!redoState && ('state' in redoState) && !previousAdhoc){
+          if(!!redoState && ('state' in redoState) && !previousAdhoc &&
+            !previousPageNotFound){
             Object.defineProperty(domainModel, 'nextState', {
               configurable: false,
               enumerable: false,
@@ -1096,6 +1105,7 @@ var IMVVMDomainViewModel = {
             });
           } else {
             previousAdhoc = adhocUndo;
+            previousPageNotFound = pageNotFound;
             Object.defineProperty(domainModel, 'canAdvance', {
               configurable: false,
               enumerable: false,
