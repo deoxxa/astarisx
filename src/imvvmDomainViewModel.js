@@ -32,46 +32,59 @@ var IMVVMDomainViewModel = {
           pageNotFound;
 
         pushStateChanged = routingEnabled ? pushStateChanged : false;
-        
-        if(!init && routingEnabled){
-          adhocUndo = nextState.enableUndo === void(0) ? false :
-            nextState.enableUndo;
 
-          forceReplace = nextState.forceReplace === void(0) ? false :
-            nextState.forceReplace;
+        if(!init){
+          if(routingEnabled){
 
-          pushState = nextState.pushState === void(0) ? true :
-            nextState.pushState;
+            forceReplace = nextState.forceReplace === void(0) ? false :
+              nextState.forceReplace;
 
-          pageNotFound = nextState.pageNotFound === void(0) ? false :
-            nextState.pageNotFound;
+            pushState = nextState.pushState === void(0) ? true :
+              nextState.pushState;
 
-          Object.defineProperty(domainModel, 'pageNotFound', {
-            configurable: false,
-            enumerable: false,
-            writable: false,
-            value: pageNotFound
-          });
-          Object.defineProperty(domainModel, 'forceReplace', {
-            configurable: false,
-            enumerable: true,
-            writable: false,
-            value: forceReplace
-          });
-          Object.defineProperty(domainModel, 'pushState', {
-            configurable: false,
-            enumerable: true,
-            writable: false,
-            value: pushState
-          });
-          if(!('path' in domainModel) && ('path' in nextState)){
-            Object.defineProperty(domainModel, 'path', {
+            pageNotFound = nextState.pageNotFound === void(0) ? false :
+              nextState.pageNotFound;
+
+            Object.defineProperty(domainModel, 'pageNotFound', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: pageNotFound
+            });
+            Object.defineProperty(domainModel, 'forceReplace', {
               configurable: false,
               enumerable: true,
               writable: false,
-              value: nextState.path
+              value: forceReplace
             });
+            Object.defineProperty(domainModel, 'pushState', {
+              configurable: false,
+              enumerable: true,
+              writable: false,
+              value: pushState
+            });
+            if(!('path' in domainModel) && ('path' in nextState)){
+              Object.defineProperty(domainModel, 'path', {
+                configurable: false,
+                enumerable: true,
+                writable: false,
+                value: nextState.path
+              });
+            }
           }
+
+          if(nextState.enableUndo === void(0)){
+              adhocUndo = false;
+          } else {
+            enableUndo = nextState.enableUndo;
+            adhocUndo = nextState.enableUndo;
+            if(!nextState.enableUndo){
+              routingEnabled = false;
+            }
+          }
+          // adhocUndo = nextState.enableUndo === void(0) ? false :
+          //   nextState.enableUndo;
+
         }
 
         //need routingEnabled flag because it depends on prevState
