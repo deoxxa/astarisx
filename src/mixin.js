@@ -1,5 +1,5 @@
 
-var core = require('./core');
+var core = require('./stateController');
 var NAMESPACE = '__IMVVM__';
 
 var mixin = {
