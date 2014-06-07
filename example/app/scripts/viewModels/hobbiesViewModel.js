@@ -54,7 +54,10 @@ var HobbiesViewModel = (function(){
   };
 
   var hobbyRouteHandler = function(params, path, pathKey, ctx){
-
+    if(ctx.rollbackRequest){
+      ctx.revert();
+      return;
+    }
     if(this.state.personsContext.selectedPerson.id != params.id){
       this.state.personsContext.selectPerson(params.id, function(){
         this.selectHobby(params.hobbyId);

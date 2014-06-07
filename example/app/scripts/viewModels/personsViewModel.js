@@ -22,6 +22,10 @@ var PersonsViewModel = (function(){
   };
 
   var personRouteHandler = function(params, path, pathKey, ctx){
+    if(ctx.rollbackRequest){
+      ctx.revert();
+      return;
+    }
       this.selectPerson(params.id);
   };
 
@@ -87,6 +91,7 @@ var PersonsViewModel = (function(){
 
     selectPerson: function(id, next){
       var selectedPerson;
+
       if(!id){
           this.setState({selectedPerson: selectedPerson },
             {path: '/people' }, next);
