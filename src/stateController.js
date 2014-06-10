@@ -380,7 +380,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//Initilize first path
 		internal = true;
 		page.replace(appState.path);
-		page.start({click: false});
+		page.start({click: false, dispatch: false});
 		external = false;
 	}
 
