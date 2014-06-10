@@ -39,3 +39,18 @@
 ## 0.7.3
 
 - aliasFor alias now is able to be referenced in Model getInitialState
+
+## 0.7.4
+
+- Bug fix: error if appNamespace not in links
+
+## 0.7.5
+- skipped version number
+
+## 0.7.6
+
+- Bug fix: callback not firing when transient state exists
+
+## 0.8.0
+
+- Add pushState router
