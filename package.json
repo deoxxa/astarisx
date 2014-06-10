@@ -1,13 +1,13 @@
 {
   "name": "imvvm",
   "description": "Immutable MVVM for React",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "keywords": [
+    "react",
     "mvvm",
+    "react",
     "mvc",
     "react",
-    "immutable",
-    "presentation model",
     "imvvm"
   ],
   "homepage": "https://github.com/entrendipity/imvvm",

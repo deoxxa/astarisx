@@ -158,7 +158,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				}
 			};
 			if(!!Object.keys(transientState).length){
-				appStateChangedHandler(void(0), {}, transientState);
+				appStateChangedHandler(void(0), {}, transientState, callback);
 				return;
 			}
 
