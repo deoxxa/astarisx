@@ -45,5 +45,8 @@
 - Bug fix: error if appNamespace not in links
 
 ## 0.7.5
+- missed version
+
+## 0.7.6
 
 - Bug fix: callback not firing when transient state exists
