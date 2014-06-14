@@ -8,6 +8,7 @@
      + \_\_getDescriptor - this has been entirely removed
  - Started promoting the use of the module pattern in order to hide implementation specific descriptor definitions/functions from the View. This is reflected in the reference implementation.
  - Updated reference implementation.
+
 ## 0.6.18-19
 
  - Nothing changed from 0.6.17. Issues with NPM meant I had to bump version.
