@@ -55,14 +55,14 @@
 ## 0.8.0
 
 - Add pushState router
-- Split mixin => IMVVM.mixin.main, IMVVM.mixin.pushState
-- Added 'getRoutes' function
-- Added 'path' to Domain Data Context
-- Added 'forceReplace': true || false property to Domain Data Context
-- Added 'pushState': true || false to Domain Data Context
-- Added readonly 'pageNotFound' to Domain Data Context
+- Split mixin => IMVVM.mixin.main, IMVVM.mixin.pushState ***(Breaking Change)***
+- Added `getRoutes` function
+- Added `path` to Domain Data Context
+- Added `forceReplace`: true || false property to Domain Data Context
+- Added `pushState`: true || false to Domain Data Context
+- Added readonly `pageNotFound` to Domain Data Context
 - Automatic pushState for 'a' tags if pushState mixed in
-- Added ad-hoc 'enableUndo': true || false to Domain Data Context
+- Added ad-hoc `enableUndo`: true || false to Domain Data Context
 - rename core.js => stateController.js
 - rename imvvm.js => core.js
 - rename imvvmDomainViewModel => domainViewModel
