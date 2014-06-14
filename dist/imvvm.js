@@ -453,9 +453,9 @@ module.exports = IMVVM;
 
 },{}],3:[function(_dereq_,module,exports){
 
-var model = _dereq_('./imvvmModel');
-var viewModel = _dereq_('./imvvmViewModel');
-var domainModel = _dereq_('./imvvmDomainViewModel');
+var model = _dereq_('./model');
+var viewModel = _dereq_('./viewModel');
+var domainModel = _dereq_('./domainViewModel');
 var mixin = _dereq_('./mixin');
 
 var page = _dereq_('page');
@@ -584,12 +584,12 @@ var IMVVM = {
 
 module.exports = IMVVM;
 
-},{"./imvvmDomainViewModel":4,"./imvvmModel":5,"./imvvmViewModel":6,"./mixin":7,"./utils":9,"page":2}],4:[function(_dereq_,module,exports){
+},{"./domainViewModel":4,"./mixin":5,"./model":6,"./utils":8,"./viewModel":9,"page":2}],4:[function(_dereq_,module,exports){
 
 var utils = _dereq_('./utils');
 var extend = utils.extend;
 
-var IMVVMDomainViewModel = {
+var domainViewModel = {
   Mixin: {
     construct: function(stateChangedHandler){
 
@@ -775,189 +775,9 @@ var IMVVMDomainViewModel = {
   }
 };
 
-module.exports = IMVVMDomainViewModel;
+module.exports = domainViewModel;
 
-},{"./utils":9}],5:[function(_dereq_,module,exports){
-
-var utils = _dereq_('./utils');
-var extend = utils.extend;
-
-var IMVVMModel = {
-  Mixin: {
-    construct: function(stateChangedHandler){
-
-      var desc = this.getDescriptor();
-
-      var dataContext = function(nextState, extendState, initialize) {
-        var freezeFields = desc.freezeFields,
-          fld,
-          model = Object.create(desc.proto, desc.descriptor);
-
-        if(nextState === void(0)){
-          initialize = true;
-        } else if(typeof nextState === 'boolean'){
-          initialize = nextState;
-          nextState = void(0);
-        } else if(typeof extendState === 'boolean'){
-          initialize = extendState;
-          extendState = void(0);
-        }
-        nextState = extend(nextState, extendState);
-
-        Object.defineProperty(model, 'state', {
-          configurable: true,
-          enumerable: false,
-          writable: true,
-          value: nextState
-        });
-
-        nextState = extend(nextState, model);
-
-        if(initialize){
-          for(var aliasFor in desc.aliases){
-            if(desc.aliases.hasOwnProperty(aliasFor) && aliasFor in nextState){
-              nextState[desc.aliases[aliasFor]] = nextState[aliasFor];
-              delete nextState[aliasFor];
-            }
-          }
-
-          Object.defineProperty(model, 'state', {
-            configurable: true,
-            enumerable: false,
-            writable: true,
-            value: nextState
-          });
-
-          nextState = extend(nextState, model);
-
-          if('getInitialState' in desc.originalSpec){
-            nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
-          }
-        }
-
-        //freeze arrays and model instances and initialize if necessary
-        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
-          if(freezeFields[fld].kind === 'array'){
-            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
-            Object.freeze(nextState[freezeFields[fld].fieldName]);
-          } else {
-            throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
-          }
-        };
-
-        Object.defineProperty(model, 'state', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: nextState
-        });
-
-        model.__stateChangedHandler = (function(){
-            return stateChangedHandler;
-        })();
-
-        return Object.freeze(model);
-      };
-      return dataContext;
-    }
-  }
-};
-
-module.exports = IMVVMModel;
-
-},{"./utils":9}],6:[function(_dereq_,module,exports){
-
-var utils = _dereq_('./utils');
-var extend = utils.extend;
-
-var IMVVMViewModel = {
-  Mixin: {
-    construct: function(stateChangedHandler){
-
-      var desc = this.getDescriptor(this);
-      desc.proto.setState = stateChangedHandler;
-
-      var dataContext = function(nextState, initialize) {
-
-        //nextState has already been extended with prevState in core
-        nextState = nextState || {};
-        nextState = ('state' in nextState ? nextState.state : nextState);
-
-        var freezeFields = desc.freezeFields,
-          fld,
-          viewModel = Object.create(desc.proto, desc.descriptor),
-          tempDesc,
-          tempModel;
-
-        Object.defineProperty(viewModel, 'state', {
-          configurable: true,
-          enumerable: false,
-          writable: true,
-          value: nextState
-        });
-
-        if(initialize){
-          nextState = ('getInitialState' in desc.originalSpec) ?
-            extend(nextState, desc.originalSpec.getInitialState.call(viewModel)) : nextState;
-
-          Object.defineProperty(viewModel, 'state', {
-            configurable: true,
-            enumerable: false,
-            writable: true,
-            value: nextState
-          });
-
-        }
-
-        //freeze arrays and viewModel instances
-        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
-          if(freezeFields[fld].kind === 'instance'){
-              if(viewModel[freezeFields[fld].fieldName]){
-                tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
-                tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
-
-                tempModel.__stateChangedHandler = (function(fld){
-                  return viewModel[fld].__stateChangedHandler;
-                })(freezeFields[fld].fieldName);
-
-                Object.defineProperty(tempModel, 'state', {
-                  configurable: true,
-                  enumerable: false,
-                  writable: true,
-                  value: viewModel[freezeFields[fld].fieldName].state
-                });
-
-                tempModel.__proto__.setState = function(state, callback){ //callback may be useful for DB updates
-                  this.__stateChangedHandler.call(viewModel, extend(this.state, state), callback);
-                };
-
-                Object.freeze(viewModel[freezeFields[fld].fieldName]);
-              }
-
-          } else {
-            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
-            Object.freeze(nextState[freezeFields[fld].fieldName]);
-          }
-        };
-
-        Object.defineProperty(viewModel, 'state', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: nextState
-        });
-
-        return Object.freeze(viewModel);
-
-      };
-      return dataContext;
-    }
-  }
-};
-
-module.exports = IMVVMViewModel;
-
-},{"./utils":9}],7:[function(_dereq_,module,exports){
+},{"./utils":8}],5:[function(_dereq_,module,exports){
 
 var core = _dereq_('./stateController');
 var NAMESPACE = '__IMVVM__';
@@ -1042,7 +862,95 @@ var mixin = {
 
 module.exports = mixin;
 
-},{"./stateController":8}],8:[function(_dereq_,module,exports){
+},{"./stateController":7}],6:[function(_dereq_,module,exports){
+
+var utils = _dereq_('./utils');
+var extend = utils.extend;
+
+var model = {
+  Mixin: {
+    construct: function(stateChangedHandler){
+
+      var desc = this.getDescriptor();
+
+      var dataContext = function(nextState, extendState, initialize) {
+        var freezeFields = desc.freezeFields,
+          fld,
+          model = Object.create(desc.proto, desc.descriptor);
+
+        if(nextState === void(0)){
+          initialize = true;
+        } else if(typeof nextState === 'boolean'){
+          initialize = nextState;
+          nextState = void(0);
+        } else if(typeof extendState === 'boolean'){
+          initialize = extendState;
+          extendState = void(0);
+        }
+        nextState = extend(nextState, extendState);
+
+        Object.defineProperty(model, 'state', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: nextState
+        });
+
+        nextState = extend(nextState, model);
+
+        if(initialize){
+          for(var aliasFor in desc.aliases){
+            if(desc.aliases.hasOwnProperty(aliasFor) && aliasFor in nextState){
+              nextState[desc.aliases[aliasFor]] = nextState[aliasFor];
+              delete nextState[aliasFor];
+            }
+          }
+
+          Object.defineProperty(model, 'state', {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: nextState
+          });
+
+          nextState = extend(nextState, model);
+
+          if('getInitialState' in desc.originalSpec){
+            nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
+          }
+        }
+
+        //freeze arrays and model instances and initialize if necessary
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+          if(freezeFields[fld].kind === 'array'){
+            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+            Object.freeze(nextState[freezeFields[fld].fieldName]);
+          } else {
+            throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
+          }
+        };
+
+        Object.defineProperty(model, 'state', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: nextState
+        });
+
+        model.__stateChangedHandler = (function(){
+            return stateChangedHandler;
+        })();
+
+        return Object.freeze(model);
+      };
+      return dataContext;
+    }
+  }
+};
+
+module.exports = model;
+
+},{"./utils":8}],7:[function(_dereq_,module,exports){
 var page = _dereq_('page');
 var utils = _dereq_('./utils');
 var extend = utils.extend;
@@ -1216,7 +1124,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				}
 			};
 			if(!!Object.keys(transientState).length){
-				appStateChangedHandler(void(0), {}, transientState);
+				appStateChangedHandler(void(0), {}, transientState, callback);
 				return;
 			}
 			//Link Phase
@@ -1425,7 +1333,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//Initilize first path
 		internal = true;
 		page.replace(appState.path);
-		page.start({click: false});
+		page.start({click: false, dispatch: false});
 		external = false;
 	}
 
@@ -1434,7 +1342,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	return appState;
 };
 
-},{"./utils":9,"page":2}],9:[function(_dereq_,module,exports){
+},{"./utils":8,"page":2}],8:[function(_dereq_,module,exports){
 
 var utils = {
   
@@ -1464,6 +1372,98 @@ var utils = {
 };
 
 module.exports = utils;
-},{}]},{},[1])
+},{}],9:[function(_dereq_,module,exports){
+
+var utils = _dereq_('./utils');
+var extend = utils.extend;
+
+var viewModel = {
+  Mixin: {
+    construct: function(stateChangedHandler){
+
+      var desc = this.getDescriptor(this);
+      desc.proto.setState = stateChangedHandler;
+
+      var dataContext = function(nextState, initialize) {
+
+        //nextState has already been extended with prevState in core
+        nextState = nextState || {};
+        nextState = ('state' in nextState ? nextState.state : nextState);
+
+        var freezeFields = desc.freezeFields,
+          fld,
+          viewModel = Object.create(desc.proto, desc.descriptor),
+          tempDesc,
+          tempModel;
+
+        Object.defineProperty(viewModel, 'state', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: nextState
+        });
+
+        if(initialize){
+          nextState = ('getInitialState' in desc.originalSpec) ?
+            extend(nextState, desc.originalSpec.getInitialState.call(viewModel)) : nextState;
+
+          Object.defineProperty(viewModel, 'state', {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: nextState
+          });
+
+        }
+
+        //freeze arrays and viewModel instances
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+          if(freezeFields[fld].kind === 'instance'){
+              if(viewModel[freezeFields[fld].fieldName]){
+                tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
+                tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
+
+                tempModel.__stateChangedHandler = (function(fld){
+                  return viewModel[fld].__stateChangedHandler;
+                })(freezeFields[fld].fieldName);
+
+                Object.defineProperty(tempModel, 'state', {
+                  configurable: true,
+                  enumerable: false,
+                  writable: true,
+                  value: viewModel[freezeFields[fld].fieldName].state
+                });
+
+                tempModel.__proto__.setState = function(state, callback){ //callback may be useful for DB updates
+                  this.__stateChangedHandler.call(viewModel, extend(this.state, state), callback);
+                };
+
+                Object.freeze(viewModel[freezeFields[fld].fieldName]);
+              }
+
+          } else {
+            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+            Object.freeze(nextState[freezeFields[fld].fieldName]);
+          }
+        };
+
+        Object.defineProperty(viewModel, 'state', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: nextState
+        });
+
+        return Object.freeze(viewModel);
+
+      };
+      return dataContext;
+    }
+  }
+};
+
+module.exports = viewModel;
+
+},{"./utils":8}]},{},[1])
 (1)
 });

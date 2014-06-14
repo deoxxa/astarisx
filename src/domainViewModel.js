@@ -2,7 +2,7 @@
 var utils = require('./utils');
 var extend = utils.extend;
 
-var IMVVMDomainViewModel = {
+var domainViewModel = {
   Mixin: {
     construct: function(stateChangedHandler){
 
@@ -188,4 +188,4 @@ var IMVVMDomainViewModel = {
   }
 };
 
-module.exports = IMVVMDomainViewModel;
+module.exports = domainViewModel;

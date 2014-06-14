@@ -1,7 +1,7 @@
 
-var model = require('./imvvmModel');
-var viewModel = require('./imvvmViewModel');
-var domainModel = require('./imvvmDomainViewModel');
+var model = require('./model');
+var viewModel = require('./viewModel');
+var domainModel = require('./domainViewModel');
 var mixin = require('./mixin');
 
 var page = require('page');

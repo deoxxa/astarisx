@@ -2,7 +2,7 @@
 var utils = require('./utils');
 var extend = utils.extend;
 
-var IMVVMModel = {
+var model = {
   Mixin: {
     construct: function(stateChangedHandler){
 
@@ -83,4 +83,4 @@ var IMVVMModel = {
   }
 };
 
-module.exports = IMVVMModel;
+module.exports = model;
