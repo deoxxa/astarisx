@@ -55,13 +55,18 @@ var NavBarView = React.createClass({
               <li><a href="/person/3">John Citizen</a></li>
             </ul>
 			      <form className="navbar-form pull-right" role="search">
-			        <button onClick={this.undo} disabled={!this.props.appContext.canRevert} className="btn btn-default">
+			        <button onClick={this.undo}
+								disabled={!this.props.appContext.canRevert}
+								className="btn btn-default">
 			        Undo
 			        </button>
-			         <button onClick={this.redo} disabled={!this.props.appContext.canAdvance} className="btn btn-default">
+			         <button onClick={this.redo}
+								disabled={!this.props.appContext.canAdvance}
+								className="btn btn-default">
 			        Redo
 			        </button>
-			        <button onClick={this.toggleOnlineState} className={onlineBtnClass}>
+			        <button onClick={this.toggleOnlineState}
+								className={onlineBtnClass}>
 			        	{onlineBtnTxt}
 			        </button>
 			      </form>
