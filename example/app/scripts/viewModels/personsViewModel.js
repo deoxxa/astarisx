@@ -106,8 +106,8 @@ var PersonsViewModel = (function(){
         }
       }
       if(!selectedPerson){
-          this.setState({selectedPerson: selectedPerson },
-            {pageNotFound: true }, next);
+        this.setState({selectedPerson: selectedPerson },
+          {pageNotFound: true }, next);
       }
     },
 
