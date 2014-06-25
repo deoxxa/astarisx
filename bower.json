@@ -22,6 +22,9 @@
     "pushState",
     "imvvm"
   ],
+  "dependencies": {
+    "page": ">=1.3.7"
+  },
   "license": "MIT",
   "ignore": [
     "**/.*",

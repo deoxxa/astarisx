@@ -532,12 +532,14 @@ var IMVVMClass = {
               if('kind' in this.originalSpec[key]){
                 if(this.originalSpec[key].kind === 'pseudo'){
                   this.originalSpec[key].enumerable = false;
+                } else if (this.originalSpec[key].kind === 'uid') {
+                  //Don't do anything as yet
                 } else if (this.originalSpec[key].kind === 'instance' ||
                   this.originalSpec[key].kind === 'array') { //'instance' || 'array'
                   autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
                 } else {
                   throw new TypeError('"'+this.originalSpec[key].kind +'" '+
-                    'is not a valid "kind" value. Valid values are "pseudo","instance" and "array". Please review field "' + key + '".');
+                    'is not a valid "kind" value. Please review field "' + key + '".');
                 }
                 delete this.originalSpec[key].kind;
               }
@@ -573,7 +575,7 @@ var IMVVMClass = {
   },
 };
 
-var IMVVM = {
+module.exports = {
   createModel: IMVVMClass.createClass.bind(this, ModelBase, 'Model'),
   createViewModel: IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel'),
   createDomainViewModel: IMVVMClass.createClass.bind(this, DomainViewModelBase, 'DomainViewModel'),
@@ -581,8 +583,6 @@ var IMVVM = {
   extend: extend,
   page: page
 };
-
-module.exports = IMVVM;
 
 },{"./domainViewModel":4,"./mixin":5,"./model":6,"./utils":8,"./viewModel":9,"page":2}],4:[function(_dereq_,module,exports){
 
