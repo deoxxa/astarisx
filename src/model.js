@@ -2,13 +2,13 @@
 var utils = require('./utils');
 var extend = utils.extend;
 
-var model = {
+var Model = {
   Mixin: {
     construct: function(stateChangedHandler){
 
       var desc = this.getDescriptor();
 
-      var dataContext = function(nextState, extendState, initialize) {
+      var ModelClass = function(nextState, extendState, initialize) {
         var freezeFields = desc.freezeFields,
           fld,
           model = Object.create(desc.proto, desc.descriptor);
@@ -78,9 +78,9 @@ var model = {
 
         return Object.freeze(model);
       };
-      return dataContext;
+      return ModelClass;
     }
   }
 };
 
-module.exports = model;
+module.exports = Model;

@@ -2,14 +2,14 @@
 var utils = require('./utils');
 var extend = utils.extend;
 
-var viewModel = {
+var ViewModel = {
   Mixin: {
     construct: function(stateChangedHandler){
 
       var desc = this.getDescriptor(this);
       desc.proto.setState = stateChangedHandler;
 
-      var dataContext = function(nextState, initialize) {
+      var ViewModelClass = function(nextState, initialize) {
 
         //nextState has already been extended with prevState in core
         nextState = nextState || {};
@@ -80,11 +80,10 @@ var viewModel = {
         });
 
         return Object.freeze(viewModel);
-
       };
-      return dataContext;
+      return ViewModelClass;
     }
   }
 };
 
-module.exports = viewModel;
+module.exports = ViewModel;
