@@ -34,11 +34,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		external = false,
 		internal = false,
     dataContextWillInitialize = false;//,
-    // processing = false,
-		// processQueue = [],
-    // continuation = false;
 
-  //forget is to override persisting previousState
 	var appStateChangedHandler = function(caller, newState, newAppState, forget, callback) {
 
 		var nextState = {},
@@ -55,12 +51,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			subscribers,
 			subscriber,
 			pushStateChanged = false;
-
-    // if(processing && !continuation && !calledBack){
-    //   processQueue.push(arguments);
-    //   return;
-    // }
-		// processing = true;
 
     if(typeof forget === 'function'){
       callback = forget;
@@ -129,13 +119,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			transientState = extend(nextState, transientState, newAppState);
 			transientStateKeys = Object.keys(transientState);
 			if(transientStateKeys.length === 0){
-				// continuation = false;
-        // if(!!processQueue.length){
-        //   console.log('POP and process up TOP');
-        //   appStateChangedHandler.apply(this, processQueue.pop());
-        // } else {
-        //   processing = false;
-        // }
 				return;
 			}
 
@@ -272,18 +255,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		transientState = {};
 		processedState = {};
 
-		// //All the work is done! -> Notify the View
-		// stateChangedHandler(appState);
-
-    // continuation = false;
-    // if(!!processQueue.length){
-    //   console.log('POP and process');
-    //   appStateChangedHandler.apply(this, processQueue.pop());
-    // } else {
-      //All the work is done! -> Notify the View
-      stateChangedHandler(appState);
-    // }
-    // processing = false;
+    //All the work is done! -> Notify the View
+    stateChangedHandler(appState);
 
 		// Internal call routing
 		if(routingEnabled && appState.pushState){
