@@ -32,9 +32,14 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		routeMapping = {},
 		routePath,
 		external = false,
-		internal = false;
+		internal = false,
+    dataContextWillInitialize = false;//,
+    // processing = false,
+		// processQueue = [],
+    // continuation = false;
 
-	var appStateChangedHandler = function(caller, newState, newAppState, callback) {
+  //forget is to override persisting previousState
+	var appStateChangedHandler = function(caller, newState, newAppState, forget, callback) {
 
 		var nextState = {},
 			prevState = void(0),
@@ -51,10 +56,22 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			subscriber,
 			pushStateChanged = false;
 
-		if(typeof newAppState === 'function'){
+    // if(processing && !continuation && !calledBack){
+    //   processQueue.push(arguments);
+    //   return;
+    // }
+		// processing = true;
+
+    if(typeof forget === 'function'){
+      callback = forget;
+      forget = false;
+    } else if(typeof newAppState === 'function'){
 			callback = newAppState;
 			newAppState = {};
-		}
+		} else if (typeof newAppState === 'boolean'){
+      forget = newAppState;
+      newAppState = {};
+    }
 
 		newState = newState || {};
 		newStateKeys = Object.keys(newState);
@@ -93,9 +110,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			if(typeof callback === 'function'){
 				appState = new ApplicationDataContext(nextState, prevState, redoState,
 					enableUndo, routingEnabled, nextState.path !== appState.path,
-					!external || nextState.pageNotFound);
+					!external || nextState.pageNotFound, forget);
+
+        calledBack = true;
 				callback(appState);
-				return;
+        return;
 			}
 
 		} else {
@@ -110,6 +129,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			transientState = extend(nextState, transientState, newAppState);
 			transientStateKeys = Object.keys(transientState);
 			if(transientStateKeys.length === 0){
+				// continuation = false;
+        // if(!!processQueue.length){
+        //   console.log('POP and process up TOP');
+        //   appStateChangedHandler.apply(this, processQueue.pop());
+        // } else {
+        //   processing = false;
+        // }
 				return;
 			}
 
@@ -171,7 +197,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				}
 			};
 			if(!!Object.keys(transientState).length){
-				appStateChangedHandler(void(0), {}, transientState, callback);
+        // continuation = true;
+				appStateChangedHandler(void(0), {}, transientState, forget, callback);
 				return;
 			}
 			//Link Phase
@@ -232,7 +259,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 
 		appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
-			!external || nextState.pageNotFound);
+			!external || nextState.pageNotFound, forget);
 		Object.freeze(appState);
 		Object.freeze(appState.state);
 
@@ -241,11 +268,23 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			callback(appState);
 			return;
 		}
-		//All the work is done! -> Notify the View
-		stateChangedHandler(appState);
 		calledBack = false;
 		transientState = {};
 		processedState = {};
+
+		// //All the work is done! -> Notify the View
+		// stateChangedHandler(appState);
+
+    // continuation = false;
+    // if(!!processQueue.length){
+    //   console.log('POP and process');
+    //   appStateChangedHandler.apply(this, processQueue.pop());
+    // } else {
+      //All the work is done! -> Notify the View
+      stateChangedHandler(appState);
+    // }
+    // processing = false;
+
 		// Internal call routing
 		if(routingEnabled && appState.pushState){
 			if(('path' in appState) && !external){
@@ -258,6 +297,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 			external = false;
 		}
+
 	};
 
 	//Initialize Application Data Context
@@ -384,7 +424,20 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		external = false;
 	}
 
-	Object.freeze(appState.state);
-	Object.freeze(appState);
-	return appState;
+  for(dataContext in domain){
+		if(domain.hasOwnProperty(dataContext)){
+			if('dataContextWillInitialize' in appState[dataContext].constructor.originalSpec){
+        dataContextWillInitialize = true;
+				appState[dataContext].constructor.originalSpec.dataContextWillInitialize.call(appState[dataContext]);
+				delete appState[dataContext].constructor.originalSpec.dataContextWillInitialize;
+			}
+		}
+	}
+
+  if(!dataContextWillInitialize){
+    Object.freeze(appState.state);
+    Object.freeze(appState);
+    return appState;
+  }
+
 };

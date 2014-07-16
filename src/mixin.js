@@ -15,9 +15,7 @@ var mixin = {
 	},
 	pushState: {
 		componentDidMount: function(){
-			if('path' in this.state.domainDataContext){
-				$(this.getDOMNode()).click(this.onclick);
-			}
+			$(this.getDOMNode()).click(this.onclick);
 		},
 		componentWillUnmount: function(){
 			$(this.getDOMNode()).unbind('click');

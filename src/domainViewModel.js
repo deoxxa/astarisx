@@ -21,7 +21,7 @@ var DomainViewModel = {
         }
       };
       var DomainViewModelClass = function(nextState, prevState, redoState, enableUndo,
-        routingEnabled, pushStateChanged, internal) {
+        routingEnabled, pushStateChanged, internal, forget) {
 
         var freezeFields = desc.freezeFields,
           domainViewModel = Object.create(desc.proto, desc.descriptor),
@@ -88,7 +88,7 @@ var DomainViewModel = {
         //need routingEnabled flag because it depends on prevState
         if(enableUndo || routingEnabled){
           if(!!prevState && (!pushStateChanged || adhocUndo || pageNotFound) &&
-            !previousAdhoc && internal){
+            !previousAdhoc && internal && !forget){
             previousAdhoc = adhocUndo;
             previousPageNotFound = pageNotFound;
             Object.defineProperty(domainViewModel, 'previousState', {
@@ -179,7 +179,7 @@ var DomainViewModel = {
           writable: false,
           value: nextState
         });
-        
+
         return domainViewModel;
       };
       return DomainViewModelClass;

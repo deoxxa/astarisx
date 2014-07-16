@@ -38,7 +38,6 @@ var ViewModel = {
             writable: true,
             value: nextState
           });
-
         }
 
         //freeze arrays and viewModel instances
