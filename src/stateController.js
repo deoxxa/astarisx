@@ -424,6 +424,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		external = false;
 	}
 
+	if('dataContextWillInitialize' in appState.constructor.originalSpec){
+		dataContextWillInitialize = true;
+		appState.constructor.originalSpec.dataContextWillInitialize.call(appState);
+		delete appState.constructor.originalSpec.dataContextWillInitialize;
+	}
+
   for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			if('dataContextWillInitialize' in appState[dataContext].constructor.originalSpec){
