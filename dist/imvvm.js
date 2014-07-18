@@ -983,12 +983,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		routePath,
 		external = false,
 		internal = false,
-    dataContextWillInitialize = false;//,
-    // processing = false,
-		// processQueue = [],
-    // continuation = false;
+    dataContextWillInitialize = false;
 
-  //forget is to override persisting previousState
 	var appStateChangedHandler = function(caller, newState, newAppState, forget, callback) {
 
 		var nextState = {},
@@ -1006,12 +1002,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			subscriber,
 			pushStateChanged = false;
 
-    // if(processing && !continuation && !calledBack){
-    //   processQueue.push(arguments);
-    //   return;
-    // }
-		// processing = true;
-
     if(typeof forget === 'function'){
       callback = forget;
       forget = false;
@@ -1023,6 +1013,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
       newAppState = {};
     }
 
+    if(forget === void(0)){
+    	forget = false;
+    }
 		newState = newState || {};
 		newStateKeys = Object.keys(newState);
 
@@ -1079,13 +1072,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			transientState = extend(nextState, transientState, newAppState);
 			transientStateKeys = Object.keys(transientState);
 			if(transientStateKeys.length === 0){
-				// continuation = false;
-        // if(!!processQueue.length){
-        //   console.log('POP and process up TOP');
-        //   appStateChangedHandler.apply(this, processQueue.pop());
-        // } else {
-        //   processing = false;
-        // }
 				return;
 			}
 
@@ -1222,18 +1208,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		transientState = {};
 		processedState = {};
 
-		// //All the work is done! -> Notify the View
-		// stateChangedHandler(appState);
-
-    // continuation = false;
-    // if(!!processQueue.length){
-    //   console.log('POP and process');
-    //   appStateChangedHandler.apply(this, processQueue.pop());
-    // } else {
-      //All the work is done! -> Notify the View
-      stateChangedHandler(appState);
-    // }
-    // processing = false;
+    //All the work is done! -> Notify the View
+    stateChangedHandler(appState);
 
 		// Internal call routing
 		if(routingEnabled && appState.pushState){
@@ -1273,7 +1249,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				watchedState = appState[dataContext].constructor.originalSpec.getWatchedState();
 				for(watchedItem in watchedState){
 					if(watchedState.hasOwnProperty(watchedItem)){
-						if(watchedItem in domain || watchedItem in appState.state){
+						if(watchedItem in domain || watchedItem in appState){
 							if('alias' in watchedState[watchedItem]){
 								if(!(dataContext in links)){
 									links[dataContext] = {};

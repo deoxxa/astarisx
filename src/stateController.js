@@ -33,7 +33,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		routePath,
 		external = false,
 		internal = false,
-    dataContextWillInitialize = false;//,
+    dataContextWillInitialize = false;
 
 	var appStateChangedHandler = function(caller, newState, newAppState, forget, callback) {
 
@@ -63,6 +63,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
       newAppState = {};
     }
 
+    if(forget === void(0)){
+    	forget = false;
+    }
 		newState = newState || {};
 		newStateKeys = Object.keys(newState);
 
@@ -296,7 +299,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				watchedState = appState[dataContext].constructor.originalSpec.getWatchedState();
 				for(watchedItem in watchedState){
 					if(watchedState.hasOwnProperty(watchedItem)){
-						if(watchedItem in domain || watchedItem in appState.state){
+						if(watchedItem in domain || watchedItem in appState){
 							if('alias' in watchedState[watchedItem]){
 								if(!(dataContext in links)){
 									links[dataContext] = {};
