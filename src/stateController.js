@@ -52,6 +52,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			subscriber,
 			pushStateChanged = false;
 
+    if(arguments.length === 1){
+      stateChangedHandler(appState);
+      return;
+    }
+
     if(typeof forget === 'function'){
       callback = forget;
       forget = false;
@@ -101,12 +106,16 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 
 			if(typeof callback === 'function'){
-				appState = new ApplicationDataContext(nextState, prevState, redoState,
-					enableUndo, routingEnabled, nextState.path !== appState.path,
-					!external || nextState.pageNotFound, forget);
+				try {
+					appState = new ApplicationDataContext(nextState, prevState, redoState,
+						enableUndo, routingEnabled, nextState.path !== appState.path,
+						!external || nextState.pageNotFound, forget);
 
-        calledBack = true;
-				callback(appState);
+	        calledBack = true;
+					callback(void(0), appState);
+				} catch(e) {
+					callback(e);
+				}
         return;
 			}
 
@@ -183,7 +192,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				}
 			};
 			if(!!Object.keys(transientState).length){
-        // continuation = true;
 				appStateChangedHandler(void(0), {}, transientState, forget, callback);
 				return;
 			}
@@ -243,20 +251,29 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		//check the paths to see of there has been an path change
 		pushStateChanged = nextState.path !== appState.path;
 
-		appState = new ApplicationDataContext(nextState, prevState, redoState,
+		try {
+			appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
 			!external || nextState.pageNotFound, forget);
-		Object.freeze(appState);
-		Object.freeze(appState.state);
+		
+			Object.freeze(appState);
+			Object.freeze(appState.state);
 
-		if(typeof callback === 'function'){
-			calledBack = true;
-			callback(appState);
-			return;
+			if(typeof callback === 'function'){
+				calledBack = true;
+				callback(void(0), appState);
+				return;
+			}
+		} catch(e) {
+			if(typeof callback === 'function'){
+				callback(e);
+				return;
+			}
+		} finally {		
+			calledBack = false;
+			transientState = {};
+			processedState = {};
 		}
-		calledBack = false;
-		transientState = {};
-		processedState = {};
 
     //All the work is done! -> Notify the View
     stateChangedHandler(appState);
@@ -273,6 +290,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			}
 			external = false;
 		}
+
 
 	};
 
