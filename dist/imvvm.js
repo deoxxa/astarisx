@@ -1002,7 +1002,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 			subscriber,
 			pushStateChanged = false;
 
-    if(arguments.length === 1){
+    if(arguments.length < 2){
       stateChangedHandler(appState);
       return;
     }
