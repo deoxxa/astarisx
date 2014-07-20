@@ -56,12 +56,13 @@
 ## 0.8.0
 
 - Add pushState router
-- Split mixin => IMVVM.mixin.main, IMVVM.mixin.pushState ***(Breaking Change)***
+- Split mixin => IMVVM.mixin.main, IMVVM.mixin.pushState ***(Breaking Change) Change mixin from IMVVM.mixin to IMVVM.mixin.main***
 - Added `getRoutes` function
 - Added `path` to Domain Data Context
 - Added `forceReplace`: true || false property to Domain Data Context
 - Added `pushState`: true || false to Domain Data Context
 - Added readonly `pageNotFound` to Domain Data Context
+- Added `kind:uid`: For future use
 - Automatic pushState for 'a' tags if pushState mixed in
 - Added ad-hoc `enableUndo`: true || false to Domain Data Context
 - rename core.js => stateController.js
@@ -69,3 +70,8 @@
 - rename imvvmDomainViewModel => domainViewModel
 - rename imvvmViewModel => viewModel
 - rename imvvmModel => model
+- Bug fix: Domain Data Context watchedState did not link if it wasn't in appState.state during initialization
+- Added `dataContextWillInitialize` to DomainViewModel and ViewModels
+- setState callbacks now return an error as the first argument. i.e. callback(err, appContext) ***(Breaking Change) Add `error` argument to first param of setState callbacks***
+- setState can now be called with no arguments eg. this.setState() 
+- setState takes extra optional argument `forget` of Type Boolean. Only applicable in DomainViewModel and ViewModels
