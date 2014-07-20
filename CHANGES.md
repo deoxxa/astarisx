@@ -55,6 +55,10 @@
 
 ## 0.8.0
 
+- skipped version number
+ 
+## 0.8.1
+
 - Add pushState router
 - Split mixin => IMVVM.mixin.main, IMVVM.mixin.pushState ***(Breaking Change) Change mixin from IMVVM.mixin to IMVVM.mixin.main***
 - Added `getRoutes` function
