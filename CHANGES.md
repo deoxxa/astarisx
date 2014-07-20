@@ -79,3 +79,7 @@
 - setState callbacks now return an error as the first argument. i.e. callback(err, appContext) ***(Breaking Change) Add `error` argument to first param of setState callbacks***
 - setState can now be called with no arguments eg. this.setState() 
 - setState takes extra optional argument `forget` of Type Boolean. Only applicable in DomainViewModel and ViewModels
+
+## 0.8.2
+
+- Bug fix: Allow initial AppState to be passed to View even when dataContextWillInitialize

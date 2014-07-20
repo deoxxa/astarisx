@@ -32,8 +32,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		routeMapping = {},
 		routePath,
 		external = false,
-		internal = false,
-    dataContextWillInitialize = false;
+		internal = false;
 
 	var appStateChangedHandler = function(caller, newState, newAppState, forget, callback) {
 
@@ -419,7 +418,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	}
 
 	if('dataContextWillInitialize' in appState.constructor.originalSpec){
-		dataContextWillInitialize = true;
 		appState.constructor.originalSpec.dataContextWillInitialize.call(appState);
 		delete appState.constructor.originalSpec.dataContextWillInitialize;
 	}
@@ -427,17 +425,14 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
   for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
 			if('dataContextWillInitialize' in appState[dataContext].constructor.originalSpec){
-        dataContextWillInitialize = true;
 				appState[dataContext].constructor.originalSpec.dataContextWillInitialize.call(appState[dataContext]);
 				delete appState[dataContext].constructor.originalSpec.dataContextWillInitialize;
 			}
 		}
 	}
 
-  if(!dataContextWillInitialize){
-    Object.freeze(appState.state);
-    Object.freeze(appState);
-    return appState;
-  }
+  Object.freeze(appState.state);
+  Object.freeze(appState);
+  return appState;
 
 };
