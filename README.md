@@ -6,7 +6,7 @@ IMVVM helps implement the Model-View-ViewModel pattern in [React](http://faceboo
 #####Documentation can be found here: https://github.com/entrendipity/imvvm/wiki
 
 ## Author
-Entrendipity  - [Follow @entrendipity](https://twitter.com/intent/follow?screen_name=entrendipity)
+Entrendipity  - [Follow @entrendipity](https://twitter.com/intent/follow?screen_name=entrendipity)  
 Frank Panetta  - [Follow @fattenap](https://twitter.com/intent/follow?screen_name=fattenap)
 
 ##License
