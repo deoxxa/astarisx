@@ -88,3 +88,7 @@
 
 - Bug fix: Remove finally from try catch during callback in stateController
 - Bug fix: Assign appState to newState when not args passed to setState to ensure that State is reflected correctly
+
+## 0.8.4
+
+- Reference React DOM node directly to add event listener in mixin.pushState
