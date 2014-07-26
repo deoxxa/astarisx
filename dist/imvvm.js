@@ -794,10 +794,10 @@ var mixin = {
 	},
 	pushState: {
 		componentDidMount: function(){
-			$(this.getDOMNode()).click(this.onclick);
+			this.getDOMNode().addEventListener('click', this.onclick);
 		},
 		componentWillUnmount: function(){
-			$(this.getDOMNode()).unbind('click');
+			this.getDOMNode().removeEventListener('click');
 		},
 		/**
 		* Event button.
