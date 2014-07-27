@@ -91,4 +91,4 @@
 
 ## 0.8.4
 
-- Reference React DOM node directly to add event listener in mixin.pushState
+- Reference React DOM node directly to add event listener in mixin.pushState. No dependancy on jQuery ie. '$' making it easier to use in NodeJS
