@@ -77,35 +77,39 @@ var mixin = {
 		}
 	},
 	mediaQuery: {
-		componentDidMount: function(){
-			
-			var sheets = document.styleSheets;
-			var sheetsLen = sheets.length;
+		closureFunc: function(id, mql, initializing){
+      (function(){
+        this.state.domainDataContext.mediaChangeHandler.call(this.state.domainDataContext, id, mql, initializing);
+      }.bind(this))();
+    },
+    componentDidMount: function(){
+      
+      var sheets = document.styleSheets;
+      var sheetsLen = sheets.length;
       var initializing = true;
-			var rules, rulesLen, mql, id;
+      var rules, rulesLen, mql, id;
 
-			for (var i = 0; i < sheetsLen; i += 1) {
+      for (var i = 0; i < sheetsLen; i += 1) {
         rules = sheets[i].cssRules;
         rulesLen = rules.length;
         for (var j = 0; j < rulesLen; j += 1) {
           if (rules[j].constructor === CSSMediaRule) {
-        		if(!!rules[j].cssRules.length){
+            if(!!rules[j].cssRules.length){
               id = rules[j].cssRules[0].selectorText.split("#");
               if(id.length === 2 && id[0] === ".media"){
-          			mql = window.matchMedia(rules[j].media.mediaText);
-                mql.addListener(this.state.domainDataContext.mediaChangeHandler.bind(this.state.domainDataContext, id[1]));
+                mql = window.matchMedia(rules[j].media.mediaText);
+                mql.addListener(this.closureFunc.bind(this, id[1]));
                 if(initializing){
-                	this.state.domainDataContext.mediaChangeHandler(id[1], mql, initializing);
+                  this.closureFunc(id[1], mql, initializing);
                 } else {
-              		this.state.domainDataContext.mediaChangeHandler(mql);
+                  this.closureFunc(mql);
                 }
-                mql = null;
               }
-        		}
+            }
           }
         }
       }
-		}
+    }
 	}
 };
 
