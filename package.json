@@ -1,15 +1,14 @@
 {
   "name": "imvvm",
   "description": "Immutable MVVM for React",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "keywords": [
     "react",
-    "mvvm",
-    "react",
     "mvc",
-    "react",
+    "mvvm",
     "routing",
     "pushState",
+    "mediaQuery",
     "imvvm"
   ],
   "homepage": "https://github.com/entrendipity/imvvm",

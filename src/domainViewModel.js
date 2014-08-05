@@ -4,12 +4,12 @@ var extend = utils.extend;
 
 var DomainViewModel = {
   Mixin: {
-    construct: function(stateChangedHandler){
+    construct: function(stateChangeHandler){
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
       var desc = this.getDescriptor();
-      desc.proto.setState = stateChangedHandler;
+      desc.proto.setState = stateChangeHandler;
 
       desc.proto.revert = function(){
         this.setState(this.previousState, !!this.previousState ? this : void(0));

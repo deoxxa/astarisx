@@ -92,3 +92,9 @@
 ## 0.8.4
 
 - Reference React DOM node directly to add event listener in mixin.pushState. No dependancy on jQuery ie. '$' making it easier to use in NodeJS
+
+## 0.8.5
+
+- Add IMVVM.mixin.mediaQuery
+- Add `mediaChangeHandler` function to DomainViewModel. Required when IMVVM.mixin.mediaQuery is specified. Signature: `mediaChangeHandler: function(mql, initializing){}`. `mql` has custom property `id` which is defined in the @media property in css file. First selector must be in `.media#[id]` with empty definition n.b. but need a comment for it to work i.e. `.media#ipad { /**/ }`
+- changed stateChangedHandler -> stateChangeHandler

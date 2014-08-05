@@ -4,12 +4,12 @@ var NAMESPACE = '__IMVVM__';
 
 var mixin = {
 	main: {
-		stateChangedHandler: function(dataContext){
+		stateChangeHandler: function(dataContext){
 	  	this.setState({domainDataContext: dataContext});
 	  },
 		getInitialState: function(){
 			var dataContext = core.getInitialState(NAMESPACE, this.props.domainModel,
-				this.stateChangedHandler, this.props.enableUndo);
+				this.stateChangeHandler, this.props.enableUndo);
 			return {domainDataContext: dataContext};
 		}
 	},
@@ -74,6 +74,33 @@ var mixin = {
 				}
 
 			IMVVM.page.show(orig);
+		}
+	},
+	mediaQuery: {
+		componentDidMount: function(){
+			
+			var sheets = document.styleSheets;
+			var sheetsLen = sheets.length;
+      var initializing = true;
+			var rules, rulesLen, mql, id;
+
+			for (var i = 0; i < sheetsLen; i += 1) {
+        rules = sheets[i].cssRules;
+        rulesLen = rules.length;
+        for (var j = 0; j < rulesLen; j += 1) {
+          if (rules[j].constructor === CSSMediaRule) {
+        		if(!!rules[j].cssRules.length){
+              id = rules[j].cssRules[0].selectorText.split("#");
+              if(id[0] === ".media"){
+          			mql = window.matchMedia(rules[j].media.mediaText);
+                mql.id = id[1];
+              	mql.addListener(this.state.domainDataContext.mediaChangeHandler.bind(this.state.domainDataContext));
+              	this.state.domainDataContext.mediaChangeHandler(mql, initializing);
+              }
+        		}
+          }
+        }
+      }
 		}
 	}
 };

@@ -2,10 +2,10 @@ var page = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
 
-exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, enableUndo) {
+exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler, enableUndo) {
 
-	if(typeof stateChangedHandler !== 'function'){
-		throw new TypeError('stateChangedHandler must be a function.');
+	if(typeof stateChangeHandler !== 'function'){
+		throw new TypeError('stateChangeHandler must be a function.');
 	}
 
 	if(enableUndo === void(0)){
@@ -34,7 +34,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		external = false,
 		internal = false;
 
-	var appStateChangedHandler = function(caller, newState, newAppState, forget, callback) {
+	var appStateChangeHandler = function(caller, newState, newAppState, forget, callback) {
 
 		var nextState = {},
 			prevState = void(0),
@@ -73,7 +73,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		newStateKeys = Object.keys(newState);
 
 		//Check to see if appState is a ready made state object. If so
-		//pass it straight to the stateChangedHandler. If a callback was passed in
+		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
 
@@ -190,7 +190,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				}
 			};
 			if(!!Object.keys(transientState).length){
-				appStateChangedHandler(void(0), {}, transientState, forget, callback);
+				appStateChangeHandler(void(0), {}, transientState, forget, callback);
 				return;
 			}
 			//Link Phase
@@ -274,7 +274,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		processedState = {};
 	
     //All the work is done! -> Notify the View
-    stateChangedHandler(appState);
+    stateChangeHandler(appState);
 
 		// Internal call routing
 		if(routingEnabled && appState.pushState){
@@ -293,7 +293,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	};
 
 	//Initialize Application Data Context
-	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
+	ApplicationDataContext = domainModel.call(this, appStateChangeHandler.bind(this, appNamespace));
 	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
   appState.state = appState.state || {};
 
@@ -303,7 +303,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	//Initialize all dataContexts
 	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
-			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangedHandler.bind(this, dataContext));
+			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangeHandler.bind(this, dataContext));
 			appState.state[dataContext] = new dataContexts[dataContext](appState.state[dataContext], true);
     }
   }

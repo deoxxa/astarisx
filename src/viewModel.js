@@ -4,10 +4,10 @@ var extend = utils.extend;
 
 var ViewModel = {
   Mixin: {
-    construct: function(stateChangedHandler){
+    construct: function(stateChangeHandler){
 
       var desc = this.getDescriptor(this);
-      desc.proto.setState = stateChangedHandler;
+      desc.proto.setState = stateChangeHandler;
 
       var ViewModelClass = function(nextState, initialize) {
 
@@ -47,8 +47,8 @@ var ViewModel = {
                 tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
 
-                tempModel.__stateChangedHandler = (function(fld){
-                  return viewModel[fld].__stateChangedHandler;
+                tempModel.__stateChangeHandler = (function(fld){
+                  return viewModel[fld].__stateChangeHandler;
                 })(freezeFields[fld].fieldName);
 
                 Object.defineProperty(tempModel, 'state', {
@@ -59,7 +59,7 @@ var ViewModel = {
                 });
 
                 tempModel.__proto__.setState = function(state, callback){ //callback may be useful for DB updates
-                  this.__stateChangedHandler.call(viewModel, extend(this.state, state), callback);
+                  this.__stateChangeHandler.call(viewModel, extend(this.state, state), callback);
                 };
 
                 Object.freeze(viewModel[freezeFields[fld].fieldName]);

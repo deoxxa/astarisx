@@ -1,6 +1,6 @@
 {
   "name": "imvvm",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "homepage": "https://github.com/entrendipity/imvvm",
   "authors": [
     "Frank Panetta <frank.panetta@entrendipity.com.au>"
@@ -14,12 +14,11 @@
   ],
   "keywords": [
     "react",
-    "mvvm",
-    "react",
     "mvc",
-    "react",
+    "mvvm",
     "routing",
     "pushState",
+    "mediaQuery",
     "imvvm"
   ],
   "dependencies": {

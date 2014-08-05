@@ -481,7 +481,7 @@ var IMVVMClass = {
 
     var DescriptorConstructor = Constructor;
 
-    var ConvenienceConstructor = function(stateChangedHandler) {
+    var ConvenienceConstructor = function(stateChangeHandler) {
       var descriptor = new DescriptorConstructor();
       return descriptor.construct.apply(ConvenienceConstructor, arguments);
     };
@@ -591,12 +591,12 @@ var extend = utils.extend;
 
 var DomainViewModel = {
   Mixin: {
-    construct: function(stateChangedHandler){
+    construct: function(stateChangeHandler){
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
       var desc = this.getDescriptor();
-      desc.proto.setState = stateChangedHandler;
+      desc.proto.setState = stateChangeHandler;
 
       desc.proto.revert = function(){
         this.setState(this.previousState, !!this.previousState ? this : void(0));
@@ -783,12 +783,12 @@ var NAMESPACE = '__IMVVM__';
 
 var mixin = {
 	main: {
-		stateChangedHandler: function(dataContext){
+		stateChangeHandler: function(dataContext){
 	  	this.setState({domainDataContext: dataContext});
 	  },
 		getInitialState: function(){
 			var dataContext = core.getInitialState(NAMESPACE, this.props.domainModel,
-				this.stateChangedHandler, this.props.enableUndo);
+				this.stateChangeHandler, this.props.enableUndo);
 			return {domainDataContext: dataContext};
 		}
 	},
@@ -854,6 +854,33 @@ var mixin = {
 
 			IMVVM.page.show(orig);
 		}
+	},
+	mediaQuery: {
+		componentDidMount: function(){
+			
+			var sheets = document.styleSheets;
+			var sheetsLen = sheets.length;
+      var initializing = true;
+			var rules, rulesLen, mql, id;
+
+			for (var i = 0; i < sheetsLen; i += 1) {
+        rules = sheets[i].cssRules;
+        rulesLen = rules.length;
+        for (var j = 0; j < rulesLen; j += 1) {
+          if (rules[j].constructor === CSSMediaRule) {
+        		if(!!rules[j].cssRules.length){
+              id = rules[j].cssRules[0].selectorText.split("#");
+              if(id[0] === ".media"){
+          			mql = window.matchMedia(rules[j].media.mediaText);
+                mql.id = id[1];
+              	mql.addListener(this.state.domainDataContext.mediaChangeHandler.bind(this.state.domainDataContext));
+              	this.state.domainDataContext.mediaChangeHandler(mql, initializing);
+              }
+        		}
+          }
+        }
+      }
+		}
 	}
 };
 
@@ -866,7 +893,7 @@ var extend = utils.extend;
 
 var Model = {
   Mixin: {
-    construct: function(stateChangedHandler){
+    construct: function(stateChangeHandler){
 
       var desc = this.getDescriptor();
 
@@ -934,8 +961,8 @@ var Model = {
           value: nextState
         });
 
-        model.__stateChangedHandler = (function(){
-            return stateChangedHandler;
+        model.__stateChangeHandler = (function(){
+            return stateChangeHandler;
         })();
 
         return Object.freeze(model);
@@ -952,10 +979,10 @@ var page = _dereq_('page');
 var utils = _dereq_('./utils');
 var extend = utils.extend;
 
-exports.getInitialState = function(appNamespace, domainModel, stateChangedHandler, enableUndo) {
+exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler, enableUndo) {
 
-	if(typeof stateChangedHandler !== 'function'){
-		throw new TypeError('stateChangedHandler must be a function.');
+	if(typeof stateChangeHandler !== 'function'){
+		throw new TypeError('stateChangeHandler must be a function.');
 	}
 
 	if(enableUndo === void(0)){
@@ -984,7 +1011,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		external = false,
 		internal = false;
 
-	var appStateChangedHandler = function(caller, newState, newAppState, forget, callback) {
+	var appStateChangeHandler = function(caller, newState, newAppState, forget, callback) {
 
 		var nextState = {},
 			prevState = void(0),
@@ -1023,7 +1050,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		newStateKeys = Object.keys(newState);
 
 		//Check to see if appState is a ready made state object. If so
-		//pass it straight to the stateChangedHandler. If a callback was passed in
+		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
 
@@ -1140,7 +1167,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 				}
 			};
 			if(!!Object.keys(transientState).length){
-				appStateChangedHandler(void(0), {}, transientState, forget, callback);
+				appStateChangeHandler(void(0), {}, transientState, forget, callback);
 				return;
 			}
 			//Link Phase
@@ -1224,7 +1251,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 		processedState = {};
 	
     //All the work is done! -> Notify the View
-    stateChangedHandler(appState);
+    stateChangeHandler(appState);
 
 		// Internal call routing
 		if(routingEnabled && appState.pushState){
@@ -1243,7 +1270,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	};
 
 	//Initialize Application Data Context
-	ApplicationDataContext = domainModel.call(this, appStateChangedHandler.bind(this, appNamespace));
+	ApplicationDataContext = domainModel.call(this, appStateChangeHandler.bind(this, appNamespace));
 	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
   appState.state = appState.state || {};
 
@@ -1253,7 +1280,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangedHandle
 	//Initialize all dataContexts
 	for(dataContext in domain){
 		if(domain.hasOwnProperty(dataContext)){
-			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangedHandler.bind(this, dataContext));
+			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangeHandler.bind(this, dataContext));
 			appState.state[dataContext] = new dataContexts[dataContext](appState.state[dataContext], true);
     }
   }
@@ -1422,10 +1449,10 @@ var extend = utils.extend;
 
 var ViewModel = {
   Mixin: {
-    construct: function(stateChangedHandler){
+    construct: function(stateChangeHandler){
 
       var desc = this.getDescriptor(this);
-      desc.proto.setState = stateChangedHandler;
+      desc.proto.setState = stateChangeHandler;
 
       var ViewModelClass = function(nextState, initialize) {
 
@@ -1465,8 +1492,8 @@ var ViewModel = {
                 tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
 
-                tempModel.__stateChangedHandler = (function(fld){
-                  return viewModel[fld].__stateChangedHandler;
+                tempModel.__stateChangeHandler = (function(fld){
+                  return viewModel[fld].__stateChangeHandler;
                 })(freezeFields[fld].fieldName);
 
                 Object.defineProperty(tempModel, 'state', {
@@ -1477,7 +1504,7 @@ var ViewModel = {
                 });
 
                 tempModel.__proto__.setState = function(state, callback){ //callback may be useful for DB updates
-                  this.__stateChangedHandler.call(viewModel, extend(this.state, state), callback);
+                  this.__stateChangeHandler.call(viewModel, extend(this.state, state), callback);
                 };
 
                 Object.freeze(viewModel[freezeFields[fld].fieldName]);

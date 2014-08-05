@@ -4,7 +4,7 @@ var extend = utils.extend;
 
 var Model = {
   Mixin: {
-    construct: function(stateChangedHandler){
+    construct: function(stateChangeHandler){
 
       var desc = this.getDescriptor();
 
@@ -72,8 +72,8 @@ var Model = {
           value: nextState
         });
 
-        model.__stateChangedHandler = (function(){
-            return stateChangedHandler;
+        model.__stateChangeHandler = (function(){
+            return stateChangeHandler;
         })();
 
         return Object.freeze(model);
