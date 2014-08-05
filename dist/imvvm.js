@@ -870,11 +870,15 @@ var mixin = {
           if (rules[j].constructor === CSSMediaRule) {
         		if(!!rules[j].cssRules.length){
               id = rules[j].cssRules[0].selectorText.split("#");
-              if(id[0] === ".media"){
+              if(id.length === 2 && id[0] === ".media"){
           			mql = window.matchMedia(rules[j].media.mediaText);
-                mql.id = id[1];
-              	mql.addListener(this.state.domainDataContext.mediaChangeHandler.bind(this.state.domainDataContext));
-              	this.state.domainDataContext.mediaChangeHandler(mql, initializing);
+                mql.addListener(this.state.domainDataContext.mediaChangeHandler.bind(this.state.domainDataContext, id[1]));
+                if(initializing){
+                	this.state.domainDataContext.mediaChangeHandler(id[1], mql, initializing);
+                } else {
+              		this.state.domainDataContext.mediaChangeHandler(mql);
+                }
+                mql = null;
               }
         		}
           }
