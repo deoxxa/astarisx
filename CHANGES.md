@@ -96,5 +96,5 @@
 ## 0.8.5
 
 - Add IMVVM.mixin.mediaQuery
-- Add `mediaChangeHandler` function to DomainViewModel. Required when IMVVM.mixin.mediaQuery is specified. Signature: `mediaChangeHandler: function(mql, initializing){}`. `mql` has custom property `id` which is defined in the @media property in css file. First selector must be in `.media#[id]` with empty definition n.b. but need a comment for it to work i.e. `.media#ipad { /**/ }`
+- Add `mediaChangeHandler` function to DomainViewModel. Required when IMVVM.mixin.mediaQuery is specified. Signature: `mediaChangeHandler: function(mql, initializing){}`. `mql` has custom property `id` which is defined in the @media property in css file. First selector must be in `.media#[id]` with empty definition n.b. comment may be needed for it to work due to some css minifiers i.e. `.media#ipad { /**/ }`
 - changed stateChangedHandler -> stateChangeHandler
