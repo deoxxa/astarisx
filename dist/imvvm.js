@@ -508,6 +508,8 @@ var IMVVMClass = {
         viewModels = {},
         autoFreeze = [],
         aliases = {},
+        statics = {},
+        hasStatic = false,
         key;
 
       if('__processedSpec__' in this.originalSpec){
@@ -532,11 +534,14 @@ var IMVVMClass = {
               if('kind' in this.originalSpec[key]){
                 if(this.originalSpec[key].kind === 'pseudo'){
                   this.originalSpec[key].enumerable = false;
-                } else if (this.originalSpec[key].kind === 'uid') {
-                  //Don't do anything as yet
                 } else if (this.originalSpec[key].kind === 'instance' ||
                   this.originalSpec[key].kind === 'array') { //'instance' || 'array'
                   autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
+                } else if (this.originalSpec[key].kind === 'static') {
+                  hasStatic = true;
+                  statics[key] = void(0);
+                } else if (this.originalSpec[key].kind === 'uid') {
+                  //Don't do anything as yet
                 } else {
                   throw new TypeError('"'+this.originalSpec[key].kind +'" '+
                     'is not a valid "kind" value. Please review field "' + key + '".');
@@ -565,7 +570,9 @@ var IMVVMClass = {
         proto: proto,
         originalSpec: this.originalSpec || {},
         freezeFields: autoFreeze,
-        aliases: aliases
+        aliases: aliases,
+        statics: statics,
+        hasStatic: hasStatic
       };
 
       return this.originalSpec.__processedSpec__;
@@ -986,6 +993,7 @@ module.exports = Model;
 var page = _dereq_('page');
 var utils = _dereq_('./utils');
 var extend = utils.extend;
+var updateStatic = utils.updateStatic;
 
 exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler, enableUndo) {
 
@@ -999,6 +1007,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 
 	var ApplicationDataContext,
 		appState = {},
+		staticState = {},
+		hasStatic = false,
 		dataContexts = {},
 		domain,
 		links = {},
@@ -1057,12 +1067,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		newState = newState || {};
 		newStateKeys = Object.keys(newState);
 
+
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
 
-			nextState = extend(newState);
+			nextState = extend(newState, staticState);
 			prevState = newState.previousState;
 			redoState = newAppState;
 			//Need to reset ViewModel with instance object so that setState is associated with
@@ -1103,6 +1114,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 			}
 
 		} else {
+
+			if(hasStatic){
+				staticState = updateStatic(staticState, newState);
+			}
 
 			if(!!newStateKeys.length){
 				if(caller === appNamespace){
@@ -1222,7 +1237,14 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 
 			if(appState.canRevert && calledBack){
 				prevState = appState.previousState;
-			} else {
+			} else if(hasStatic && staticState._staticUpdated && staticState._onlyStatic){
+        if(appState.canRevert){
+        	prevState = appState.previousState;
+        }
+        if(appState.canAdvance){
+        	redoState = appState.nextState;
+        }
+      } else {
 				prevState = appState;
 			}
 		}
@@ -1237,8 +1259,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		try {
 			appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
-			!external || nextState.pageNotFound, forget);
-		
+			!external || nextState.pageNotFound, forget);	
+
 			Object.freeze(appState);
 			Object.freeze(appState.state);
 
@@ -1401,6 +1423,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		external = false;
 	}
 
+	hasStatic = appState.constructor.originalSpec.__processedSpec__.hasStatic;
+	if(hasStatic){
+		staticState = updateStatic(appState.constructor.originalSpec.__processedSpec__.statics, appState.state);
+	}
+
 	if('dataContextWillInitialize' in appState.constructor.originalSpec){
 		appState.constructor.originalSpec.dataContextWillInitialize.call(appState);
 		delete appState.constructor.originalSpec.dataContextWillInitialize;
@@ -1431,6 +1458,38 @@ var utils = {
       for (var key in obj) {
         if (obj.hasOwnProperty(key)) {
           newObj[key] = obj[key];
+        }
+      }
+    }
+    return newObj;
+  },
+
+  updateStatic: function () {
+    var newObj = {};
+    Object.defineProperty(newObj, '_onlyStatic', {
+      configurable: false,
+      enumerable: false,
+      writable: true,
+      value: true
+    });
+    Object.defineProperty(newObj, '_staticUpdated', {
+      configurable: false,
+      enumerable: false,
+      writable: true,
+      value: false
+    });
+    for (var i = 0; i < arguments.length; i++) {
+      var obj = arguments[i];
+      for (var key in obj) {
+        if (obj.hasOwnProperty(key) && key in arguments[0]) {
+          if(key in arguments[0]){
+            newObj[key] = obj[key];
+            if(i > 0){
+              newObj._staticUpdated = true;
+            }
+          } else {
+            newObj._onlyStatic = false;
+          }
         }
       }
     }

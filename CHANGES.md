@@ -98,3 +98,4 @@
 - Add IMVVM.mixin.mediaQuery
 - Add `mediaChangeHandler` function to DomainViewModel. Required when IMVVM.mixin.mediaQuery is specified. Signature: `mediaChangeHandler(id, mql, initializing)`. `id` is defined in the `@media` attribute in the css file. The first selector must be `.media#[id]` with empty definition n.b. comment may be needed for it to work due to some css minifiers i.e. `.media#ipad { /**/ }`
 - changed stateChangedHandler -> stateChangeHandler
+- Added `kind:static`: Fields designated as `static` will not affect undo\redo functionality when their state changes. Only available to DomainViewModel fields

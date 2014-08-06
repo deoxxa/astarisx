@@ -1,6 +1,7 @@
 var page = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
+var updateStatic = utils.updateStatic;
 
 exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler, enableUndo) {
 
@@ -14,6 +15,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 
 	var ApplicationDataContext,
 		appState = {},
+		staticState = {},
+		hasStatic = false,
 		dataContexts = {},
 		domain,
 		links = {},
@@ -72,12 +75,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		newState = newState || {};
 		newStateKeys = Object.keys(newState);
 
+
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
 
-			nextState = extend(newState);
+			nextState = extend(newState, staticState);
 			prevState = newState.previousState;
 			redoState = newAppState;
 			//Need to reset ViewModel with instance object so that setState is associated with
@@ -118,6 +122,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 			}
 
 		} else {
+
+			if(hasStatic){
+				staticState = updateStatic(staticState, newState);
+			}
 
 			if(!!newStateKeys.length){
 				if(caller === appNamespace){
@@ -237,7 +245,14 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 
 			if(appState.canRevert && calledBack){
 				prevState = appState.previousState;
-			} else {
+			} else if(hasStatic && staticState._staticUpdated && staticState._onlyStatic){
+        if(appState.canRevert){
+        	prevState = appState.previousState;
+        }
+        if(appState.canAdvance){
+        	redoState = appState.nextState;
+        }
+      } else {
 				prevState = appState;
 			}
 		}
@@ -252,8 +267,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		try {
 			appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
-			!external || nextState.pageNotFound, forget);
-		
+			!external || nextState.pageNotFound, forget);	
+
 			Object.freeze(appState);
 			Object.freeze(appState.state);
 
@@ -414,6 +429,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		page.replace(appState.path);
 		page.start({click: false, dispatch: false});
 		external = false;
+	}
+
+	hasStatic = appState.constructor.originalSpec.__processedSpec__.hasStatic;
+	if(hasStatic){
+		staticState = updateStatic(appState.constructor.originalSpec.__processedSpec__.statics, appState.state);
 	}
 
 	if('dataContextWillInitialize' in appState.constructor.originalSpec){

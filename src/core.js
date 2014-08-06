@@ -54,6 +54,8 @@ var IMVVMClass = {
         viewModels = {},
         autoFreeze = [],
         aliases = {},
+        statics = {},
+        hasStatic = false,
         key;
 
       if('__processedSpec__' in this.originalSpec){
@@ -78,11 +80,14 @@ var IMVVMClass = {
               if('kind' in this.originalSpec[key]){
                 if(this.originalSpec[key].kind === 'pseudo'){
                   this.originalSpec[key].enumerable = false;
-                } else if (this.originalSpec[key].kind === 'uid') {
-                  //Don't do anything as yet
                 } else if (this.originalSpec[key].kind === 'instance' ||
                   this.originalSpec[key].kind === 'array') { //'instance' || 'array'
                   autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
+                } else if (this.originalSpec[key].kind === 'static') {
+                  hasStatic = true;
+                  statics[key] = void(0);
+                } else if (this.originalSpec[key].kind === 'uid') {
+                  //Don't do anything as yet
                 } else {
                   throw new TypeError('"'+this.originalSpec[key].kind +'" '+
                     'is not a valid "kind" value. Please review field "' + key + '".');
@@ -111,7 +116,9 @@ var IMVVMClass = {
         proto: proto,
         originalSpec: this.originalSpec || {},
         freezeFields: autoFreeze,
-        aliases: aliases
+        aliases: aliases,
+        statics: statics,
+        hasStatic: hasStatic
       };
 
       return this.originalSpec.__processedSpec__;
