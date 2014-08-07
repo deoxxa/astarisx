@@ -1257,6 +1257,9 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		pushStateChanged = nextState.path !== appState.path;
 
 		try {
+			//Add the state that will update
+      nextState = extend(nextState, {dataContextWillUpdate: processedState});
+
 			appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
 			!external || nextState.pageNotFound, forget);	
