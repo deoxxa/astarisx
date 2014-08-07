@@ -52,7 +52,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 			watchedField,
 			subscribers,
 			subscriber,
-			pushStateChanged = false;
+			pushStateChanged = false,
+			willUndo = false;
 
     if(arguments.length < 2){
       newState = appState;
@@ -80,7 +81,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
-
+			willUndo = true;
 			nextState = extend(newState, staticState);
 			prevState = newState.previousState;
 			redoState = newAppState;
@@ -120,7 +121,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 				}
         return;
 			}
-
 		} else {
 
 			if(hasStatic){
@@ -265,8 +265,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		pushStateChanged = nextState.path !== appState.path;
 
 		try {
-			//Add the state that will update
-      nextState = extend(nextState, {dataContextWillUpdate: processedState});
+			//Add dataContextWillUpdate
+      if(willUndo){
+        nextState = extend(nextState, {dataContextWillUpdate: newState.state.dataContextWillUpdate});
+      } else {
+        nextState = extend(nextState, {dataContextWillUpdate: processedState});
+      }
 
 			appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,

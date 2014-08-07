@@ -47,9 +47,14 @@ var ViewModel = {
                 tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
 
-                tempModel.__stateChangeHandler = (function(fld){
-                  return viewModel[fld].__stateChangeHandler;
-                })(freezeFields[fld].fieldName);
+                Object.defineProperty(tempModel, '__stateChangeHandler', {
+                  configurable: false,
+                  enumerable: false,
+                  writable: false,
+                  value: (function(fld){
+                    return viewModel[fld].__stateChangeHandler;
+                  })(freezeFields[fld].fieldName)
+                });
 
                 Object.defineProperty(tempModel, 'state', {
                   configurable: true,

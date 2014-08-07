@@ -975,10 +975,15 @@ var Model = {
           writable: false,
           value: nextState
         });
-
-        model.__stateChangeHandler = (function(){
+        
+        Object.defineProperty(model, '__stateChangeHandler', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: (function(){
             return stateChangeHandler;
-        })();
+          })()
+        });
 
         return Object.freeze(model);
       };
@@ -1044,7 +1049,8 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 			watchedField,
 			subscribers,
 			subscriber,
-			pushStateChanged = false;
+			pushStateChanged = false,
+			willUndo = false;
 
     if(arguments.length < 2){
       newState = appState;
@@ -1072,7 +1078,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
-
+			willUndo = true;
 			nextState = extend(newState, staticState);
 			prevState = newState.previousState;
 			redoState = newAppState;
@@ -1112,7 +1118,6 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 				}
         return;
 			}
-
 		} else {
 
 			if(hasStatic){
@@ -1257,8 +1262,12 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		pushStateChanged = nextState.path !== appState.path;
 
 		try {
-			//Add the state that will update
-      nextState = extend(nextState, {dataContextWillUpdate: processedState});
+			//Add dataContextWillUpdate
+      if(willUndo){
+        nextState = extend(nextState, {dataContextWillUpdate: newState.state.dataContextWillUpdate});
+      } else {
+        nextState = extend(nextState, {dataContextWillUpdate: processedState});
+      }
 
 			appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
@@ -1562,9 +1571,14 @@ var ViewModel = {
                 tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
                 tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
 
-                tempModel.__stateChangeHandler = (function(fld){
-                  return viewModel[fld].__stateChangeHandler;
-                })(freezeFields[fld].fieldName);
+                Object.defineProperty(tempModel, '__stateChangeHandler', {
+                  configurable: false,
+                  enumerable: false,
+                  writable: false,
+                  value: (function(fld){
+                    return viewModel[fld].__stateChangeHandler;
+                  })(freezeFields[fld].fieldName)
+                });
 
                 Object.defineProperty(tempModel, 'state', {
                   configurable: true,

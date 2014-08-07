@@ -104,3 +104,8 @@
 
 - Added `dataContextWillUpdate` object to `domainDataContext.state`. This object is dynamic and only holds the values of the state that will change. It is intended to be used within React's `shouldComponentUpdate`.
 
+## 0.8.7
+
+- Make Model `__stateChangeHanlder` property `enumerable` = `false`.
+- Fix `dataContextWillUpdate` bug: Undo\Redo did not show any state
+

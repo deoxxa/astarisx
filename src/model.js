@@ -71,10 +71,15 @@ var Model = {
           writable: false,
           value: nextState
         });
-
-        model.__stateChangeHandler = (function(){
+        
+        Object.defineProperty(model, '__stateChangeHandler', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: (function(){
             return stateChangeHandler;
-        })();
+          })()
+        });
 
         return Object.freeze(model);
       };
