@@ -184,6 +184,7 @@ var TodoApp = React.createClass({
   mixins: [IMVVM.mixin.main],
 
   render: function() {
+    var todosDataContext = this.state.domainDataContext.Todos;
     return (
       <div>
         <Header todosDataContext={todosDataContext}/>
