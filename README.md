@@ -160,7 +160,7 @@ var TodoViewModel = IMVVM.createViewModel({
 
 #### Create DomainViewModel
 ```javascript
-var DomainViewModel = IMVVM.createDomainViewModel({
+var TodoDomainViewModel = IMVVM.createDomainViewModel({
   /**
   * Expose the TodoViewModel to the "Controller-View" as `Todos` Data Context.
   * This will be attached to this.state.domainDataContext
@@ -203,7 +203,7 @@ var TodoApp = React.createClass({
 ```javascript
 /* Use `domainModel` prop to reference the DomainViewModel */
 React.renderComponent(
-  <TodoApp domainModel={DomainViewModel}/>,
+  <TodoApp domainModel={TodoDomainViewModel}/>,
   document.getElementById('todoapp')
 );
 ```
