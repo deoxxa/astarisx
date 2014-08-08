@@ -178,7 +178,7 @@ var DomainViewModel = IMVVM.createDomainViewModel({
 ```javascript
 var TodoApp = React.createClass({
   /**
-  * Set up Event handler for 'change' events coming from
+  * Mixin sets up Event handler for 'change' events coming from
   * TodoDomainViewModel data context
   */
   mixins: [IMVVM.mixin.main],
