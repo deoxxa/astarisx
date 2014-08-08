@@ -37,7 +37,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		external = false,
 		internal = false;
 
-	var appStateChangeHandler = function(caller, newState, newAppState, forget, callback) {
+	var appStateChangeHandler = function(caller, newState, newAppState, forget, callback, delay) {
 
 		var nextState = {},
 			prevState = void(0),
@@ -60,9 +60,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
     }
 
     if(typeof forget === 'function'){
+    	delay = callback;
       callback = forget;
       forget = false;
     } else if(typeof newAppState === 'function'){
+    	delay = forget;
 			callback = newAppState;
 			newAppState = {};
 		} else if (typeof newAppState === 'boolean'){
@@ -115,7 +117,13 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 						!external || nextState.pageNotFound, forget);
 
 	        calledBack = true;
-					callback(void(0), appState);
+	        if(!!delay){
+						window.setTimeout(function(){
+							callback(void(0), appState);
+			      }, delay);
+					} else {
+						callback(void(0), appState);
+					}
 				} catch(e) {
 					callback(e);
 				}
@@ -198,7 +206,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 				}
 			};
 			if(!!Object.keys(transientState).length){
-				appStateChangeHandler(void(0), {}, transientState, forget, callback);
+				appStateChangeHandler(void(0), {}, transientState, forget, callback, delay);
 				return;
 			}
 			//Link Phase
@@ -281,8 +289,14 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 
 			if(typeof callback === 'function'){
 				calledBack = true;
-				callback(void(0), appState);
-				return;
+				if(!!delay){
+					window.setTimeout(function(){
+						callback(void(0), appState);
+		      }, delay);
+				} else {
+					callback(void(0), appState);
+					return;
+				}
 			}
 		} catch(e) {
 			if(typeof callback === 'function'){
