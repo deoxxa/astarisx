@@ -10,7 +10,7 @@ IMVVM helps implement the Model-View-ViewModel pattern in [React](http://faceboo
 ## TL;DR: Fast Forward >>
 
 ### IMVVM Application Flows
-![IMVVM Application Anatomy](IMVVM.png)
+![IMVVM Application Anatomy](IMVVM.png?raw=true)
 
 
 ### TodoMVC example code
