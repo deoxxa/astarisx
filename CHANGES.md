@@ -112,3 +112,22 @@
 ## 0.8.8
 
 - Add `delay` param to setState. => `delay` is the number of milliseconds (thousandths of a second) that the function call should be delayed by and is passed as the last argument when there is a callback function used. The effect is sequential updates (no batching).
+- __Deprecate__: createModel()
+- Add `createModelClass()` to _replace_ createModel()
+- Add `createMClass()` => short form for createModelClass()
+- __Deprecate__: createViewModel()
+- Add `createViewModelClass()` to _replace_ createViewModel() 
+- Add `createVMClass()` => short form for createViewModelClass()
+- __Deprecate__: createDomainViewModel()
+- Add `createControllerViewModelClass()` to _replace_ createDomainViewModel()
+- Add `createCVMClass()` => short form for createControllerViewModelClass()
+- __Deprecate__: `domainDataContext` as default prop in this.state.domainDataContext
+- __Deprecate__: `domainModel` prop in React's render component call and _replace_ with `controllerViewModel` 
+- _Replace_ default `this.state.domainDataContext` with `this.state.dataContext`
+
+___Please update all `createXXX` calls to reflect the new names as the deprecated names may not be available in future releases___
+
+### Breaking Changes
+- In the ControllerView i.e. the React component that lists the IMVVM mixin `IMVVM.mixin.main`, change all references of `this.state.domainDataContext` to `this.state.dataContext`
+- In React.renderComponent change the prop `domainModel` to `controllerViewModel`
+

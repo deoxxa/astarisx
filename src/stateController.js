@@ -3,15 +3,7 @@ var utils = require('./utils');
 var extend = utils.extend;
 var updateStatic = utils.updateStatic;
 
-exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler, enableUndo) {
-
-	if(typeof stateChangeHandler !== 'function'){
-		throw new TypeError('stateChangeHandler must be a function.');
-	}
-
-	if(enableUndo === void(0)){
-		enableUndo = false;
-	}
+exports.getInitialState = function(appNamespace, controllerViewModel, stateChangeHandler, enableUndo) {
 
 	var ApplicationDataContext,
 		appState = {},
@@ -21,7 +13,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		domain,
 		links = {},
 		watchedDataContexts = {},
-		dataContext,
+		viewModel,
 		transientState = {},
 		processedState = {},
 		watchedState,
@@ -82,7 +74,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
-		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
+		if(Object.getPrototypeOf(newState).constructor.classType === "ControllerViewModel") {
 			willUndo = true;
 			nextState = extend(newState, staticState);
 			prevState = newState.previousState;
@@ -324,48 +316,46 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 			}
 			external = false;
 		}
-
-
 	};
 
 	//Initialize Application Data Context
-	ApplicationDataContext = domainModel.call(this, appStateChangeHandler.bind(this, appNamespace));
+	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, appNamespace));
 	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
   appState.state = appState.state || {};
 
-	domain = appState.constructor.originalSpec.getDomainDataContext();
-	delete appState.constructor.originalSpec.getDomainDataContext;
+	domain = appState.constructor.originalSpec.getViewModels();
+	delete appState.constructor.originalSpec.getViewModels;
 
 	//Initialize all dataContexts
-	for(dataContext in domain){
-		if(domain.hasOwnProperty(dataContext)){
-			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangeHandler.bind(this, dataContext));
-			appState.state[dataContext] = new dataContexts[dataContext](appState.state[dataContext], true);
+	for(viewModel in domain){
+		if(domain.hasOwnProperty(viewModel)){
+			dataContexts[viewModel] = domain[viewModel].call(this, appStateChangeHandler.bind(this, viewModel));
+			appState.state[viewModel] = new dataContexts[viewModel](appState.state[viewModel], true);
     }
   }
 
   //Store links
-	for(dataContext in domain){
-		if(domain.hasOwnProperty(dataContext)){
-			if('getWatchedState' in appState[dataContext].constructor.originalSpec){
-				watchedState = appState[dataContext].constructor.originalSpec.getWatchedState();
+	for(viewModel in domain){
+		if(domain.hasOwnProperty(viewModel)){
+			if('getWatchedState' in appState[viewModel].constructor.originalSpec){
+				watchedState = appState[viewModel].constructor.originalSpec.getWatchedState();
 				for(watchedItem in watchedState){
 					if(watchedState.hasOwnProperty(watchedItem)){
 						if(watchedItem in domain || watchedItem in appState){
 							if('alias' in watchedState[watchedItem]){
-								if(!(dataContext in links)){
-									links[dataContext] = {};
+								if(!(viewModel in links)){
+									links[viewModel] = {};
 								}
-								links[dataContext][watchedItem] = watchedState[watchedItem].alias;
+								links[viewModel][watchedItem] = watchedState[watchedItem].alias;
 
 								if(!(watchedItem in domain)){
 									if(!(appNamespace in links)){
 										links[appNamespace] = {};
 									}
-									if(!(dataContext in links[appNamespace])){
+									if(!(viewModel in links[appNamespace])){
 										links[appNamespace][watchedItem] = {};
 									}
-									links[appNamespace][watchedItem][dataContext] = watchedState[watchedItem].alias;
+									links[appNamespace][watchedItem][viewModel] = watchedState[watchedItem].alias;
 								}
 							}
 							for(watchedProp in watchedState[watchedItem].fields){
@@ -376,7 +366,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 											watchedDataContexts[watchedItem] = {};
 										}
 										watchedDataContext[watchedProp] = {};
-										watchedDataContext[watchedProp][dataContext] =
+										watchedDataContext[watchedProp][viewModel] =
 											watchedState[watchedItem].fields[watchedProp];
 										watchedDataContexts[watchedItem] = watchedDataContext;
 									}
@@ -390,25 +380,25 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 	}
 
 	//apply links
-	for(dataContext in domain){
-		if(domain.hasOwnProperty(dataContext)){
-			for(link in links[dataContext]){
-			  if(links[dataContext].hasOwnProperty(link)){
-					appState[dataContext].state[links[dataContext][link]] = appState[link];
+	for(viewModel in domain){
+		if(domain.hasOwnProperty(viewModel)){
+			for(link in links[viewModel]){
+			  if(links[viewModel].hasOwnProperty(link)){
+					appState[viewModel].state[links[viewModel][link]] = appState[link];
 			  }
 			}
 		}
 	}
 
 	//reinitialize with all data in place
-	for(dataContext in domain){
-		if(domain.hasOwnProperty(dataContext)){
-			appState.state[dataContext] =
-				new dataContexts[dataContext](appState.state[dataContext]);
+	for(viewModel in domain){
+		if(domain.hasOwnProperty(viewModel)){
+			appState.state[viewModel] =
+				new dataContexts[viewModel](appState.state[viewModel]);
 
-			if('getRoutes' in appState[dataContext].constructor.originalSpec){
+			if('getRoutes' in appState[viewModel].constructor.originalSpec){
 				routingEnabled = true;
-				routeHash = appState[dataContext].constructor.originalSpec.getRoutes();
+				routeHash = appState[viewModel].constructor.originalSpec.getRoutes();
 				for(routePath in routeHash){
 					if(routeHash.hasOwnProperty(routePath)){
 						routeMapping[routeHash[routePath].path] = routeHash[routePath].handler;
@@ -427,10 +417,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 								ctx.path, pathKey, ctx);
 							}
 							internal = false;
-						}.bind(this, dataContext, routeHash[routePath].path, routePath));
+						}.bind(this, viewModel, routeHash[routePath].path, routePath));
 					}
 				}
-				delete appState[dataContext].constructor.originalSpec.getRoutes;
+				delete appState[viewModel].constructor.originalSpec.getRoutes;
 			}
     }
   }
@@ -462,11 +452,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		delete appState.constructor.originalSpec.dataContextWillInitialize;
 	}
 
-  for(dataContext in domain){
-		if(domain.hasOwnProperty(dataContext)){
-			if('dataContextWillInitialize' in appState[dataContext].constructor.originalSpec){
-				appState[dataContext].constructor.originalSpec.dataContextWillInitialize.call(appState[dataContext]);
-				delete appState[dataContext].constructor.originalSpec.dataContextWillInitialize;
+  for(viewModel in domain){
+		if(domain.hasOwnProperty(viewModel)){
+			if('dataContextWillInitialize' in appState[viewModel].constructor.originalSpec){
+				appState[viewModel].constructor.originalSpec.dataContextWillInitialize.call(appState[viewModel]);
+				delete appState[viewModel].constructor.originalSpec.dataContextWillInitialize;
 			}
 		}
 	}

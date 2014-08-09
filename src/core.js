@@ -1,7 +1,7 @@
 
 var model = require('./model');
 var viewModel = require('./viewModel');
-var domainModel = require('./domainViewModel');
+var controllerViewModel = require('./controllerViewModel');
 var mixin = require('./mixin');
 
 var page = require('page');
@@ -12,11 +12,15 @@ var mixInto = utils.mixInto;
 
 var ModelBase = function(){};
 var ViewModelBase = function(){};
-var DomainViewModelBase = function(){};
+var ControllerViewModelBase = function(){};
+
+var modelClassConstructor;
+var viewModelClassConstructor;
+var controllerViewModelClassConstructor;
 
 mixInto(ModelBase, model.Mixin);
 mixInto(ViewModelBase, viewModel.Mixin);
-mixInto(DomainViewModelBase, domainModel.Mixin);
+mixInto(ControllerViewModelBase, controllerViewModel.Mixin);
 
 var IMVVMClass = {
   createClass: function(ctor, classType, spec){
@@ -106,7 +110,7 @@ var IMVVMClass = {
       }
 
       if(!!Object.keys(viewModels).length){
-        this.originalSpec.getDomainDataContext = function(){
+        this.originalSpec.getViewModels = function(){
           return viewModels;
         }
       }
@@ -128,10 +132,20 @@ var IMVVMClass = {
   },
 };
 
+modelClassConstructor = IMVVMClass.createClass.bind(this, ModelBase, 'Model');
+viewModelClassConstructor = IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel');
+controllerViewModelClassConstructor = IMVVMClass.createClass.bind(this, ControllerViewModelBase, 'ControllerViewModel');
+
 module.exports = {
-  createModel: IMVVMClass.createClass.bind(this, ModelBase, 'Model'),
-  createViewModel: IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel'),
-  createDomainViewModel: IMVVMClass.createClass.bind(this, DomainViewModelBase, 'DomainViewModel'),
+  createModel: modelClassConstructor, // deprecated
+  createModelClass: modelClassConstructor,
+  createMClass: modelClassConstructor,
+  createViewModel: viewModelClassConstructor, // deprecated
+  createVMClass: viewModelClassConstructor,
+  createViewModelClass: viewModelClassConstructor,
+  createDomainViewModel: controllerViewModelClassConstructor, // deprecated
+  createControllerViewModelClass: controllerViewModelClassConstructor,
+  createCVMClass: controllerViewModelClassConstructor,
   mixin: mixin,
   extend: extend,
   page: page

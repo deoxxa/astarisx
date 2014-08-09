@@ -2,7 +2,7 @@
 var utils = require('./utils');
 var extend = utils.extend;
 
-var DomainViewModel = {
+var ControllerViewModel = {
   Mixin: {
     construct: function(stateChangeHandler){
 
@@ -20,11 +20,11 @@ var DomainViewModel = {
           this.setState(this.nextState, this.nextState.nextState);
         }
       };
-      var DomainViewModelClass = function(nextState, prevState, redoState, enableUndo,
+      var ControllerViewModelClass = function(nextState, prevState, redoState, enableUndo,
         routingEnabled, pushStateChanged, internal, forget) {
 
         var freezeFields = desc.freezeFields,
-          domainViewModel = Object.create(desc.proto, desc.descriptor),
+          controllerViewModel = Object.create(desc.proto, desc.descriptor),
           fld,
           init = nextState === void(0),
           adhocUndo,
@@ -46,26 +46,26 @@ var DomainViewModel = {
             pageNotFound = nextState.pageNotFound === void(0) ? false :
               nextState.pageNotFound;
 
-            Object.defineProperty(domainViewModel, 'pageNotFound', {
+            Object.defineProperty(controllerViewModel, 'pageNotFound', {
               configurable: false,
               enumerable: false,
               writable: false,
               value: pageNotFound
             });
-            Object.defineProperty(domainViewModel, 'forceReplace', {
+            Object.defineProperty(controllerViewModel, 'forceReplace', {
               configurable: false,
               enumerable: true,
               writable: false,
               value: forceReplace
             });
-            Object.defineProperty(domainViewModel, 'pushState', {
+            Object.defineProperty(controllerViewModel, 'pushState', {
               configurable: false,
               enumerable: true,
               writable: false,
               value: pushState
             });
-            if(!('path' in domainViewModel) && ('path' in nextState)){
-              Object.defineProperty(domainViewModel, 'path', {
+            if(!('path' in controllerViewModel) && ('path' in nextState)){
+              Object.defineProperty(controllerViewModel, 'path', {
                 configurable: false,
                 enumerable: true,
                 writable: false,
@@ -91,20 +91,20 @@ var DomainViewModel = {
             !previousAdhoc && internal && !forget){
             previousAdhoc = adhocUndo;
             previousPageNotFound = pageNotFound;
-            Object.defineProperty(domainViewModel, 'previousState', {
+            Object.defineProperty(controllerViewModel, 'previousState', {
               configurable: false,
               enumerable: false,
               writable: false,
               value: prevState
             });
-            Object.defineProperty(domainViewModel, 'canRevert', {
+            Object.defineProperty(controllerViewModel, 'canRevert', {
               configurable: false,
               enumerable: false,
               writable: false,
               value: true
             });
           } else {
-            Object.defineProperty(domainViewModel, 'canRevert', {
+            Object.defineProperty(controllerViewModel, 'canRevert', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -113,13 +113,13 @@ var DomainViewModel = {
           }
           if(!!redoState && ('state' in redoState) && !previousAdhoc &&
             !previousPageNotFound){
-            Object.defineProperty(domainViewModel, 'nextState', {
+            Object.defineProperty(controllerViewModel, 'nextState', {
               configurable: false,
               enumerable: false,
               writable: false,
               value: redoState
             });
-            Object.defineProperty(domainViewModel, 'canAdvance', {
+            Object.defineProperty(controllerViewModel, 'canAdvance', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -128,7 +128,7 @@ var DomainViewModel = {
           } else {
             previousAdhoc = adhocUndo;
             previousPageNotFound = pageNotFound;
-            Object.defineProperty(domainViewModel, 'canAdvance', {
+            Object.defineProperty(controllerViewModel, 'canAdvance', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -140,9 +140,9 @@ var DomainViewModel = {
         if(init){
           //Add state prop so that it can be referenced from within getInitialState
           nextState = ('getInitialState' in desc.originalSpec) ?
-            desc.originalSpec.getInitialState.call(domainViewModel) : {};
+            desc.originalSpec.getInitialState.call(controllerViewModel) : {};
           if('path' in nextState){
-            Object.defineProperty(domainViewModel, 'path', {
+            Object.defineProperty(controllerViewModel, 'path', {
               configurable: false,
               enumerable: true,
               writable: false,
@@ -153,14 +153,14 @@ var DomainViewModel = {
         } else if('state' in nextState){
           delete nextState.state;
 
-          //Need to have 'state' prop in domainViewModel before can extend domainViewModel to get correct state
-          Object.defineProperty(domainViewModel, 'state', {
+          //Need to have 'state' prop in controllerViewModel before can extend controllerViewModel to get correct state
+          Object.defineProperty(controllerViewModel, 'state', {
             configurable: true,
             enumerable: false,
             writable: true,
             value: nextState
           });
-          nextState = extend(nextState, domainViewModel);
+          nextState = extend(nextState, controllerViewModel);
         }
 
         //freeze arrays and model instances and initialize if necessary
@@ -173,18 +173,18 @@ var DomainViewModel = {
           }
         };
 
-        Object.defineProperty(domainViewModel, 'state', {
+        Object.defineProperty(controllerViewModel, 'state', {
           configurable: false,
           enumerable: false,
           writable: false,
           value: nextState
         });
 
-        return domainViewModel;
+        return controllerViewModel;
       };
-      return DomainViewModelClass;
+      return ControllerViewModelClass;
     }
   }
 };
 
-module.exports = DomainViewModel;
+module.exports = ControllerViewModel;

@@ -5,7 +5,7 @@ var IMVVM = _dereq_('./src/core.js');
 
 module.exports = IMVVM;
 
-},{"./src/core.js":3}],2:[function(_dereq_,module,exports){
+},{"./src/core.js":4}],2:[function(_dereq_,module,exports){
 
 ;(function(){
 
@@ -453,9 +453,201 @@ module.exports = IMVVM;
 
 },{}],3:[function(_dereq_,module,exports){
 
+var utils = _dereq_('./utils');
+var extend = utils.extend;
+
+var ControllerViewModel = {
+  Mixin: {
+    construct: function(stateChangeHandler){
+
+      var prevAdhocUndo = false;
+      var previousPageNotFound = false;
+      var desc = this.getDescriptor();
+      desc.proto.setState = stateChangeHandler;
+
+      desc.proto.revert = function(){
+        this.setState(this.previousState, !!this.previousState ? this : void(0));
+      };
+
+      desc.proto.advance = function(){
+        if(this.canAdvance){
+          this.setState(this.nextState, this.nextState.nextState);
+        }
+      };
+      var ControllerViewModelClass = function(nextState, prevState, redoState, enableUndo,
+        routingEnabled, pushStateChanged, internal, forget) {
+
+        var freezeFields = desc.freezeFields,
+          controllerViewModel = Object.create(desc.proto, desc.descriptor),
+          fld,
+          init = nextState === void(0),
+          adhocUndo,
+          forceReplace,
+          pushState,
+          pageNotFound;
+
+        pushStateChanged = routingEnabled ? pushStateChanged : false;
+
+        if(!init){
+          if(routingEnabled){
+
+            forceReplace = nextState.forceReplace === void(0) ? false :
+              nextState.forceReplace;
+
+            pushState = nextState.pushState === void(0) ? true :
+              nextState.pushState;
+
+            pageNotFound = nextState.pageNotFound === void(0) ? false :
+              nextState.pageNotFound;
+
+            Object.defineProperty(controllerViewModel, 'pageNotFound', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: pageNotFound
+            });
+            Object.defineProperty(controllerViewModel, 'forceReplace', {
+              configurable: false,
+              enumerable: true,
+              writable: false,
+              value: forceReplace
+            });
+            Object.defineProperty(controllerViewModel, 'pushState', {
+              configurable: false,
+              enumerable: true,
+              writable: false,
+              value: pushState
+            });
+            if(!('path' in controllerViewModel) && ('path' in nextState)){
+              Object.defineProperty(controllerViewModel, 'path', {
+                configurable: false,
+                enumerable: true,
+                writable: false,
+                value: nextState.path
+              });
+            }
+          }
+
+          if(nextState.enableUndo === void(0)){
+              adhocUndo = false;
+          } else {
+            enableUndo = nextState.enableUndo;
+            adhocUndo = nextState.enableUndo;
+            if(!nextState.enableUndo){
+              routingEnabled = false;
+            }
+          }
+        }
+
+        //need routingEnabled flag because it depends on prevState
+        if(enableUndo || routingEnabled){
+          if(!!prevState && (!pushStateChanged || adhocUndo || pageNotFound) &&
+            !previousAdhoc && internal && !forget){
+            previousAdhoc = adhocUndo;
+            previousPageNotFound = pageNotFound;
+            Object.defineProperty(controllerViewModel, 'previousState', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: prevState
+            });
+            Object.defineProperty(controllerViewModel, 'canRevert', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: true
+            });
+          } else {
+            Object.defineProperty(controllerViewModel, 'canRevert', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: false
+            });
+          }
+          if(!!redoState && ('state' in redoState) && !previousAdhoc &&
+            !previousPageNotFound){
+            Object.defineProperty(controllerViewModel, 'nextState', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: redoState
+            });
+            Object.defineProperty(controllerViewModel, 'canAdvance', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: true
+            });
+          } else {
+            previousAdhoc = adhocUndo;
+            previousPageNotFound = pageNotFound;
+            Object.defineProperty(controllerViewModel, 'canAdvance', {
+              configurable: false,
+              enumerable: false,
+              writable: false,
+              value: false
+            });
+          }
+        }
+
+        if(init){
+          //Add state prop so that it can be referenced from within getInitialState
+          nextState = ('getInitialState' in desc.originalSpec) ?
+            desc.originalSpec.getInitialState.call(controllerViewModel) : {};
+          if('path' in nextState){
+            Object.defineProperty(controllerViewModel, 'path', {
+              configurable: false,
+              enumerable: true,
+              writable: false,
+              value: nextState.path
+            });
+          }
+
+        } else if('state' in nextState){
+          delete nextState.state;
+
+          //Need to have 'state' prop in controllerViewModel before can extend controllerViewModel to get correct state
+          Object.defineProperty(controllerViewModel, 'state', {
+            configurable: true,
+            enumerable: false,
+            writable: true,
+            value: nextState
+          });
+          nextState = extend(nextState, controllerViewModel);
+        }
+
+        //freeze arrays and model instances and initialize if necessary
+        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+          if(freezeFields[fld].kind === 'array'){
+            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+            Object.freeze(nextState[freezeFields[fld].fieldName]);
+          } else {
+            throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
+          }
+        };
+
+        Object.defineProperty(controllerViewModel, 'state', {
+          configurable: false,
+          enumerable: false,
+          writable: false,
+          value: nextState
+        });
+
+        return controllerViewModel;
+      };
+      return ControllerViewModelClass;
+    }
+  }
+};
+
+module.exports = ControllerViewModel;
+
+},{"./utils":8}],4:[function(_dereq_,module,exports){
+
 var model = _dereq_('./model');
 var viewModel = _dereq_('./viewModel');
-var domainModel = _dereq_('./domainViewModel');
+var controllerViewModel = _dereq_('./controllerViewModel');
 var mixin = _dereq_('./mixin');
 
 var page = _dereq_('page');
@@ -466,11 +658,15 @@ var mixInto = utils.mixInto;
 
 var ModelBase = function(){};
 var ViewModelBase = function(){};
-var DomainViewModelBase = function(){};
+var ControllerViewModelBase = function(){};
+
+var modelClassConstructor;
+var viewModelClassConstructor;
+var controllerViewModelClassConstructor;
 
 mixInto(ModelBase, model.Mixin);
 mixInto(ViewModelBase, viewModel.Mixin);
-mixInto(DomainViewModelBase, domainModel.Mixin);
+mixInto(ControllerViewModelBase, controllerViewModel.Mixin);
 
 var IMVVMClass = {
   createClass: function(ctor, classType, spec){
@@ -560,7 +756,7 @@ var IMVVMClass = {
       }
 
       if(!!Object.keys(viewModels).length){
-        this.originalSpec.getDomainDataContext = function(){
+        this.originalSpec.getViewModels = function(){
           return viewModels;
         }
       }
@@ -582,221 +778,55 @@ var IMVVMClass = {
   },
 };
 
+modelClassConstructor = IMVVMClass.createClass.bind(this, ModelBase, 'Model');
+viewModelClassConstructor = IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel');
+controllerViewModelClassConstructor = IMVVMClass.createClass.bind(this, ControllerViewModelBase, 'ControllerViewModel');
+
 module.exports = {
-  createModel: IMVVMClass.createClass.bind(this, ModelBase, 'Model'),
-  createViewModel: IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel'),
-  createDomainViewModel: IMVVMClass.createClass.bind(this, DomainViewModelBase, 'DomainViewModel'),
+  createModel: modelClassConstructor, // deprecated
+  createModelClass: modelClassConstructor,
+  createMClass: modelClassConstructor,
+  createViewModel: viewModelClassConstructor, // deprecated
+  createVMClass: viewModelClassConstructor,
+  createViewModelClass: viewModelClassConstructor,
+  createDomainViewModel: controllerViewModelClassConstructor, // deprecated
+  createControllerViewModelClass: controllerViewModelClassConstructor,
+  createCVMClass: controllerViewModelClassConstructor,
   mixin: mixin,
   extend: extend,
   page: page
 };
 
-},{"./domainViewModel":4,"./mixin":5,"./model":6,"./utils":8,"./viewModel":9,"page":2}],4:[function(_dereq_,module,exports){
-
-var utils = _dereq_('./utils');
-var extend = utils.extend;
-
-var DomainViewModel = {
-  Mixin: {
-    construct: function(stateChangeHandler){
-
-      var prevAdhocUndo = false;
-      var previousPageNotFound = false;
-      var desc = this.getDescriptor();
-      desc.proto.setState = stateChangeHandler;
-
-      desc.proto.revert = function(){
-        this.setState(this.previousState, !!this.previousState ? this : void(0));
-      };
-
-      desc.proto.advance = function(){
-        if(this.canAdvance){
-          this.setState(this.nextState, this.nextState.nextState);
-        }
-      };
-      var DomainViewModelClass = function(nextState, prevState, redoState, enableUndo,
-        routingEnabled, pushStateChanged, internal, forget) {
-
-        var freezeFields = desc.freezeFields,
-          domainViewModel = Object.create(desc.proto, desc.descriptor),
-          fld,
-          init = nextState === void(0),
-          adhocUndo,
-          forceReplace,
-          pushState,
-          pageNotFound;
-
-        pushStateChanged = routingEnabled ? pushStateChanged : false;
-
-        if(!init){
-          if(routingEnabled){
-
-            forceReplace = nextState.forceReplace === void(0) ? false :
-              nextState.forceReplace;
-
-            pushState = nextState.pushState === void(0) ? true :
-              nextState.pushState;
-
-            pageNotFound = nextState.pageNotFound === void(0) ? false :
-              nextState.pageNotFound;
-
-            Object.defineProperty(domainViewModel, 'pageNotFound', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: pageNotFound
-            });
-            Object.defineProperty(domainViewModel, 'forceReplace', {
-              configurable: false,
-              enumerable: true,
-              writable: false,
-              value: forceReplace
-            });
-            Object.defineProperty(domainViewModel, 'pushState', {
-              configurable: false,
-              enumerable: true,
-              writable: false,
-              value: pushState
-            });
-            if(!('path' in domainViewModel) && ('path' in nextState)){
-              Object.defineProperty(domainViewModel, 'path', {
-                configurable: false,
-                enumerable: true,
-                writable: false,
-                value: nextState.path
-              });
-            }
-          }
-
-          if(nextState.enableUndo === void(0)){
-              adhocUndo = false;
-          } else {
-            enableUndo = nextState.enableUndo;
-            adhocUndo = nextState.enableUndo;
-            if(!nextState.enableUndo){
-              routingEnabled = false;
-            }
-          }
-        }
-
-        //need routingEnabled flag because it depends on prevState
-        if(enableUndo || routingEnabled){
-          if(!!prevState && (!pushStateChanged || adhocUndo || pageNotFound) &&
-            !previousAdhoc && internal && !forget){
-            previousAdhoc = adhocUndo;
-            previousPageNotFound = pageNotFound;
-            Object.defineProperty(domainViewModel, 'previousState', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: prevState
-            });
-            Object.defineProperty(domainViewModel, 'canRevert', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: true
-            });
-          } else {
-            Object.defineProperty(domainViewModel, 'canRevert', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: false
-            });
-          }
-          if(!!redoState && ('state' in redoState) && !previousAdhoc &&
-            !previousPageNotFound){
-            Object.defineProperty(domainViewModel, 'nextState', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: redoState
-            });
-            Object.defineProperty(domainViewModel, 'canAdvance', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: true
-            });
-          } else {
-            previousAdhoc = adhocUndo;
-            previousPageNotFound = pageNotFound;
-            Object.defineProperty(domainViewModel, 'canAdvance', {
-              configurable: false,
-              enumerable: false,
-              writable: false,
-              value: false
-            });
-          }
-        }
-
-        if(init){
-          //Add state prop so that it can be referenced from within getInitialState
-          nextState = ('getInitialState' in desc.originalSpec) ?
-            desc.originalSpec.getInitialState.call(domainViewModel) : {};
-          if('path' in nextState){
-            Object.defineProperty(domainViewModel, 'path', {
-              configurable: false,
-              enumerable: true,
-              writable: false,
-              value: nextState.path
-            });
-          }
-
-        } else if('state' in nextState){
-          delete nextState.state;
-
-          //Need to have 'state' prop in domainViewModel before can extend domainViewModel to get correct state
-          Object.defineProperty(domainViewModel, 'state', {
-            configurable: true,
-            enumerable: false,
-            writable: true,
-            value: nextState
-          });
-          nextState = extend(nextState, domainViewModel);
-        }
-
-        //freeze arrays and model instances and initialize if necessary
-        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
-          if(freezeFields[fld].kind === 'array'){
-            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
-            Object.freeze(nextState[freezeFields[fld].fieldName]);
-          } else {
-            throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
-          }
-        };
-
-        Object.defineProperty(domainViewModel, 'state', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: nextState
-        });
-
-        return domainViewModel;
-      };
-      return DomainViewModelClass;
-    }
-  }
-};
-
-module.exports = DomainViewModel;
-
-},{"./utils":8}],5:[function(_dereq_,module,exports){
+},{"./controllerViewModel":3,"./mixin":5,"./model":6,"./utils":8,"./viewModel":9,"page":2}],5:[function(_dereq_,module,exports){
 
 var core = _dereq_('./stateController');
-var NAMESPACE = '__IMVVM__';
+var __NAMESPACE__ = '__IMVVM__';
 
 var mixin = {
 	main: {
 		stateChangeHandler: function(dataContext){
-	  	this.setState({domainDataContext: dataContext});
+      this.setState({dataContext: dataContext});
 	  },
 		getInitialState: function(){
-			var dataContext = core.getInitialState(NAMESPACE, this.props.domainModel,
-				this.stateChangeHandler, this.props.enableUndo);
-			return {domainDataContext: dataContext};
+      var dataContext;
+      var enableUndo = false;
+
+      if(!('controllerViewModel' in this.props)){
+        if('domainModel' in this.props){
+          controllerViewModel = this.props.domainModel;
+          new TypeError('Please rename the "domainModel" prop in React.renderComponent to "controllerViewModel"');
+        }
+        new TypeError('Please assign the ControllerViewModel to the "controllerViewModel" prop in React.renderComponent');
+      }
+
+      if('enableUndo' in this.props){
+        enableUndo = this.props.enableUndo;
+      }
+
+			dataContext = core.getInitialState(__NAMESPACE__, this.props.controllerViewModel,
+				this.stateChangeHandler, enableUndo);
+
+			return {dataContext: dataContext};
 		}
 	},
 	pushState: {
@@ -865,7 +895,7 @@ var mixin = {
 	mediaQuery: {
 		closureFunc: function(id, mql, initializing){
       (function(){
-        this.state.domainDataContext.mediaChangeHandler.call(this.state.domainDataContext, id, mql, initializing);
+        this.state.dataContext.mediaChangeHandler.call(this.state.dataContext, id, mql, initializing);
       }.bind(this))();
     },
     componentDidMount: function(){
@@ -1000,15 +1030,7 @@ var utils = _dereq_('./utils');
 var extend = utils.extend;
 var updateStatic = utils.updateStatic;
 
-exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler, enableUndo) {
-
-	if(typeof stateChangeHandler !== 'function'){
-		throw new TypeError('stateChangeHandler must be a function.');
-	}
-
-	if(enableUndo === void(0)){
-		enableUndo = false;
-	}
+exports.getInitialState = function(appNamespace, controllerViewModel, stateChangeHandler, enableUndo) {
 
 	var ApplicationDataContext,
 		appState = {},
@@ -1018,7 +1040,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		domain,
 		links = {},
 		watchedDataContexts = {},
-		dataContext,
+		viewModel,
 		transientState = {},
 		processedState = {},
 		watchedState,
@@ -1079,7 +1101,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
-		if(Object.getPrototypeOf(newState).constructor.classType === "DomainViewModel") {
+		if(Object.getPrototypeOf(newState).constructor.classType === "ControllerViewModel") {
 			willUndo = true;
 			nextState = extend(newState, staticState);
 			prevState = newState.previousState;
@@ -1321,48 +1343,46 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 			}
 			external = false;
 		}
-
-
 	};
 
 	//Initialize Application Data Context
-	ApplicationDataContext = domainModel.call(this, appStateChangeHandler.bind(this, appNamespace));
+	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, appNamespace));
 	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
   appState.state = appState.state || {};
 
-	domain = appState.constructor.originalSpec.getDomainDataContext();
-	delete appState.constructor.originalSpec.getDomainDataContext;
+	domain = appState.constructor.originalSpec.getViewModels();
+	delete appState.constructor.originalSpec.getViewModels;
 
 	//Initialize all dataContexts
-	for(dataContext in domain){
-		if(domain.hasOwnProperty(dataContext)){
-			dataContexts[dataContext] = domain[dataContext].call(this, appStateChangeHandler.bind(this, dataContext));
-			appState.state[dataContext] = new dataContexts[dataContext](appState.state[dataContext], true);
+	for(viewModel in domain){
+		if(domain.hasOwnProperty(viewModel)){
+			dataContexts[viewModel] = domain[viewModel].call(this, appStateChangeHandler.bind(this, viewModel));
+			appState.state[viewModel] = new dataContexts[viewModel](appState.state[viewModel], true);
     }
   }
 
   //Store links
-	for(dataContext in domain){
-		if(domain.hasOwnProperty(dataContext)){
-			if('getWatchedState' in appState[dataContext].constructor.originalSpec){
-				watchedState = appState[dataContext].constructor.originalSpec.getWatchedState();
+	for(viewModel in domain){
+		if(domain.hasOwnProperty(viewModel)){
+			if('getWatchedState' in appState[viewModel].constructor.originalSpec){
+				watchedState = appState[viewModel].constructor.originalSpec.getWatchedState();
 				for(watchedItem in watchedState){
 					if(watchedState.hasOwnProperty(watchedItem)){
 						if(watchedItem in domain || watchedItem in appState){
 							if('alias' in watchedState[watchedItem]){
-								if(!(dataContext in links)){
-									links[dataContext] = {};
+								if(!(viewModel in links)){
+									links[viewModel] = {};
 								}
-								links[dataContext][watchedItem] = watchedState[watchedItem].alias;
+								links[viewModel][watchedItem] = watchedState[watchedItem].alias;
 
 								if(!(watchedItem in domain)){
 									if(!(appNamespace in links)){
 										links[appNamespace] = {};
 									}
-									if(!(dataContext in links[appNamespace])){
+									if(!(viewModel in links[appNamespace])){
 										links[appNamespace][watchedItem] = {};
 									}
-									links[appNamespace][watchedItem][dataContext] = watchedState[watchedItem].alias;
+									links[appNamespace][watchedItem][viewModel] = watchedState[watchedItem].alias;
 								}
 							}
 							for(watchedProp in watchedState[watchedItem].fields){
@@ -1373,7 +1393,7 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 											watchedDataContexts[watchedItem] = {};
 										}
 										watchedDataContext[watchedProp] = {};
-										watchedDataContext[watchedProp][dataContext] =
+										watchedDataContext[watchedProp][viewModel] =
 											watchedState[watchedItem].fields[watchedProp];
 										watchedDataContexts[watchedItem] = watchedDataContext;
 									}
@@ -1387,25 +1407,25 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 	}
 
 	//apply links
-	for(dataContext in domain){
-		if(domain.hasOwnProperty(dataContext)){
-			for(link in links[dataContext]){
-			  if(links[dataContext].hasOwnProperty(link)){
-					appState[dataContext].state[links[dataContext][link]] = appState[link];
+	for(viewModel in domain){
+		if(domain.hasOwnProperty(viewModel)){
+			for(link in links[viewModel]){
+			  if(links[viewModel].hasOwnProperty(link)){
+					appState[viewModel].state[links[viewModel][link]] = appState[link];
 			  }
 			}
 		}
 	}
 
 	//reinitialize with all data in place
-	for(dataContext in domain){
-		if(domain.hasOwnProperty(dataContext)){
-			appState.state[dataContext] =
-				new dataContexts[dataContext](appState.state[dataContext]);
+	for(viewModel in domain){
+		if(domain.hasOwnProperty(viewModel)){
+			appState.state[viewModel] =
+				new dataContexts[viewModel](appState.state[viewModel]);
 
-			if('getRoutes' in appState[dataContext].constructor.originalSpec){
+			if('getRoutes' in appState[viewModel].constructor.originalSpec){
 				routingEnabled = true;
-				routeHash = appState[dataContext].constructor.originalSpec.getRoutes();
+				routeHash = appState[viewModel].constructor.originalSpec.getRoutes();
 				for(routePath in routeHash){
 					if(routeHash.hasOwnProperty(routePath)){
 						routeMapping[routeHash[routePath].path] = routeHash[routePath].handler;
@@ -1424,10 +1444,10 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 								ctx.path, pathKey, ctx);
 							}
 							internal = false;
-						}.bind(this, dataContext, routeHash[routePath].path, routePath));
+						}.bind(this, viewModel, routeHash[routePath].path, routePath));
 					}
 				}
-				delete appState[dataContext].constructor.originalSpec.getRoutes;
+				delete appState[viewModel].constructor.originalSpec.getRoutes;
 			}
     }
   }
@@ -1459,11 +1479,11 @@ exports.getInitialState = function(appNamespace, domainModel, stateChangeHandler
 		delete appState.constructor.originalSpec.dataContextWillInitialize;
 	}
 
-  for(dataContext in domain){
-		if(domain.hasOwnProperty(dataContext)){
-			if('dataContextWillInitialize' in appState[dataContext].constructor.originalSpec){
-				appState[dataContext].constructor.originalSpec.dataContextWillInitialize.call(appState[dataContext]);
-				delete appState[dataContext].constructor.originalSpec.dataContextWillInitialize;
+  for(viewModel in domain){
+		if(domain.hasOwnProperty(viewModel)){
+			if('dataContextWillInitialize' in appState[viewModel].constructor.originalSpec){
+				appState[viewModel].constructor.originalSpec.dataContextWillInitialize.call(appState[viewModel]);
+				delete appState[viewModel].constructor.originalSpec.dataContextWillInitialize;
 			}
 		}
 	}

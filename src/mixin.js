@@ -1,16 +1,32 @@
 
 var core = require('./stateController');
-var NAMESPACE = '__IMVVM__';
+var __NAMESPACE__ = '__IMVVM__';
 
 var mixin = {
 	main: {
 		stateChangeHandler: function(dataContext){
-	  	this.setState({domainDataContext: dataContext});
+      this.setState({dataContext: dataContext});
 	  },
 		getInitialState: function(){
-			var dataContext = core.getInitialState(NAMESPACE, this.props.domainModel,
-				this.stateChangeHandler, this.props.enableUndo);
-			return {domainDataContext: dataContext};
+      var dataContext;
+      var enableUndo = false;
+
+      if(!('controllerViewModel' in this.props)){
+        if('domainModel' in this.props){
+          controllerViewModel = this.props.domainModel;
+          new TypeError('Please rename the "domainModel" prop in React.renderComponent to "controllerViewModel"');
+        }
+        new TypeError('Please assign the ControllerViewModel to the "controllerViewModel" prop in React.renderComponent');
+      }
+
+      if('enableUndo' in this.props){
+        enableUndo = this.props.enableUndo;
+      }
+
+			dataContext = core.getInitialState(__NAMESPACE__, this.props.controllerViewModel,
+				this.stateChangeHandler, enableUndo);
+
+			return {dataContext: dataContext};
 		}
 	},
 	pushState: {
@@ -79,7 +95,7 @@ var mixin = {
 	mediaQuery: {
 		closureFunc: function(id, mql, initializing){
       (function(){
-        this.state.domainDataContext.mediaChangeHandler.call(this.state.domainDataContext, id, mql, initializing);
+        this.state.dataContext.mediaChangeHandler.call(this.state.dataContext, id, mql, initializing);
       }.bind(this))();
     },
     componentDidMount: function(){
