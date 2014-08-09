@@ -8,10 +8,15 @@ IMVVM helps implement the Model-View-ViewModel pattern in [React](http://faceboo
 #####Example Applications: https://github.com/entrendipity/IMVVM.example
 
 ## TL;DR: Fast Forward >>
+
+### IMVVM Application Flows
+![IMVVM Application Anatomy](IMVVM.png)
+
+
 ### TodoMVC example code
 #### Create Model
 ```javascript
-var TodoModel = IMVVM.createModel({
+var TodoClass = IMVVM.createModelClass({
 
   getInitialState: function(){
     return {
@@ -58,7 +63,7 @@ var todoStateChangeHandler = function(state){
 };
 
 var Todo = function(){
-  return new TodoModel(todoStateChangeHandler).apply(this, arguments);
+  return new TodoClass(todoStateChangeHandler).apply(this, arguments);
 };
 
 var TodoViewModel = IMVVM.createViewModel({
@@ -160,10 +165,10 @@ var TodoViewModel = IMVVM.createViewModel({
 
 #### Create DomainViewModel
 ```javascript
-var TodoDomainViewModel = IMVVM.createDomainViewModel({
+var TodoControllerViewModel = IMVVM.createControllerViewModelClass({
   /**
   * Expose the TodoViewModel to the "Controller-View" as `Todos` Data Context.
-  * This will be attached to this.state.domainDataContext
+  * This will be attached to this.state.dataContext
   */
   Todos: {
     viewModel: TodoViewModel,
@@ -179,12 +184,12 @@ var TodoDomainViewModel = IMVVM.createDomainViewModel({
 var TodoApp = React.createClass({
   /**
   * Mixin sets up Event handler for 'change' events coming from
-  * TodoDomainViewModel data context
+  * TodoControllerViewModel data context
   */
   mixins: [IMVVM.mixin.main],
 
   render: function() {
-    var todosDataContext = this.state.domainDataContext.Todos;
+    var todosDataContext = this.state.dataContext.Todos;
     return (
       <div>
         <Header todosDataContext={todosDataContext}/>
@@ -198,15 +203,6 @@ var TodoApp = React.createClass({
     );
   },
 });
-```
-
-#### Start the Application
-```javascript
-/* Use `domainModel` prop to reference the DomainViewModel */
-React.renderComponent(
-  <TodoApp domainModel={TodoDomainViewModel}/>,
-  document.getElementById('todoapp')
-);
 ```
 
 #### React Components Interact with DomainDataContext
@@ -397,6 +393,15 @@ var TodoItem = React.createClass({
     this.props.todosDataContext.destroy(this.props.todo.id);
   }
 });
+```
+
+#### Start the Application
+```javascript
+/* Use controllerViewModel prop to reference the TodoControllerViewModel */
+React.renderComponent(
+  <TodoApp controllerViewModel={TodoControllerViewModel}/>,
+  document.getElementById('todoapp')
+);
 ```
 
 ## Author
