@@ -811,14 +811,6 @@ var mixin = {
       var dataContext;
       var enableUndo = false;
 
-      if(!('controllerViewModel' in this.props)){
-        if('domainModel' in this.props){
-          controllerViewModel = this.props.domainModel;
-          new TypeError('Please rename the "domainModel" prop in React.renderComponent to "controllerViewModel"');
-        }
-        new TypeError('Please assign the ControllerViewModel to the "controllerViewModel" prop in React.renderComponent');
-      }
-
       if('enableUndo' in this.props){
         enableUndo = this.props.enableUndo;
       }
@@ -1346,9 +1338,17 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 	};
 
 	//Initialize Application Data Context
-	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, appNamespace));
-	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
-  appState.state = appState.state || {};
+  try {
+  	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, appNamespace));
+  	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
+    appState.state = appState.state || {};
+  } catch (e) { 
+  	if (e instanceof TypeError) {
+    	throw new TypeError('Please assign a ControllerViewModel to the "controllerViewModel" prop in React.renderComponent');
+  	} else {
+  		throw e;
+  	}
+  }
 
 	domain = appState.constructor.originalSpec.getViewModels();
 	delete appState.constructor.originalSpec.getViewModels;

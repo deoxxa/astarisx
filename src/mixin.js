@@ -11,14 +11,6 @@ var mixin = {
       var dataContext;
       var enableUndo = false;
 
-      if(!('controllerViewModel' in this.props)){
-        if('domainModel' in this.props){
-          controllerViewModel = this.props.domainModel;
-          new TypeError('Please rename the "domainModel" prop in React.renderComponent to "controllerViewModel"');
-        }
-        new TypeError('Please assign the ControllerViewModel to the "controllerViewModel" prop in React.renderComponent');
-      }
-
       if('enableUndo' in this.props){
         enableUndo = this.props.enableUndo;
       }
