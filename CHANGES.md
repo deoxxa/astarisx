@@ -109,7 +109,7 @@
 - Make Model `__stateChangeHanlder` property `enumerable` = `false`.
 - Fix `dataContextWillUpdate` bug: Undo\Redo did not show any state
 
-## 0.8.8
+## 0.9.0
 
 - Add `delay` param to setState. => `delay` is the number of milliseconds (thousandths of a second) that the function call should be delayed by and is passed as the last argument when there is a callback function used. The effect is sequential updates (no batching).
 - __Deprecate__: createModel()
