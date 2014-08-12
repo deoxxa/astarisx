@@ -26,6 +26,10 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 		routeHash = {},
 		routeMapping = {},
 		routePath,
+		animationEnabled = false,
+		viewHash = {},
+		viewMapping = {},
+		view,
 		external = false,
 		internal = false;
 
@@ -429,9 +433,31 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 					}
 				}
 				delete appState[viewModel].constructor.originalSpec.getRoutes;
+    	}
+
+			if('getViews' in appState[viewModel].constructor.originalSpec){
+				animationEnabled = true;
+				viewHash = appState[viewModel].constructor.originalSpec.getViews();
+				for(view in viewHash){
+					if(viewHash.hasOwnProperty(view)){
+						viewMapping[viewModel + "." + view] = {
+							key: viewModel + "." + view,
+							displayName: view,
+							component: viewHash[view].component,
+							path: (viewHash[view].pathKey in routeHash) ? routeHash[viewHash[view].pathKey].path : void(0)
+						};
+					}
+				}
+				delete appState[viewModel].constructor.originalSpec.getViews;
 			}
-    }
+		}
   }
+
+  if(animationEnabled){
+  	appState.addViews(viewMapping);
+		viewMapping = void(0);
+  }
+	delete appState.__proto__.addViews;		
 
 	appState = new ApplicationDataContext(appState, void(0), void(0),
 			enableUndo, routingEnabled);

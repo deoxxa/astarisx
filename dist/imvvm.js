@@ -456,14 +456,40 @@ module.exports = IMVVM;
 var utils = _dereq_('./utils');
 var extend = utils.extend;
 
+var extendProto = void(0);
+var extendFields = void(0);
+
 var ControllerViewModel = {
+  extend: function(obj){
+    extendProto = obj.proto;
+    extendFields = obj.descriptor;
+  },
   Mixin: {
     construct: function(stateChangeHandler){
+      
+      //This is used for Transitions
+      var Views;
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
       var desc = this.getDescriptor();
       desc.proto.setState = stateChangeHandler;
+
+      if(!!extendProto){
+        for(var k in extendProto){
+          if(extendProto.hasOwnProperty(k)){
+            desc.proto[k] = extendProto[k];
+          }
+        }
+        desc.proto.getView = function(viewKey){
+          return !!Views ? Views[viewKey] : void(0);
+        };
+      }
+
+      //This gets deleted
+      desc.proto.addViews = function(viewObj){
+        Views = viewObj;
+      };
 
       desc.proto.revert = function(){
         this.setState(this.previousState, !!this.previousState ? this : void(0));
@@ -478,13 +504,19 @@ var ControllerViewModel = {
         routingEnabled, pushStateChanged, internal, forget) {
 
         var freezeFields = desc.freezeFields,
-          controllerViewModel = Object.create(desc.proto, desc.descriptor),
+          controllerViewModel,
           fld,
           init = nextState === void(0),
           adhocUndo,
           forceReplace,
           pushState,
           pageNotFound;
+
+        if(!!extendFields){
+          controllerViewModel = Object.create(desc.proto, extend(desc.descriptor, extendFields));
+        } else {
+          controllerViewModel = Object.create(desc.proto, desc.descriptor);
+        }
 
         pushStateChanged = routingEnabled ? pushStateChanged : false;
 
@@ -1045,6 +1077,10 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 		routeHash = {},
 		routeMapping = {},
 		routePath,
+		animationEnabled = false,
+		viewHash = {},
+		viewMapping = {},
+		view,
 		external = false,
 		internal = false;
 
@@ -1448,9 +1484,31 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 					}
 				}
 				delete appState[viewModel].constructor.originalSpec.getRoutes;
+    	}
+
+			if('getViews' in appState[viewModel].constructor.originalSpec){
+				animationEnabled = true;
+				viewHash = appState[viewModel].constructor.originalSpec.getViews();
+				for(view in viewHash){
+					if(viewHash.hasOwnProperty(view)){
+						viewMapping[viewModel + "." + view] = {
+							key: viewModel + "." + view,
+							displayName: view,
+							component: viewHash[view].component,
+							path: (viewHash[view].pathKey in routeHash) ? routeHash[viewHash[view].pathKey].path : void(0)
+						};
+					}
+				}
+				delete appState[viewModel].constructor.originalSpec.getViews;
 			}
-    }
+		}
   }
+
+  if(animationEnabled){
+  	appState.addViews(viewMapping);
+		viewMapping = void(0);
+  }
+	delete appState.__proto__.addViews;		
 
 	appState = new ApplicationDataContext(appState, void(0), void(0),
 			enableUndo, routingEnabled);
@@ -1561,6 +1619,7 @@ var utils = _dereq_('./utils');
 var extend = utils.extend;
 
 var ViewModel = {
+
   Mixin: {
     construct: function(stateChangeHandler){
 
