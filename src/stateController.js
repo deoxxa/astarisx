@@ -30,6 +30,8 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 		viewHash = {},
 		viewMapping = {},
 		view,
+		defaultAppViewDisplay = "Application",
+		viewPath,
 		external = false,
 		internal = false;
 
@@ -440,11 +442,15 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 				viewHash = appState[viewModel].constructor.originalSpec.getViews();
 				for(view in viewHash){
 					if(viewHash.hasOwnProperty(view)){
-						viewMapping[viewModel + "." + view] = {
-							key: viewModel + "." + view,
-							displayName: view,
+						viewPath = ('path' in viewHash[view]) ? viewHash[view].path : void(0);
+						viewMapping[(viewHash[view].viewDisplay || viewModel) + "." + view] = {
+							viewKey: (viewHash[view].viewDisplay || viewModel) + "." + view,
+							viewContext: viewModel,
+							viewDisplay: (viewHash[view].viewDisplay || viewModel),
+							viewName: view,
 							component: viewHash[view].component,
-							path: (viewHash[view].pathKey in routeHash) ? routeHash[viewHash[view].pathKey].path : void(0)
+							viewPath: ('path' in viewHash[view]) ? viewHash[view].path : void(0),
+							pathIsFunc: (viewPath && typeof viewPath === 'function')
 						};
 					}
 				}
@@ -453,6 +459,25 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 		}
   }
 
+	if('getViews' in appState.constructor.originalSpec){
+		animationEnabled = true;
+		viewHash = appState.constructor.originalSpec.getViews();
+		for(view in viewHash){
+			if(viewHash.hasOwnProperty(view)){
+				viewPath = ('path' in viewHash[view]) ? viewHash[view].path : void(0);
+				viewMapping[(viewHash[view].viewDisplay || defaultAppViewDisplay) + "." + view] = {
+					viewKey: (viewHash[view].viewDisplay || defaultAppViewDisplay) + "." + view,
+					viewContext: defaultAppViewDisplay,
+					viewDisplay: (viewHash[view].viewDisplay || defaultAppViewDisplay),
+					viewName: view,
+					component: viewHash[view].component,
+					viewPath: ('path' in viewHash[view]) ? viewHash[view].path : void(0),
+					pathIsFunc: (viewPath && typeof viewPath === 'function')
+				};
+			}
+		}
+		delete appState.constructor.originalSpec.getViews;
+	}
   if(animationEnabled){
   	appState.addViews(viewMapping);
 		viewMapping = void(0);
