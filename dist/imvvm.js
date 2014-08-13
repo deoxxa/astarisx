@@ -1,11 +1,10 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.IMVVM=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-'use strict'
-
-var IMVVM = _dereq_('./src/core.js');
-
+require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"epB21t":[function(require,module,exports){
+var IMVVM = require('./src/core.js');
 module.exports = IMVVM;
 
-},{"./src/core.js":4}],2:[function(_dereq_,module,exports){
+},{"./src/core.js":5}],"imvvm":[function(require,module,exports){
+module.exports=require('epB21t');
+},{}],3:[function(require,module,exports){
 
 ;(function(){
 
@@ -451,9 +450,9 @@ module.exports = IMVVM;
 
 })();
 
-},{}],3:[function(_dereq_,module,exports){
+},{}],4:[function(require,module,exports){
 
-var utils = _dereq_('./utils');
+var utils = require('./utils');
 var extend = utils.extend;
 
 var extendProto = void(0);
@@ -675,16 +674,16 @@ var ControllerViewModel = {
 
 module.exports = ControllerViewModel;
 
-},{"./utils":8}],4:[function(_dereq_,module,exports){
+},{"./utils":9}],5:[function(require,module,exports){
 
-var model = _dereq_('./model');
-var viewModel = _dereq_('./viewModel');
-var controllerViewModel = _dereq_('./controllerViewModel');
-var mixin = _dereq_('./mixin');
+var model = require('./model');
+var viewModel = require('./viewModel');
+var controllerViewModel = require('./controllerViewModel');
+var mixin = require('./mixin');
 
-var page = _dereq_('page');
+var page = require('page');
 
-var utils = _dereq_('./utils');
+var utils = require('./utils');
 var extend = utils.extend;
 var mixInto = utils.mixInto;
 
@@ -826,12 +825,13 @@ module.exports = {
   createCVMClass: controllerViewModelClassConstructor,
   mixin: mixin,
   extend: extend,
-  page: page
+  page: page,
+  cvm: controllerViewModel
 };
 
-},{"./controllerViewModel":3,"./mixin":5,"./model":6,"./utils":8,"./viewModel":9,"page":2}],5:[function(_dereq_,module,exports){
+},{"./controllerViewModel":4,"./mixin":6,"./model":7,"./utils":9,"./viewModel":10,"page":3}],6:[function(require,module,exports){
 
-var core = _dereq_('./stateController');
+var core = require('./stateController');
 var __NAMESPACE__ = '__IMVVM__';
 
 var mixin = {
@@ -955,9 +955,9 @@ var mixin = {
 
 module.exports = mixin;
 
-},{"./stateController":7}],6:[function(_dereq_,module,exports){
+},{"./stateController":8}],7:[function(require,module,exports){
 
-var utils = _dereq_('./utils');
+var utils = require('./utils');
 var extend = utils.extend;
 
 var Model = {
@@ -1048,9 +1048,9 @@ var Model = {
 
 module.exports = Model;
 
-},{"./utils":8}],7:[function(_dereq_,module,exports){
-var page = _dereq_('page');
-var utils = _dereq_('./utils');
+},{"./utils":9}],8:[function(require,module,exports){
+var page = require('page');
+var utils = require('./utils');
 var extend = utils.extend;
 var updateStatic = utils.updateStatic;
 
@@ -1551,7 +1551,7 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
   return appState;
 
 };
-},{"./utils":8,"page":2}],8:[function(_dereq_,module,exports){
+},{"./utils":9,"page":3}],9:[function(require,module,exports){
 
 var utils = {
   
@@ -1613,9 +1613,9 @@ var utils = {
 };
 
 module.exports = utils;
-},{}],9:[function(_dereq_,module,exports){
+},{}],10:[function(require,module,exports){
 
-var utils = _dereq_('./utils');
+var utils = require('./utils');
 var extend = utils.extend;
 
 var ViewModel = {
@@ -1709,6 +1709,4 @@ var ViewModel = {
 
 module.exports = ViewModel;
 
-},{"./utils":8}]},{},[1])
-(1)
-});
+},{"./utils":9}]},{},["epB21t"])

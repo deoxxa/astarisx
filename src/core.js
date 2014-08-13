@@ -148,5 +148,6 @@ module.exports = {
   createCVMClass: controllerViewModelClassConstructor,
   mixin: mixin,
   extend: extend,
-  page: page
+  page: page,
+  cvm: controllerViewModel
 };
