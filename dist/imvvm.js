@@ -826,7 +826,7 @@ module.exports = {
   mixin: mixin,
   extend: extend,
   page: page,
-  cvm: controllerViewModel
+  _addOn: controllerViewModel.extend
 };
 
 },{"./controllerViewModel":4,"./mixin":6,"./model":7,"./utils":9,"./viewModel":10,"page":3}],6:[function(require,module,exports){

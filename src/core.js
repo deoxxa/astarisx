@@ -149,5 +149,5 @@ module.exports = {
   mixin: mixin,
   extend: extend,
   page: page,
-  cvm: controllerViewModel
+  _addOn: controllerViewModel.extend
 };
