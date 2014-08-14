@@ -654,12 +654,12 @@ var ControllerViewModel = {
           //Add state prop so that it can be referenced from within getInitialState
           nextState = ('getInitialState' in desc.originalSpec) ?
             desc.originalSpec.getInitialState.call(controllerViewModel) : {};
-          if('path' in nextState){
+          if(routingEnabled){
             Object.defineProperty(controllerViewModel, 'path', {
               configurable: false,
               enumerable: true,
               writable: false,
-              value: nextState.path
+              value: nextState.path || '/'
             });
           }
 
@@ -870,13 +870,18 @@ var mixin = {
 		getInitialState: function(){
       var dataContext;
       var enableUndo = false;
+      var enableRouting = false;
 
       if('enableUndo' in this.props){
         enableUndo = this.props.enableUndo;
       }
 
+      if('enableRouting' in this.props){
+        enableRouting = this.props.enableRouting;
+      }
+
 			dataContext = core.getInitialState(__NAMESPACE__, this.props.controllerViewModel,
-				this.stateChangeHandler, enableUndo);
+				this.stateChangeHandler, enableUndo, enableRouting);
 
 			return {dataContext: dataContext};
 		}
@@ -1082,7 +1087,7 @@ var utils = require('./utils');
 var extend = utils.extend;
 var updateStatic = utils.updateStatic;
 
-exports.getInitialState = function(appNamespace, controllerViewModel, stateChangeHandler, enableUndo) {
+exports.getInitialState = function(appNamespace, controllerViewModel, stateChangeHandler, enableUndo, routingEnabled) {
 
 	var ApplicationDataContext,
 		appState = {},
@@ -1101,7 +1106,6 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 		watchedDataContext,
 		link,
 		calledBack = false,
-		routingEnabled = false,
 		routeHash = {},
 		routeMapping = {},
 		routePath,
@@ -1490,7 +1494,6 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 				new dataContexts[viewModel](appState.state[viewModel]);
 
 			if('getRoutes' in appState[viewModel].constructor.originalSpec){
-				routingEnabled = true;
 				routeHash = appState[viewModel].constructor.originalSpec.getRoutes();
 				for(routePath in routeHash){
 					if(routeHash.hasOwnProperty(routePath)){
@@ -1507,7 +1510,7 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
                   }.bind(appState);
                 }
 								routeMapping[route].call(appState[dataContextName], ctx.params,
-								ctx.path, pathKey, ctx);
+								ctx.path, pathKey, ctx, appState.transitionTo.bind(appState));
 							}
 							internal = false;
 						}.bind(this, viewModel, routeHash[routePath].path, routePath));

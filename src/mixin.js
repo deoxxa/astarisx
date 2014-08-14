@@ -10,13 +10,18 @@ var mixin = {
 		getInitialState: function(){
       var dataContext;
       var enableUndo = false;
+      var enableRouting = false;
 
       if('enableUndo' in this.props){
         enableUndo = this.props.enableUndo;
       }
 
+      if('enableRouting' in this.props){
+        enableRouting = this.props.enableRouting;
+      }
+
 			dataContext = core.getInitialState(__NAMESPACE__, this.props.controllerViewModel,
-				this.stateChangeHandler, enableUndo);
+				this.stateChangeHandler, enableUndo, enableRouting);
 
 			return {dataContext: dataContext};
 		}

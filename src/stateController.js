@@ -3,7 +3,7 @@ var utils = require('./utils');
 var extend = utils.extend;
 var updateStatic = utils.updateStatic;
 
-exports.getInitialState = function(appNamespace, controllerViewModel, stateChangeHandler, enableUndo) {
+exports.getInitialState = function(appNamespace, controllerViewModel, stateChangeHandler, enableUndo, routingEnabled) {
 
 	var ApplicationDataContext,
 		appState = {},
@@ -22,7 +22,6 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 		watchedDataContext,
 		link,
 		calledBack = false,
-		routingEnabled = false,
 		routeHash = {},
 		routeMapping = {},
 		routePath,
@@ -411,7 +410,6 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 				new dataContexts[viewModel](appState.state[viewModel]);
 
 			if('getRoutes' in appState[viewModel].constructor.originalSpec){
-				routingEnabled = true;
 				routeHash = appState[viewModel].constructor.originalSpec.getRoutes();
 				for(routePath in routeHash){
 					if(routeHash.hasOwnProperty(routePath)){
@@ -428,7 +426,7 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
                   }.bind(appState);
                 }
 								routeMapping[route].call(appState[dataContextName], ctx.params,
-								ctx.path, pathKey, ctx);
+								ctx.path, pathKey, ctx, appState.transitionTo.bind(appState));
 							}
 							internal = false;
 						}.bind(this, viewModel, routeHash[routePath].path, routePath));

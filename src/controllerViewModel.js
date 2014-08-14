@@ -201,12 +201,12 @@ var ControllerViewModel = {
           //Add state prop so that it can be referenced from within getInitialState
           nextState = ('getInitialState' in desc.originalSpec) ?
             desc.originalSpec.getInitialState.call(controllerViewModel) : {};
-          if('path' in nextState){
+          if(routingEnabled){
             Object.defineProperty(controllerViewModel, 'path', {
               configurable: false,
               enumerable: true,
               writable: false,
-              value: nextState.path
+              value: nextState.path || '/'
             });
           }
 
