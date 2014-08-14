@@ -6,8 +6,8 @@
     "react",
     "mvc",
     "mvvm",
-    "routing",
-    "pushState",
+    "react routing",
+    "react pushState",
     "mediaQuery",
     "imvvm"
   ],

@@ -450,7 +450,11 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 							viewName: view,
 							component: viewHash[view].component,
 							viewPath: ('path' in viewHash[view]) ? viewHash[view].path : void(0),
-							pathIsFunc: (viewPath && typeof viewPath === 'function')
+							pathIsFunc: (viewPath && typeof viewPath === 'function'),
+							displayIn: viewHash[view].displayIn,
+				      displayOut: viewHash[view].displayOut,
+				      itemIn: viewHash[view].itemIn,
+				      itemOut: viewHash[view].itemOut
 						};
 					}
 				}
@@ -467,22 +471,33 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 				viewPath = ('path' in viewHash[view]) ? viewHash[view].path : void(0);
 				viewMapping[(viewHash[view].viewDisplay || defaultAppViewDisplay) + "." + view] = {
 					viewKey: (viewHash[view].viewDisplay || defaultAppViewDisplay) + "." + view,
-					viewContext: defaultAppViewDisplay,
 					viewDisplay: (viewHash[view].viewDisplay || defaultAppViewDisplay),
 					viewName: view,
 					component: viewHash[view].component,
 					viewPath: ('path' in viewHash[view]) ? viewHash[view].path : void(0),
-					pathIsFunc: (viewPath && typeof viewPath === 'function')
+					pathIsFunc: (viewPath && typeof viewPath === 'function'),
+					displayIn: viewHash[view].displayIn,
+		      displayOut: viewHash[view].displayOut,
+		      itemIn: viewHash[view].itemIn,
+		      itemOut: viewHash[view].itemOut
 				};
 			}
 		}
 		delete appState.constructor.originalSpec.getViews;
 	}
+	
   if(animationEnabled){
   	appState.addViews(viewMapping);
 		viewMapping = void(0);
   }
-	delete appState.__proto__.addViews;		
+	delete appState.__proto__.addViews;
+
+	// Add default transitions
+	if('getDefaultTransitions' in appState.constructor.originalSpec){
+		appState.addDefaultTransitions(appState.constructor.originalSpec.getDefaultTransitions());
+		delete appState.constructor.originalSpec.getDefaultTransitions;
+		delete appState.__proto__.addDefaultTransitions;
+	}
 
 	appState = new ApplicationDataContext(appState, void(0), void(0),
 			enableUndo, routingEnabled);

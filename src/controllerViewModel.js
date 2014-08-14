@@ -15,6 +15,7 @@ var ControllerViewModel = {
       
       //This is used for Transitions
       var Views;
+      var displayTransIn, displayTransOut, itemTransIn, itemTransOut;
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
@@ -30,11 +31,38 @@ var ControllerViewModel = {
         desc.proto.getView = function(viewKey){
           return !!Views ? Views[viewKey] : void(0);
         };
+        if(displayTransIn){
+          desc.proto.getDisplayTransitionIn = function(){
+            return displayTransIn;
+          };
+        }
+        if(displayTransOut){
+          desc.proto.getDisplayTransitionOut = function(){
+            return displayTransOut;
+          };
+        }
+        if(itemTransIn){
+          desc.proto.getItemTransitionIn = function(){
+            return itemTransIn;
+          };
+        }
+        if(itemTransOut){
+          desc.proto.getItemTransitionOut = function(){
+            return itemTransOut;
+          };
+        }
       }
 
       //This gets deleted
       desc.proto.addViews = function(viewObj){
         Views = viewObj;
+      };
+
+      desc.proto.addDefaultTransitions = function(trans){
+        displayTransIn = trans.displayIn;
+        displayTransOut = trans.displayOut;
+        itemTransIn = trans.itemIn;
+        itemTransOut = trans.itemOut;
       };
 
       desc.proto.revert = function(){
