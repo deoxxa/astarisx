@@ -469,7 +469,6 @@ var ControllerViewModel = {
       
       //This is used for Transitions
       var Views;
-      //var displayTransIn, displayTransOut, itemTransIn, itemTransOut;
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
@@ -492,15 +491,6 @@ var ControllerViewModel = {
         Views = viewObj;
       };
 
-      // //This gets deleted
-      // desc.proto.addDefaultTransitions = function(trans){
-      //   defaultTransitions = true;
-      //   displayTransIn = trans.displayIn;
-      //   displayTransOut = trans.displayOut;
-      //   itemTransIn = trans.itemIn;
-      //   itemTransOut = trans.itemOut;
-      // };
-
       desc.proto.revert = function(){
         this.setState(this.previousState, !!this.previousState ? this : void(0));
       };
@@ -510,6 +500,7 @@ var ControllerViewModel = {
           this.setState(this.nextState, this.nextState.nextState);
         }
       };
+      
       var ControllerViewModelClass = function(nextState, prevState, redoState, enableUndo,
         routingEnabled, pushStateChanged, internal, forget) {
 
@@ -1556,13 +1547,6 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
 		viewMapping = void(0);
   }
 	delete appState.__proto__.addViews;
-
-	// // Add default transitions
-	// if('getDefaultTransitions' in appState.constructor.originalSpec){
-	// 	appState.addDefaultTransitions(appState.constructor.originalSpec.getDefaultTransitions());
-	// 	delete appState.constructor.originalSpec.getDefaultTransitions;
-	// 	delete appState.__proto__.addDefaultTransitions;
-	// }
 
 	appState = new ApplicationDataContext(appState, void(0), void(0),
 			enableUndo, routingEnabled);
