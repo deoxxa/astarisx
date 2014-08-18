@@ -457,6 +457,7 @@ var extend = utils.extend;
 
 var extendProto = void(0);
 var extendFields = void(0);
+var defaultTransitions = false;
 
 var ControllerViewModel = {
   extend: function(obj){
@@ -468,7 +469,7 @@ var ControllerViewModel = {
       
       //This is used for Transitions
       var Views;
-      var displayTransIn, displayTransOut, itemTransIn, itemTransOut;
+      //var displayTransIn, displayTransOut, itemTransIn, itemTransOut;
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
@@ -484,26 +485,6 @@ var ControllerViewModel = {
         desc.proto.getView = function(viewKey){
           return !!Views ? Views[viewKey] : void(0);
         };
-        if(displayTransIn){
-          desc.proto.getDisplayTransitionIn = function(){
-            return displayTransIn;
-          };
-        }
-        if(displayTransOut){
-          desc.proto.getDisplayTransitionOut = function(){
-            return displayTransOut;
-          };
-        }
-        if(itemTransIn){
-          desc.proto.getItemTransitionIn = function(){
-            return itemTransIn;
-          };
-        }
-        if(itemTransOut){
-          desc.proto.getItemTransitionOut = function(){
-            return itemTransOut;
-          };
-        }
       }
 
       //This gets deleted
@@ -511,12 +492,14 @@ var ControllerViewModel = {
         Views = viewObj;
       };
 
-      desc.proto.addDefaultTransitions = function(trans){
-        displayTransIn = trans.displayIn;
-        displayTransOut = trans.displayOut;
-        itemTransIn = trans.itemIn;
-        itemTransOut = trans.itemOut;
-      };
+      // //This gets deleted
+      // desc.proto.addDefaultTransitions = function(trans){
+      //   defaultTransitions = true;
+      //   displayTransIn = trans.displayIn;
+      //   displayTransOut = trans.displayOut;
+      //   itemTransIn = trans.itemIn;
+      //   itemTransOut = trans.itemOut;
+      // };
 
       desc.proto.revert = function(){
         this.setState(this.previousState, !!this.previousState ? this : void(0));
@@ -1574,12 +1557,12 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
   }
 	delete appState.__proto__.addViews;
 
-	// Add default transitions
-	if('getDefaultTransitions' in appState.constructor.originalSpec){
-		appState.addDefaultTransitions(appState.constructor.originalSpec.getDefaultTransitions());
-		delete appState.constructor.originalSpec.getDefaultTransitions;
-		delete appState.__proto__.addDefaultTransitions;
-	}
+	// // Add default transitions
+	// if('getDefaultTransitions' in appState.constructor.originalSpec){
+	// 	appState.addDefaultTransitions(appState.constructor.originalSpec.getDefaultTransitions());
+	// 	delete appState.constructor.originalSpec.getDefaultTransitions;
+	// 	delete appState.__proto__.addDefaultTransitions;
+	// }
 
 	appState = new ApplicationDataContext(appState, void(0), void(0),
 			enableUndo, routingEnabled);
