@@ -669,6 +669,7 @@ var ControllerViewModel = {
 
         return controllerViewModel;
       };
+      delete ControllerViewModel.extend;
       return ControllerViewModelClass;
     }
   }
@@ -781,7 +782,7 @@ var IMVVMClass = {
             descriptor[key] = this.originalSpec[key];
           } else {
             if(key !== 'getInitialState' && key !== 'getWatchedState' &&
-              key !== 'getRoutes'){
+              key !== 'getRoutes' && key !== 'getViews'){
               proto[key] = this.originalSpec[key];
             }
           }

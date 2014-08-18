@@ -216,6 +216,7 @@ var ControllerViewModel = {
 
         return controllerViewModel;
       };
+      delete ControllerViewModel.extend;
       return ControllerViewModelClass;
     }
   }
