@@ -762,7 +762,7 @@ var IMVVMClass = {
             descriptor[key] = this.originalSpec[key];
           } else {
             if(key !== 'getInitialState' && key !== 'getWatchedState' &&
-              key !== 'getRoutes' && key !== 'getViews'){
+              key !== 'getRoutes' && key !== 'getViews' && key != 'getDefaultTransitions'){
               proto[key] = this.originalSpec[key];
             }
           }
