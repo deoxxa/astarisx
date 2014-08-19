@@ -1,7 +1,7 @@
 IMVVM
 =====
 
-IMVVM helps implement the Model-View-ViewModel pattern in [React](http://facebook.github.io/react/) applications. It's role is to provide the framework to create Models and ViewModels, with React acting as the View. It is designed to complement React. The IMVVM API gets its inspiration from the React library. So it feels like React. This makes it easy to understand and enables you to be productive in a short time frame.
+IMVVM is a JavaScript library that helps implement the Model-View-ViewModel pattern in [React](http://facebook.github.io/react/) applications. It is designed to complement React. It's role is to provide a framework to create Models and ViewModels, with React acting as the View. The IMVVM API gets its inspiration from the React library. So it feels like React. Making it easy to understand and enabling you to be productive in a short time frame.
 
 #####Documentation: https://github.com/entrendipity/imvvm/wiki
 
