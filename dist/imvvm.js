@@ -1,10 +1,8 @@
-require=(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"epB21t":[function(require,module,exports){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.IMVVM=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var IMVVM = require('./src/core.js');
 module.exports = IMVVM;
 
-},{"./src/core.js":5}],"imvvm":[function(require,module,exports){
-module.exports=require('epB21t');
-},{}],3:[function(require,module,exports){
+},{"./src/core.js":4}],2:[function(require,module,exports){
 
 ;(function(){
 
@@ -450,46 +448,20 @@ module.exports=require('epB21t');
 
 })();
 
-},{}],4:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 
 var utils = require('./utils');
 var extend = utils.extend;
 
-var extendProto = void(0);
-var extendFields = void(0);
-var defaultTransitions = false;
-
 var ControllerViewModel = {
-  extend: function(obj){
-    extendProto = obj.proto;
-    extendFields = obj.descriptor;
-  },
+
   Mixin: {
     construct: function(stateChangeHandler){
-      
-      //This is used for Transitions
-      var Views;
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
       var desc = this.getDescriptor();
       desc.proto.setState = stateChangeHandler;
-
-      if(!!extendProto){
-        for(var k in extendProto){
-          if(extendProto.hasOwnProperty(k)){
-            desc.proto[k] = extendProto[k];
-          }
-        }
-        desc.proto.getView = function(viewKey){
-          return !!Views ? Views[viewKey] : void(0);
-        };
-      }
-
-      //This gets deleted
-      desc.proto.addViews = function(viewObj){
-        Views = viewObj;
-      };
 
       desc.proto.revert = function(){
         this.setState(this.previousState, !!this.previousState ? this : void(0));
@@ -505,19 +477,13 @@ var ControllerViewModel = {
         routingEnabled, pushStateChanged, internal, forget) {
 
         var freezeFields = desc.freezeFields,
-          controllerViewModel,
+          controllerViewModel = Object.create(desc.proto, desc.descriptor),
           fld,
           init = nextState === void(0),
           adhocUndo,
           forceReplace,
           pushState,
           pageNotFound;
-
-        if(!!extendFields){
-          controllerViewModel = Object.create(desc.proto, extend(desc.descriptor, extendFields));
-        } else {
-          controllerViewModel = Object.create(desc.proto, desc.descriptor);
-        }
 
         pushStateChanged = routingEnabled ? pushStateChanged : false;
 
@@ -669,7 +635,6 @@ var ControllerViewModel = {
 
         return controllerViewModel;
       };
-      delete ControllerViewModel.extend;
       return ControllerViewModelClass;
     }
   }
@@ -677,7 +642,7 @@ var ControllerViewModel = {
 
 module.exports = ControllerViewModel;
 
-},{"./utils":9}],5:[function(require,module,exports){
+},{"./utils":8}],4:[function(require,module,exports){
 
 var model = require('./model');
 var viewModel = require('./viewModel');
@@ -740,10 +705,26 @@ var IMVVMClass = {
         aliases = {},
         statics = {},
         hasStatic = false,
-        key;
+        key,
+        mixinSpec;
 
       if('__processedSpec__' in this.originalSpec){
         return this.originalSpec.__processedSpec__;
+      }
+
+      // Mixin addons
+      if('mixins' in this.originalSpec && proto.constructor.classType === "ControllerViewModel"){
+        for (var i = 0; i < this.originalSpec.mixins.length; i++) {
+          mixinSpec = this.originalSpec.mixins[i];
+          for (var name in mixinSpec) {
+            var property = mixinSpec[name];
+            if (!mixinSpec.hasOwnProperty(name)) {
+              continue;
+            }
+            this.originalSpec[name] = property;
+          }
+        }
+        delete this.originalSpec.mixins;
       }
 
       for(key in this.originalSpec){
@@ -751,26 +732,25 @@ var IMVVMClass = {
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
             //assume it is a descriptor
             this.originalSpec[key].enumerable = true;
-            if('viewModel' in this.originalSpec[key]) {
+            if('viewModel' in this.originalSpec[key] && proto.constructor.classType === "ControllerViewModel") {
               viewModels[key] = this.originalSpec[key].viewModel;
               delete this.originalSpec[key].viewModel;
               delete this.originalSpec[key].set;
             } else {
-              if('aliasFor' in this.originalSpec[key]){
+              if('aliasFor' in this.originalSpec[key] && proto.constructor.classType === "Model"){
                 aliases[this.originalSpec[key].aliasFor] = key;
                 delete this.originalSpec[key].aliasFor;
               }
-
               if('kind' in this.originalSpec[key]){
                 if(this.originalSpec[key].kind === 'pseudo'){
                   this.originalSpec[key].enumerable = false;
-                } else if (this.originalSpec[key].kind === 'instance' ||
+                } else if ((this.originalSpec[key].kind === 'instance' && proto.constructor.classType === "ViewModel") ||
                   this.originalSpec[key].kind === 'array') { //'instance' || 'array'
                   autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
-                } else if (this.originalSpec[key].kind === 'static') {
+                } else if (this.originalSpec[key].kind === 'static' && proto.constructor.classType === "ControllerViewModel") {
                   hasStatic = true;
                   statics[key] = void(0);
-                } else if (this.originalSpec[key].kind === 'uid') {
+                } else if (this.originalSpec[key].kind === 'uid' && proto.constructor.classType === "Model") {
                   //Don't do anything as yet
                 } else {
                   throw new TypeError('"'+this.originalSpec[key].kind +'" '+
@@ -789,7 +769,7 @@ var IMVVMClass = {
         }
       }
 
-      if(!!Object.keys(viewModels).length){
+      if(proto.constructor.classType === "ControllerViewModel" && !!Object.keys(viewModels).length){
         this.originalSpec.getViewModels = function(){
           return viewModels;
         }
@@ -804,10 +784,8 @@ var IMVVMClass = {
         statics: statics,
         hasStatic: hasStatic
       };
-
       return this.originalSpec.__processedSpec__;
     };
-
     return ConvenienceConstructor;
   },
 };
@@ -829,10 +807,11 @@ module.exports = {
   mixin: mixin,
   extend: extend,
   page: page,
-  _addOn: controllerViewModel.extend
+  getView: controllerViewModel.getView,
+  getTransition: controllerViewModel.getTransition
 };
 
-},{"./controllerViewModel":4,"./mixin":6,"./model":7,"./utils":9,"./viewModel":10,"page":3}],6:[function(require,module,exports){
+},{"./controllerViewModel":3,"./mixin":5,"./model":6,"./utils":8,"./viewModel":9,"page":2}],5:[function(require,module,exports){
 
 var core = require('./stateController');
 var __NAMESPACE__ = '__IMVVM__';
@@ -963,7 +942,7 @@ var mixin = {
 
 module.exports = mixin;
 
-},{"./stateController":8}],7:[function(require,module,exports){
+},{"./stateController":7}],6:[function(require,module,exports){
 
 var utils = require('./utils');
 var extend = utils.extend;
@@ -1056,7 +1035,7 @@ var Model = {
 
 module.exports = Model;
 
-},{"./utils":9}],8:[function(require,module,exports){
+},{"./utils":8}],7:[function(require,module,exports){
 var page = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
@@ -1549,6 +1528,12 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
   }
 	delete appState.__proto__.addViews;
 
+	if('getDefaultTransitions' in appState.constructor.originalSpec){
+		appState.addTransitions(appState.constructor.originalSpec.getDefaultTransitions());
+		delete appState.constructor.originalSpec.getDefaultTransitions;
+	}
+	delete appState.__proto__.addTransitions;
+
 	appState = new ApplicationDataContext(appState, void(0), void(0),
 			enableUndo, routingEnabled);
 
@@ -1590,7 +1575,7 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
   return appState;
 
 };
-},{"./utils":9,"page":3}],9:[function(require,module,exports){
+},{"./utils":8,"page":2}],8:[function(require,module,exports){
 
 var utils = {
   
@@ -1652,7 +1637,7 @@ var utils = {
 };
 
 module.exports = utils;
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 
 var utils = require('./utils');
 var extend = utils.extend;
@@ -1748,4 +1733,5 @@ var ViewModel = {
 
 module.exports = ViewModel;
 
-},{"./utils":9}]},{},["epB21t"])
+},{"./utils":8}]},{},[1])(1)
+});

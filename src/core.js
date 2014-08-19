@@ -60,10 +60,26 @@ var IMVVMClass = {
         aliases = {},
         statics = {},
         hasStatic = false,
-        key;
+        key,
+        mixinSpec;
 
       if('__processedSpec__' in this.originalSpec){
         return this.originalSpec.__processedSpec__;
+      }
+
+      // Mixin addons
+      if('mixins' in this.originalSpec && proto.constructor.classType === "ControllerViewModel"){
+        for (var i = 0; i < this.originalSpec.mixins.length; i++) {
+          mixinSpec = this.originalSpec.mixins[i];
+          for (var name in mixinSpec) {
+            var property = mixinSpec[name];
+            if (!mixinSpec.hasOwnProperty(name)) {
+              continue;
+            }
+            this.originalSpec[name] = property;
+          }
+        }
+        delete this.originalSpec.mixins;
       }
 
       for(key in this.originalSpec){
@@ -71,26 +87,25 @@ var IMVVMClass = {
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
             //assume it is a descriptor
             this.originalSpec[key].enumerable = true;
-            if('viewModel' in this.originalSpec[key]) {
+            if('viewModel' in this.originalSpec[key] && proto.constructor.classType === "ControllerViewModel") {
               viewModels[key] = this.originalSpec[key].viewModel;
               delete this.originalSpec[key].viewModel;
               delete this.originalSpec[key].set;
             } else {
-              if('aliasFor' in this.originalSpec[key]){
+              if('aliasFor' in this.originalSpec[key] && proto.constructor.classType === "Model"){
                 aliases[this.originalSpec[key].aliasFor] = key;
                 delete this.originalSpec[key].aliasFor;
               }
-
               if('kind' in this.originalSpec[key]){
                 if(this.originalSpec[key].kind === 'pseudo'){
                   this.originalSpec[key].enumerable = false;
-                } else if (this.originalSpec[key].kind === 'instance' ||
+                } else if ((this.originalSpec[key].kind === 'instance' && proto.constructor.classType === "ViewModel") ||
                   this.originalSpec[key].kind === 'array') { //'instance' || 'array'
                   autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
-                } else if (this.originalSpec[key].kind === 'static') {
+                } else if (this.originalSpec[key].kind === 'static' && proto.constructor.classType === "ControllerViewModel") {
                   hasStatic = true;
                   statics[key] = void(0);
-                } else if (this.originalSpec[key].kind === 'uid') {
+                } else if (this.originalSpec[key].kind === 'uid' && proto.constructor.classType === "Model") {
                   //Don't do anything as yet
                 } else {
                   throw new TypeError('"'+this.originalSpec[key].kind +'" '+
@@ -109,7 +124,7 @@ var IMVVMClass = {
         }
       }
 
-      if(!!Object.keys(viewModels).length){
+      if(proto.constructor.classType === "ControllerViewModel" && !!Object.keys(viewModels).length){
         this.originalSpec.getViewModels = function(){
           return viewModels;
         }
@@ -124,10 +139,8 @@ var IMVVMClass = {
         statics: statics,
         hasStatic: hasStatic
       };
-
       return this.originalSpec.__processedSpec__;
     };
-
     return ConvenienceConstructor;
   },
 };
@@ -149,5 +162,6 @@ module.exports = {
   mixin: mixin,
   extend: extend,
   page: page,
-  _addOn: controllerViewModel.extend
+  getView: controllerViewModel.getView,
+  getTransition: controllerViewModel.getTransition
 };

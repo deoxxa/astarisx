@@ -2,41 +2,15 @@
 var utils = require('./utils');
 var extend = utils.extend;
 
-var extendProto = void(0);
-var extendFields = void(0);
-var defaultTransitions = false;
-
 var ControllerViewModel = {
-  extend: function(obj){
-    extendProto = obj.proto;
-    extendFields = obj.descriptor;
-  },
+
   Mixin: {
     construct: function(stateChangeHandler){
-      
-      //This is used for Transitions
-      var Views;
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
       var desc = this.getDescriptor();
       desc.proto.setState = stateChangeHandler;
-
-      if(!!extendProto){
-        for(var k in extendProto){
-          if(extendProto.hasOwnProperty(k)){
-            desc.proto[k] = extendProto[k];
-          }
-        }
-        desc.proto.getView = function(viewKey){
-          return !!Views ? Views[viewKey] : void(0);
-        };
-      }
-
-      //This gets deleted
-      desc.proto.addViews = function(viewObj){
-        Views = viewObj;
-      };
 
       desc.proto.revert = function(){
         this.setState(this.previousState, !!this.previousState ? this : void(0));
@@ -52,19 +26,13 @@ var ControllerViewModel = {
         routingEnabled, pushStateChanged, internal, forget) {
 
         var freezeFields = desc.freezeFields,
-          controllerViewModel,
+          controllerViewModel = Object.create(desc.proto, desc.descriptor),
           fld,
           init = nextState === void(0),
           adhocUndo,
           forceReplace,
           pushState,
           pageNotFound;
-
-        if(!!extendFields){
-          controllerViewModel = Object.create(desc.proto, extend(desc.descriptor, extendFields));
-        } else {
-          controllerViewModel = Object.create(desc.proto, desc.descriptor);
-        }
 
         pushStateChanged = routingEnabled ? pushStateChanged : false;
 
@@ -216,7 +184,6 @@ var ControllerViewModel = {
 
         return controllerViewModel;
       };
-      delete ControllerViewModel.extend;
       return ControllerViewModelClass;
     }
   }

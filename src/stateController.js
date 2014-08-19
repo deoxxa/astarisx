@@ -490,6 +490,12 @@ exports.getInitialState = function(appNamespace, controllerViewModel, stateChang
   }
 	delete appState.__proto__.addViews;
 
+	if('getDefaultTransitions' in appState.constructor.originalSpec){
+		appState.addTransitions(appState.constructor.originalSpec.getDefaultTransitions());
+		delete appState.constructor.originalSpec.getDefaultTransitions;
+	}
+	delete appState.__proto__.addTransitions;
+
 	appState = new ApplicationDataContext(appState, void(0), void(0),
 			enableUndo, routingEnabled);
 
