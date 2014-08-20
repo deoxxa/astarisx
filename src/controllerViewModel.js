@@ -56,9 +56,9 @@ var ControllerViewModel = {
             });
             Object.defineProperty(controllerViewModel, 'forceReplace', {
               configurable: false,
-              enumerable: true,
+              enumerable: false,
               writable: false,
-              value: forceReplace
+              value: forceReplace || false
             });
             Object.defineProperty(controllerViewModel, 'pushState', {
               configurable: false,
