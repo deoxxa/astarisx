@@ -1,7 +1,7 @@
 IMVVM
 =====
 
-IMVVM is a JavaScript library that helps implement the Model-View-ViewModel pattern in [React](http://facebook.github.io/react/) applications. It is designed to complement React. It's role is to provide a framework to create Models and ViewModels, with React acting as the View. The IMVVM API gets its inspiration from the React library. So it feels like React. Making it easy to understand and enabling you to be productive in a short time frame.
+IMVVM is a JavaScript library that helps implement the Model-View-ViewModel pattern in [React](http://facebook.github.io/react/) applications. It is designed to complement React. It's role is to provide a framework to create Models and ViewModels, with React acting as the View. The IMVVM API gets its inspiration from the React library. So it feels like React. Making it easy to understand and enabling you to be productive in a short period of time.
 
 #####Documentation: https://github.com/entrendipity/imvvm/wiki
 
@@ -163,12 +163,12 @@ var TodoViewModel = IMVVM.createViewModel({
 });
 ```
 
-#### Create DomainViewModel
+#### Create ControllerViewModel
 ```javascript
 var TodoControllerViewModel = IMVVM.createControllerViewModelClass({
   /**
   * Expose the TodoViewModel to the "Controller-View" as `Todos` Data Context.
-  * This will be attached to this.state.dataContext
+  * This will be attached to this.state.appContext
   */
   Todos: {
     viewModel: TodoViewModel,
@@ -189,7 +189,7 @@ var TodoApp = React.createClass({
   mixins: [IMVVM.mixin.main],
 
   render: function() {
-    var todosDataContext = this.state.dataContext.Todos;
+    var todosDataContext = this.state.appContext.Todos;
     return (
       <div>
         <Header todosDataContext={todosDataContext}/>
@@ -205,7 +205,7 @@ var TodoApp = React.createClass({
 });
 ```
 
-#### React Components Interact with DomainDataContext
+#### React Components Interact with Application Data Context
 ```javascript
 var MainSection = React.createClass({
 

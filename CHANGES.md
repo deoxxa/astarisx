@@ -123,11 +123,11 @@
 - Add `createCVMClass()` => short form for createControllerViewModelClass()
 - __Deprecate__: `domainDataContext` as default prop in this.state.domainDataContext
 - __Deprecate__: `domainModel` prop in React's render component call and _replace_ with `controllerViewModel` 
-- _Replace_ default `this.state.domainDataContext` with `this.state.dataContext`
+- _Replace_ default `this.state.domainDataContext` with `this.state.appContext`
 
 ___Please update all `createXXX` calls to reflect the new names as the deprecated names may not be available in future releases___
 
 ### Breaking Changes
-- In the ControllerView i.e. the React component that lists the IMVVM mixin `IMVVM.mixin.main`, change all references of `this.state.domainDataContext` to `this.state.dataContext`
+- In the ControllerView i.e. the React component that references the IMVVM mixin `IMVVM.mixin.main`, change all references of `this.state.domainDataContext` to `this.state.appContext`
 - In React.renderComponent change the prop `domainModel` to `controllerViewModel`
 
