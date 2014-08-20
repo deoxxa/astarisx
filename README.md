@@ -9,7 +9,7 @@ IMVVM is a JavaScript library that helps implement the Model-View-ViewModel patt
 
 ## TL;DR: Fast Forward >>
 
-### IMVVM Application Flows
+### IMVVM Application Flow
 ![IMVVM Application Anatomy](IMVVM_med.png?raw=true)
 
 
