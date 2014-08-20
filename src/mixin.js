@@ -4,11 +4,11 @@ var __NAMESPACE__ = '__IMVVM__';
 
 var mixin = {
 	main: {
-		stateChangeHandler: function(dataContext){
-      this.setState({dataContext: dataContext});
+		stateChangeHandler: function(applicationDataContext){
+      this.setState({appContext: applicationDataContext});
 	  },
 		getInitialState: function(){
-      var dataContext;
+      var applicationDataContext;
       var enableUndo = false;
       var enableRouting = false;
 
@@ -20,10 +20,11 @@ var mixin = {
         enableRouting = this.props.enableRouting;
       }
 
-			dataContext = core.getInitialState(__NAMESPACE__, this.props.controllerViewModel,
-				this.stateChangeHandler, enableUndo, enableRouting);
+			applicationDataContext = core.getInitialState(__NAMESPACE__,
+        this.props.controllerViewModel, this.stateChangeHandler,
+        enableUndo, enableRouting);
 
-			return {dataContext: dataContext};
+			return {appContext: applicationDataContext};
 		}
 	},
 	pushState: {
@@ -92,7 +93,7 @@ var mixin = {
 	mediaQuery: {
 		closureFunc: function(id, mql, initializing){
       (function(){
-        this.state.dataContext.mediaChangeHandler.call(this.state.dataContext, id, mql, initializing);
+        this.state.appContext.mediaChangeHandler.call(this.state.appContext, id, mql, initializing);
       }.bind(this))();
     },
     componentDidMount: function(){
