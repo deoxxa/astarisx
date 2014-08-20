@@ -481,24 +481,13 @@ var ControllerViewModel = {
           fld,
           init = nextState === void(0),
           adhocUndo,
-          forceReplace,
-          pushState,
           pageNotFound;
 
         pushStateChanged = routingEnabled ? pushStateChanged : false;
 
         if(!init){
           if(routingEnabled){
-
-            forceReplace = nextState.forceReplace === void(0) ? false :
-              nextState.forceReplace;
-
-            pushState = nextState.pushState === void(0) ? true :
-              nextState.pushState;
-
-            pageNotFound = nextState.pageNotFound === void(0) ? false :
-              nextState.pageNotFound;
-
+            pageNotFound = nextState.pageNotFound === void(0) ? false : nextState.pageNotFound;
             Object.defineProperty(controllerViewModel, 'pageNotFound', {
               configurable: false,
               enumerable: false,
@@ -509,13 +498,13 @@ var ControllerViewModel = {
               configurable: false,
               enumerable: false,
               writable: false,
-              value: forceReplace || false
+              value: nextState.forceReplace === void(0) ? false : nextState.forceReplace
             });
             Object.defineProperty(controllerViewModel, 'pushState', {
               configurable: false,
               enumerable: true,
               writable: false,
-              value: pushState
+              value: nextState.pushState === void(0) ? true : nextState.pushState
             });
             if(!('path' in controllerViewModel) && ('path' in nextState)){
               Object.defineProperty(controllerViewModel, 'path', {
