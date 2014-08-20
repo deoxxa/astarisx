@@ -10,7 +10,7 @@ IMVVM is a JavaScript library that helps implement the Model-View-ViewModel patt
 ## TL;DR: Fast Forward >>
 
 ### IMVVM Application Flows
-![IMVVM Application Anatomy](IMVVM_med.png?raw=true)
+->![IMVVM Application Anatomy](IMVVM_med.png?raw=true)<-
 
 
 ### TodoMVC example code
