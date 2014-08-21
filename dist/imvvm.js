@@ -806,7 +806,7 @@ module.exports = {
 var stateController = require('./stateController');
 
 var mixin = {
-	main: {
+	controllerView: {
 		getInitialState: function(){
       var applicationDataContext;
       var enableUndo = false;
