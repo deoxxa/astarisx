@@ -4,20 +4,7 @@ var stateController = require('./stateController');
 var mixin = {
 	controllerView: {
 		getInitialState: function(){
-      var applicationDataContext;
-      var enableUndo = false;
-      var enableRouting = false;
-
-      if('enableUndo' in this.props){
-        enableUndo = this.props.enableUndo;
-      }
-
-      if('enableRouting' in this.props){
-        enableRouting = this.props.enableRouting;
-      }
-
-			applicationDataContext = stateController.initAppState(this, enableUndo, enableRouting);
-			return {appContext: applicationDataContext};
+			return {appContext: stateController.initAppState(this)};
 		}
 	},
   view: {

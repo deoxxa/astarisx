@@ -808,20 +808,7 @@ var stateController = require('./stateController');
 var mixin = {
 	controllerView: {
 		getInitialState: function(){
-      var applicationDataContext;
-      var enableUndo = false;
-      var enableRouting = false;
-
-      if('enableUndo' in this.props){
-        enableUndo = this.props.enableUndo;
-      }
-
-      if('enableRouting' in this.props){
-        enableRouting = this.props.enableRouting;
-      }
-
-			applicationDataContext = stateController.initAppState(this, enableUndo, enableRouting);
-			return {appContext: applicationDataContext};
+			return {appContext: stateController.initAppState(this)};
 		}
 	},
   view: {
@@ -1074,6 +1061,7 @@ var initAppState = (function(appNamespace){
 		controllerViewModel;
 
 	var listeners = {}, hasListeners = false;
+  var enableUndo, routingEnabled;
 
 	var viewStateChangeHandler = function(e){
     this.setState({appContext: e.detail});
@@ -1087,10 +1075,13 @@ var initAppState = (function(appNamespace){
   	}
   }
 
-	initViewState = function(component, enableUndo, routingEnabled) {
+	initViewState = function(component) {
 		var stateChangeHandler;
 		if(!initialized){
 		  initialized = true;
+			controllerViewModel = component.props.controllerViewModel;
+			enableUndo = component.props.enableUndo === void(0) ? false : component.props.enableUndo;
+			routingEnabled = component.props.enableRouting === void(0) ? false : component.props.enableRouting;
 			stateChangeHandler = function(applicationDataContext){
 		    component.setState({appContext: applicationDataContext});
 		  };
@@ -1103,8 +1094,6 @@ var initAppState = (function(appNamespace){
 	  	}
 	  	return appState;
 	  }
-
-		controllerViewModel = component.props.controllerViewModel;
 
 		var appStateChangeHandler = function(caller, newState, newAppState, forget, callback, delay) {
 			var nextState = {},
@@ -1373,24 +1362,6 @@ var initAppState = (function(appNamespace){
 				}
 			}
 
-			calledBack = false;
-			transientState = {};
-			processedState = {};
-			
-			/***************/
-			/* All the work is done! -> Notify the ControllerView
-			/* and Other mounted Views
-			/***************/
-	    stateChangeHandler(appState);
-	    if(hasListeners){
-		    var stateChangeEvent = new CustomEvent("stateChange", {"detail": appState});
-		  	for(var k in listeners){
-		  		if(listeners.hasOwnProperty(k)){
-		  			listeners[k].dispatchEvent(stateChangeEvent);
-		  		}
-		  	}
-	    }
-	  	
 			// Internal call routing
 			if(routingEnabled && appState.pushState){
 				if(('path' in appState) && !external){
@@ -1403,6 +1374,24 @@ var initAppState = (function(appNamespace){
 				}
 				external = false;
 			}
+			
+			/***************/
+			/* All the work is done! -> Notify the ControllerView
+			/* and any other mounted Views
+			/***************/
+			calledBack = false;
+			transientState = {};
+			processedState = {};
+	  	
+	    stateChangeHandler(appState);
+	    if(hasListeners){
+		    var stateChangeEvent = new CustomEvent("stateChange", {"detail": appState});
+		  	for(var k in listeners){
+		  		if(listeners.hasOwnProperty(k)){
+		  			listeners[k].dispatchEvent(stateChangeEvent);
+		  		}
+		  	}
+	    }
 		};
 		/***************/
 		/* Initialize Application Data Context
