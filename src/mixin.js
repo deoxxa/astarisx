@@ -1,12 +1,8 @@
 
-var core = require('./stateController');
-var __NAMESPACE__ = '__IMVVM__';
+var stateController = require('./stateController');
 
 var mixin = {
 	main: {
-		stateChangeHandler: function(applicationDataContext){
-      this.setState({appContext: applicationDataContext});
-	  },
 		getInitialState: function(){
       var applicationDataContext;
       var enableUndo = false;
@@ -20,13 +16,24 @@ var mixin = {
         enableRouting = this.props.enableRouting;
       }
 
-			applicationDataContext = core.getInitialState(__NAMESPACE__,
-        this.props.controllerViewModel, this.stateChangeHandler,
-        enableUndo, enableRouting);
-
+			applicationDataContext = stateController.initAppState(this, enableUndo, enableRouting);
 			return {appContext: applicationDataContext};
 		}
 	},
+  view: {
+    getInitialState: function(){
+      //If component isn't passed in just returns appContext
+      return {appContext: stateController.initViewState()};
+    },
+    componentDidMount: function(){
+      //If component is passed registers stateChange listener
+      stateController.initViewState(this);
+    },
+    componentWillUnmount: function(){
+      //remove event listener
+      stateController.unmountView(this);
+    }
+  },
 	pushState: {
 		componentDidMount: function(){
 			this.getDOMNode().addEventListener('click', this.onclick);

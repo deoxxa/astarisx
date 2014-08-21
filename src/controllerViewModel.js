@@ -5,7 +5,7 @@ var extend = utils.extend;
 var ControllerViewModel = {
 
   Mixin: {
-    construct: function(stateChangeHandler){
+    construct: function(stateChangeHandler, viewStateChangeHandler){
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
