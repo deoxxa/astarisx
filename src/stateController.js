@@ -59,9 +59,9 @@ var initAppState = (function(appNamespace){
   };
 
   unmountView = function(component){
-  	var viewId = component.props.viewId || component._rootNodeID;
-  	listeners[viewId].removeEventListener("stateChange");
-  	delete listeners[viewId];
+  	var viewKey = component.props.viewKey || component._rootNodeID;
+  	listeners[viewKey].removeEventListener("stateChange");
+  	delete listeners[viewKey];
   	if(!!!Object.keys(listeners).length){
   		hasListeners = false;
   	}
@@ -79,9 +79,9 @@ var initAppState = (function(appNamespace){
 		  };
 	  } else {
 	  	if(component !== void(0)){
-	  		var viewId = component.props.viewId || component._rootNodeID;
-	  		listeners[viewId] = component.getDOMNode();
-		  	listeners[viewId].addEventListener("stateChange", viewStateChangeHandler.bind(component));
+	  		var viewKey = component.props.viewKey || component._rootNodeID;
+	  		listeners[viewKey] = component.getDOMNode();
+		  	listeners[viewKey].addEventListener("stateChange", viewStateChangeHandler.bind(component));
 		  	hasListeners = true;
 		  	return;
 	  	}
@@ -382,11 +382,11 @@ var initAppState = (function(appNamespace){
 			  if(nextState.notify){
 			  	//Only notify specific views
 					if(Object.prototype.toString.call(nextState.notify) === '[object Array]'){
-						nextState.notify.forEach(function(viewId){
-							if(viewId === "*"){
+						nextState.notify.forEach(function(viewKey){
+							if(viewKey === "*"){
 								stateChangeHandler(appState);
-							} else if(viewId in listeners){
-								listeners[viewId].dispatchEvent(stateChangeEvent);
+							} else if(viewKey in listeners){
+								listeners[viewKey].dispatchEvent(stateChangeEvent);
 							}
 						});
 					} else {

@@ -91,7 +91,7 @@
 
 ## 0.8.4
 
-- Reference React DOM node directly to add event listener in mixin.pushState. No dependancy on jQuery ie. '$' making it easier to use in NodeJS
+- Reference React DOM node directly to add event listener in mixin.pushState. Removing dependancy on jQuery ie. '$' making it easier to use in NodeJS
 
 ## 0.8.5
 
@@ -107,12 +107,12 @@
 ## 0.8.7
 
 - Make Model `__stateChangeHanlder` property `enumerable` = `false`.
-- Fix `dataContextWillUpdate` bug: Undo\Redo did not show any state
+- Fix `dataContextWillUpdate` bug: Undo\Redo did not show State
 
 ## 0.9.0
 
 - Add `delay` param to setState. => `delay` is the number of milliseconds (thousandths of a second) that the function call should be delayed by and is passed as the last argument when there is a callback function used. The effect is sequential updates (no batching).
-- setState optional argument `forget` is now `remember` with default `true`. Only applicable in DomainViewModel and ViewModels
+- setState optional argument `forget` is now `remember`. default = `true`. Only applicable in ControllerViewModel and ViewModels
 - __Deprecate__: createModel()
 - Add `createModelClass()` to _replace_ createModel()
 - Add `createMClass()` => short form for createModelClass()
@@ -125,11 +125,37 @@
 - __Deprecate__: `domainDataContext` as default prop in this.state.domainDataContext
 - __Deprecate__: `domainModel` prop in React's render component call and _replace_ with `controllerViewModel` 
 - _Replace_ default `this.state.domainDataContext` with `this.state.appContext`
-
-___Please update all `createXXX` calls to reflect the new names as the deprecated names may not be available in future releases___
+- add prop `enableRouting` to React.renderComponent component
+- Change `mixin.view` in `mixin.controllerView`
+- Add `mixin.view` in order to specify a component as a View
+- Add `notify` to ControllerViewModel in order to specify which View should be notified
+- Add `viewId` prop ti View components to help identify the View to be notified when using `notify`
+- Views no longer require any properties or state to be passed into them
+- Add `mixins` property to ControllerViewModel
+- Add ability for ControllerViewModel to mixin [IMVVAnimateMixin](https://github.com/entrendipity/imvvm-animate)
+- `IMVVMAnimateMixin` adds the following properties to `this.state.appContext`
+    + nextView
+    + nextViewKey
+    + viewDisplay
+    + viewName
+- `IMVVMAnimateMixin` adds the following functions to `this.state.appContext`
+    + animate
+    + transitionDisplayIn
+    + transitionDisplayOut
+    + transitionItemIn
+    + transitionItemOut
+    + transitionTo
+    + addViews (system)
+    + addTransitions (system)
+- Added `getDefaultTranstions()` to `ControllerViewModel`
+- Added `getViews()` to `ViewModel`
+- Added ability for Route Path during page transitions
+- `IMVVMAnimateMixin` functions return Promises.
 
 ### Breaking Changes
 - In the ControllerView i.e. the React component that references the IMVVM mixin `IMVVM.mixin.main`, change all references of `this.state.domainDataContext` to `this.state.appContext`
+- In the ControllerView i.e. the React component that references the IMVVM mixin `IMVVM.mixin.main`, change `IMVVM.mixin.main` to `IMVVM.mixin.controllerView`
 - In React.renderComponent change the prop `domainModel` to `controllerViewModel`
-- change setState optional argument `forget` to `remember` with default `true`. i.e. flip the boolean. Only applicable in DomainViewModel and ViewModels
-
+- If pushState Routing is being used then, in React.renderComponent add prop `enableRouting = {true}` change the prop `domainModel` to `controllerViewModel`
+- change setState optional argument `forget` to `remember` with default `true`. i.e. flip the boolean. Only applicable in ControllerViewModel and ViewModels
+- ___Update all `createXXX` calls to reflect the new names___
