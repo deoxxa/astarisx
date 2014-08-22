@@ -112,6 +112,7 @@
 ## 0.9.0
 
 - Add `delay` param to setState. => `delay` is the number of milliseconds (thousandths of a second) that the function call should be delayed by and is passed as the last argument when there is a callback function used. The effect is sequential updates (no batching).
+- setState optional argument `forget` is now `remember` with default `true`. Only applicable in DomainViewModel and ViewModels
 - __Deprecate__: createModel()
 - Add `createModelClass()` to _replace_ createModel()
 - Add `createMClass()` => short form for createModelClass()
@@ -130,4 +131,5 @@ ___Please update all `createXXX` calls to reflect the new names as the deprecate
 ### Breaking Changes
 - In the ControllerView i.e. the React component that references the IMVVM mixin `IMVVM.mixin.main`, change all references of `this.state.domainDataContext` to `this.state.appContext`
 - In React.renderComponent change the prop `domainModel` to `controllerViewModel`
+- change setState optional argument `forget` to `remember` with default `true`. i.e. flip the boolean. Only applicable in DomainViewModel and ViewModels
 

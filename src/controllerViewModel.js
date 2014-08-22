@@ -23,7 +23,7 @@ var ControllerViewModel = {
       };
       
       var ControllerViewModelClass = function(nextState, prevState, redoState, enableUndo,
-        routingEnabled, pushStateChanged, internal, forget) {
+        routingEnabled, pushStateChanged, internal, remember) {
 
         var freezeFields = desc.freezeFields,
           controllerViewModel = Object.create(desc.proto, desc.descriptor),
@@ -81,7 +81,7 @@ var ControllerViewModel = {
         //need routingEnabled flag because it depends on prevState
         if(enableUndo || routingEnabled){
           if(!!prevState && (!pushStateChanged || adhocUndo || pageNotFound) &&
-            !previousAdhoc && internal && !forget){
+            !previousAdhoc && internal && remember){
             previousAdhoc = adhocUndo;
             previousPageNotFound = pageNotFound;
             Object.defineProperty(controllerViewModel, 'previousState', {

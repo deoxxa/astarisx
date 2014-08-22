@@ -88,7 +88,7 @@ var initAppState = (function(appNamespace){
 	  	return appState;
 	  }
 
-		var appStateChangeHandler = function(caller, newState, newAppState, forget, callback, delay) {
+		var appStateChangeHandler = function(caller, newState, newAppState, remember, callback, delay) {
 			var nextState = {},
 				prevState = void(0),
 				redoState = void(0),
@@ -110,21 +110,21 @@ var initAppState = (function(appNamespace){
 	      newState = appState;
 	    }
 
-	    if(typeof forget === 'function'){
+	    if(typeof remember === 'function'){
 	    	delay = callback;
-	      callback = forget;
-	      forget = false;
+	      callback = remember;
+	      remember = true;
 	    } else if(typeof newAppState === 'function'){
-	    	delay = forget;
+	    	delay = remember;
 				callback = newAppState;
 				newAppState = {};
 			} else if (typeof newAppState === 'boolean'){
-	      forget = newAppState;
+	      remember = newAppState;
 	      newAppState = {};
 	    }
 
-	    if(forget === void(0)){
-	    	forget = false;
+	    if(remember === void(0)){
+	    	remember = true;
 	    }
 			newState = newState || {};
 			newStateKeys = Object.keys(newState);
@@ -165,7 +165,7 @@ var initAppState = (function(appNamespace){
 					try {
 						appState = new ApplicationDataContext(nextState, prevState, redoState,
 							enableUndo, routingEnabled, nextState.path !== appState.path,
-							!external || nextState.pageNotFound, forget);
+							!external || nextState.pageNotFound, remember);
 
 		        calledBack = true;
 		        if(!!delay){
@@ -257,7 +257,7 @@ var initAppState = (function(appNamespace){
 					}
 				};
 				if(!!Object.keys(transientState).length){
-					appStateChangeHandler(void(0), {}, transientState, forget, callback, delay);
+					appStateChangeHandler(void(0), {}, transientState, remember, callback, delay);
 					return;
 				}
 				//Link Phase
@@ -333,7 +333,7 @@ var initAppState = (function(appNamespace){
 
 				appState = new ApplicationDataContext(nextState, prevState, redoState,
 				enableUndo, routingEnabled, pushStateChanged,
-				!external || nextState.pageNotFound, forget);	
+				!external || nextState.pageNotFound, remember);	
 
 				Object.freeze(appState);
 				Object.freeze(appState.state);
