@@ -1,3 +1,17 @@
+/* Polyfill CustomEvent - might look at synthetic Events*/
+// (function () {
+//   function CustomEvent ( event, params ) {
+//     params = params || { bubbles: false, cancelable: false, detail: undefined };
+//     var evt = document.createEvent( 'CustomEvent' );
+//     evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+//     return evt;
+//    };
+
+//   CustomEvent.prototype = window.Event.prototype;
+
+//   window.CustomEvent = CustomEvent;
+// })();
+
 var page = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
@@ -45,8 +59,9 @@ var initAppState = (function(appNamespace){
   };
 
   unmountView = function(component){
-  	listeners[component._rootNodeID].removeEventListener("stateChange");
-  	delete listeners[component._rootNodeID];
+  	var viewId = component.props.viewId || component._rootNodeID;
+  	listeners[viewId].removeEventListener("stateChange");
+  	delete listeners[viewId];
   	if(!!!Object.keys(listeners).length){
   		hasListeners = false;
   	}
@@ -64,8 +79,9 @@ var initAppState = (function(appNamespace){
 		  };
 	  } else {
 	  	if(component !== void(0)){
-	  		listeners[component._rootNodeID] = component.getDOMNode();
-		  	listeners[component._rootNodeID].addEventListener("stateChange", viewStateChangeHandler.bind(component));
+	  		var viewId = component.props.viewId || component._rootNodeID;
+	  		listeners[viewId] = component.getDOMNode();
+		  	listeners[viewId].addEventListener("stateChange", viewStateChangeHandler.bind(component));
 		  	hasListeners = true;
 		  	return;
 	  	}
@@ -87,7 +103,8 @@ var initAppState = (function(appNamespace){
 				subscribers,
 				subscriber,
 				pushStateChanged = false,
-				willUndo = false;
+				willUndo = false,
+				stateChangeEvent;
 
 	    if(arguments.length < 2){
 	      newState = appState;
@@ -360,15 +377,38 @@ var initAppState = (function(appNamespace){
 			transientState = {};
 			processedState = {};
 	  	
-	    stateChangeHandler(appState);
-	    if(hasListeners){
-		    var stateChangeEvent = new CustomEvent("stateChange", {"detail": appState});
-		  	for(var k in listeners){
-		  		if(listeners.hasOwnProperty(k)){
-		  			listeners[k].dispatchEvent(stateChangeEvent);
-		  		}
-		  	}
-	    }
+	  	if(hasListeners){
+				stateChangeEvent = new CustomEvent("stateChange", {"detail": appState});
+			  if(nextState.notify){
+			  	//Only notify specific views
+					if(Object.prototype.toString.call(nextState.notify) === '[object Array]'){
+						nextState.notify.forEach(function(viewId){
+							if(viewId === "*"){
+								stateChangeHandler(appState);
+							} else if(viewId in listeners){
+								listeners[viewId].dispatchEvent(stateChangeEvent);
+							}
+						});
+					} else {
+						if(nextState.notify === "*"){
+							stateChangeHandler(appState);
+						} else if(nextState.notify in listeners){
+							listeners[nextState.notify].dispatchEvent(stateChangeEvent);
+						}
+					}
+				} else {
+					// Notify all the views
+			    stateChangeHandler(appState);
+			    for(var k in listeners){
+			  		if(listeners.hasOwnProperty(k)){
+			  			listeners[k].dispatchEvent(stateChangeEvent);
+			  		}
+			  	}
+				}
+				stateChangeEvent = void(0);
+			} else {
+				stateChangeHandler(appState);
+			}
 		};
 		/***************/
 		/* Initialize Application Data Context
