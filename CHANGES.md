@@ -126,13 +126,13 @@
 - __Deprecate__: `domainModel` prop in React's render component call and _replace_ with `controllerViewModel` 
 - _Replace_ default `this.state.domainDataContext` with `this.state.appContext`
 - add prop `enableRouting` to React.renderComponent component
-- Change `mixin.view` in `mixin.controllerView`
+- Change `mixin.main` to `mixin.controllerView`
 - Add `mixin.view` in order to specify a component as a View
+- Components that have `mixin.view` add/remove event listener for CustomEvent stateChange.
 - Add `notify` to ControllerViewModel in order to specify which View should be notified
 - Add `viewId` prop ti View components to help identify the View to be notified when using `notify`
 - Views no longer require any properties or state to be passed into them
-- Add `mixins` property to ControllerViewModel
-- Add ability for ControllerViewModel to mixin [IMVVAnimateMixin](https://github.com/entrendipity/imvvm-animate)
+- Add `mixins` property to enable ControllerViewModel to mixin [IMVVAnimateMixin](https://github.com/entrendipity/imvvm-animate)
 - `IMVVMAnimateMixin` adds the following properties to `this.state.appContext`
     + nextView
     + nextViewKey
@@ -155,7 +155,7 @@
 ### Breaking Changes
 - In the ControllerView i.e. the React component that references the IMVVM mixin `IMVVM.mixin.main`, change all references of `this.state.domainDataContext` to `this.state.appContext`
 - In the ControllerView i.e. the React component that references the IMVVM mixin `IMVVM.mixin.main`, change `IMVVM.mixin.main` to `IMVVM.mixin.controllerView`
-- In React.renderComponent change the prop `domainModel` to `controllerViewModel`
-- If pushState Routing is being used then, in React.renderComponent add prop `enableRouting = {true}` change the prop `domainModel` to `controllerViewModel`
+- In React.renderComponent change the ControllerView Component prop `domainModel` to `controllerViewModel`
+- If pushState Routing is being used then, in React.renderComponent add prop `enableRouting = {true}` to ControllerView Component
 - change setState optional argument `forget` to `remember` with default `true`. i.e. flip the boolean. Only applicable in ControllerViewModel and ViewModels
-- ___Update all `createXXX` calls to reflect the new names___
+- ___Update all `createXXX` calls to reflect the new names. Short form can be used___
