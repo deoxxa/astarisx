@@ -21,7 +21,17 @@ var mixin = {
       stateController.unmountView(this);
     }
   },
-	pushState: {
+	display: {
+    componentDidMount: function(){
+      this.props.appContext.cueDisplay(this);
+    }
+  },
+  page: {
+    componentDidMount: function(){
+      this.props.appContext.cuePage(this);
+    }
+  },  
+  pushState: {
 		componentDidMount: function(){
 			this.getDOMNode().addEventListener('click', this.onclick);
 		},
@@ -120,5 +130,52 @@ var mixin = {
     }
 	}
 };
+
+var viewMixin = mixin.view;
+
+var display = {
+  getInitialState: function(){
+    //If component isn't passed in it just returns appContext
+    return {appContext: stateController.initViewState()};
+  },
+  componentDidMount: function(){
+    //If component is passed it registers stateChange listener
+    stateController.initViewState(this);
+    this.state.appContext.cueDisplay(this);
+  },
+  componentWillUnmount: function(){
+    //remove event listener
+    stateController.unmountView(this);
+  }
+};
+var page = {
+  getInitialState: function(){
+    //If component isn't passed in it just returns appContext
+    return {appContext: stateController.initViewState()};
+  },
+  componentDidMount: function(){
+    //If component is passed it registers stateChange listener
+    stateController.initViewState(this);
+    this.state.appContext.cuePage(this);
+  },
+  componentWillUnmount: function(){
+    //remove event listener
+    stateController.unmountView(this);
+  }
+};
+
+Object.defineProperty(viewMixin, 'display', {
+  configurable: true,
+  enumerable: false,
+  writable: true,
+  value: display
+});
+
+Object.defineProperty(viewMixin, 'page', {
+  configurable: true,
+  enumerable: false,
+  writable: true,
+  value: page
+});
 
 module.exports = mixin;

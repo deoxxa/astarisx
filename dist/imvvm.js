@@ -752,7 +752,7 @@ var IMVVMClass = {
             descriptor[key] = this.originalSpec[key];
           } else {
             if(key !== 'getInitialState' && key !== 'getWatchedState' &&
-              key !== 'getRoutes' && key !== 'getViews' && key != 'getDefaultTransitions'){
+              key !== 'getRoutes' && key !== 'getDisplays' && key != 'getDefaultTransitions'){
               proto[key] = this.originalSpec[key];
             }
           }
@@ -825,7 +825,17 @@ var mixin = {
       stateController.unmountView(this);
     }
   },
-	pushState: {
+	display: {
+    componentDidMount: function(){
+      this.props.appContext.cueDisplay(this);
+    }
+  },
+  page: {
+    componentDidMount: function(){
+      this.props.appContext.cuePage(this);
+    }
+  },  
+  pushState: {
 		componentDidMount: function(){
 			this.getDOMNode().addEventListener('click', this.onclick);
 		},
@@ -924,6 +934,53 @@ var mixin = {
     }
 	}
 };
+
+var viewMixin = mixin.view;
+
+var display = {
+  getInitialState: function(){
+    //If component isn't passed in it just returns appContext
+    return {appContext: stateController.initViewState()};
+  },
+  componentDidMount: function(){
+    //If component is passed it registers stateChange listener
+    stateController.initViewState(this);
+    this.state.appContext.cueDisplay(this);
+  },
+  componentWillUnmount: function(){
+    //remove event listener
+    stateController.unmountView(this);
+  }
+};
+var page = {
+  getInitialState: function(){
+    //If component isn't passed in it just returns appContext
+    return {appContext: stateController.initViewState()};
+  },
+  componentDidMount: function(){
+    //If component is passed it registers stateChange listener
+    stateController.initViewState(this);
+    this.state.appContext.cuePage(this);
+  },
+  componentWillUnmount: function(){
+    //remove event listener
+    stateController.unmountView(this);
+  }
+};
+
+Object.defineProperty(viewMixin, 'display', {
+  configurable: true,
+  enumerable: false,
+  writable: true,
+  value: display
+});
+
+Object.defineProperty(viewMixin, 'page', {
+  configurable: true,
+  enumerable: false,
+  writable: true,
+  value: page
+});
 
 module.exports = mixin;
 
@@ -1064,12 +1121,6 @@ var initAppState = (function(appNamespace){
 		routeHash = {},
 		routeMapping = {},
 		routePath,
-		animationEnabled = false,
-		viewHash = {},
-		viewMapping = {},
-		view,
-		defaultAppViewDisplay = "Application",
-		viewPath,
 		external = false,
 		internal = false,
 		controllerViewModel;
@@ -1547,60 +1598,21 @@ var initAppState = (function(appNamespace){
 					delete appState[viewModel].constructor.originalSpec.getRoutes;
 	    	}
 
-				if('getViews' in appState[viewModel].constructor.originalSpec){
-					animationEnabled = true;
-					viewHash = appState[viewModel].constructor.originalSpec.getViews();
-					for(view in viewHash){
-						if(viewHash.hasOwnProperty(view)){
-							viewPath = ('path' in viewHash[view]) ? viewHash[view].path : void(0);
-							viewMapping[(viewHash[view].viewDisplay || viewModel) + "." + view] = {
-								viewKey: (viewHash[view].viewDisplay || viewModel) + "." + view,
-								viewContext: viewModel,
-								viewDisplay: (viewHash[view].viewDisplay || viewModel),
-								viewName: view,
-								component: viewHash[view].component,
-								viewPath: ('path' in viewHash[view]) ? viewHash[view].path : void(0),
-								pathIsFunc: (viewPath && typeof viewPath === 'function'),
-								displayIn: viewHash[view].displayIn,
-					      displayOut: viewHash[view].displayOut,
-					      itemIn: viewHash[view].itemIn,
-					      itemOut: viewHash[view].itemOut
-							};
-						}
-					}
-					delete appState[viewModel].constructor.originalSpec.getViews;
+	    	//This is if imvvm-animate mixin is used
+				if('getDisplays' in appState[viewModel].constructor.originalSpec){
+					appState.addDisplays(appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
+					delete appState[viewModel].constructor.originalSpec.getDisplays;
 				}
 			}
 	  }
 
-		if('getViews' in appState.constructor.originalSpec){
-			animationEnabled = true;
-			viewHash = appState.constructor.originalSpec.getViews();
-			for(view in viewHash){
-				if(viewHash.hasOwnProperty(view)){
-					viewPath = ('path' in viewHash[view]) ? viewHash[view].path : void(0);
-					viewMapping[(viewHash[view].viewDisplay || defaultAppViewDisplay) + "." + view] = {
-						viewKey: (viewHash[view].viewDisplay || defaultAppViewDisplay) + "." + view,
-						viewDisplay: (viewHash[view].viewDisplay || defaultAppViewDisplay),
-						viewName: view,
-						component: viewHash[view].component,
-						viewPath: ('path' in viewHash[view]) ? viewHash[view].path : void(0),
-						pathIsFunc: (viewPath && typeof viewPath === 'function'),
-						displayIn: viewHash[view].displayIn,
-			      displayOut: viewHash[view].displayOut,
-			      itemIn: viewHash[view].itemIn,
-			      itemOut: viewHash[view].itemOut
-					};
-				}
-			}
-			delete appState.constructor.originalSpec.getViews;
+		//This is if imvvm-animate mixin is used
+		if('getDisplays' in appState.constructor.originalSpec){
+			appState.addDisplays(appState.constructor.originalSpec.getDisplays());
+			delete appState.constructor.originalSpec.getDisplays;
 		}
 		
-	  if(animationEnabled){
-	  	appState.addViews(viewMapping);
-			viewMapping = void(0);
-	  }
-		delete appState.__proto__.addViews;
+		delete appState.__proto__.addDisplays;
 
 		if('getDefaultTransitions' in appState.constructor.originalSpec){
 			appState.addTransitions(appState.constructor.originalSpec.getDefaultTransitions());
