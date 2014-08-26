@@ -1,8 +1,34 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.IMVVM=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+require('custom-event-polyfill');
 var IMVVM = require('./src/core.js');
 module.exports = IMVVM;
 
-},{"./src/core.js":4}],2:[function(require,module,exports){
+},{"./src/core.js":5,"custom-event-polyfill":2}],2:[function(require,module,exports){
+// Polyfill for creating CustomEvents on IE9/10
+
+// code pulled from:
+// https://github.com/d4tocchini/customevent-polyfill
+// https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent#Polyfill
+
+if (!window.CustomEvent) {
+    var CustomEvent = function(event, params) {
+        var evt;
+        params = params || {
+            bubbles: false,
+            cancelable: false,
+            detail: undefined
+        };
+
+        evt = document.createEvent("CustomEvent");
+        evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+        return evt;
+    };
+
+    CustomEvent.prototype = window.Event.prototype;
+    window.CustomEvent = CustomEvent; // expose definition to window
+}
+
+},{}],3:[function(require,module,exports){
 
 ;(function(){
 
@@ -448,7 +474,7 @@ module.exports = IMVVM;
 
 })();
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 
 var utils = require('./utils');
 var extend = utils.extend;
@@ -632,7 +658,7 @@ var ControllerViewModel = {
 
 module.exports = ControllerViewModel;
 
-},{"./utils":8}],4:[function(require,module,exports){
+},{"./utils":9}],5:[function(require,module,exports){
 
 var model = require('./model');
 var viewModel = require('./viewModel');
@@ -801,7 +827,7 @@ module.exports = {
   getTransition: controllerViewModel.getTransition
 };
 
-},{"./controllerViewModel":3,"./mixin":5,"./model":6,"./utils":8,"./viewModel":9,"page":2}],5:[function(require,module,exports){
+},{"./controllerViewModel":4,"./mixin":6,"./model":7,"./utils":9,"./viewModel":10,"page":3}],6:[function(require,module,exports){
 
 var stateController = require('./stateController');
 
@@ -984,7 +1010,7 @@ Object.defineProperty(viewMixin, 'page', {
 
 module.exports = mixin;
 
-},{"./stateController":7}],6:[function(require,module,exports){
+},{"./stateController":8}],7:[function(require,module,exports){
 
 var utils = require('./utils');
 var extend = utils.extend;
@@ -1077,7 +1103,7 @@ var Model = {
 
 module.exports = Model;
 
-},{"./utils":8}],7:[function(require,module,exports){
+},{"./utils":9}],8:[function(require,module,exports){
 /* Polyfill CustomEvent - might look at synthetic Events*/
 // (function () {
 //   function CustomEvent ( event, params ) {
@@ -1668,7 +1694,7 @@ module.exports = {
 	initViewState: initViewState,
 	unmountView: unmountView
 }
-},{"./utils":8,"page":2}],8:[function(require,module,exports){
+},{"./utils":9,"page":3}],9:[function(require,module,exports){
 
 var utils = {
   
@@ -1730,7 +1756,7 @@ var utils = {
 };
 
 module.exports = utils;
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 
 var utils = require('./utils');
 var extend = utils.extend;
@@ -1826,5 +1852,5 @@ var ViewModel = {
 
 module.exports = ViewModel;
 
-},{"./utils":8}]},{},[1])(1)
+},{"./utils":9}]},{},[1])(1)
 });
