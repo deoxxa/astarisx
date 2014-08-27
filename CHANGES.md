@@ -159,10 +159,11 @@
     + addTransitions (system)
 - Added `getDefaultTranstions()` to `ControllerViewModel`
 - Added `getDisplays()` to `ViewModel`
-- Added ability for Route Path during page transitions
+- Added ability for Route Path during page transitions. pass in , `transitionTo` as last argument to route handler
 - Add `containerType` to `this.state` for Views, Displays and Pages
 
 ### Breaking Changes
+- All deprecated items are removed and not available
 - In the ControllerView i.e. the React component that references the IMVVM mixin `IMVVM.mixin.main`, change all references of `this.state.domainDataContext` to `this.state.appContext`
 - In the ControllerView i.e. the React component that references the IMVVM mixin `IMVVM.mixin.main`, change `IMVVM.mixin.main` to `IMVVM.mixin.controllerView`
 - In React.renderComponent change the ControllerView Component prop `domainModel` to `controllerViewModel`
