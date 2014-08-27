@@ -1,12 +1,12 @@
 {
-  "name": "imvvm",
+  "name": "astarisx",
   "version": "0.8.8",
-  "homepage": "https://github.com/entrendipity/imvvm",
+  "homepage": "https://github.com/entrendipity/astarisx",
   "authors": [
     "Frank Panetta <frank.panetta@entrendipity.com.au>"
   ],
-  "description": "Immutable MVVM for React",
-  "main": "dist/imvvm.js",
+  "description": "MVVM for React",
+  "main": "dist/astarisx.js",
   "moduleType": [
     "amd",
     "globals",
@@ -19,11 +19,8 @@
     "routing",
     "pushState",
     "mediaQuery",
-    "imvvm"
+    "astarisx"
   ],
-  "dependencies": {
-    "page": ">=1.3.7"
-  },
   "license": "MIT",
   "ignore": [
     "**/.*",
