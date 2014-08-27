@@ -5,7 +5,7 @@ Astarisx helps implement the Model-View-ViewModel pattern in [React](http://face
 
 #####Documentation: https://github.com/entrendipity/astarisx/wiki
 
-#####Example Applications: https://github.com/entrendipity/Astarisx.example
+#####Example Applications: https://github.com/entrendipity/astarisx.examples
 
 ## TL;DR: Fast Forward >>
 ### TodoMVC example code
