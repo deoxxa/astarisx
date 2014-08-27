@@ -5,7 +5,7 @@ Astarisx is a JavaScript library that helps implement the Model-View-ViewModel p
 
 #####Documentation: https://github.com/entrendipity/astarisx/wiki
 
-#####Example Applications: https://github.com/entrendipity/Astarisx.examples
+#####Example Applications: https://github.com/entrendipity/astarisx.examples
 
 ## TL;DR: Fast Forward >>
 
