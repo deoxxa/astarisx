@@ -22,7 +22,7 @@ mixInto(ModelBase, model.Mixin);
 mixInto(ViewModelBase, viewModel.Mixin);
 mixInto(ControllerViewModelBase, controllerViewModel.Mixin);
 
-var IMVVMClass = {
+var AstarisxClass = {
   createClass: function(ctor, classType, spec){
 
     var Constructor = function(){};
@@ -145,9 +145,9 @@ var IMVVMClass = {
   },
 };
 
-modelClassConstructor = IMVVMClass.createClass.bind(this, ModelBase, 'Model');
-viewModelClassConstructor = IMVVMClass.createClass.bind(this, ViewModelBase, 'ViewModel');
-controllerViewModelClassConstructor = IMVVMClass.createClass.bind(this, ControllerViewModelBase, 'ControllerViewModel');
+modelClassConstructor = AstarisxClass.createClass.bind(this, ModelBase, 'Model');
+viewModelClassConstructor = AstarisxClass.createClass.bind(this, ViewModelBase, 'ViewModel');
+controllerViewModelClassConstructor = AstarisxClass.createClass.bind(this, ControllerViewModelBase, 'ControllerViewModel');
 
 module.exports = {
   createModel: modelClassConstructor, // deprecated

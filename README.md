@@ -1,22 +1,22 @@
-IMVVM
+Astarisx
 =====
 
-IMVVM is a JavaScript library that helps implement the Model-View-ViewModel pattern in [React](http://facebook.github.io/react/) applications. It is designed to complement React. It's role is to provide a framework to create Models and ViewModels, with React acting as the View. The IMVVM API gets its inspiration from the React library. So it feels like React. Making it easy to understand and enabling you to be productive in a short period of time.
+Astarisx is a JavaScript library that helps implement the Model-View-ViewModel pattern in [React](http://facebook.github.io/react/) applications. It is designed to complement React. It's role is to provide a framework to create Models and ViewModels, with React acting as the View. The Astarisx API gets its inspiration from the React library. So it feels like React. Making it easy to understand and enabling you to be productive in a short period of time.
 
-#####Documentation: https://github.com/entrendipity/imvvm/wiki
+#####Documentation: https://github.com/entrendipity/astarisx/wiki
 
-#####Example Applications: https://github.com/entrendipity/IMVVM.example
+#####Example Applications: https://github.com/entrendipity/Astarisx.examples
 
 ## TL;DR: Fast Forward >>
 
-### IMVVM Application Flow
-![IMVVM Application Anatomy](https://github.com/entrendipity/imvvm/wiki/IMVVM.png)
+### Astarisx Application Flow
+![Astarisx Application Anatomy](https://github.com/entrendipity/astarisx/wiki/Astarisx.png)
 
 
 ### TodoMVC example code
 #### Create Model
 ```javascript
-var TodoClass = IMVVM.createModelClass({
+var TodoClass = Astarisx.createModelClass({
 
   getInitialState: function(){
     return {
@@ -58,7 +58,7 @@ var todoStateChangeHandler = function(state){
   var nextState = {todos:{}};
   nextState.selectedTodo = void(0);
   nextState.todos[state.id] = new Todo(this.todos[state.id], state);
-  nextState.todos = IMVVM.extend(this.todos, nextState.todos);
+  nextState.todos = Astarisx.extend(this.todos, nextState.todos);
   this.setState(nextState);
 };
 
@@ -66,7 +66,7 @@ var Todo = function(){
   return new TodoClass(todoStateChangeHandler).apply(this, arguments);
 };
 
-var TodoViewModel = IMVVM.createViewModel({
+var TodoViewModel = Astarisx.createViewModel({
   
   getInitialState: function(){
     return { todos: {} };
@@ -104,15 +104,15 @@ var TodoViewModel = IMVVM.createViewModel({
       text: text
     }, true);
 
-    var nextTodos = IMVVM.extend(this.todos);
+    var nextTodos = Astarisx.extend(this.todos);
     nextTodos[todo.id] = todo;    
-    this.setState({todos: IMVVM.extend(this.todos, nextTodos)});
+    this.setState({todos: Astarisx.extend(this.todos, nextTodos)});
   },
 
   selectToEdit: function(id) {
     var nextState = {};
     nextState.selectedTodo = new Todo(this.todos[id]);
-    nextState.todos = IMVVM.extend(this.todos);
+    nextState.todos = Astarisx.extend(this.todos);
     nextState.todos[id] = nextState.selectedTodo;
     this.setState(nextState);
   },
@@ -120,7 +120,7 @@ var TodoViewModel = IMVVM.createViewModel({
   toggleComplete: function(todo) {
     var nextTodos = {};
     nextTodos[todo.id] = new Todo(todo, {complete: !todo.complete});
-    nextTodos = IMVVM.extend(this.todos, nextTodos);
+    nextTodos = Astarisx.extend(this.todos, nextTodos);
     this.setState({todos: nextTodos});
   },
 
@@ -136,7 +136,7 @@ var TodoViewModel = IMVVM.createViewModel({
         }
       } 
     }
-    nextTodos = IMVVM.extend(this.todos, nextTodos);
+    nextTodos = Astarisx.extend(this.todos, nextTodos);
     this.setState({todos: nextTodos});
   },
 
@@ -165,7 +165,7 @@ var TodoViewModel = IMVVM.createViewModel({
 
 #### Create ControllerViewModel
 ```javascript
-var TodoControllerViewModel = IMVVM.createControllerViewModelClass({
+var TodoControllerViewModel = Astarisx.createControllerViewModelClass({
   /**
   * Expose the TodoViewModel to the "Controller-View" as `Todos` Data Context.
   * This will be attached to this.state.appContext
@@ -186,7 +186,7 @@ var TodoApp = React.createClass({
   * Mixin sets up Event handler for 'change' events coming from
   * TodoControllerViewModel data context
   */
-  mixins: [IMVVM.mixin.main],
+  mixins: [Astarisx.mixin.main],
 
   render: function() {
     var todosDataContext = this.state.appContext.Todos;

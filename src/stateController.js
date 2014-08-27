@@ -16,7 +16,7 @@ var page = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
 var updateStatic = utils.updateStatic;
-var __NAMESPACE__ = '__IMVVM__';
+var __NAMESPACE__ = '__Astarisx__';
 var initViewState, unmountView;
 
 var initAppState = (function(appNamespace){
@@ -518,7 +518,7 @@ var initAppState = (function(appNamespace){
 					delete appState[viewModel].constructor.originalSpec.getRoutes;
 	    	}
 
-	    	//This is if imvvm-animate mixin is used
+	    	//This is if astarisx-animate mixin is used
 				if('getDisplays' in appState[viewModel].constructor.originalSpec){
 					appState.addDisplays(appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
 					delete appState[viewModel].constructor.originalSpec.getDisplays;
@@ -526,7 +526,7 @@ var initAppState = (function(appNamespace){
 			}
 	  }
 
-		//This is if imvvm-animate mixin is used
+		//This is if astarisx-animate mixin is used
 		if('getDisplays' in appState.constructor.originalSpec){
 			appState.addDisplays(appState.constructor.originalSpec.getDisplays());
 			delete appState.constructor.originalSpec.getDisplays;

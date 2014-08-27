@@ -111,6 +111,7 @@
 
 ## 0.9.0
 
+- __Deprecate__: IMVVM -> Change name to Astarisx
 - Add `delay` param to setState. => `delay` is the number of milliseconds (thousandths of a second) that the function call should be delayed by and is passed as the last argument when there is a callback function used. The effect is sequential updates (no batching).
 - setState optional argument `forget` is now `remember`. default = `true`. Only applicable in ControllerViewModel and ViewModels
 - __Deprecate__: createModel()
@@ -164,6 +165,7 @@
 
 ### Breaking Changes
 - All deprecated items are removed and not available
+- `IMVVM` -> Change all references to `Astarisx`
 - In the ControllerView i.e. the React component that references the IMVVM mixin `IMVVM.mixin.main`, change all references of `this.state.domainDataContext` to `this.state.appContext`
 - In the ControllerView i.e. the React component that references the IMVVM mixin `IMVVM.mixin.main`, change `IMVVM.mixin.main` to `IMVVM.mixin.controllerView`
 - In React.renderComponent change the ControllerView Component prop `domainModel` to `controllerViewModel`

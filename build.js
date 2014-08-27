@@ -3,18 +3,18 @@ var path = require('path');
 
 var compressor = require('yuicompressor');
 var browserify = require('browserify');
-var writer = fs.createWriteStream(path.normalize('dist/imvvm.js'));
+var writer = fs.createWriteStream(path.normalize('dist/astarisx.js'));
 
-browserify({standalone: "IMVVM"}).add('./main.js').bundle().pipe(writer);
+browserify({standalone: "Astarisx"}).add('./main.js').bundle().pipe(writer);
 
 writer.on('finish', function() {
     console.error('Write successful. Compressing...');
-    compressor.compress('./dist/imvvm.js', {
+    compressor.compress('./dist/astarisx.js', {
         //Compressor Options:
         charset: 'utf8',
         type: 'js',
     }, function(err, data, extra) {
-      fs.writeFile("./dist/imvvm.min.js", data, function(err) {
+      fs.writeFile("./dist/astarisx.min.js", data, function(err) {
         if(err) {
             console.error(err);
         } else {

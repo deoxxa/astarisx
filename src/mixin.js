@@ -98,13 +98,13 @@ var mixin = {
       // same page
       var orig = path + el.hash;
       e.preventDefault();
-      path = path.replace(IMVVM.page.base(), '');
-      if (IMVVM.page.base() && orig == path ||
+      path = path.replace(Astarisx.page.base(), '');
+      if (Astarisx.page.base() && orig == path ||
         el.href === el.baseURI + el.search + (el.hash || '')) {
           return;
         }
 
-      IMVVM.page.show(orig);
+      Astarisx.page.show(orig);
     }
   },
   mediaQuery: {
