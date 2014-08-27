@@ -128,29 +128,39 @@
 - add prop `enableRouting` to React.renderComponent component
 - Change `mixin.main` to `mixin.controllerView`
 - Add `mixin.view` in order to specify a component as a View
-- Components that have `mixin.view` add/remove event listener for CustomEvent stateChange.
+- Add `mixin.display` in order to specify a component as a Display. Animation display requires `appContext` to be passed as prop.
+- Add `mixin.page` in order to specify a component as a Page. Animation page requires `appContext` to be passed as prop.
+- Add `mixin.view.display` in order to specify a component as a Display View. Animation display no props required to be passed as prop.
+- Add `mixin.view.page` in order to specify a component as a Page View. Animation page no props required to be passed as prop.
+- Components that have `mixin.view`, `mixin.view.display`, `mixin.view.page` add/remove event a listener for CustomEvent stateChange.
 - Add `notify` to ControllerViewModel in order to specify which View should be notified
-- Add `viewId` prop ti View components to help identify the View to be notified when using `notify`
-- Views no longer require any properties or state to be passed into them
+- Add optional `viewKey` prop to View components to help identify the View to be notified when using `notify`
+- Auto add `viewKey` prop to Views if animation mixin used.
+- Auto add `_container` prop to Displays and Pages
+- Views no longer require properties or state to be passed in
 - Add `mixins` property to enable ControllerViewModel to mixin [IMVVAnimateMixin](https://github.com/entrendipity/imvvm-animate)
 - `IMVVMAnimateMixin` adds the following properties to `this.state.appContext`
-    + nextView
-    + nextViewKey
-    + viewDisplay
-    + viewName
+    + display
+    + displayGroup
+    + displayKey
+    + page
 - `IMVVMAnimateMixin` adds the following functions to `this.state.appContext`
     + animate
-    + transitionDisplayIn
-    + transitionDisplayOut
-    + transitionItemIn
-    + transitionItemOut
-    + transitionTo
-    + addViews (system)
+    + getDisplay
+    + cueDisplay
+    + dropDisplay
+    + getPage
+    + cuePage
+    + dropPage
+    + addListItem
+    + dropListItem
+    + show
+    + addDisplays (system)
     + addTransitions (system)
 - Added `getDefaultTranstions()` to `ControllerViewModel`
-- Added `getViews()` to `ViewModel`
+- Added `getDisplays()` to `ViewModel`
 - Added ability for Route Path during page transitions
-- `IMVVMAnimateMixin` functions return Promises.
+- Add `containerType` to `this.state` for Views, Displays and Pages
 
 ### Breaking Changes
 - In the ControllerView i.e. the React component that references the IMVVM mixin `IMVVM.mixin.main`, change all references of `this.state.domainDataContext` to `this.state.appContext`
