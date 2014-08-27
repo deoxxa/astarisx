@@ -131,8 +131,6 @@ var mixin = {
 	}
 };
 
-var viewMixin = mixin.view;
-
 var display = {
   getInitialState: function(){
     //If component isn't passed in it just returns appContext
@@ -148,6 +146,7 @@ var display = {
     stateController.unmountView(this);
   }
 };
+
 var page = {
   getInitialState: function(){
     //If component isn't passed in it just returns appContext
@@ -164,14 +163,14 @@ var page = {
   }
 };
 
-Object.defineProperty(viewMixin, 'display', {
+Object.defineProperty(mixin.view, 'display', {
   configurable: true,
   enumerable: false,
   writable: true,
   value: display
 });
 
-Object.defineProperty(viewMixin, 'page', {
+Object.defineProperty(mixin.view, 'page', {
   configurable: true,
   enumerable: false,
   writable: true,
