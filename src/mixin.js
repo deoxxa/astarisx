@@ -1,27 +1,27 @@
 
-var stateController = require('./stateController');
+var stateManager = require('./stateManager');
 
 var mixin = {
-  controllerView: {
+  ui: {
     getInitialState: function(){
-      return {appContext: stateController.initAppState(this)};
+      return {appContext: stateManager.initAppState(this)};
     }
   },
   view: {
     getInitialState: function(){
       //If component isn't passed in just returns appContext
       return {
-        appContext: stateController.initViewState(),
+        appContext: stateManager.initViewState(),
         containerType: "view"
       };
     },
     componentDidMount: function(){
       //If component is passed registers stateChange listener
-      stateController.initViewState(this);
+      stateManager.initViewState(this);
     },
     componentWillUnmount: function(){
       //remove event listener
-      stateController.unmountView(this);
+      stateManager.unmountView(this);
     }
   },
   display: {
@@ -148,18 +148,18 @@ var display = {
   getInitialState: function(){
     //If component isn't passed in it just returns appContext
     return {
-      appContext: stateController.initViewState(),
+      appContext: stateManager.initViewState(),
       containerType: "display"
     };
   },
   componentDidMount: function(){
     //If component is passed it registers stateChange listener
-    stateController.initViewState(this);
+    stateManager.initViewState(this);
     this.state.appContext.cueDisplay(this);
   },
   componentWillUnmount: function(){
     //remove event listener
-    stateController.unmountView(this);
+    stateManager.unmountView(this);
   }
 };
 
@@ -167,18 +167,18 @@ var page = {
   getInitialState: function(){
     //If component isn't passed in it just returns appContext
     return {
-      appContext: stateController.initViewState(),
+      appContext: stateManager.initViewState(),
       containerType: "page"
     };
   },
   componentDidMount: function(){
     //If component is passed it registers stateChange listener
-    stateController.initViewState(this);
+    stateManager.initViewState(this);
     this.state.appContext.cuePage(this);
   },
   componentWillUnmount: function(){
     //remove event listener
-    stateController.unmountView(this);
+    stateManager.unmountView(this);
   }
 };
 

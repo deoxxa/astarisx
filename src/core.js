@@ -1,4 +1,3 @@
-
 var model = require('./model');
 var viewModel = require('./viewModel');
 var controllerViewModel = require('./controllerViewModel');

@@ -1,17 +1,3 @@
-/* Polyfill CustomEvent - might look at synthetic Events*/
-// (function () {
-//   function CustomEvent ( event, params ) {
-//     params = params || { bubbles: false, cancelable: false, detail: undefined };
-//     var evt = document.createEvent( 'CustomEvent' );
-//     evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
-//     return evt;
-//    };
-
-//   CustomEvent.prototype = window.Event.prototype;
-
-//   window.CustomEvent = CustomEvent;
-// })();
-
 var page = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
@@ -364,7 +350,7 @@ var initAppState = (function(appNamespace){
 			}
 			
 			/***************/
-			/* All the work is done! -> Notify the ControllerView
+			/* All the work is done! -> Notify the UI
 			/* and any other mounted Views
 			/***************/
 			calledBack = false;

@@ -660,7 +660,6 @@ var ControllerViewModel = {
 module.exports = ControllerViewModel;
 
 },{"./utils":9}],5:[function(require,module,exports){
-
 var model = require('./model');
 var viewModel = require('./viewModel');
 var controllerViewModel = require('./controllerViewModel');
@@ -830,29 +829,29 @@ module.exports = {
 
 },{"./controllerViewModel":4,"./mixin":6,"./model":7,"./utils":9,"./viewModel":10,"page":3}],6:[function(require,module,exports){
 
-var stateController = require('./stateController');
+var stateManager = require('./stateManager');
 
 var mixin = {
-  controllerView: {
+  ui: {
     getInitialState: function(){
-      return {appContext: stateController.initAppState(this)};
+      return {appContext: stateManager.initAppState(this)};
     }
   },
   view: {
     getInitialState: function(){
       //If component isn't passed in just returns appContext
       return {
-        appContext: stateController.initViewState(),
+        appContext: stateManager.initViewState(),
         containerType: "view"
       };
     },
     componentDidMount: function(){
       //If component is passed registers stateChange listener
-      stateController.initViewState(this);
+      stateManager.initViewState(this);
     },
     componentWillUnmount: function(){
       //remove event listener
-      stateController.unmountView(this);
+      stateManager.unmountView(this);
     }
   },
   display: {
@@ -979,18 +978,18 @@ var display = {
   getInitialState: function(){
     //If component isn't passed in it just returns appContext
     return {
-      appContext: stateController.initViewState(),
+      appContext: stateManager.initViewState(),
       containerType: "display"
     };
   },
   componentDidMount: function(){
     //If component is passed it registers stateChange listener
-    stateController.initViewState(this);
+    stateManager.initViewState(this);
     this.state.appContext.cueDisplay(this);
   },
   componentWillUnmount: function(){
     //remove event listener
-    stateController.unmountView(this);
+    stateManager.unmountView(this);
   }
 };
 
@@ -998,18 +997,18 @@ var page = {
   getInitialState: function(){
     //If component isn't passed in it just returns appContext
     return {
-      appContext: stateController.initViewState(),
+      appContext: stateManager.initViewState(),
       containerType: "page"
     };
   },
   componentDidMount: function(){
     //If component is passed it registers stateChange listener
-    stateController.initViewState(this);
+    stateManager.initViewState(this);
     this.state.appContext.cuePage(this);
   },
   componentWillUnmount: function(){
     //remove event listener
-    stateController.unmountView(this);
+    stateManager.unmountView(this);
   }
 };
 
@@ -1031,7 +1030,7 @@ Object.defineProperty(mixin.view, 'page', {
 
 module.exports = mixin;
 
-},{"./stateController":8}],7:[function(require,module,exports){
+},{"./stateManager":8}],7:[function(require,module,exports){
 
 var utils = require('./utils');
 var extend = utils.extend;
@@ -1125,20 +1124,6 @@ var Model = {
 module.exports = Model;
 
 },{"./utils":9}],8:[function(require,module,exports){
-/* Polyfill CustomEvent - might look at synthetic Events*/
-// (function () {
-//   function CustomEvent ( event, params ) {
-//     params = params || { bubbles: false, cancelable: false, detail: undefined };
-//     var evt = document.createEvent( 'CustomEvent' );
-//     evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
-//     return evt;
-//    };
-
-//   CustomEvent.prototype = window.Event.prototype;
-
-//   window.CustomEvent = CustomEvent;
-// })();
-
 var page = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
@@ -1491,7 +1476,7 @@ var initAppState = (function(appNamespace){
 			}
 			
 			/***************/
-			/* All the work is done! -> Notify the ControllerView
+			/* All the work is done! -> Notify the UI
 			/* and any other mounted Views
 			/***************/
 			calledBack = false;
@@ -1716,7 +1701,6 @@ module.exports = {
 	unmountView: unmountView
 }
 },{"./utils":9,"page":3}],9:[function(require,module,exports){
-
 var utils = {
   
   extend: function () {
@@ -1778,7 +1762,6 @@ var utils = {
 
 module.exports = utils;
 },{}],10:[function(require,module,exports){
-
 var utils = require('./utils');
 var extend = utils.extend;
 
