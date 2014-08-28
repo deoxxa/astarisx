@@ -186,7 +186,7 @@ var TodoApp = React.createClass({
   * Mixin sets up Event handler for 'change' events coming from
   * TodoControllerViewModel data context
   */
-  mixins: [Astarisx.mixin.main],
+  mixins: [Astarisx.mixin.ui],
 
   render: function() {
     var todosDataContext = this.state.appContext.Todos;
