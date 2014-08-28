@@ -778,7 +778,7 @@ var AstarisxClass = {
             descriptor[key] = this.originalSpec[key];
           } else {
             if(key !== 'getInitialState' && key !== 'getWatchedState' &&
-              key !== 'getRoutes' && key !== 'getDisplays' && key != 'getDefaultTransitions'){
+              key !== 'getRoutes' && key !== 'getDisplays' && key != 'getTransitions'){
               proto[key] = this.originalSpec[key];
             }
           }
@@ -1646,9 +1646,9 @@ var initAppState = (function(appNamespace){
 		
 		delete appState.__proto__.addDisplays;
 
-		if('getDefaultTransitions' in appState.constructor.originalSpec){
-			appState.addTransitions(appState.constructor.originalSpec.getDefaultTransitions());
-			delete appState.constructor.originalSpec.getDefaultTransitions;
+		if('getTransitions' in appState.constructor.originalSpec){
+			appState.addTransitions(appState.constructor.originalSpec.getTransitions());
+			delete appState.constructor.originalSpec.getTransitions;
 		}
 		delete appState.__proto__.addTransitions;
 

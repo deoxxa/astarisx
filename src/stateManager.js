@@ -520,9 +520,9 @@ var initAppState = (function(appNamespace){
 		
 		delete appState.__proto__.addDisplays;
 
-		if('getDefaultTransitions' in appState.constructor.originalSpec){
-			appState.addTransitions(appState.constructor.originalSpec.getDefaultTransitions());
-			delete appState.constructor.originalSpec.getDefaultTransitions;
+		if('getTransitions' in appState.constructor.originalSpec){
+			appState.addTransitions(appState.constructor.originalSpec.getTransitions());
+			delete appState.constructor.originalSpec.getTransitions;
 		}
 		delete appState.__proto__.addTransitions;
 

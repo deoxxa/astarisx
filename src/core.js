@@ -116,7 +116,7 @@ var AstarisxClass = {
             descriptor[key] = this.originalSpec[key];
           } else {
             if(key !== 'getInitialState' && key !== 'getWatchedState' &&
-              key !== 'getRoutes' && key !== 'getDisplays' && key != 'getDefaultTransitions'){
+              key !== 'getRoutes' && key !== 'getDisplays' && key != 'getTransitions'){
               proto[key] = this.originalSpec[key];
             }
           }
