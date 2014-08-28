@@ -1,7 +1,7 @@
 Astarisx
 =====
 
-Astarisx is a JavaScript library that helps implement the Model-View-ViewModel pattern in [React](http://facebook.github.io/react/) applications. It is designed to complement React. It's role is to provide a framework to create Models and ViewModels, with React acting as the View. The Astarisx API gets its inspiration from the React library. So it feels like React. Making it easy to understand and enabling you to be productive in a short period of time.
+Highly Composable Application Architecture for building [React](http://facebook.github.io/react/) Applications.
 
 #####Documentation: https://github.com/entrendipity/astarisx/wiki
 
@@ -9,7 +9,7 @@ Astarisx is a JavaScript library that helps implement the Model-View-ViewModel p
 
 ## TL;DR: Fast Forward >>
 
-### Astarisx Application Flow
+### Astarisx Application Anatomy
 ![Astarisx Application Anatomy](https://github.com/entrendipity/astarisx/wiki/Astarisx.png)
 
 
