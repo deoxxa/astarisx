@@ -8,7 +8,7 @@ Highly Composable Application Architecture for building [React](http://facebook.
 ## Usage
 Astarisx can be loaded as:
 
-standalone. `Astarisx` is exposed as a global variable
+-   standalone. `Astarisx` is exposed as a global variable
 
 ```javscript
  <script src="astarisx.min.js"></script>
