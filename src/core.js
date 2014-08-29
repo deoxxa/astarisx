@@ -149,18 +149,13 @@ viewModelClassConstructor = AstarisxClass.createClass.bind(this, ViewModelBase, 
 controllerViewModelClassConstructor = AstarisxClass.createClass.bind(this, ControllerViewModelBase, 'ControllerViewModel');
 
 module.exports = {
-  createModel: modelClassConstructor, // deprecated
   createModelClass: modelClassConstructor,
   createMClass: modelClassConstructor,
-  createViewModel: viewModelClassConstructor, // deprecated
   createVMClass: viewModelClassConstructor,
   createViewModelClass: viewModelClassConstructor,
-  createDomainViewModel: controllerViewModelClassConstructor, // deprecated
   createControllerViewModelClass: controllerViewModelClassConstructor,
   createCVMClass: controllerViewModelClassConstructor,
   mixin: mixin,
   extend: extend,
-  page: page,
-  getView: controllerViewModel.getView,
-  getTransition: controllerViewModel.getTransition
+  page: page
 };
