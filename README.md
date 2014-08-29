@@ -5,6 +5,35 @@ Highly Composable Application Architecture for building [React](http://facebook.
 
 #####Documentation: https://github.com/entrendipity/astarisx/wiki
 
+## Usage
+Astarisx can be loaded as:
+
+standalone. `Astarisx` is exposed as a global variable
+
+```javscript
+ <script src="astarisx.min.js"></script>
+```
+
+-   a Node.js module
+
+```
+$ npm install astarisx
+```
+
+-   a Bower module
+
+```
+$ bower install astarisx
+```
+
+-   a RequireJS module
+
+```
+require(['./astarisx.min.js'], function (Astarisx) {
+    // Do something with Astarisx
+});
+```
+
 #####Example Applications: https://github.com/entrendipity/astarisx.examples
 
 ## TL;DR: Fast Forward >>
