@@ -1,12 +1,6 @@
 Astarisx
 =====
 
-<<<<<<< HEAD
-Astarisx helps implement the Model-View-ViewModel pattern in [React](http://facebook.github.io/react/) applications. It's role is to provide the framework to create Models and ViewModels, with React acting as the View. It is designed to complement React. The Astarisx API gets its inspiration from the React library. So it feels like React. This makes it easy to understand and enables you to be productive in a short time frame.
-
-#####Documentation: https://github.com/entrendipity/astarisx/wiki
-
-=======
 Highly Composable Application Architecture for building [React](http://facebook.github.io/react/) Applications.
 
 #####Documentation: https://github.com/entrendipity/astarisx/wiki
@@ -40,7 +34,6 @@ require(['./astarisx.min.js'], function (Astarisx) {
 });
 ```
 
->>>>>>> v0.9.0
 #####Example Applications: https://github.com/entrendipity/astarisx.examples
 
 ## TL;DR: Fast Forward >>
@@ -52,11 +45,7 @@ require(['./astarisx.min.js'], function (Astarisx) {
 ### TodoMVC example code
 #### Create Model
 ```javascript
-<<<<<<< HEAD
-var TodoModel = Astarisx.createModel({
-=======
 var TodoClass = Astarisx.createModelClass({
->>>>>>> v0.9.0
 
   getInitialState: function(){
     return {
@@ -205,11 +194,7 @@ var TodoViewModel = Astarisx.createViewModel({
 
 #### Create ControllerViewModel
 ```javascript
-<<<<<<< HEAD
-var TodoDomainViewModel = Astarisx.createDomainViewModel({
-=======
 var TodoControllerViewModel = Astarisx.createControllerViewModelClass({
->>>>>>> v0.9.0
   /**
   * Expose the TodoViewModel to the "Controller-View" as `Todos` Data Context.
   * This will be attached to this.state.appContext
@@ -230,11 +215,7 @@ var TodoApp = React.createClass({
   * Mixin sets up Event handler for 'change' events coming from
   * TodoControllerViewModel data context
   */
-<<<<<<< HEAD
-  mixins: [Astarisx.mixin.main],
-=======
   mixins: [Astarisx.mixin.ui],
->>>>>>> v0.9.0
 
   render: function() {
     var todosDataContext = this.state.appContext.Todos;
