@@ -196,7 +196,7 @@ var TodoViewModel = Astarisx.createViewModel({
 ```javascript
 var TodoControllerViewModel = Astarisx.createControllerViewModelClass({
   /**
-  * Expose the TodoViewModel to the "Controller-View" as `Todos` Data Context.
+  * Expose the TodoViewModel to the UI as `Todos` Data Context.
   * This will be attached to this.state.appContext
   */
   Todos: {
@@ -212,8 +212,8 @@ var TodoControllerViewModel = Astarisx.createControllerViewModelClass({
 ```javascript
 var TodoApp = React.createClass({
   /**
-  * Mixin sets up Event handler for 'change' events coming from
-  * TodoControllerViewModel data context
+  * ui mixin sets up Event handler/listener for 'stateChange'
+  * events dispatched from the State Manager
   */
   mixins: [Astarisx.mixin.ui],
 
