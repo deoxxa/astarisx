@@ -1,8 +1,8 @@
-
 var utils = require('./utils');
 var extend = utils.extend;
 
 var ViewModel = {
+
   Mixin: {
     construct: function(stateChangeHandler){
 

@@ -1,5 +1,4 @@
-'use strict'
+var Astarisx = require('./src/core.js');
+require('./lib/custom-event-polyfill');
 
-var IMVVM = require('./src/core.js');
-
-module.exports = IMVVM;
+module.exports = Astarisx;

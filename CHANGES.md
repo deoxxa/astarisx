@@ -91,7 +91,7 @@
 
 ## 0.8.4
 
-- Reference React DOM node directly to add event listener in mixin.pushState. No dependancy on jQuery ie. '$' making it easier to use in NodeJS
+- Reference React DOM node directly to add event listener in mixin.pushState. Removing dependancy on jQuery ie. '$' making it easier to use in NodeJS
 
 ## 0.8.5
 
@@ -107,8 +107,67 @@
 ## 0.8.7
 
 - Make Model `__stateChangeHanlder` property `enumerable` = `false`.
-- Fix `dataContextWillUpdate` bug: Undo\Redo did not show any state
+- Fix `dataContextWillUpdate` bug: Undo\Redo did not show State
 
-## 0.8.8
+## 0.9.0
 
+- __Deprecate__: IMVVM -> Change name to Astarisx
 - Add `delay` param to setState. => `delay` is the number of milliseconds (thousandths of a second) that the function call should be delayed by and is passed as the last argument when there is a callback function used. The effect is sequential updates (no batching).
+- setState optional argument `forget` is now `remember`. default = `true`. Only applicable in ControllerViewModel and ViewModels
+- __Deprecate__: createModel()
+- Add `createModelClass()` to _replace_ createModel()
+- Add `createMClass()` => short form for createModelClass()
+- __Deprecate__: createViewModel()
+- Add `createViewModelClass()` to _replace_ createViewModel() 
+- Add `createVMClass()` => short form for createViewModelClass()
+- __Deprecate__: createDomainViewModel()
+- Add `createControllerViewModelClass()` to _replace_ createDomainViewModel()
+- Add `createCVMClass()` => short form for createControllerViewModelClass()
+- __Deprecate__: `domainDataContext` as default prop in this.state.domainDataContext
+- __Deprecate__: `domainModel` prop in React's render component call and _replace_ with `controllerViewModel` 
+- _Replace_ default `this.state.domainDataContext` with `this.state.appContext`
+- add prop `enableRouting` to React.renderComponent component
+- Change `mixin.main` to `mixin.ui`
+- Add `mixin.view` in order to specify a component as a View
+- Add `mixin.display` in order to specify a component as a Display. Animation display requires `appContext` to be passed as prop.
+- Add `mixin.page` in order to specify a component as a Page. Animation page requires `appContext` to be passed as prop.
+- Add `mixin.view.display` in order to specify a component as a Display View. Animation display no props required to be passed as prop.
+- Add `mixin.view.page` in order to specify a component as a Page View. Animation page no props required to be passed as prop.
+- Components that have `mixin.view`, `mixin.view.display`, `mixin.view.page` add/remove event a listener for CustomEvent stateChange.
+- Add `notify` to ControllerViewModel in order to specify which View should be notified
+- Add optional `viewKey` prop to View components to help identify the View to be notified when using `notify`
+- Auto add `viewKey` prop to Views if animation mixin used.
+- Auto add `containerType` to Views, Displays and Pages `this.state`
+- Views no longer require properties or state to be passed in
+- Add `mixins` property to enable ControllerViewModel to mixin [IMVVAnimateMixin](https://github.com/entrendipity/imvvm-animate)
+- `AstarisxAnimate` adds the following properties to `this.state.appContext`
+    + display
+    + displayGroup
+    + displayKey
+    + page
+- `AstarisxAnimate` adds the following functions to `this.state.appContext`
+    + animate
+    + getDisplay
+    + cueDisplay
+    + dropDisplay
+    + getPage
+    + cuePage
+    + dropPage
+    + addListItem
+    + dropListItem
+    + show
+    + addDisplays (system)
+    + addTransitions (system)
+- Added `getTranstions()` to `ControllerViewModel`
+- Added `getDisplays()` to `ViewModel`
+- Added ability for Route Path during page transitions. pass in , `transitionTo` as last argument to route handler
+
+### Breaking Changes
+- All deprecated items are removed and not available
+- `IMVVM` -> Change all references to `Astarisx`
+- In the UI Container i.e. the React component that references `Astarisx.mixin.main`, change `Astarisx.mixin.main` to `Astarisx.mixin.ui`
+- In the UI Container i.e. the React component that references the Astarisx mixin `Astarisx.mixin.ui`, change all references of `this.state.domainDataContext` to `this.state.appContext`
+- In React.renderComponent change the UI Container Component prop `domainModel` to `controllerViewModel`
+- If pushState Routing is being used then, in React.renderComponent add prop `enableRouting = {true}` to UI Container Component
+- change setState optional argument `forget` to `remember` with default `true`. i.e. flip the boolean. Only applicable in ControllerViewModel and ViewModels
+- ___Update all `createXXX` calls to reflect the new names. Short form can be used___
