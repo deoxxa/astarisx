@@ -208,7 +208,7 @@ var TodoControllerViewModel = Astarisx.createControllerViewModelClass({
 });
 ```
 
-#### Hook up the View (Controller-View)
+#### Hook up the UI
 ```javascript
 var TodoApp = React.createClass({
   /**
