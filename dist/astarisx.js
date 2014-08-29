@@ -828,13 +828,18 @@ module.exports = {
 };
 
 },{"./controllerViewModel":4,"./mixin":6,"./model":7,"./utils":9,"./viewModel":10,"page":3}],6:[function(require,module,exports){
-
 var stateManager = require('./stateManager');
+var initState;
 
 var mixin = {
   ui: {
     getInitialState: function(){
-      return {appContext: stateManager.initAppState(this)};
+      initState = stateManager.initAppState(this);
+      return {appContext: initState.appContext};
+    },
+    componentDidMount: function(){
+      initState.callback();
+      initState = void(0);
     }
   },
   view: {
@@ -1621,7 +1626,7 @@ var initAppState = (function(appNamespace){
 	                  }.bind(appState);
 	                }
 									routeMapping[route].call(appState[dataContextName], ctx.params,
-									ctx.path, pathKey, ctx, appState.transitionTo.bind(appState));
+									ctx.path, pathKey, ctx, ('show' in appState) ? appState.show.bind(appState): void(0));
 								}
 								internal = false;
 							}.bind(this, viewModel, routeHash[routePath].path, routePath));
@@ -1674,23 +1679,28 @@ var initAppState = (function(appNamespace){
 			staticState = updateStatic(appState.constructor.originalSpec.__processedSpec__.statics, appState.state);
 		}
 
-		if('dataContextWillInitialize' in appState.constructor.originalSpec){
-			appState.constructor.originalSpec.dataContextWillInitialize.call(appState);
-			delete appState.constructor.originalSpec.dataContextWillInitialize;
-		}
-
-	  for(viewModel in domain){
-			if(domain.hasOwnProperty(viewModel)){
-				if('dataContextWillInitialize' in appState[viewModel].constructor.originalSpec){
-					appState[viewModel].constructor.originalSpec.dataContextWillInitialize.call(appState[viewModel]);
-					delete appState[viewModel].constructor.originalSpec.dataContextWillInitialize;
-				}
-			}
-		}
-
 	  Object.freeze(appState.state);
 	  Object.freeze(appState);
-	  return appState;
+
+	  return {
+      appContext: appState,
+      callback: function(){
+        // UI has mounted
+        if('dataContextWillInitialize' in appState.constructor.originalSpec){
+          appState.constructor.originalSpec.dataContextWillInitialize.call(appState);
+          delete appState.constructor.originalSpec.dataContextWillInitialize;
+        }
+
+        for(viewModel in domain){
+          if(domain.hasOwnProperty(viewModel)){
+            if('dataContextWillInitialize' in appState[viewModel].constructor.originalSpec){
+              appState[viewModel].constructor.originalSpec.dataContextWillInitialize.call(appState[viewModel]);
+              delete appState[viewModel].constructor.originalSpec.dataContextWillInitialize;
+            }
+          }
+        }
+      }
+    }
 	};
 	return initViewState;
 })(__NAMESPACE__);

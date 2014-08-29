@@ -1,10 +1,15 @@
-
 var stateManager = require('./stateManager');
+var initState;
 
 var mixin = {
   ui: {
     getInitialState: function(){
-      return {appContext: stateManager.initAppState(this)};
+      initState = stateManager.initAppState(this);
+      return {appContext: initState.appContext};
+    },
+    componentDidMount: function(){
+      initState.callback();
+      initState = void(0);
     }
   },
   view: {
