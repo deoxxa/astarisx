@@ -171,3 +171,7 @@
 - If pushState Routing is being used then, in React.renderComponent add prop `enableRouting = {true}` to UI Container Component
 - change setState optional argument `forget` to `remember` with default `true`. i.e. flip the boolean. Only applicable in ControllerViewModel and ViewModels
 - ___Update all `createXXX` calls to reflect the new names. Short form can be used___
+
+## 0.9.1
+
+- clean up stateManager.
