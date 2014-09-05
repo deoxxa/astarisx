@@ -123,7 +123,7 @@ var AstarisxClass = {
         }
       }
 
-      if(proto.constructor.classType === "ControllerViewModel" && !!Object.keys(viewModels).length){
+      if(proto.constructor.classType === "ControllerViewModel"){
         this.originalSpec.getViewModels = function(){
           return viewModels;
         }
