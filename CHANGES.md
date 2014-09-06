@@ -109,7 +109,7 @@
 - Make Model `__stateChangeHanlder` property `enumerable` = `false`.
 - Fix `dataContextWillUpdate` bug: Undo\Redo did not show State
 
-## 0.9.0
+## 0.9.0-beta
 
 - __Deprecate__: IMVVM -> Change name to Astarisx
 - Add `delay` param to setState. => `delay` is the number of milliseconds (thousandths of a second) that the function call should be delayed by and is passed as the last argument when there is a callback function used. The effect is sequential updates (no batching).
@@ -172,6 +172,11 @@
 - change setState optional argument `forget` to `remember` with default `true`. i.e. flip the boolean. Only applicable in ControllerViewModel and ViewModels
 - ___Update all `createXXX` calls to reflect the new names. Short form can be used___
 
-## 0.9.1
+## 0.9.1-beta
 
 - clean up stateManager.
+
+## 0.9.2-beta
+
+- Added `initializeDataContext(string)` to ControllerViewModel i.e. `this.state.appContext.intializeDataContext([dataContextName])`. This enabled `dataContextWillInitialize` calls to be deferred, allowing lazy loading of initial data.
+- Added `currentState()` to stateManager so that the current state can be retrieved.
