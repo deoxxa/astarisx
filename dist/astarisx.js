@@ -501,11 +501,29 @@ var ControllerViewModel = {
       };
 
       desc.proto.initializeDataContext = function(dataContext){
-        if((dataContext in this) && 'dataContextWillInitialize' in this[dataContext].constructor.originalSpec){
-          this[dataContext].constructor.originalSpec.dataContextWillInitialize.call(this[dataContext]);
-          delete this[dataContext].constructor.originalSpec.dataContextWillInitialize;
-          delete this[dataContext].__proto__.dataContextWillInitialize;
+        var dataContextArr = dataContext;
+        if(Object.prototype.toString.call(dataContext) === '[object String]'){
+          if(dataContext === '*'){
+            for(var vm in desc.viewModels){
+              if(desc.viewModels.hasOwnProperty(vm)){
+                if((vm in this) && 'dataContextWillInitialize' in this[vm].constructor.originalSpec){
+                  this[vm].constructor.originalSpec.dataContextWillInitialize.call(this[vm]);
+                  delete this[vm].constructor.originalSpec.dataContextWillInitialize;
+                  delete this[vm].__proto__.dataContextWillInitialize;
+                }
+              }
+            }
+            return;
+          }
+          dataContextArr = [dataContext];
         }
+        dataContextArr.forEach(function(context){
+          if((context in this) && 'dataContextWillInitialize' in this[context].constructor.originalSpec){
+            this[context].constructor.originalSpec.dataContextWillInitialize.call(this[context]);
+            delete this[context].constructor.originalSpec.dataContextWillInitialize;
+            delete this[context].__proto__.dataContextWillInitialize;
+          }
+        }.bind(this));
       }
       
       var ControllerViewModelClass = function(nextState, prevState, redoState, enableUndo,
@@ -806,7 +824,8 @@ var AstarisxClass = {
         freezeFields: autoFreeze,
         aliases: aliases,
         statics: statics,
-        hasStatic: hasStatic
+        hasStatic: hasStatic,
+        viewModels: viewModels
       };
       return this.originalSpec.__processedSpec__;
     };

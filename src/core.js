@@ -136,7 +136,8 @@ var AstarisxClass = {
         freezeFields: autoFreeze,
         aliases: aliases,
         statics: statics,
-        hasStatic: hasStatic
+        hasStatic: hasStatic,
+        viewModels: viewModels
       };
       return this.originalSpec.__processedSpec__;
     };
