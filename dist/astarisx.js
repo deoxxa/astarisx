@@ -499,6 +499,14 @@ var ControllerViewModel = {
           this.setState(this.nextState, this.nextState.nextState);
         }
       };
+
+      desc.proto.initializeDataContext = function(dataContext){
+        if((dataContext in this) && 'dataContextWillInitialize' in this[dataContext].constructor.originalSpec){
+          this[dataContext].constructor.originalSpec.dataContextWillInitialize.call(this[dataContext]);
+          delete this[dataContext].constructor.originalSpec.dataContextWillInitialize;
+          delete this[dataContext].__proto__.dataContextWillInitialize;
+        }
+      }
       
       var ControllerViewModelClass = function(nextState, prevState, redoState, enableUndo,
         routingEnabled, pushStateChanged, internal, remember) {
@@ -785,7 +793,7 @@ var AstarisxClass = {
         }
       }
 
-      if(proto.constructor.classType === "ControllerViewModel" && !!Object.keys(viewModels).length){
+      if(proto.constructor.classType === "ControllerViewModel"){
         this.originalSpec.getViewModels = function(){
           return viewModels;
         }
@@ -938,10 +946,8 @@ var mixin = {
     }
   },
   mediaQuery: {
-    closureFunc: function(id, mql, initializing){
-      (function(){
-        this.state.appContext.mediaChangeHandler.call(this.state.appContext, id, mql, initializing);
-      }.bind(this))();
+    mediaChangeHandler: function(id, mql, initializing){
+      stateManager.currentState().mediaChangeHandler.call(stateManager.currentState(), id, mql, initializing);
     },
     componentDidMount: function(){
       
@@ -959,11 +965,11 @@ var mixin = {
               id = rules[j].cssRules[0].selectorText.split("#");
               if(id.length === 2 && id[0] === ".media"){
                 mql = window.matchMedia(rules[j].media.mediaText);
-                mql.addListener(this.closureFunc.bind(this, id[1]));
+                mql.addListener(this.mediaChangeHandler.bind(this, id[1]));
                 if(initializing){
-                  this.closureFunc(id[1], mql, initializing);
+                  this.mediaChangeHandler(id[1], mql, initializing);
                 } else {
-                  this.closureFunc(mql);
+                  this.mediaChangeHandler(mql);
                 }
               }
             }
@@ -1680,26 +1686,23 @@ var initState = function(component) {
   return {
     appContext: appState,
     callback: function(){
-      // UI has mounted
+      // UI has mounted. Call dataContextWillInitialize on ControllerViewModel
       if('dataContextWillInitialize' in appState.constructor.originalSpec){
         appState.constructor.originalSpec.dataContextWillInitialize.call(appState);
         delete appState.constructor.originalSpec.dataContextWillInitialize;
-      }
-
-      for(viewModel in domain){
-        if(domain.hasOwnProperty(viewModel)){
-          if('dataContextWillInitialize' in appState[viewModel].constructor.originalSpec){
-            appState[viewModel].constructor.originalSpec.dataContextWillInitialize.call(appState[viewModel]);
-            delete appState[viewModel].constructor.originalSpec.dataContextWillInitialize;
-          }
-        }
+        delete appState.__proto__.dataContextWillInitialize;
       }
     }
   }
 };
 
+var getCurrentState = function(){
+  return appState;
+};
+
 module.exports = { 
 	initState: initState,
+  currentState: getCurrentState,
 	unmount: unmountView
 }
 },{"./utils":9,"page":3}],9:[function(require,module,exports){

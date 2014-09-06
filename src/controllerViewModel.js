@@ -21,6 +21,14 @@ var ControllerViewModel = {
           this.setState(this.nextState, this.nextState.nextState);
         }
       };
+
+      desc.proto.initializeDataContext = function(dataContext){
+        if((dataContext in this) && 'dataContextWillInitialize' in this[dataContext].constructor.originalSpec){
+          this[dataContext].constructor.originalSpec.dataContextWillInitialize.call(this[dataContext]);
+          delete this[dataContext].constructor.originalSpec.dataContextWillInitialize;
+          delete this[dataContext].__proto__.dataContextWillInitialize;
+        }
+      }
       
       var ControllerViewModelClass = function(nextState, prevState, redoState, enableUndo,
         routingEnabled, pushStateChanged, internal, remember) {

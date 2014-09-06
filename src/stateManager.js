@@ -554,25 +554,22 @@ var initState = function(component) {
   return {
     appContext: appState,
     callback: function(){
-      // UI has mounted
+      // UI has mounted. Call dataContextWillInitialize on ControllerViewModel
       if('dataContextWillInitialize' in appState.constructor.originalSpec){
         appState.constructor.originalSpec.dataContextWillInitialize.call(appState);
         delete appState.constructor.originalSpec.dataContextWillInitialize;
-      }
-
-      for(viewModel in domain){
-        if(domain.hasOwnProperty(viewModel)){
-          if('dataContextWillInitialize' in appState[viewModel].constructor.originalSpec){
-            appState[viewModel].constructor.originalSpec.dataContextWillInitialize.call(appState[viewModel]);
-            delete appState[viewModel].constructor.originalSpec.dataContextWillInitialize;
-          }
-        }
+        delete appState.__proto__.dataContextWillInitialize;
       }
     }
   }
 };
 
+var getCurrentState = function(){
+  return appState;
+};
+
 module.exports = { 
 	initState: initState,
+  currentState: getCurrentState,
 	unmount: unmountView
 }
