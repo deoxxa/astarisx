@@ -180,3 +180,7 @@
 
 - Added `initializeDataContext(string)` to ControllerViewModel i.e. `this.state.appContext.intializeDataContext([dataContextName])`. This enabled `dataContextWillInitialize` calls to be deferred, allowing lazy loading of initial data.
 - Added `currentState()` to stateManager so that the current state can be retrieved.
+
+## 0.9.3-beta
+
+- Allow Array of dataContext names to be passed to `initializeDataContext`. If empty args then all dataContexts will be initialized.

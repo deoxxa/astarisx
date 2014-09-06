@@ -502,19 +502,19 @@ var ControllerViewModel = {
 
       desc.proto.initializeDataContext = function(dataContext){
         var dataContextArr = dataContext;
-        if(Object.prototype.toString.call(dataContext) === '[object String]'){
-          if(dataContext === '*'){
-            for(var vm in desc.viewModels){
-              if(desc.viewModels.hasOwnProperty(vm)){
-                if((vm in this) && 'dataContextWillInitialize' in this[vm].constructor.originalSpec){
-                  this[vm].constructor.originalSpec.dataContextWillInitialize.call(this[vm]);
-                  delete this[vm].constructor.originalSpec.dataContextWillInitialize;
-                  delete this[vm].__proto__.dataContextWillInitialize;
-                }
+        if(dataContext === void(0)){
+          for(var vm in desc.viewModels){
+            if(desc.viewModels.hasOwnProperty(vm)){
+              if((vm in this) && 'dataContextWillInitialize' in this[vm].constructor.originalSpec){
+                this[vm].constructor.originalSpec.dataContextWillInitialize.call(this[vm]);
+                delete this[vm].constructor.originalSpec.dataContextWillInitialize;
+                delete this[vm].__proto__.dataContextWillInitialize;
               }
             }
-            return;
           }
+          return;
+        }
+        if(Object.prototype.toString.call(dataContext) === '[object String]'){
           dataContextArr = [dataContext];
         }
         dataContextArr.forEach(function(context){
