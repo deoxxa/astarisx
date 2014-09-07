@@ -184,3 +184,7 @@
 ## 0.9.3-beta
 
 - Allow Array of dataContext names to be passed to `initializeDataContext`. If empty args then all dataContexts will be initialized.
+
+## 0.9.4-beta
+
+- call ControllerViewModel's `dataContextWillInitialize` before UI container component mounts.
