@@ -851,17 +851,13 @@ module.exports = {
 
 },{"./controllerViewModel":4,"./mixin":6,"./model":7,"./utils":9,"./viewModel":10,"page":3}],6:[function(require,module,exports){
 var stateManager = require('./stateManager');
-var initState;
 
 var mixin = {
   ui: {
     getInitialState: function(){
-      initState = stateManager.initState(this);
-      return {appContext: initState.appContext};
-    },
-    componentDidMount: function(){
+      var initState = stateManager.initState(this);
       initState.callback();
-      initState = void(0);
+      return {appContext: initState.appContext};
     }
   },
   view: {
