@@ -10,8 +10,8 @@ module.exports = Astarisx;
 // code pulled from:
 // https://github.com/d4tocchini/customevent-polyfill
 // https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent#Polyfill
-
-if (!window.CustomEvent) {
+// modified by fattenap to test if function -> ie 11
+if (!window.CustomEvent || Object.prototype.toString.call(window.CustomEvent) !== '[object Function]') {
     var CustomEvent = function(event, params) {
         var evt;
         params = params || {

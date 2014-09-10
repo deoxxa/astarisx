@@ -188,3 +188,7 @@
 ## 0.9.4-beta
 
 - call ControllerViewModel's `dataContextWillInitialize` before UI container component mounts.
+
+## 0.9.5-beta
+
+- Bug Fix: IE11 CustomEvent polyfill wasn't working so added extra test to see if it was a function.
