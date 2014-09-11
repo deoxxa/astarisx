@@ -191,4 +191,9 @@
 
 ## 0.9.5-beta
 
-- Bug Fix: IE11 CustomEvent polyfill wasn't working so added extra test to see if it was a function.
+- Bug Fix: CustomEvent polyfill wasn't working for IE11, so added extra test to see if it was a function.
+
+## 0.9.6-beta
+
+- change CustomEvent polyfill test to use typeof.
+- if kind === 'array' then delete `set`. Can only update arrays via a function on the Model or ViewModel

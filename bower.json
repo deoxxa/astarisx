@@ -1,11 +1,11 @@
 {
   "name": "astarisx",
-  "version": "0.9.5-beta",
+  "version": "0.9.6-beta",
   "homepage": "https://github.com/entrendipity/astarisx",
   "authors": [
     "Frank Panetta <frank.panetta@entrendipity.com.au>"
   ],
-  "description": "Highly Composable Application Architecture for building React Applications",
+  "description": "Highly Composable Application Architecture for building Modern Client-Side Web Applications",
   "main": "dist/astarisx.js",
   "moduleType": [
     "amd",

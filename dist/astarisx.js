@@ -789,6 +789,10 @@ var AstarisxClass = {
                 } else if ((this.originalSpec[key].kind === 'instance' && proto.constructor.classType === "ViewModel") ||
                   this.originalSpec[key].kind === 'array') { //'instance' || 'array'
                   autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
+                  //if array then remove set. Can only update array via functions
+                  if(this.originalSpec[key].kind === 'array'){
+                    delete this.originalSpec[key].set;
+                  }
                 } else if (this.originalSpec[key].kind === 'static' && proto.constructor.classType === "ControllerViewModel") {
                   hasStatic = true;
                   statics[key] = void(0);
