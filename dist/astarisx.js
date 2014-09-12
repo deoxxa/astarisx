@@ -1182,12 +1182,14 @@ var appNamespace = '__Astarisx__',
 	controllerViewModel,
 	initialized = false,
 	listeners = {},
+	handlers = {},
 	hasListeners = false;
 
 var unmountView = function(component){
   	var viewKey = component.props.viewKey || component._rootNodeID;
-  	listeners[viewKey].removeEventListener("stateChange");
+  	listeners[viewKey].removeEventListener("stateChange", handlers[viewKey]);
   	delete listeners[viewKey];
+  	delete handlers[viewKey];
   	if(!!!Object.keys(listeners).length){
   		hasListeners = false;
   	}
@@ -1195,8 +1197,7 @@ var unmountView = function(component){
 
 var initState = function(component) {
 
-	var stateChangeHandler;
-
+	var stateChangeHandler, viewKey, node;
 	if(!initialized){
 	  initialized = true;
 		controllerViewModel = component.props.controllerViewModel;
@@ -1206,13 +1207,16 @@ var initState = function(component) {
 	    component.setState({appContext: applicationDataContext});
 	  };
   } else {
-  	if(component !== void(0)){
-  		var viewKey = component.props.viewKey || component._rootNodeID;
-  		stateChangeHandler = function(e){
+	    if (component !== void (0)) {
+  		viewKey = component.props.viewKey || component._rootNodeID;
+  		handlers[viewKey] = function(e){
 		    component.setState({appContext: e.detail});
-		  };
-  		listeners[viewKey] = component.getDOMNode();
-	  	listeners[viewKey].addEventListener("stateChange", stateChangeHandler);
+  		};
+  		node = component.getDOMNode();
+  		// if node is null i.e. return 'null' from render(). then create a dummy element
+  		// to attach the event listener to
+  		listeners[viewKey] = !!node ? node : document.createElement("div");
+	  	listeners[viewKey].addEventListener("stateChange", handlers[viewKey]);
 	  	hasListeners = true;
 	  	return;
   	}

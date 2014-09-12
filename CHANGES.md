@@ -197,3 +197,5 @@
 
 - change CustomEvent polyfill test to use typeof.
 - if kind === 'array' then delete `set`. Can only update arrays via a function on the Model or ViewModel
+- if return 'null' from render() within a View then create a dummy element to attach View event listener to
+- pass in handler when removing View event listener
