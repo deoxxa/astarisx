@@ -56,7 +56,7 @@
 ## 0.8.0
 
 - skipped version number
- 
+
 ## 0.8.1
 
 - Add pushState router
@@ -77,7 +77,7 @@
 - Bug fix: Domain Data Context watchedState did not link if it wasn't in appState.state during initialization
 - Added `dataContextWillInitialize` to DomainViewModel and ViewModels
 - setState callbacks now return an error as the first argument. i.e. callback(err, appContext) ***(Breaking Change) Add `error` argument to first param of setState callbacks***
-- setState can now be called with no arguments eg. this.setState() 
+- setState can now be called with no arguments eg. this.setState()
 - setState takes extra optional argument `forget` of Type Boolean. Only applicable in DomainViewModel and ViewModels
 
 ## 0.8.2
@@ -118,13 +118,13 @@
 - Add `createModelClass()` to _replace_ createModel()
 - Add `createMClass()` => short form for createModelClass()
 - __Deprecate__: createViewModel()
-- Add `createViewModelClass()` to _replace_ createViewModel() 
+- Add `createViewModelClass()` to _replace_ createViewModel()
 - Add `createVMClass()` => short form for createViewModelClass()
 - __Deprecate__: createDomainViewModel()
 - Add `createControllerViewModelClass()` to _replace_ createDomainViewModel()
 - Add `createCVMClass()` => short form for createControllerViewModelClass()
 - __Deprecate__: `domainDataContext` as default prop in this.state.domainDataContext
-- __Deprecate__: `domainModel` prop in React's render component call and _replace_ with `controllerViewModel` 
+- __Deprecate__: `domainModel` prop in React's render component call and _replace_ with `controllerViewModel`
 - _Replace_ default `this.state.domainDataContext` with `this.state.appContext`
 - add prop `enableRouting` to React.renderComponent component
 - Change `mixin.main` to `mixin.ui`
@@ -199,3 +199,7 @@
 - if kind === 'array' then delete `set`. Can only update arrays via a function on the Model or ViewModel
 - if return 'null' from render() within a View then create a dummy element to attach View event listener to
 - pass in handler when removing View event listener
+
+## 0.9.7-beta
+
+- enable intializeDataContext to accept restArgs to be passed to repective dataContext's dataContextWillInitizialize.

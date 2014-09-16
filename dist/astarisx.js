@@ -502,11 +502,12 @@ var ControllerViewModel = {
 
       desc.proto.initializeDataContext = function(dataContext){
         var dataContextArr = dataContext;
-        if(dataContext === void(0)){
+        var restArgs = Array.prototype.slice.call(arguments, desc.proto.initializeDataContext.length);
+        if(dataContext === void(0) || dataContext === '*'){
           for(var vm in desc.viewModels){
             if(desc.viewModels.hasOwnProperty(vm)){
               if((vm in this) && 'dataContextWillInitialize' in this[vm].constructor.originalSpec){
-                this[vm].constructor.originalSpec.dataContextWillInitialize.call(this[vm]);
+                this[vm].constructor.originalSpec.dataContextWillInitialize.apply(this[vm], restArgs);
                 delete this[vm].constructor.originalSpec.dataContextWillInitialize;
                 delete this[vm].__proto__.dataContextWillInitialize;
               }
@@ -519,13 +520,13 @@ var ControllerViewModel = {
         }
         dataContextArr.forEach(function(context){
           if((context in this) && 'dataContextWillInitialize' in this[context].constructor.originalSpec){
-            this[context].constructor.originalSpec.dataContextWillInitialize.call(this[context]);
+            this[context].constructor.originalSpec.dataContextWillInitialize.apply(this[context], restArgs);
             delete this[context].constructor.originalSpec.dataContextWillInitialize;
             delete this[context].__proto__.dataContextWillInitialize;
           }
         }.bind(this));
       }
-      
+
       var ControllerViewModelClass = function(nextState, prevState, redoState, enableUndo,
         routingEnabled, pushStateChanged, internal, remember) {
 
@@ -540,9 +541,9 @@ var ControllerViewModel = {
 
         if(!init){
           if(routingEnabled){
-            
+
             pageNotFound = nextState.pageNotFound === void(0) ? false : nextState.pageNotFound;
-            
+
             Object.defineProperty(controllerViewModel, 'pageNotFound', {
               configurable: false,
               enumerable: false,
