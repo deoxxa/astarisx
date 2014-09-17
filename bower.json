@@ -5,7 +5,7 @@
   "authors": [
     "Frank Panetta <frank.panetta@entrendipity.com.au>"
   ],
-  "description": "Highly Composable Application Architecture for building Modern Client-Side Web Applications",
+  "description": "Highly Composable Application Architecture for building React Applications",
   "main": "dist/astarisx.js",
   "moduleType": [
     "amd",

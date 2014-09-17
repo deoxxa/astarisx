@@ -1,6 +1,6 @@
 {
   "name": "astarisx",
-  "description": "Highly Composable Application Architecture for building Modern Client-Side Web Applications",
+  "description": "Highly Composable Application Architecture for building React Applications",
   "version": "0.9.7-beta",
   "keywords": [
     "react",
