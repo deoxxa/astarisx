@@ -2,75 +2,51 @@ var page = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
 var updateStatic = utils.updateStatic;
+var uuid = require('./utils').uuid;
 
-var enableUndo, routingEnabled;
+var StateManager = function(component, appCtx, initCtxObj) {
+	
+	var namespace = uuid(),
+		ApplicationDataContext,
+		controllerViewModel,
+		stateChangeHandler,
+		viewKey,
+		node,
+		enableUndo,
+		routingEnabled,
+		staticState = {},
+		hasStatic = false,
+		dataContexts = {},
+		domain,
+		links = {},
+		watchedDataContexts = {},
+		viewModel,
+		transientState = {},
+		processedState = {},
+		watchedState,
+		watchedItem,
+		watchedProp,
+		watchedDataContext,
+		link,
+		calledBack = false,
+		routeHash = {},
+		routeMapping = {},
+		routePath,
+		external = false,
+		internal = false,
+		self = this;
 
-var appNamespace = '__Astarisx__',
-	ApplicationDataContext,
-	appState = {},
-	staticState = {},
-	hasStatic = false,
-	dataContexts = {},
-	domain,
-	links = {},
-	watchedDataContexts = {},
-	viewModel,
-	transientState = {},
-	processedState = {},
-	watchedState,
-	watchedItem,
-	watchedProp,
-	watchedDataContext,
-	link,
-	calledBack = false,
-	routeHash = {},
-	routeMapping = {},
-	routePath,
-	external = false,
-	internal = false,
-	controllerViewModel,
-	initialized = false,
-	listeners = {},
-	handlers = {},
-	hasListeners = false;
+		self.appState = {};
+		self.listeners = {};
+		self.handlers = {};
+		self.hasListeners = false;		
 
-var unmountView = function(component){
-  	var viewKey = component.props.viewKey || component._rootNodeID;
-  	listeners[viewKey].removeEventListener("stateChange", handlers[viewKey]);
-  	delete listeners[viewKey];
-  	delete handlers[viewKey];
-  	if(!!!Object.keys(listeners).length){
-  		hasListeners = false;
-  	}
-  }
-
-var initializeState = function(component, appCtx) {
-	var restArgs = Array.prototype.slice.call(arguments, this.initializeState.length);    
-	var stateChangeHandler, viewKey, node;
-	if(!initialized){
-	  initialized = true;
 		controllerViewModel = appCtx.controllerViewModel;
 		enableUndo = 'enableUndo' in appCtx ? appCtx.enableUndo : false;
 		routingEnabled = 'enableRouting' in appCtx ? appCtx.enableRouting : false;
 		stateChangeHandler = function(applicationDataContext){
 	    component.setState({appContext: applicationDataContext});
 	  };
-  } else {
-	    if (component !== void (0)) {
-  		viewKey = component.props.viewKey || component._rootNodeID;
-  		handlers[viewKey] = function(e){
-		    component.setState({appContext: e.detail});
-  		};
-  		node = component.getDOMNode();
-  		// if node is null i.e. return 'null' from render(). then create a dummy element
-  		// to attach the event listener to
-  		listeners[viewKey] = !!node ? node : document.createElement("div");
-	  	listeners[viewKey].addEventListener("stateChange", handlers[viewKey]);
-	  	hasListeners = true;
-	  	return;
-  	}
-  	return appState;
-  }
 
 	var appStateChangeHandler = function(caller, newState, newAppState, remember, callback, delay) {
 		var nextState = {},
@@ -91,7 +67,7 @@ var initializeState = function(component, appCtx) {
 			stateChangeEvent;
 
     if(arguments.length < 2){
-      newState = appState;
+      newState = self.appState;
     }
 
     if(typeof remember === 'function'){
@@ -112,7 +88,6 @@ var initializeState = function(component, appCtx) {
     }
 		newState = newState || {};
 		newStateKeys = Object.keys(newState);
-
 
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangeHandler. If a callback was passed in
@@ -147,17 +122,17 @@ var initializeState = function(component, appCtx) {
 
 			if(typeof callback === 'function'){
 				try {
-					appState = new ApplicationDataContext(nextState, prevState, redoState,
-						enableUndo, routingEnabled, nextState.path !== appState.path,
+						self.appState = new ApplicationDataContext(nextState, prevState, redoState,
+						enableUndo, routingEnabled, nextState.path !== self.appState.path,
 						!external || nextState.pageNotFound, remember);
 
 	        calledBack = true;
 	        if(!!delay){
 						window.setTimeout(function(){
-							callback(void(0), appState);
+							callback(void(0), self.appState);
 			      }, delay);
 					} else {
-						callback(void(0), appState);
+						callback(void(0), self.appState);
 					}
 				} catch(e) {
 					callback(e);
@@ -171,7 +146,7 @@ var initializeState = function(component, appCtx) {
 			}
 
 			if(!!newStateKeys.length){
-				if(caller === appNamespace){
+				if(caller === namespace){
 					nextState = extend(newState);
 				} else {
 					nextState[caller] = extend(newState);
@@ -187,7 +162,7 @@ var initializeState = function(component, appCtx) {
 
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
 				if(transientStateKeys[keyIdx] in domain){
-					nextState[transientStateKeys[keyIdx]] = extend(appState[transientStateKeys[keyIdx]], transientState[transientStateKeys[keyIdx]]);
+					nextState[transientStateKeys[keyIdx]] = extend(self.appState[transientStateKeys[keyIdx]], transientState[transientStateKeys[keyIdx]]);
 					nextState[transientStateKeys[keyIdx]] = new dataContexts[transientStateKeys[keyIdx]](nextState[transientStateKeys[keyIdx]]);
 				} else {
 					nextState[transientStateKeys[keyIdx]] = transientState[transientStateKeys[keyIdx]];
@@ -197,7 +172,7 @@ var initializeState = function(component, appCtx) {
 			processedState = extend(processedState, nextState);
 
 			//Triggers
-			nextState = extend(appState, processedState);
+			nextState = extend(self.appState, processedState);
 
 			transientState = {};
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
@@ -228,11 +203,11 @@ var initializeState = function(component, appCtx) {
 											}
 										}
 										transientState = extend(transientState,
-											subscribers[subscriber].call(appState[subscriber],
+											subscribers[subscriber].call(self.appState[subscriber],
 											nextState[transientStateKeys[keyIdx]][watchedField],
-											appState[transientStateKeys[keyIdx]][watchedField],
+											self.appState[transientStateKeys[keyIdx]][watchedField],
 											watchedField, transientStateKeys[keyIdx],
-											nextState.path, appState.path));
+											nextState.path, self.appState.path));
 									}
 								}
 							}
@@ -248,11 +223,11 @@ var initializeState = function(component, appCtx) {
 			processedStateKeys = Object.keys(processedState);
 			processedStateKeysLen = processedStateKeys.length - 1;
 			for (keyIdx = processedStateKeysLen; keyIdx >= 0; keyIdx--) {
-				if(caller === appNamespace && (appNamespace in links)){
-					if(processedStateKeys[keyIdx] in links[appNamespace]){
-						for(dataContext in links[appNamespace][processedStateKeys[keyIdx]]){
-							if(links[appNamespace][processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
-								nextState[dataContext].state[links[appNamespace][processedStateKeys[keyIdx]][dataContext]] =
+				if(caller === namespace && (namespace in links)){
+					if(processedStateKeys[keyIdx] in links[namespace]){
+						for(dataContext in links[namespace][processedStateKeys[keyIdx]]){
+							if(links[namespace][processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
+								nextState[dataContext].state[links[namespace][processedStateKeys[keyIdx]][dataContext]] =
 									nextState[processedStateKeys[keyIdx]];
 							}
 							if(dataContext in links){
@@ -286,17 +261,17 @@ var initializeState = function(component, appCtx) {
 				}
 	    }
 
-			if(appState.canRevert && calledBack){
-				prevState = appState.previousState;
+			if(self.appState.canRevert && calledBack){
+				prevState = self.appState.previousState;
 			} else if(hasStatic && staticState._staticUpdated && staticState._onlyStatic){
-        if(appState.canRevert){
-        	prevState = appState.previousState;
+        if(self.appState.canRevert){
+        	prevState = self.appState.previousState;
         }
-        if(appState.canAdvance){
-        	redoState = appState.nextState;
+        if(self.appState.canAdvance){
+        	redoState = self.appState.nextState;
         }
       } else {
-				prevState = appState;
+				prevState = self.appState;
 			}
 		}
 
@@ -305,7 +280,7 @@ var initializeState = function(component, appCtx) {
 		}
 
 		//check the paths to see of there has been an path change
-		pushStateChanged = nextState.path !== appState.path;
+		pushStateChanged = nextState.path !== self.appState.path;
 
 		try {
 			//Add dataContextWillUpdate
@@ -315,21 +290,21 @@ var initializeState = function(component, appCtx) {
         nextState = extend(nextState, {dataContextWillUpdate: processedState});
       }
 
-			appState = new ApplicationDataContext(nextState, prevState, redoState,
+			self.appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
 			!external || nextState.pageNotFound, remember);	
 
-			Object.freeze(appState);
-			Object.freeze(appState.state);
+			Object.freeze(self.appState);
+			Object.freeze(self.appState.state);
 
 			if(typeof callback === 'function'){
 				calledBack = true;
 				if(!!delay){
 					window.setTimeout(function(){
-						callback(void(0), appState);
+						callback(void(0), self.appState);
 		      }, delay);
 				} else {
-					callback(void(0), appState);
+					callback(void(0), self.appState);
 					return;
 				}
 			}
@@ -341,13 +316,13 @@ var initializeState = function(component, appCtx) {
 		}
 
 		// Internal call routing
-		if(routingEnabled && appState.pushState){
-			if(('path' in appState) && !external){
+		if(routingEnabled && self.appState.pushState){
+			if(('path' in self.appState) && !external){
 				internal = true;
-				if(pushStateChanged && !appState.forceReplace){
-					page(appState.path);
+				if(pushStateChanged && !self.appState.forceReplace){
+					page(self.appState.path);
 				} else {
-					page.replace(appState.path);
+					page.replace(self.appState.path);
 				}
 			}
 			external = false;
@@ -361,46 +336,46 @@ var initializeState = function(component, appCtx) {
 		transientState = {};
 		processedState = {};
   	
-  	if(hasListeners){
-			stateChangeEvent = new CustomEvent("stateChange", {"detail": appState});
+  	if(self.hasListeners){
+			stateChangeEvent = new CustomEvent("stateChange", {"detail": self.appState});
 		  if(nextState.notify){
 		  	//Only notify specific views
 				if(Object.prototype.toString.call(nextState.notify) === '[object Array]'){
 					nextState.notify.forEach(function(viewKey){
 						if(viewKey === "*"){
-							stateChangeHandler(appState);
-						} else if(viewKey in listeners){
-							listeners[viewKey].dispatchEvent(stateChangeEvent);
+							stateChangeHandler(self.appState);
+						} else if(viewKey in self.listeners){
+							self.listeners[viewKey].dispatchEvent(stateChangeEvent);
 						}
 					});
 				} else {
 					if(nextState.notify === "*"){
-						stateChangeHandler(appState);
-					} else if(nextState.notify in listeners){
-						listeners[nextState.notify].dispatchEvent(stateChangeEvent);
+						stateChangeHandler(self.appState);
+					} else if(nextState.notify in self.listeners){
+						self.listeners[nextState.notify].dispatchEvent(stateChangeEvent);
 					}
 				}
 			} else {
 				// Notify all the views
-		    stateChangeHandler(appState);
-		    for(var k in listeners){
-		  		if(listeners.hasOwnProperty(k)){
-		  			listeners[k].dispatchEvent(stateChangeEvent);
+		    stateChangeHandler(self.appState);
+		    for(var k in self.listeners){
+		  		if(self.listeners.hasOwnProperty(k)){
+		  			self.listeners[k].dispatchEvent(stateChangeEvent);
 		  		}
 		  	}
 			}
 			stateChangeEvent = void(0);
 		} else {
-			stateChangeHandler(appState);
+			stateChangeHandler(self.appState);
 		}
 	};
 	/***************/
 	/* Initialize Application Data Context
 	/***************/
   try {
-  	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, appNamespace));
-  	appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
-    appState.state = appState.state || {};
+  	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace));
+  	self.appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
+    self.appState.state = self.appState.state || {};
   } catch (e) { 
   	if (e instanceof TypeError) {
     	throw new TypeError('Please assign a ControllerViewModel to the "controllerViewModel" prop in React.renderComponent');
@@ -409,25 +384,25 @@ var initializeState = function(component, appCtx) {
   	}
   }
 
-	domain = appState.constructor.originalSpec.getViewModels();
-	delete appState.constructor.originalSpec.getViewModels;
+	domain = self.appState.constructor.originalSpec.getViewModels();
+	// delete self.appState.constructor.originalSpec.getViewModels;
 
 	//Initialize all dataContexts
 	for(viewModel in domain){
 		if(domain.hasOwnProperty(viewModel)){
 			dataContexts[viewModel] = domain[viewModel].call(this, appStateChangeHandler.bind(this, viewModel));
-			appState.state[viewModel] = new dataContexts[viewModel](appState.state[viewModel], true);
+			self.appState.state[viewModel] = new dataContexts[viewModel](self.appState.state[viewModel], true);
     }
   }
 
   //Store links
 	for(viewModel in domain){
 		if(domain.hasOwnProperty(viewModel)){
-			if('getWatchedState' in appState[viewModel].constructor.originalSpec){
-				watchedState = appState[viewModel].constructor.originalSpec.getWatchedState();
+			if('getWatchedState' in self.appState[viewModel].constructor.originalSpec){
+				watchedState = self.appState[viewModel].constructor.originalSpec.getWatchedState();
 				for(watchedItem in watchedState){
 					if(watchedState.hasOwnProperty(watchedItem)){
-						if(watchedItem in domain || watchedItem in appState){
+						if(watchedItem in domain || watchedItem in self.appState){
 							if('alias' in watchedState[watchedItem]){
 								if(!(viewModel in links)){
 									links[viewModel] = {};
@@ -435,13 +410,13 @@ var initializeState = function(component, appCtx) {
 								links[viewModel][watchedItem] = watchedState[watchedItem].alias;
 
 								if(!(watchedItem in domain)){
-									if(!(appNamespace in links)){
-										links[appNamespace] = {};
+									if(!(namespace in links)){
+										links[namespace] = {};
 									}
-									if(!(viewModel in links[appNamespace])){
-										links[appNamespace][watchedItem] = {};
+									if(!(viewModel in links[namespace])){
+										links[namespace][watchedItem] = {};
 									}
-									links[appNamespace][watchedItem][viewModel] = watchedState[watchedItem].alias;
+									links[namespace][watchedItem][viewModel] = watchedState[watchedItem].alias;
 								}
 							}
 							for(watchedProp in watchedState[watchedItem].fields){
@@ -470,7 +445,7 @@ var initializeState = function(component, appCtx) {
 		if(domain.hasOwnProperty(viewModel)){
 			for(link in links[viewModel]){
 			  if(links[viewModel].hasOwnProperty(link)){
-					appState[viewModel].state[links[viewModel][link]] = appState[link];
+					self.appState[viewModel].state[links[viewModel][link]] = self.appState[link];
 			  }
 			}
 		}
@@ -479,11 +454,11 @@ var initializeState = function(component, appCtx) {
 	//reinitialize with all data in place
 	for(viewModel in domain){
 		if(domain.hasOwnProperty(viewModel)){
-			appState.state[viewModel] =
-				new dataContexts[viewModel](appState.state[viewModel]);
+			self.appState.state[viewModel] =
+				new dataContexts[viewModel](self.appState.state[viewModel]);
 
-			if('getRoutes' in appState[viewModel].constructor.originalSpec){
-				routeHash = appState[viewModel].constructor.originalSpec.getRoutes();
+			if('getRoutes' in self.appState[viewModel].constructor.originalSpec){
+				routeHash = self.appState[viewModel].constructor.originalSpec.getRoutes();
 				for(routePath in routeHash){
 					if(routeHash.hasOwnProperty(routePath)){
 						routeMapping[routeHash[routePath].path] = routeHash[routePath].handler;
@@ -491,96 +466,110 @@ var initializeState = function(component, appCtx) {
 								pathKey, ctx){
 							external = true;
 							if(!internal) {
-								if(appState.canRevert && appState.pageNotFound){
+								if(self.appState.canRevert && self.appState.pageNotFound){
                   ctx.rollbackRequest = true;
 									ctx.revert = function(){
                     this.revert.bind(this);
                     this.setState({},{path:ctx.path});
-                  }.bind(appState);
+                  }.bind(self.appState);
                 }
-								routeMapping[route].call(appState[dataContextName], ctx.params,
-								ctx.path, pathKey, ctx, ('show' in appState) ? appState.show.bind(appState): void(0));
+								routeMapping[route].call(self.appState[dataContextName], ctx.params,
+								ctx.path, pathKey, ctx, ('show' in self.appState) ? self.appState.show.bind(self.appState): void(0));
 							}
 							internal = false;
 						}.bind(this, viewModel, routeHash[routePath].path, routePath));
 					}
 				}
-				delete appState[viewModel].constructor.originalSpec.getRoutes;
+				// delete self.appState[viewModel].constructor.originalSpec.getRoutes;
     	}
 
     	//This is if astarisx-animate mixin is used
-			if('getDisplays' in appState[viewModel].constructor.originalSpec){
-				appState.addDisplays(appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
-				delete appState[viewModel].constructor.originalSpec.getDisplays;
+			if('getDisplays' in self.appState[viewModel].constructor.originalSpec){
+				self.appState.addDisplays(self.appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
+				// delete self.appState[viewModel].constructor.originalSpec.getDisplays;
 			}
 		}
   }
 
 	//This is if astarisx-animate mixin is used
-	if('getDisplays' in appState.constructor.originalSpec){
-		appState.addDisplays(appState.constructor.originalSpec.getDisplays());
-		delete appState.constructor.originalSpec.getDisplays;
+	if('getDisplays' in self.appState.constructor.originalSpec){
+		self.appState.addDisplays(self.appState.constructor.originalSpec.getDisplays());
+		// delete self.appState.constructor.originalSpec.getDisplays;
 	}
 	
-	delete appState.__proto__.addDisplays;
+	// delete self.appState.__proto__.addDisplays;
 
-	if('getTransitions' in appState.constructor.originalSpec){
-		appState.addTransitions(appState.constructor.originalSpec.getTransitions());
-		delete appState.constructor.originalSpec.getTransitions;
+	if('getTransitions' in self.appState.constructor.originalSpec){
+		self.appState.addTransitions(self.appState.constructor.originalSpec.getTransitions());
+		// delete self.appState.constructor.originalSpec.getTransitions;
 	}
-	delete appState.__proto__.addTransitions;
+	// delete self.appState.__proto__.addTransitions;
 
-	appState = new ApplicationDataContext(appState, void(0), void(0),
+	self.appState = new ApplicationDataContext(self.appState, void(0), void(0),
 			enableUndo, routingEnabled);
 
 	if(routingEnabled){
 		//Setup 'pageNotFound' route
 		page(function(ctx){
 			external = true;
-			appState.setState({'pageNotFound':true});
+			self.appState.setState({'pageNotFound':true});
 			internal = false;
 		});
 		//Initilize first path
 		internal = true;
-		page.replace(appState.path);
+		page.replace(self.appState.path);
 		page.start({click: false, dispatch: false});
 		external = false;
 	}
 
-	hasStatic = appState.constructor.originalSpec.__processedSpec__.hasStatic;
+	hasStatic = self.appState.constructor.originalSpec.__processedSpec__.hasStatic;
 	if(hasStatic){
-		staticState = updateStatic(appState.constructor.originalSpec.__processedSpec__.statics, appState.state);
+		staticState = updateStatic(self.appState.constructor.originalSpec.__processedSpec__.statics, self.appState.state);
 	}
 
-  Object.freeze(appState.state);
-  Object.freeze(appState);
+  Object.freeze(self.appState.state);
+  Object.freeze(self.appState);
 
-  if('dataContextWillInitialize' in appState.constructor.originalSpec){
-    appState.constructor.originalSpec.dataContextWillInitialize.apply(appState, restArgs);
-    delete appState.constructor.originalSpec.dataContextWillInitialize;
-    delete appState.__proto__.dataContextWillInitialize;
+  if('dataContextWillInitialize' in self.appState.constructor.originalSpec){
+    self.appState.constructor.originalSpec.dataContextWillInitialize.call(self.appState, initCtxObj);
+    // delete self.appState.constructor.originalSpec.dataContextWillInitialize;
+    // delete self.appState.__proto__.dataContextWillInitialize;
   }
 
-  // return {
-  //   appContext: appState,
-  //   callback: function(){
-  //     // UI has mounted. Call dataContextWillInitialize on ControllerViewModel
-  //     if('dataContextWillInitialize' in appState.constructor.originalSpec){
-  //       appState.constructor.originalSpec.dataContextWillInitialize.call(appState);
-  //       delete appState.constructor.originalSpec.dataContextWillInitialize;
-  //       delete appState.__proto__.dataContextWillInitialize;
-  //     }
-  //     appState.initializeDataContext(u, p, {authenticated:true, authorized: true});
-  //   }
-  // }
 };
 
-var getCurrentState = function(){
-  return appState;
+StateManager.prototype.currentState = function(){
+  return this.appState;
 };
 
-module.exports = { 
-	initializeState: initializeState,
-  currentState: getCurrentState,
-	unmount: unmountView
+StateManager.prototype.unmountView = function(component){
+	var viewKey = component.props.viewKey || component._rootNodeID;
+	this.listeners[viewKey].removeEventListener("stateChange", this.handlers[viewKey]);
+	delete this.listeners[viewKey];
+	delete this.handlers[viewKey];
+	if(!!!Object.keys(this.listeners).length){
+		this.hasListeners = false;
+	}
 }
+
+StateManager.prototype.mountView = function(component){
+		var viewKey = component.props.viewKey || component._rootNodeID;
+		this.handlers[viewKey] = function(e){
+	    component.setState({appContext: e.detail});
+		};
+		var node = component.getDOMNode();
+		// if node is null i.e. return 'null' from render(). then create a dummy element
+		// to attach the event listener to
+		this.listeners[viewKey] = !!node ? node : document.createElement("div");
+  	this.listeners[viewKey].addEventListener("stateChange", this.handlers[viewKey]);
+  	this.hasListeners = true;
+}
+
+StateManager.prototype.dispose = function(){
+	this.appState = null;
+	this.listeners = null;
+	this.handlers = null;
+	this.hasListeners = false;
+};
+
+module.exports = StateManager;

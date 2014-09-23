@@ -1,28 +1,30 @@
-var stateManager = require('./stateManager');
+var StateManager = require('./stateManager');
+var stateMgr;
 
 var mixin = {
   ui: {
-    initializeAppContext: function(){
-      var args = Array.prototype.slice.call(arguments, 0);
-      args.unshift(this);
-      stateManager.initializeState.apply(stateManager, args);
-    }
+    initializeAppContext: function(options, initCtxObj){
+      stateMgr = new StateManager(this, options, initCtxObj);
+    },
+    // componentWillUnmount: function(){
+    //   stateMgr.reset();
+    // }
   },
   view: {
     getInitialState: function(){
       //If component isn't passed in just returns appContext
       return {
-        appContext: stateManager.initializeState(),
+        appContext: stateMgr.currentState(),
         containerType: "view"
       };
     },
     componentDidMount: function(){
       //If component is passed registers stateChange listener
-      stateManager.initializeState(this);
+      stateMgr.mountView(this);
     },
     componentWillUnmount: function(){
       //remove event listener
-      stateManager.unmount(this);
+      stateMgr.unmountView(this);
     }
   },
   display: {
@@ -110,7 +112,7 @@ var mixin = {
   },
   mediaQuery: {
     mediaChangeHandler: function(id, mql, initializing){
-      stateManager.currentState().mediaChangeHandler.call(stateManager.currentState(), id, mql, initializing);
+      stateMgr.currentState().mediaChangeHandler.call(stateMgr.currentState(), id, mql, initializing);
     },
     componentDidMount: function(){
       
@@ -147,18 +149,18 @@ var display = {
   getInitialState: function(){
     //If component isn't passed in it just returns appContext
     return {
-      appContext: stateManager.initializeState(),
+      appContext: stateMgr.currentState(),
       containerType: "display"
     };
   },
   componentDidMount: function(){
     //If component is passed it registers stateChange listener
-    stateManager.initializeState(this);
+    stateMgr.mountView(this);
     this.state.appContext.cueDisplay(this);
   },
   componentWillUnmount: function(){
     //remove event listener
-    stateManager.unmount(this);
+    stateMgr.unmountView(this);
   }
 };
 
@@ -166,18 +168,18 @@ var page = {
   getInitialState: function(){
     //If component isn't passed in it just returns appContext
     return {
-      appContext: stateManager.initializeState(),
+      appContext: stateMgr.currentState(),
       containerType: "page"
     };
   },
   componentDidMount: function(){
     //If component is passed it registers stateChange listener
-    stateManager.initializeState(this);
+    stateMgr.mountView(this);
     this.state.appContext.cuePage(this);
   },
   componentWillUnmount: function(){
     //remove event listener
-    stateManager.unmount(this);
+    stateMgr.unmountView(this);
   }
 };
 

@@ -60,8 +60,8 @@ var ControllerViewModel = {
               //append '*' args
               ctxArgs = ctxArgs.concat(objArg['*'] || objArg['_*'] || []);
               this[ctx].constructor.originalSpec.dataContextWillInitialize.apply(this[ctx], ctxArgs);
-              delete this[ctx].constructor.originalSpec.dataContextWillInitialize;
-              delete this[ctx].__proto__.dataContextWillInitialize;
+              // delete this[ctx].constructor.originalSpec.dataContextWillInitialize;
+              // delete this[ctx].__proto__.dataContextWillInitialize;
             }
           }
         }
