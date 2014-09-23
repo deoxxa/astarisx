@@ -1,7 +1,7 @@
 {
   "name": "astarisx",
   "description": "Highly Composable Application Architecture for building React Applications",
-  "version": "0.9.7-beta",
+  "version": "0.10.0-beta",
   "keywords": [
     "react",
     "mvc",
