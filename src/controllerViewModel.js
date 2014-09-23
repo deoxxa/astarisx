@@ -9,7 +9,7 @@ var ControllerViewModel = {
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
-      var desc = this.getDescriptor();
+      var desc = extend(this.getDescriptor());
       desc.proto.setState = stateChangeHandler;
 
       desc.proto.revert = function(){
@@ -60,8 +60,7 @@ var ControllerViewModel = {
               //append '*' args
               ctxArgs = ctxArgs.concat(objArg['*'] || objArg['_*'] || []);
               this[ctx].constructor.originalSpec.dataContextWillInitialize.apply(this[ctx], ctxArgs);
-              // delete this[ctx].constructor.originalSpec.dataContextWillInitialize;
-              // delete this[ctx].__proto__.dataContextWillInitialize;
+              delete this[ctx].__proto__.dataContextWillInitialize;
             }
           }
         }

@@ -50,7 +50,7 @@ var AstarisxClass = {
 
     ConvenienceConstructor.classType = classType;
     Constructor.prototype.classType = classType;
-
+    
     ConvenienceConstructor.getDescriptor = function(){
       var descriptor = {},
         proto = this.prototype,
@@ -61,6 +61,7 @@ var AstarisxClass = {
         hasStatic = false,
         key,
         mixinSpec;
+      var tempDesc = {};
 
       if('__processedSpec__' in this.originalSpec){
         return this.originalSpec.__processedSpec__;
@@ -80,47 +81,47 @@ var AstarisxClass = {
         }
         delete this.originalSpec.mixins;
       }
-
       for(key in this.originalSpec){
         if(this.originalSpec.hasOwnProperty(key)){
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
-            //assume it is a descriptor
-            this.originalSpec[key].enumerable = true;
-            if('viewModel' in this.originalSpec[key] && proto.constructor.classType === "ControllerViewModel") {
+            //assume it is a descriptor and clone
+            tempDesc[key] = extend(this.originalSpec[key]);
+            tempDesc[key].enumerable = true;
+            if('viewModel' in tempDesc[key] && proto.constructor.classType === "ControllerViewModel") {
               //ensure that we don't use the reseved keys
               if(key !== '*' && key !== '_*'){
-                viewModels[key] = this.originalSpec[key].viewModel;
+                viewModels[key] = tempDesc[key].viewModel;
               }
-              delete this.originalSpec[key].viewModel;
-              delete this.originalSpec[key].set;
+              delete tempDesc[key].viewModel;
+              delete tempDesc[key].set;
             } else {
-              if('aliasFor' in this.originalSpec[key] && proto.constructor.classType === "Model"){
-                aliases[this.originalSpec[key].aliasFor] = key;
-                delete this.originalSpec[key].aliasFor;
+              if('aliasFor' in tempDesc[key] && proto.constructor.classType === "Model"){
+                aliases[tempDesc[key].aliasFor] = key;
+                delete tempDesc[key].aliasFor;
               }
-              if('kind' in this.originalSpec[key]){
-                if(this.originalSpec[key].kind === 'pseudo'){
-                  this.originalSpec[key].enumerable = false;
-                } else if ((this.originalSpec[key].kind === 'instance' && proto.constructor.classType === "ViewModel") ||
-                  this.originalSpec[key].kind === 'array') { //'instance' || 'array'
-                  autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
+              if('kind' in tempDesc[key]){
+                if(tempDesc[key].kind === 'pseudo'){
+                  tempDesc[key].enumerable = false;
+                } else if ((tempDesc[key].kind === 'instance' && proto.constructor.classType === "ViewModel") ||
+                  tempDesc[key].kind === 'array') { //'instance' || 'array'
+                  autoFreeze.push({fieldName: key, kind: tempDesc[key].kind});
                   //if array then remove set. Can only update array via functions
-                  if(this.originalSpec[key].kind === 'array'){
-                    delete this.originalSpec[key].set;
+                  if(tempDesc[key].kind === 'array'){
+                    delete tempDesc[key].set;
                   }
-                } else if (this.originalSpec[key].kind === 'static' && proto.constructor.classType === "ControllerViewModel") {
+                } else if (tempDesc[key].kind === 'static' && proto.constructor.classType === "ControllerViewModel") {
                   hasStatic = true;
                   statics[key] = void(0);
-                } else if (this.originalSpec[key].kind === 'uid' && proto.constructor.classType === "Model") {
+                } else if (tempDesc[key].kind === 'uid' && proto.constructor.classType === "Model") {
                   //Don't do anything as yet
                 } else {
-                  throw new TypeError('"'+this.originalSpec[key].kind +'" '+
+                  throw new TypeError('"'+tempDesc[key].kind +'" '+
                     'is not a valid "kind" value. Please review field "' + key + '".');
                 }
-                delete this.originalSpec[key].kind;
+                delete tempDesc[key].kind;
               }
             }
-            descriptor[key] = this.originalSpec[key];
+            descriptor[key] = tempDesc[key];
           } else {
             if(key !== 'getInitialState' && key !== 'getWatchedState' &&
               key !== 'getRoutes' && key !== 'getDisplays' && key != 'getTransitions'){

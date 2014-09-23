@@ -487,7 +487,7 @@ var ControllerViewModel = {
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
-      var desc = this.getDescriptor();
+      var desc = extend(this.getDescriptor());
       desc.proto.setState = stateChangeHandler;
 
       desc.proto.revert = function(){
@@ -538,8 +538,7 @@ var ControllerViewModel = {
               //append '*' args
               ctxArgs = ctxArgs.concat(objArg['*'] || objArg['_*'] || []);
               this[ctx].constructor.originalSpec.dataContextWillInitialize.apply(this[ctx], ctxArgs);
-              // delete this[ctx].constructor.originalSpec.dataContextWillInitialize;
-              // delete this[ctx].__proto__.dataContextWillInitialize;
+              delete this[ctx].__proto__.dataContextWillInitialize;
             }
           }
         }
@@ -757,7 +756,7 @@ var AstarisxClass = {
 
     ConvenienceConstructor.classType = classType;
     Constructor.prototype.classType = classType;
-
+    
     ConvenienceConstructor.getDescriptor = function(){
       var descriptor = {},
         proto = this.prototype,
@@ -768,6 +767,7 @@ var AstarisxClass = {
         hasStatic = false,
         key,
         mixinSpec;
+      var tempDesc = {};
 
       if('__processedSpec__' in this.originalSpec){
         return this.originalSpec.__processedSpec__;
@@ -787,47 +787,47 @@ var AstarisxClass = {
         }
         delete this.originalSpec.mixins;
       }
-
       for(key in this.originalSpec){
         if(this.originalSpec.hasOwnProperty(key)){
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
-            //assume it is a descriptor
-            this.originalSpec[key].enumerable = true;
-            if('viewModel' in this.originalSpec[key] && proto.constructor.classType === "ControllerViewModel") {
+            //assume it is a descriptor and clone
+            tempDesc[key] = extend(this.originalSpec[key]);
+            tempDesc[key].enumerable = true;
+            if('viewModel' in tempDesc[key] && proto.constructor.classType === "ControllerViewModel") {
               //ensure that we don't use the reseved keys
               if(key !== '*' && key !== '_*'){
-                viewModels[key] = this.originalSpec[key].viewModel;
+                viewModels[key] = tempDesc[key].viewModel;
               }
-              delete this.originalSpec[key].viewModel;
-              delete this.originalSpec[key].set;
+              delete tempDesc[key].viewModel;
+              delete tempDesc[key].set;
             } else {
-              if('aliasFor' in this.originalSpec[key] && proto.constructor.classType === "Model"){
-                aliases[this.originalSpec[key].aliasFor] = key;
-                delete this.originalSpec[key].aliasFor;
+              if('aliasFor' in tempDesc[key] && proto.constructor.classType === "Model"){
+                aliases[tempDesc[key].aliasFor] = key;
+                delete tempDesc[key].aliasFor;
               }
-              if('kind' in this.originalSpec[key]){
-                if(this.originalSpec[key].kind === 'pseudo'){
-                  this.originalSpec[key].enumerable = false;
-                } else if ((this.originalSpec[key].kind === 'instance' && proto.constructor.classType === "ViewModel") ||
-                  this.originalSpec[key].kind === 'array') { //'instance' || 'array'
-                  autoFreeze.push({fieldName: key, kind: this.originalSpec[key].kind});
+              if('kind' in tempDesc[key]){
+                if(tempDesc[key].kind === 'pseudo'){
+                  tempDesc[key].enumerable = false;
+                } else if ((tempDesc[key].kind === 'instance' && proto.constructor.classType === "ViewModel") ||
+                  tempDesc[key].kind === 'array') { //'instance' || 'array'
+                  autoFreeze.push({fieldName: key, kind: tempDesc[key].kind});
                   //if array then remove set. Can only update array via functions
-                  if(this.originalSpec[key].kind === 'array'){
-                    delete this.originalSpec[key].set;
+                  if(tempDesc[key].kind === 'array'){
+                    delete tempDesc[key].set;
                   }
-                } else if (this.originalSpec[key].kind === 'static' && proto.constructor.classType === "ControllerViewModel") {
+                } else if (tempDesc[key].kind === 'static' && proto.constructor.classType === "ControllerViewModel") {
                   hasStatic = true;
                   statics[key] = void(0);
-                } else if (this.originalSpec[key].kind === 'uid' && proto.constructor.classType === "Model") {
+                } else if (tempDesc[key].kind === 'uid' && proto.constructor.classType === "Model") {
                   //Don't do anything as yet
                 } else {
-                  throw new TypeError('"'+this.originalSpec[key].kind +'" '+
+                  throw new TypeError('"'+tempDesc[key].kind +'" '+
                     'is not a valid "kind" value. Please review field "' + key + '".');
                 }
-                delete this.originalSpec[key].kind;
+                delete tempDesc[key].kind;
               }
             }
-            descriptor[key] = this.originalSpec[key];
+            descriptor[key] = tempDesc[key];
           } else {
             if(key !== 'getInitialState' && key !== 'getWatchedState' &&
               key !== 'getRoutes' && key !== 'getDisplays' && key != 'getTransitions'){
@@ -884,9 +884,9 @@ var mixin = {
     initializeAppContext: function(options, initCtxObj){
       stateMgr = new StateManager(this, options, initCtxObj);
     },
-    // componentWillUnmount: function(){
-    //   stateMgr.reset();
-    // }
+    componentWillUnmount: function(){
+      stateMgr.dispose();
+    }
   },
   view: {
     getInitialState: function(){
@@ -1559,8 +1559,9 @@ var StateManager = function(component, appCtx, initCtxObj) {
   	}
   }
 
-	domain = self.appState.constructor.originalSpec.getViewModels();
-	// delete self.appState.constructor.originalSpec.getViewModels;
+  this.viewModels = self.appState.constructor.originalSpec.getViewModels();
+	domain = this.viewModels;
+	delete self.appState.__proto__.getViewModels;
 
 	//Initialize all dataContexts
 	for(viewModel in domain){
@@ -1655,13 +1656,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 						}.bind(this, viewModel, routeHash[routePath].path, routePath));
 					}
 				}
-				// delete self.appState[viewModel].constructor.originalSpec.getRoutes;
+				delete self.appState[viewModel].__proto__.getRoutes;
     	}
 
     	//This is if astarisx-animate mixin is used
 			if('getDisplays' in self.appState[viewModel].constructor.originalSpec){
 				self.appState.addDisplays(self.appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
-				// delete self.appState[viewModel].constructor.originalSpec.getDisplays;
+				delete self.appState[viewModel].__proto__.getDisplays;
 			}
 		}
   }
@@ -1669,16 +1670,15 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	//This is if astarisx-animate mixin is used
 	if('getDisplays' in self.appState.constructor.originalSpec){
 		self.appState.addDisplays(self.appState.constructor.originalSpec.getDisplays());
-		// delete self.appState.constructor.originalSpec.getDisplays;
+		delete self.appState.__proto__.getDisplays;
 	}
-	
-	// delete self.appState.__proto__.addDisplays;
+	delete self.appState.__proto__.addDisplays;
 
 	if('getTransitions' in self.appState.constructor.originalSpec){
 		self.appState.addTransitions(self.appState.constructor.originalSpec.getTransitions());
-		// delete self.appState.constructor.originalSpec.getTransitions;
+		delete self.appState.__proto__.getTransitions;
 	}
-	// delete self.appState.__proto__.addTransitions;
+	delete self.appState.__proto__.addTransitions;
 
 	self.appState = new ApplicationDataContext(self.appState, void(0), void(0),
 			enableUndo, routingEnabled);
@@ -1707,8 +1707,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
   if('dataContextWillInitialize' in self.appState.constructor.originalSpec){
     self.appState.constructor.originalSpec.dataContextWillInitialize.call(self.appState, initCtxObj);
-    // delete self.appState.constructor.originalSpec.dataContextWillInitialize;
-    // delete self.appState.__proto__.dataContextWillInitialize;
+    delete self.appState.__proto__.dataContextWillInitialize;
   }
 
 };
@@ -1741,10 +1740,25 @@ StateManager.prototype.mountView = function(component){
 }
 
 StateManager.prototype.dispose = function(){
+	//remove listners
+	for(var viewKey in this.listeners){
+		if(this.listeners.hasOwnProperty(viewKey)){
+			this.listeners[viewKey].removeEventListener("stateChange", this.handlers[viewKey]);
+		}
+	}
+
+	delete this.appState.constructor.originalSpec.__processedSpec__;
+	for(viewModel in this.viewModels){
+		if(this.viewModels.hasOwnProperty(viewModel)){			
+			delete this.appState[viewModel].constructor.originalSpec.__processedSpec__;
+		}
+	}
+
 	this.appState = null;
 	this.listeners = null;
 	this.handlers = null;
 	this.hasListeners = false;
+
 };
 
 module.exports = StateManager;

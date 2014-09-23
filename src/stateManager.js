@@ -384,8 +384,9 @@ var StateManager = function(component, appCtx, initCtxObj) {
   	}
   }
 
-	domain = self.appState.constructor.originalSpec.getViewModels();
-	// delete self.appState.constructor.originalSpec.getViewModels;
+  this.viewModels = self.appState.constructor.originalSpec.getViewModels();
+	domain = this.viewModels;
+	delete self.appState.__proto__.getViewModels;
 
 	//Initialize all dataContexts
 	for(viewModel in domain){
@@ -480,13 +481,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 						}.bind(this, viewModel, routeHash[routePath].path, routePath));
 					}
 				}
-				// delete self.appState[viewModel].constructor.originalSpec.getRoutes;
+				delete self.appState[viewModel].__proto__.getRoutes;
     	}
 
     	//This is if astarisx-animate mixin is used
 			if('getDisplays' in self.appState[viewModel].constructor.originalSpec){
 				self.appState.addDisplays(self.appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
-				// delete self.appState[viewModel].constructor.originalSpec.getDisplays;
+				delete self.appState[viewModel].__proto__.getDisplays;
 			}
 		}
   }
@@ -494,16 +495,15 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	//This is if astarisx-animate mixin is used
 	if('getDisplays' in self.appState.constructor.originalSpec){
 		self.appState.addDisplays(self.appState.constructor.originalSpec.getDisplays());
-		// delete self.appState.constructor.originalSpec.getDisplays;
+		delete self.appState.__proto__.getDisplays;
 	}
-	
-	// delete self.appState.__proto__.addDisplays;
+	delete self.appState.__proto__.addDisplays;
 
 	if('getTransitions' in self.appState.constructor.originalSpec){
 		self.appState.addTransitions(self.appState.constructor.originalSpec.getTransitions());
-		// delete self.appState.constructor.originalSpec.getTransitions;
+		delete self.appState.__proto__.getTransitions;
 	}
-	// delete self.appState.__proto__.addTransitions;
+	delete self.appState.__proto__.addTransitions;
 
 	self.appState = new ApplicationDataContext(self.appState, void(0), void(0),
 			enableUndo, routingEnabled);
@@ -532,8 +532,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
   if('dataContextWillInitialize' in self.appState.constructor.originalSpec){
     self.appState.constructor.originalSpec.dataContextWillInitialize.call(self.appState, initCtxObj);
-    // delete self.appState.constructor.originalSpec.dataContextWillInitialize;
-    // delete self.appState.__proto__.dataContextWillInitialize;
+    delete self.appState.__proto__.dataContextWillInitialize;
   }
 
 };
@@ -566,10 +565,25 @@ StateManager.prototype.mountView = function(component){
 }
 
 StateManager.prototype.dispose = function(){
+	//remove listners
+	for(var viewKey in this.listeners){
+		if(this.listeners.hasOwnProperty(viewKey)){
+			this.listeners[viewKey].removeEventListener("stateChange", this.handlers[viewKey]);
+		}
+	}
+
+	delete this.appState.constructor.originalSpec.__processedSpec__;
+	for(viewModel in this.viewModels){
+		if(this.viewModels.hasOwnProperty(viewModel)){			
+			delete this.appState[viewModel].constructor.originalSpec.__processedSpec__;
+		}
+	}
+
 	this.appState = null;
 	this.listeners = null;
 	this.handlers = null;
 	this.hasListeners = false;
+
 };
 
 module.exports = StateManager;

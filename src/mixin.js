@@ -6,9 +6,9 @@ var mixin = {
     initializeAppContext: function(options, initCtxObj){
       stateMgr = new StateManager(this, options, initCtxObj);
     },
-    // componentWillUnmount: function(){
-    //   stateMgr.reset();
-    // }
+    componentWillUnmount: function(){
+      stateMgr.dispose();
+    }
   },
   view: {
     getInitialState: function(){
