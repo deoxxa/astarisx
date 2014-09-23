@@ -87,7 +87,10 @@ var AstarisxClass = {
             //assume it is a descriptor
             this.originalSpec[key].enumerable = true;
             if('viewModel' in this.originalSpec[key] && proto.constructor.classType === "ControllerViewModel") {
-              viewModels[key] = this.originalSpec[key].viewModel;
+              //ensure that we don't use the reseved keys
+              if(key !== '*' && key !== '_*'){
+                viewModels[key] = this.originalSpec[key].viewModel;
+              }
               delete this.originalSpec[key].viewModel;
               delete this.originalSpec[key].set;
             } else {

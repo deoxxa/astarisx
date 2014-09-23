@@ -200,6 +200,8 @@
 - if return 'null' from render() within a View then create a dummy element to attach View event listener to
 - pass in handler when removing View event listener
 
-## 0.9.7-beta
+## 0.10.0-beta
 
-- enable intializeDataContext to accept restArgs to be passed to repective dataContext's dataContextWillInitizialize.
+### Breaking Changes
+- New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necssary arguments plus rest (...) arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.
+- `this.intializeDataContext` now accepts either no args, '*', '_*', dataContext names as strings or an Object with dataContext names as keys with the value being the args to be passed to each dataContext during initialization.

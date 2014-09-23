@@ -44,14 +44,14 @@ var unmountView = function(component){
   	}
   }
 
-var initState = function(component) {
-
+var initializeState = function(component, appCtx) {
+	var restArgs = Array.prototype.slice.call(arguments, this.initializeState.length);    
 	var stateChangeHandler, viewKey, node;
 	if(!initialized){
 	  initialized = true;
-		controllerViewModel = component.props.controllerViewModel;
-		enableUndo = component.props.enableUndo === void(0) ? false : component.props.enableUndo;
-		routingEnabled = component.props.enableRouting === void(0) ? false : component.props.enableRouting;
+		controllerViewModel = appCtx.controllerViewModel;
+		enableUndo = 'enableUndo' in appCtx ? appCtx.enableUndo : false;
+		routingEnabled = 'enableRouting' in appCtx ? appCtx.enableRouting : false;
 		stateChangeHandler = function(applicationDataContext){
 	    component.setState({appContext: applicationDataContext});
 	  };
@@ -555,17 +555,24 @@ var initState = function(component) {
   Object.freeze(appState.state);
   Object.freeze(appState);
 
-  return {
-    appContext: appState,
-    callback: function(){
-      // UI has mounted. Call dataContextWillInitialize on ControllerViewModel
-      if('dataContextWillInitialize' in appState.constructor.originalSpec){
-        appState.constructor.originalSpec.dataContextWillInitialize.call(appState);
-        delete appState.constructor.originalSpec.dataContextWillInitialize;
-        delete appState.__proto__.dataContextWillInitialize;
-      }
-    }
+  if('dataContextWillInitialize' in appState.constructor.originalSpec){
+    appState.constructor.originalSpec.dataContextWillInitialize.apply(appState, restArgs);
+    delete appState.constructor.originalSpec.dataContextWillInitialize;
+    delete appState.__proto__.dataContextWillInitialize;
   }
+
+  // return {
+  //   appContext: appState,
+  //   callback: function(){
+  //     // UI has mounted. Call dataContextWillInitialize on ControllerViewModel
+  //     if('dataContextWillInitialize' in appState.constructor.originalSpec){
+  //       appState.constructor.originalSpec.dataContextWillInitialize.call(appState);
+  //       delete appState.constructor.originalSpec.dataContextWillInitialize;
+  //       delete appState.__proto__.dataContextWillInitialize;
+  //     }
+  //     appState.initializeDataContext(u, p, {authenticated:true, authorized: true});
+  //   }
+  // }
 };
 
 var getCurrentState = function(){
@@ -573,7 +580,7 @@ var getCurrentState = function(){
 };
 
 module.exports = { 
-	initState: initState,
+	initializeState: initializeState,
   currentState: getCurrentState,
 	unmount: unmountView
 }

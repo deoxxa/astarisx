@@ -22,32 +22,50 @@ var ControllerViewModel = {
         }
       };
 
-      desc.proto.initializeDataContext = function(dataContext){
-        var dataContextArr = dataContext;
-        var restArgs = Array.prototype.slice.call(arguments, desc.proto.initializeDataContext.length);
-        if(dataContext === void(0) || dataContext === '*'){
-          for(var vm in desc.viewModels){
-            if(desc.viewModels.hasOwnProperty(vm)){
-              if((vm in this) && 'dataContextWillInitialize' in this[vm].constructor.originalSpec){
-                this[vm].constructor.originalSpec.dataContextWillInitialize.apply(this[vm], restArgs);
-                delete this[vm].constructor.originalSpec.dataContextWillInitialize;
-                delete this[vm].__proto__.dataContextWillInitialize;
-              }
+      desc.proto.initializeDataContext = function(obj /* or ...string */){
+
+        var args = Array.prototype.slice.call(arguments, 0);
+        var objArg = {};
+        var arg, ctx, contexts, ctxArgs;
+
+        if(obj === void(0)){
+          objArg = { '*':[] };
+        } else {
+          if(Object.prototype.toString.call(obj) === '[object Object]'){
+            for(arg in obj){
+              if(obj.hasOwnProperty(arg)){
+                if(Object.prototype.toString.call(obj[arg]) === '[object Array]'){
+                  objArg[arg] = obj[arg];
+                } else {
+                  objArg[arg] = obj[arg] === void(0) ? [] : [obj[arg]];
+                }
+              };
+            }
+          } else {
+            //they must be strings
+            args.forEach(function(arg){
+              //set to empty array to pass to apply
+              objArg[arg] = [];
+            });
+          }
+        }
+
+        //determine processing scope
+        contexts = '*' in objArg ? desc.viewModels : objArg;
+        for(ctx in contexts){
+          if(contexts.hasOwnProperty(ctx)){
+            if((ctx in this) && 'dataContextWillInitialize' in this[ctx].constructor.originalSpec){
+              //build args
+              ctxArgs = objArg[ctx] || [];
+              //append '*' args
+              ctxArgs = ctxArgs.concat(objArg['*'] || objArg['_*'] || []);
+              this[ctx].constructor.originalSpec.dataContextWillInitialize.apply(this[ctx], ctxArgs);
+              delete this[ctx].constructor.originalSpec.dataContextWillInitialize;
+              delete this[ctx].__proto__.dataContextWillInitialize;
             }
           }
-          return;
         }
-        if(Object.prototype.toString.call(dataContext) === '[object String]'){
-          dataContextArr = [dataContext];
-        }
-        dataContextArr.forEach(function(context){
-          if((context in this) && 'dataContextWillInitialize' in this[context].constructor.originalSpec){
-            this[context].constructor.originalSpec.dataContextWillInitialize.apply(this[context], restArgs);
-            delete this[context].constructor.originalSpec.dataContextWillInitialize;
-            delete this[context].__proto__.dataContextWillInitialize;
-          }
-        }.bind(this));
-      }
+      };
 
       var ControllerViewModelClass = function(nextState, prevState, redoState, enableUndo,
         routingEnabled, pushStateChanged, internal, remember) {

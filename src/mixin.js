@@ -2,23 +2,23 @@ var stateManager = require('./stateManager');
 
 var mixin = {
   ui: {
-    getInitialState: function(){
-      var initState = stateManager.initState(this);
-      initState.callback();
-      return {appContext: initState.appContext};
+    initializeAppContext: function(){
+      var args = Array.prototype.slice.call(arguments, 0);
+      args.unshift(this);
+      stateManager.initializeState.apply(stateManager, args);
     }
   },
   view: {
     getInitialState: function(){
       //If component isn't passed in just returns appContext
       return {
-        appContext: stateManager.initState(),
+        appContext: stateManager.initializeState(),
         containerType: "view"
       };
     },
     componentDidMount: function(){
       //If component is passed registers stateChange listener
-      stateManager.initState(this);
+      stateManager.initializeState(this);
     },
     componentWillUnmount: function(){
       //remove event listener
@@ -147,13 +147,13 @@ var display = {
   getInitialState: function(){
     //If component isn't passed in it just returns appContext
     return {
-      appContext: stateManager.initState(),
+      appContext: stateManager.initializeState(),
       containerType: "display"
     };
   },
   componentDidMount: function(){
     //If component is passed it registers stateChange listener
-    stateManager.initState(this);
+    stateManager.initializeState(this);
     this.state.appContext.cueDisplay(this);
   },
   componentWillUnmount: function(){
@@ -166,13 +166,13 @@ var page = {
   getInitialState: function(){
     //If component isn't passed in it just returns appContext
     return {
-      appContext: stateManager.initState(),
+      appContext: stateManager.initializeState(),
       containerType: "page"
     };
   },
   componentDidMount: function(){
     //If component is passed it registers stateChange listener
-    stateManager.initState(this);
+    stateManager.initializeState(this);
     this.state.appContext.cuePage(this);
   },
   componentWillUnmount: function(){
