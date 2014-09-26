@@ -1304,10 +1304,18 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	        calledBack = true;
 	        if(!!delay){
 						window.setTimeout(function(){
-							callback(void(0), self.appState);
+						  if(caller === namespace){
+                callback.call(self.appState, void(0), self.appState);
+              } else {
+                callback.call(self.appState[caller], void(0), self.appState);
+              }
 			      }, delay);
 					} else {
-						callback(void(0), self.appState);
+					  if(caller === namespace){
+              callback.call(self.appState, void(0), self.appState);
+            } else {
+              callback.call(self.appState[caller], void(0), self.appState);
+            }
 					}
 				} catch(e) {
 					callback(e);
@@ -1476,10 +1484,18 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				calledBack = true;
 				if(!!delay){
 					window.setTimeout(function(){
-						callback(void(0), self.appState);
+					  if(caller === namespace){
+	            callback.call(self.appState, void(0), self.appState);
+	          } else {
+	            callback.call(self.appState[caller], void(0), self.appState);
+	          }
 		      }, delay);
 				} else {
-					callback(void(0), self.appState);
+				  if(caller === namespace){
+            callback.call(self.appState, void(0), self.appState);
+          } else {
+            callback.call(self.appState[caller], void(0), self.appState);
+          }
 					return;
 				}
 			}
@@ -1906,6 +1922,7 @@ var ViewModel = {
                 });
 
                 tempModel.__proto__.setState = function(state, callback){ //callback may be useful for DB updates
+                  callback = callback ? callback.bind(this) : void(0);
                   this.__stateChangeHandler.call(viewModel, extend(this.state, state), callback);
                 };
 
