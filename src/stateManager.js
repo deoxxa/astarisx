@@ -559,6 +559,11 @@ StateManager.prototype.currentState = function(){
 
 StateManager.prototype.unmountView = function(component){
 	var viewKey = component.props.viewKey || component._rootNodeID;
+	if(this.listeners === null || this.listeners === void(0)){
+		this.handlers = null;
+		this.hasListeners = false;
+		return;
+	}
 	this.listeners[viewKey].removeEventListener("stateChange", this.handlers[viewKey]);
 	delete this.listeners[viewKey];
 	delete this.handlers[viewKey];
