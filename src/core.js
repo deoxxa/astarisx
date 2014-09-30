@@ -68,7 +68,7 @@ var AstarisxClass = {
       }
 
       // Mixin addons
-      if('mixins' in this.originalSpec && proto.constructor.classType === "ControllerViewModel"){
+      if('mixins' in this.originalSpec && proto.constructor.classType !== "Model"){
         for (var i = 0; i < this.originalSpec.mixins.length; i++) {
           mixinSpec = this.originalSpec.mixins[i];
           for (var name in mixinSpec) {

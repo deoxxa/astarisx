@@ -203,6 +203,7 @@
 ## 0.10.0-beta
 
 - added auto-binding for setState callbacks.
+- Enable mixinx for ViewModels
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.
