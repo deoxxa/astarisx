@@ -22,44 +22,49 @@ var ControllerViewModel = {
         }
       };
 
-      desc.proto.initializeDataContext = function(obj /* or ...string */){
+      desc.proto.initializeDataContext = function(obj /* ...string and objects OR array of string and objects OR empty */){
 
         var args = Array.prototype.slice.call(arguments, 0);
+        var argsLen;
         var objArg = {};
         var arg, ctx, contexts, ctxArgs;
 
         if(obj === void(0)){
           objArg = { '*':[] };
         } else {
-          if(Object.prototype.toString.call(obj) === '[object Object]'){
-            for(arg in obj){
-              if(obj.hasOwnProperty(arg)){
-                if(Object.prototype.toString.call(obj[arg]) === '[object Array]'){
-                  objArg[arg] = obj[arg];
-                } else {
-                  objArg[arg] = obj[arg] === void(0) ? [] : [obj[arg]];
-                }
-              };
-            }
-          } else {
-            //they must be strings
-            args.forEach(function(arg){
-              //set to empty array to pass to apply
-              objArg[arg] = [];
-            });
+          if(Object.prototype.toString.call(obj) === '[object Array]'){
+            args = args[0];
           }
+          argsLen = args.length;
+          for (var i = 0; i < argsLen; i++) {
+            args[i]
+          
+            if(Object.prototype.toString.call(args[i]) === '[object Object]'){
+              for(arg in args[i]){
+                if(args[i].hasOwnProperty(arg)){
+                  if(Object.prototype.toString.call(args[i][arg]) === '[object Array]'){
+                    objArg[arg] = args[i][arg];
+                  } else {
+                    objArg[arg] = args[i][arg] === void(0) ? [] : [args[i][arg]];
+                  }
+                };
+              }
+            } else {
+              objArg[args[i]] = [];
+            }
+          };
         }
 
         //determine processing scope
         contexts = '*' in objArg ? desc.viewModels : objArg;
         for(ctx in contexts){
           if(contexts.hasOwnProperty(ctx)){
-            if((ctx in this) && 'dataContextWillInitialize' in this[ctx].constructor.originalSpec){
+            if((ctx in this) && !!this[ctx].dataContextWillInitialize){
               //build args
               ctxArgs = objArg[ctx] || [];
               //append '*' args
               ctxArgs = ctxArgs.concat(objArg['*'] || objArg['_*'] || []);
-              this[ctx].constructor.originalSpec.dataContextWillInitialize.apply(this[ctx], ctxArgs);
+              this[ctx].dataContextWillInitialize.apply(this[ctx], ctxArgs);
               delete this[ctx].__proto__.dataContextWillInitialize;
             }
           }

@@ -206,5 +206,5 @@
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.
-- `this.intializeDataContext` now accepts either no args, '*', '_*', dataContext names as strings or an Object with dataContext names as keys with the value being the args to be passed to each dataContext during initialization.
-- fields of `kind:"array"` do not have a set method, it is removed to prevent in advertently updating the array. Must update arrays using methods and calling `setState`.
+- `this.intializeDataContext` now accepts either no args, '*', '_*', dataContext names as strings or Objects with dataContext names as keys with the value being the args to be passed to each dataContext OR both strings and Objects OR an array of string and Objects during initialization.
+- fields of `kind:"array"` do not have a set method, it is removed to prevent inadvertently updating the array by assignment. Must update arrays using methods and calling `setState`.
