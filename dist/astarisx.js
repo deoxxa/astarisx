@@ -890,6 +890,9 @@ var mixin = {
       stateMgr = new StateManager(this, options, initCtxObj);
     },
     componentWillUnmount: function(){
+      if('sessionStorage' in window){
+        window.sessionStorage.clear();
+      }
       stateMgr.dispose();
     }
   },
@@ -1187,7 +1190,6 @@ var uuid = require('./utils').uuid;
 var StateManager = function(component, appCtx, initCtxObj) {
 	
 	var namespace = uuid(),
-		ApplicationDataContext,
 		controllerViewModel,
 		stateChangeHandler,
 		viewKey,
@@ -1216,17 +1218,19 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		internal = false,
 		self = this;
 
-		self.appState = {};
-		self.listeners = {};
-		self.handlers = {};
-		self.hasListeners = false;		
+	self.appState = {};
+	self.listeners = {};
+	self.handlers = {};
+	self.hasListeners = false;		
 
-		controllerViewModel = appCtx.controllerViewModel;
-		enableUndo = 'enableUndo' in appCtx ? appCtx.enableUndo : false;
-		routingEnabled = 'enableRouting' in appCtx ? appCtx.enableRouting : false;
-		stateChangeHandler = function(applicationDataContext){
-	    component.setState({appContext: applicationDataContext});
-	  };
+	controllerViewModel = appCtx.controllerViewModel;
+	enableUndo = 'enableUndo' in appCtx ? appCtx.enableUndo : false;
+	routingEnabled = 'enableRouting' in appCtx ? appCtx.enableRouting : false;
+	self.signInUrl = appCtx.signInUrl;
+
+	stateChangeHandler = function(applicationDataContext){
+    component.setState({appContext: applicationDataContext});
+  };
 
 	var appStateChangeHandler = function(caller, newState, newAppState, remember, callback, delay) {
 		var nextState = {},
@@ -1245,6 +1249,9 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			pushStateChanged = false,
 			willUndo = false,
 			stateChangeEvent;
+
+			console.log(newState);
+
 
     if(arguments.length < 2){
       newState = self.appState;
@@ -1302,7 +1309,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
 			if(typeof callback === 'function'){
 				try {
-						self.appState = new ApplicationDataContext(nextState, prevState, redoState,
+						self.appState = new this.ApplicationDataContext(nextState, prevState, redoState,
 						enableUndo, routingEnabled, nextState.path !== self.appState.path,
 						!external || nextState.pageNotFound, remember);
 
@@ -1478,7 +1485,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
         nextState = extend(nextState, {dataContextWillUpdate: processedState});
       }
 
-			self.appState = new ApplicationDataContext(nextState, prevState, redoState,
+			self.appState = new this.ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
 			!external || nextState.pageNotFound, remember);	
 
@@ -1569,8 +1576,8 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	/* Initialize Application Data Context
 	/***************/
   try {
-  	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace));
-  	self.appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
+  	this.ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace));
+  	self.appState = new this.ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
     self.appState.state = self.appState.state || {};
   } catch (e) { 
   	if (e instanceof TypeError) {
@@ -1580,8 +1587,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
   	}
   }
 
-  this.viewModels = self.appState.constructor.originalSpec.getViewModels();
-	domain = this.viewModels;
+	domain = self.appState.constructor.originalSpec.getViewModels();
 	delete self.appState.__proto__.getViewModels;
 
 	//Initialize all dataContexts
@@ -1701,7 +1707,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	}
 	delete self.appState.__proto__.addTransitions;
 
-	self.appState = new ApplicationDataContext(self.appState, void(0), void(0),
+	self.appState = new this.ApplicationDataContext(self.appState, void(0), void(0),
 			enableUndo, routingEnabled);
 
 	if(routingEnabled){
@@ -1766,21 +1772,50 @@ StateManager.prototype.mountView = function(component){
 }
 
 StateManager.prototype.dispose = function(){
+  
+  var emptyState = new this.ApplicationDataContext(void(0), void(0), void(0), false, false);
+	var resetState = {};
+	var viewModels = this.appState.constructor.originalSpec.getViewModels();
+	if(!!this.signInUrl){
+		page.replace(this.signInUrl);
+	}
+	//first check if Animation mixin is being used
+	//if it is then reset the display
+	if('resetDisplay' in this.appState){
+		this.appState.resetDisplay();
+	}
+		
 	//remove listners
 	for(var viewKey in this.listeners){
 		if(this.listeners.hasOwnProperty(viewKey)){
 			this.listeners[viewKey].removeEventListener("stateChange", this.handlers[viewKey]);
 		}
 	}
+	
+	//reset dataContexts
+	for(viewModel in viewModels){
+		if(viewModels.hasOwnProperty(viewModel)){
+			resetState[viewModel] = this.appState[viewModel].dispose();
+    }
+  }
+  resetState = extend(this.appState, emptyState, resetState);
+	try {
+  	this.appState = new this.ApplicationDataContext(resetState, void(0), void(0), false, false);
+    this.appState.state = this.appState.state || {};
+  } catch (e) { 
+  	if (e instanceof TypeError) {
+    	throw new TypeError('Something went wrong');
+  	} else {
+  		throw e;
+  	}
+  }
 
 	delete this.appState.constructor.originalSpec.__processedSpec__;
-	for(viewModel in this.viewModels){
-		if(this.viewModels.hasOwnProperty(viewModel)){			
+	for(viewModel in viewModels){
+		if(viewModels.hasOwnProperty(viewModel)){			
 			delete this.appState[viewModel].constructor.originalSpec.__processedSpec__;
 		}
 	}
-
-	this.appState = null;
 	this.listeners = null;
 	this.handlers = null;
 	this.hasListeners = false;
@@ -1954,6 +1989,11 @@ var ViewModel = {
 
         return Object.freeze(viewModel);
       };
+
+      desc.proto.dispose = function(){
+        return ViewModelClass(void(0));
+      };
+
       return ViewModelClass;
     }
   }

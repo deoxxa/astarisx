@@ -86,6 +86,11 @@ var ViewModel = {
 
         return Object.freeze(viewModel);
       };
+
+      desc.proto.dispose = function(){
+        return ViewModelClass(void(0));
+      };
+
       return ViewModelClass;
     }
   }

@@ -7,6 +7,9 @@ var mixin = {
       stateMgr = new StateManager(this, options, initCtxObj);
     },
     componentWillUnmount: function(){
+      if('sessionStorage' in window){
+        window.sessionStorage.clear();
+      }
       stateMgr.dispose();
     }
   },
