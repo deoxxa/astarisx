@@ -63,7 +63,7 @@ var ViewModel = {
                   value: viewModel[freezeFields[fld].fieldName].state
                 });
 
-                tempModel.__proto__.setState = function(state, callback){ //callback may be useful for DB updates
+                Object.getPrototypeOf(tempModel).setState = function(state, callback){ //callback may be useful for DB updates
                   callback = callback ? callback.bind(this) : void(0);
                   this.__stateChangeHandler.call(viewModel, extend(this.state, state), callback);
                 };

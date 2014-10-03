@@ -206,6 +206,7 @@
 - Enable mixins for ViewModels
 - add dispose() to ViewModels. Automatically called on Astarisx UI component unmount.
 - add signInUrl as init param to ControllerViewModel
+- Bug fix: removed use of `_____proto_____`. Broke in IE.
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.

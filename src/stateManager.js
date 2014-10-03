@@ -405,7 +405,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
   }
 
 	domain = self.appState.constructor.originalSpec.getViewModels();
-	delete self.appState.__proto__.getViewModels;
+	delete Object.getPrototypeOf(self.appState).getViewModels;
 
 	//Initialize all dataContexts
 	for(viewModel in domain){
@@ -500,13 +500,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 						}.bind(this, viewModel, routeHash[routePath].path, routePath));
 					}
 				}
-				delete self.appState[viewModel].__proto__.getRoutes;
+				delete Object.getPrototypeOf(self.appState[viewModel]).getRoutes;
     	}
 
     	//This is if astarisx-animate mixin is used
 			if('getDisplays' in self.appState[viewModel].constructor.originalSpec){
 				self.appState.addDisplays(self.appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
-				delete self.appState[viewModel].__proto__.getDisplays;
+				delete Object.getPrototypeOf(self.appState[viewModel]).getDisplays;
 			}
 		}
   }
@@ -514,15 +514,15 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	//This is if astarisx-animate mixin is used
 	if('getDisplays' in self.appState.constructor.originalSpec){
 		self.appState.addDisplays(self.appState.constructor.originalSpec.getDisplays());
-		delete self.appState.__proto__.getDisplays;
+		delete Object.getPrototypeOf(self.appState).getDisplays;
 	}
-	delete self.appState.__proto__.addDisplays;
+	delete Object.getPrototypeOf(self.appState).addDisplays;
 
 	if('getTransitions' in self.appState.constructor.originalSpec){
 		self.appState.addTransitions(self.appState.constructor.originalSpec.getTransitions());
-		delete self.appState.__proto__.getTransitions;
+		delete Object.getPrototypeOf(self.appState).getTransitions;
 	}
-	delete self.appState.__proto__.addTransitions;
+	delete Object.getPrototypeOf(self.appState).addTransitions;
 
 	self.appState = new this.ApplicationDataContext(self.appState, void(0), void(0),
 			enableUndo, routingEnabled);
@@ -551,7 +551,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
   if('dataContextWillInitialize' in self.appState.constructor.originalSpec){
     self.appState.constructor.originalSpec.dataContextWillInitialize.call(self.appState, initCtxObj);
-    delete self.appState.__proto__.dataContextWillInitialize;
+    delete Object.getPrototypeOf(self.appState).dataContextWillInitialize;
   }
 
 };
