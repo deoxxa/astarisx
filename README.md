@@ -95,7 +95,7 @@ var Todo = function(){
   return new TodoClass(todoStateChangeHandler).apply(this, arguments);
 };
 
-var TodoViewModel = Astarisx.createViewModel({
+var TodoViewModel = Astarisx.createViewModelClass({
   
   getInitialState: function(){
     return { todos: {} };
