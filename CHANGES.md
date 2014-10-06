@@ -207,6 +207,8 @@
 - add dispose() to ViewModels. Automatically called on Astarisx UI component unmount.
 - add signInUrl as init param to ControllerViewModel
 - Bug fix: removed use of `_____proto_____`. Broke in IE.
+- add Model validation. Field descriptor takes a `validate` object with a getter that returns a bool. Adds [field]valid as a field to model. Also adds `allValid` field that check all the `validate` descriptors return true.
+
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.

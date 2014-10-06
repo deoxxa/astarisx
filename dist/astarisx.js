@@ -772,7 +772,8 @@ var AstarisxClass = {
         hasStatic = false,
         key,
         mixinSpec;
-      var tempDesc = {};
+      var tempDesc = {},
+        validations = [];
 
       if('__processedSpec__' in this.originalSpec){
         return this.originalSpec.__processedSpec__;
@@ -798,7 +799,7 @@ var AstarisxClass = {
             //assume it is a descriptor and clone
             tempDesc[key] = extend(this.originalSpec[key]);
             tempDesc[key].enumerable = true;
-            if('viewModel' in tempDesc[key] && proto.constructor.classType === "ControllerViewModel") {
+            if(proto.constructor.classType === "ControllerViewModel" && ('viewModel' in tempDesc[key])) {
               //ensure that we don't use the reseved keys
               if(key !== '*' && key !== '_*'){
                 viewModels[key] = tempDesc[key].viewModel;
@@ -806,24 +807,34 @@ var AstarisxClass = {
               delete tempDesc[key].viewModel;
               delete tempDesc[key].set;
             } else {
-              if('aliasFor' in tempDesc[key] && proto.constructor.classType === "Model"){
+              if(proto.constructor.classType === "Model" && ('aliasFor' in tempDesc[key])){
                 aliases[tempDesc[key].aliasFor] = key;
                 delete tempDesc[key].aliasFor;
               }
+
+              if(proto.constructor.classType === "Model" && ('validate' in tempDesc[key]) && 
+                Object.prototype.toString.call(tempDesc[key].validate) === '[object Object]'){
+                //delete setter. just in case
+                delete tempDesc[key].validate.set;
+                descriptor[key + 'Valid'] = tempDesc[key].validate;
+                validations.push(tempDesc[key].validate.get);
+                delete tempDesc[key].validate;
+              }
+
               if('kind' in tempDesc[key]){
                 if(tempDesc[key].kind === 'pseudo'){
                   tempDesc[key].enumerable = false;
-                } else if ((tempDesc[key].kind === 'instance' && proto.constructor.classType === "ViewModel") ||
+                } else if ((proto.constructor.classType === "ViewModel" && tempDesc[key].kind === 'instance') ||
                   tempDesc[key].kind === 'array') { //'instance' || 'array'
                   autoFreeze.push({fieldName: key, kind: tempDesc[key].kind});
                   //if array then remove set. Can only update array via functions
                   if(tempDesc[key].kind === 'array'){
                     delete tempDesc[key].set;
                   }
-                } else if (tempDesc[key].kind === 'static' && proto.constructor.classType === "ControllerViewModel") {
+                } else if (proto.constructor.classType === "ControllerViewModel" && tempDesc[key].kind === 'static') {
                   hasStatic = true;
                   statics[key] = void(0);
-                } else if (tempDesc[key].kind === 'uid' && proto.constructor.classType === "Model") {
+                } else if (proto.constructor.classType === "Model" && tempDesc[key].kind === 'uid') {
                   //Don't do anything as yet
                 } else {
                   throw new TypeError('"'+tempDesc[key].kind +'" '+
@@ -845,6 +856,25 @@ var AstarisxClass = {
       if(proto.constructor.classType === "ControllerViewModel"){
         this.originalSpec.getViewModels = function(){
           return viewModels;
+        }
+      }
+
+      //add allValid check
+      if(proto.constructor.classType === "Model"){
+        var validationsLen = validations.length;
+        if(validationsLen > 0){
+          descriptor.allValid = { 
+            get: function(){
+              var valid = true;
+              for(var v = 0; v < validationsLen; v++){
+                if(!!!validations[v].call(this)){
+                  valid = false;
+                  break;
+                }
+              }
+              return valid;
+            }
+          }
         }
       }
 
