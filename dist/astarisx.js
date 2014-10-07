@@ -719,6 +719,7 @@ var page = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
 var mixInto = utils.mixInto;
+var uuid = utils.uuid;
 
 var ModelBase = function(){};
 var ViewModelBase = function(){};
@@ -798,7 +799,9 @@ var AstarisxClass = {
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
             //assume it is a descriptor and clone
             tempDesc[key] = extend(this.originalSpec[key]);
-            tempDesc[key].enumerable = true;
+            if(!('enumerable' in tempDesc[key])){
+              tempDesc[key].enumerable = true;
+            }
             if(proto.constructor.classType === "ControllerViewModel" && ('viewModel' in tempDesc[key])) {
               //ensure that we don't use the reseved keys
               if(key !== '*' && key !== '_*'){
@@ -907,6 +910,7 @@ module.exports = {
   createCVMClass: controllerViewModelClassConstructor,
   mixin: mixin,
   extend: extend,
+  uuid: uuid,
   page: page
 };
 

@@ -206,8 +206,10 @@
 - Enable mixins for ViewModels
 - add dispose() to ViewModels. Automatically called on Astarisx UI component unmount.
 - add signInUrl as init param to ControllerViewModel
-- Bug fix: removed use of `_____proto_____`. Broke in IE.
+- Bug fix: removed use of `__ proto __`. Broke in IE.
 - add Model validation. Field descriptor takes a `validate` object with a getter that returns a bool. Adds [field]valid as a field to model. Also adds `allValid` field that check all the `validate` descriptors return true.
+- expose uuid() on Astarisx object
+- allow 'enumerable' to be set in model fields. default is enumerable:true
 
 
 ### Breaking Changes
