@@ -610,8 +610,8 @@ var ControllerViewModel = {
         //need routingEnabled flag because it depends on prevState
         if(enableUndo || routingEnabled){
           if(!!prevState && (!pushStateChanged || adhocUndo || pageNotFound) &&
-            !previousAdhoc && internal && remember){
-            previousAdhoc = adhocUndo;
+            !prevAdhocUndo && internal && remember){
+            prevAdhocUndo = adhocUndo;
             previousPageNotFound = pageNotFound;
             Object.defineProperty(controllerViewModel, 'previousState', {
               configurable: false,
@@ -633,7 +633,7 @@ var ControllerViewModel = {
               value: false
             });
           }
-          if(!!redoState && ('state' in redoState) && !previousAdhoc &&
+          if(!!redoState && ('state' in redoState) && !prevAdhocUndo &&
             !previousPageNotFound){
             Object.defineProperty(controllerViewModel, 'nextState', {
               configurable: false,
@@ -648,7 +648,7 @@ var ControllerViewModel = {
               value: true
             });
           } else {
-            previousAdhoc = adhocUndo;
+            prevAdhocUndo = adhocUndo;
             previousPageNotFound = pageNotFound;
             Object.defineProperty(controllerViewModel, 'canAdvance', {
               configurable: false,
@@ -713,12 +713,6 @@ var ControllerViewModel = {
               Object.freeze(nextState[freezeFields[fld].fieldName]);
             } 
           }
-          // if(freezeFields[fld].kind === 'array'){
-          //   nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
-          //   Object.freeze(nextState[freezeFields[fld].fieldName]);
-          // } else {
-          //   throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
-          // }
         };
 
         Object.defineProperty(controllerViewModel, 'state', {
@@ -1239,12 +1233,6 @@ var Model = {
               Object.freeze(nextState[freezeFields[fld].fieldName]);
             } 
           }
-          // if(freezeFields[fld].kind === 'array'){
-          //   nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
-          //   Object.freeze(nextState[freezeFields[fld].fieldName]);
-          // } else {
-          //   throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
-          // }
         };
 
         Object.defineProperty(model, 'state', {

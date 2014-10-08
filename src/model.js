@@ -83,12 +83,6 @@ var Model = {
               Object.freeze(nextState[freezeFields[fld].fieldName]);
             } 
           }
-          // if(freezeFields[fld].kind === 'array'){
-          //   nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
-          //   Object.freeze(nextState[freezeFields[fld].fieldName]);
-          // } else {
-          //   throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
-          // }
         };
 
         Object.defineProperty(model, 'state', {

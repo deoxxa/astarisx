@@ -211,6 +211,7 @@
 - expose uuid() on Astarisx object
 - allow 'enumerable' attribute to be set in model fields. default is enumerable:true
 - added `kind:’object’`, `kind:’object:freeze’`, `kind:’object:deepFreeze’`, `kind:’array:freeze’`, `kind:’array:deepFreeze’`
+- Bug fix: adhoc undo i.e. `{ enableUndo: true }` error.
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.
