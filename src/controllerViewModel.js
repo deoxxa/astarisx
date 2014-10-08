@@ -132,7 +132,7 @@ var ControllerViewModel = {
         //need routingEnabled flag because it depends on prevState
         if(enableUndo || routingEnabled){
           if(!!prevState && (!pushStateChanged || adhocUndo || pageNotFound) &&
-            !prevAdhocUndo && internal && remember){
+            internal && remember){
             prevAdhocUndo = adhocUndo;
             previousPageNotFound = pageNotFound;
             Object.defineProperty(controllerViewModel, 'previousState', {
