@@ -1,5 +1,10 @@
 var utils = require('./utils');
 var extend = utils.extend;
+var isObject = utils.isObject;
+var isArray = utils.isArray;
+var isModel = utils.isModel;
+var freeze = utils.freeze;
+var deepFreeze = utils.deepFreeze;
 
 var ViewModel = {
 
@@ -70,10 +75,31 @@ var ViewModel = {
 
                 Object.freeze(viewModel[freezeFields[fld].fieldName]);
               }
-
+          } else if(freezeFields[fld].kind === 'object'){
+            //Only freeze root object
+            if(isObject(nextState[freezeFields[fld].fieldName])){
+              Object.freeze(nextState[freezeFields[fld].fieldName]);
+            }
+          } else if(freezeFields[fld].kind === 'object:freeze'){
+            //shallow freeze all objects and arrays one level down
+            freeze(nextState[freezeFields[fld].fieldName]);
+          } else if(freezeFields[fld].kind === 'object:deepFreeze'){
+            //freeze all objects and arrays traversing arrays for objects and arrays
+            deepFreeze(nextState[freezeFields[fld].fieldName]);
           } else {
+            //Must be kind:'array*'
+            //initialize array if necessary
             nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
-            Object.freeze(nextState[freezeFields[fld].fieldName]);
+            if(freezeFields[fld].kind === 'array:freeze'){
+              //shallow freeze all objects and arrays in array
+              freeze(nextState[freezeFields[fld].fieldName]);
+            } else if(freezeFields[fld].kind === 'array:deepFreeze'){
+              //freeze all objects and arrays in array traversing arrays and objects for arrays and objects
+              deepFreeze(nextState[freezeFields[fld].fieldName]);
+            } else {
+              //freezeFields[fld].kind === 'array'
+              Object.freeze(nextState[freezeFields[fld].fieldName]);
+            } 
           }
         };
 

@@ -1,6 +1,8 @@
 
 var utils = require('./utils');
 var extend = utils.extend;
+var isArray = utils.isArray;
+var isObject = utils.isObject;
 
 var ControllerViewModel = {
 
@@ -32,17 +34,17 @@ var ControllerViewModel = {
         if(obj === void(0)){
           objArg = { '*':[] };
         } else {
-          if(Object.prototype.toString.call(obj) === '[object Array]'){
+          if(isArray(obj)){
             args = args[0];
           }
           argsLen = args.length;
           for (var i = 0; i < argsLen; i++) {
             args[i]
           
-            if(Object.prototype.toString.call(args[i]) === '[object Object]'){
+            if(isObject(args[i])){
               for(arg in args[i]){
                 if(args[i].hasOwnProperty(arg)){
-                  if(Object.prototype.toString.call(args[i][arg]) === '[object Array]'){
+                  if(isArray(args[i][arg])){
                     objArg[arg] = args[i][arg];
                   } else {
                     objArg[arg] = args[i][arg] === void(0) ? [] : [args[i][arg]];
@@ -205,14 +207,40 @@ var ControllerViewModel = {
           nextState = extend(nextState, controllerViewModel);
         }
 
-        //freeze arrays and model instances and initialize if necessary
+        //freeze arrays and model objects and initialize if necessary
         for (fld = freezeFields.length - 1; fld >= 0; fld--) {
-          if(freezeFields[fld].kind === 'array'){
-            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
-            Object.freeze(nextState[freezeFields[fld].fieldName]);
+          if(freezeFields[fld].kind === 'object'){
+            //Only freeze root object
+            if(isObject(nextState[freezeFields[fld].fieldName])){
+              Object.freeze(nextState[freezeFields[fld].fieldName]);
+            }
+          } else if(freezeFields[fld].kind === 'object:freeze'){
+            //shallow freeze all objects and arrays one level down
+            freeze(nextState[freezeFields[fld].fieldName]);
+          } else if(freezeFields[fld].kind === 'object:deepFreeze'){
+            //freeze all objects and arrays traversing arrays for objects and arrays
+            deepFreeze(nextState[freezeFields[fld].fieldName]);
           } else {
-            throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
+            //Must be kind:'array*'
+            //initialize array if necessary
+            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+            if(freezeFields[fld].kind === 'array:freeze'){
+              //shallow freeze all objects and arrays in array
+              freeze(nextState[freezeFields[fld].fieldName]);
+            } else if(freezeFields[fld].kind === 'array:deepFreeze'){
+              //freeze all objects and arrays in array traversing arrays and objects for arrays and objects
+              deepFreeze(nextState[freezeFields[fld].fieldName]);
+            } else {
+              //freezeFields[fld].kind === 'array'
+              Object.freeze(nextState[freezeFields[fld].fieldName]);
+            } 
           }
+          // if(freezeFields[fld].kind === 'array'){
+          //   nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+          //   Object.freeze(nextState[freezeFields[fld].fieldName]);
+          // } else {
+          //   throw new TypeError('kind:"instance" can only be specified in a ViewModel.');
+          // }
         };
 
         Object.defineProperty(controllerViewModel, 'state', {

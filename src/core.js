@@ -117,12 +117,16 @@ var AstarisxClass = {
                 if(tempDesc[key].kind === 'pseudo'){
                   tempDesc[key].enumerable = false;
                 } else if ((proto.constructor.classType === "ViewModel" && tempDesc[key].kind === 'instance') ||
-                  tempDesc[key].kind === 'array') { //'instance' || 'array'
+                  tempDesc[key].kind === 'object' ||
+                  tempDesc[key].kind === 'object:freeze' ||
+                  tempDesc[key].kind === 'object:deepFreeze' ||
+                  tempDesc[key].kind === 'array' ||
+                  tempDesc[key].kind === 'array:freeze' ||
+                  tempDesc[key].kind === 'array:deepFreeze') {
                   autoFreeze.push({fieldName: key, kind: tempDesc[key].kind});
-                  //if array then remove set. Can only update array via functions
-                  if(tempDesc[key].kind === 'array'){
-                    delete tempDesc[key].set;
-                  }
+                  //There's no need for set statments for these kinds. Can only update via functions & setState.
+                  //If the object needs to be updated then it should be a Model                  
+                  delete tempDesc[key].set;
                 } else if (proto.constructor.classType === "ControllerViewModel" && tempDesc[key].kind === 'static') {
                   hasStatic = true;
                   statics[key] = void(0);

@@ -1,3 +1,4 @@
+var toString = Object.prototype.toString;
 var utils = {
   
   extend: function () {
@@ -69,8 +70,58 @@ var utils = {
         .toString(16);
     }
     return uuid;
-  }
-  
+  },
+  isObject: function(o) {
+    return toString.call(o) === '[object Object]';
+  },
+  isArray: function (o) {
+    return toString.call(o) === '[object Array]';
+  },
+  isModel: function (o) {
+    return Object.getPrototypeOf(o).constructor.classType === "Model";
+  },
+  isViewModel: function (o) {
+    return Object.getPrototypeOf(o).constructor.classType === "ViewModel";
+  },
+  isControllerViewModel: function (o) {
+    return Object.getPrototypeOf(o).constructor.classType === "ControllerViewModel";
+  },
+  freeze: function(o) {
+    if(utils.isObject(o)){
+      Object.freeze(o);
+      for (var k in o) {
+        if(o.hasOwnProperty(k)){
+          if(utils.isArray(o[k]) || utils.isObject(o[k])){
+            Object.freeze(o[k]);
+          }          
+        }
+      }
+    } else if(utils.isArray(o)){
+      for (var i = o.length - 1; i >= 0; i--) {
+        if(utils.isArray(o[i]) || utils.isObject(o[i])){
+          Object.freeze(o[i]);
+        }
+      };
+    }
+  },
+  deepFreeze: function(o) {
+    if(utils.isObject(o)){
+      Object.freeze(o);
+      for (var k in o) {
+        if(o.hasOwnProperty(k)){
+          if(utils.isArray(o[k]) || utils.isObject(o[k])){
+            deepFreeze(Object.freeze(o[k]));
+          }          
+        }
+      }
+    } else if(utils.isArray(o)){
+      for (var i = o.length - 1; i >= 0; i--) {
+        if(utils.isArray(o[i]) || utils.isObject(o[i])){
+          deepFreeze(Object.freeze(o[i]));
+        }
+      };
+    }
+  }  
 };
 
 module.exports = utils;

@@ -209,8 +209,8 @@
 - Bug fix: removed use of `__ proto __`. Broke in IE.
 - add Model validation. Field descriptor takes a `validate` object with a getter that returns a bool. Adds [field]valid as a field to model. Also adds `allValid` field that check all the `validate` descriptors return true.
 - expose uuid() on Astarisx object
-- allow 'enumerable' to be set in model fields. default is enumerable:true
-
+- allow 'enumerable' attribute to be set in model fields. default is enumerable:true
+- added `kind:’object’`, `kind:’object:freeze’`, `kind:’object:deepFreeze’`, `kind:’array:freeze’`, `kind:’array:deepFreeze’`
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.

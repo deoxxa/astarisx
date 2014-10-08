@@ -2,7 +2,9 @@ var page = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
 var updateStatic = utils.updateStatic;
-var uuid = require('./utils').uuid;
+var uuid = utils.uuid;
+var isArray = utils.isArray;
+var isControllerViewModel = utils.isControllerViewModel;
 
 var StateManager = function(component, appCtx, initCtxObj) {
 	
@@ -96,7 +98,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		//Check to see if appState is a ready made state object. If so
 		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
-		if(Object.getPrototypeOf(newState).constructor.classType === "ControllerViewModel") {
+		if(isControllerViewModel(newState)) {
 			willUndo = true;
 			nextState = extend(newState, staticState);
 			prevState = newState.previousState;
@@ -360,7 +362,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			stateChangeEvent = new CustomEvent("stateChange", {"detail": self.appState});
 		  if(nextState.notify){
 		  	//Only notify specific views
-				if(Object.prototype.toString.call(nextState.notify) === '[object Array]'){
+				if(isArray(nextState.notify)){
 					nextState.notify.forEach(function(viewKey){
 						if(viewKey === "*"){
 							stateChangeHandler(self.appState);
