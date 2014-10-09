@@ -2129,7 +2129,7 @@ var ViewModel = {
                       };
                     }
                     callback = callback ? callback.bind(this) : void(0);
-                    this.__stateChangeHandler.call(viewModel, extend(this.state, state, clientFields), callback);
+                    this.__stateChangeHandler.call(viewModel, extend(this.state, clientFields, state), callback);
                   };
 
                   Object.freeze(viewModel[freezeFields[fld].fieldName]);
