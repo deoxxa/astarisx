@@ -1332,9 +1332,6 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			willUndo = false,
 			stateChangeEvent;
 
-			console.log(newState);
-
-
     if(arguments.length < 2){
       newState = self.appState;
     }
