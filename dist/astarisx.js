@@ -824,13 +824,13 @@ var AstarisxClass = {
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
             //assume it is a descriptor and clone
             tempDesc[key] = extend(this.originalSpec[key]);
-            if(proto.constructor.classType === "Model" && key[0] === "_"){
+            if(!('enumerable' in tempDesc[key])){
+              tempDesc[key].enumerable = true;
+            } else if(proto.constructor.classType === "Model" && key[0] === "_"){
               tempDesc[key].enumerable = false;
               clientFields = clientFields || [];
               clientFields.push(key);
               //place into statics list
-            } else if(!('enumerable' in tempDesc[key])){
-              tempDesc[key].enumerable = true;
             }
 
             if(proto.constructor.classType === "ControllerViewModel" && ('viewModel' in tempDesc[key])) {
