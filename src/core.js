@@ -56,14 +56,15 @@ var AstarisxClass = {
       var descriptor = {},
         proto = this.prototype,
         viewModels = {},
-        autoFreeze = [],
-        aliases = {},
-        statics = {},
+        autoFreeze,
+        aliases,
+        statics,
+        clientFields,
         hasStatic = false,
         key,
-        mixinSpec;
-      var tempDesc = {},
-        validations = [];
+        mixinSpec,
+        tempDesc = {},
+        validations;
 
       if('__processedSpec__' in this.originalSpec){
         return this.originalSpec.__processedSpec__;
@@ -88,9 +89,15 @@ var AstarisxClass = {
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
             //assume it is a descriptor and clone
             tempDesc[key] = extend(this.originalSpec[key]);
-            if(!('enumerable' in tempDesc[key])){
+            if(proto.constructor.classType === "Model" && key[0] === "_"){
+              tempDesc[key].enumerable = false;
+              clientFields = clientFields || [];
+              clientFields.push(key);
+              //place into statics list
+            } else if(!('enumerable' in tempDesc[key])){
               tempDesc[key].enumerable = true;
             }
+
             if(proto.constructor.classType === "ControllerViewModel" && ('viewModel' in tempDesc[key])) {
               //ensure that we don't use the reseved keys
               if(key !== '*' && key !== '_*'){
@@ -100,6 +107,7 @@ var AstarisxClass = {
               delete tempDesc[key].set;
             } else {
               if(proto.constructor.classType === "Model" && ('aliasFor' in tempDesc[key])){
+                aliases = aliases || {};
                 aliases[tempDesc[key].aliasFor] = key;
                 delete tempDesc[key].aliasFor;
               }
@@ -109,6 +117,7 @@ var AstarisxClass = {
                 //delete setter. just in case
                 delete tempDesc[key].validate.set;
                 descriptor[key + 'Valid'] = tempDesc[key].validate;
+                validations = validations || [];
                 validations.push(tempDesc[key].validate.get);
                 delete tempDesc[key].validate;
               }
@@ -123,11 +132,13 @@ var AstarisxClass = {
                   tempDesc[key].kind === 'array' ||
                   tempDesc[key].kind === 'array:freeze' ||
                   tempDesc[key].kind === 'array:deepFreeze') {
+                  autoFreeze = autoFreeze || [];
                   autoFreeze.push({fieldName: key, kind: tempDesc[key].kind});
                   //There's no need for set statments for these kinds. Can only update via functions & setState.
                   //If the object needs to be updated then it should be a Model                  
                   delete tempDesc[key].set;
                 } else if (proto.constructor.classType === "ControllerViewModel" && tempDesc[key].kind === 'static') {
+                  statics = statics || {};
                   hasStatic = true;
                   statics[key] = void(0);
                 } else if (proto.constructor.classType === "Model" && tempDesc[key].kind === 'uid') {
@@ -156,7 +167,7 @@ var AstarisxClass = {
       }
 
       //add allValid check
-      if(proto.constructor.classType === "Model"){
+      if(validations !== void(0) && proto.constructor.classType === "Model"){
         var validationsLen = validations.length;
         if(validationsLen > 0){
           descriptor.allValid = { 
@@ -181,6 +192,7 @@ var AstarisxClass = {
         freezeFields: autoFreeze,
         aliases: aliases,
         statics: statics,
+        clientFields: clientFields,
         hasStatic: hasStatic,
         viewModels: viewModels
       };

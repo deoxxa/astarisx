@@ -213,6 +213,7 @@
 - added `kind:’object’`, `kind:’object:freeze’`, `kind:’object:deepFreeze’`, `kind:’array:freeze’`, `kind:’array:deepFreeze’`
 - Bug fix: adhoc undo i.e. `{ enableUndo: true }` error.
 - Bug fix: prevAdhocUndo removed from if statement in CVM.
+- Enable client-side fields in Models. Getter/Setter fields prefixed with an underscore will not be sent to the server.
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.

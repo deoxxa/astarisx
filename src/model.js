@@ -34,10 +34,12 @@ var Model = {
         nextState = extend(nextState, model);
 
         if(initialize){
-          for(var aliasFor in desc.aliases){
-            if(desc.aliases.hasOwnProperty(aliasFor) && aliasFor in nextState){
-              nextState[desc.aliases[aliasFor]] = nextState[aliasFor];
-              delete nextState[aliasFor];
+          if(desc.aliases !== void(0)){
+            for(var aliasFor in desc.aliases){
+              if(desc.aliases.hasOwnProperty(aliasFor) && aliasFor in nextState){
+                nextState[desc.aliases[aliasFor]] = nextState[aliasFor];
+                delete nextState[aliasFor];
+              }
             }
           }
 
@@ -56,34 +58,36 @@ var Model = {
         }
 
         //freeze arrays and model objects and initialize if necessary
-        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
-          if(freezeFields[fld].kind === 'object'){
-            //Only freeze root object
-            if(isObject(nextState[freezeFields[fld].fieldName])){
-              Object.freeze(nextState[freezeFields[fld].fieldName]);
-            }
-          } else if(freezeFields[fld].kind === 'object:freeze'){
-            //shallow freeze all objects and arrays one level down
-            freeze(nextState[freezeFields[fld].fieldName]);
-          } else if(freezeFields[fld].kind === 'object:deepFreeze'){
-            //freeze all objects and arrays traversing arrays for objects and arrays
-            deepFreeze(nextState[freezeFields[fld].fieldName]);
-          } else {
-            //Must be kind:'array*'
-            //initialize array if necessary
-            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
-            if(freezeFields[fld].kind === 'array:freeze'){
-              //shallow freeze all objects and arrays in array
+        if(freezeFields !== void(0)){
+          for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+            if(freezeFields[fld].kind === 'object'){
+              //Only freeze root object
+              if(isObject(nextState[freezeFields[fld].fieldName])){
+                Object.freeze(nextState[freezeFields[fld].fieldName]);
+              }
+            } else if(freezeFields[fld].kind === 'object:freeze'){
+              //shallow freeze all objects and arrays one level down
               freeze(nextState[freezeFields[fld].fieldName]);
-            } else if(freezeFields[fld].kind === 'array:deepFreeze'){
-              //freeze all objects and arrays in array traversing arrays and objects for arrays and objects
+            } else if(freezeFields[fld].kind === 'object:deepFreeze'){
+              //freeze all objects and arrays traversing arrays for objects and arrays
               deepFreeze(nextState[freezeFields[fld].fieldName]);
             } else {
-              //freezeFields[fld].kind === 'array'
-              Object.freeze(nextState[freezeFields[fld].fieldName]);
-            } 
-          }
-        };
+              //Must be kind:'array*'
+              //initialize array if necessary
+              nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+              if(freezeFields[fld].kind === 'array:freeze'){
+                //shallow freeze all objects and arrays in array
+                freeze(nextState[freezeFields[fld].fieldName]);
+              } else if(freezeFields[fld].kind === 'array:deepFreeze'){
+                //freeze all objects and arrays in array traversing arrays and objects for arrays and objects
+                deepFreeze(nextState[freezeFields[fld].fieldName]);
+              } else {
+                //freezeFields[fld].kind === 'array'
+                Object.freeze(nextState[freezeFields[fld].fieldName]);
+              } 
+            }
+          };
+        }
 
         Object.defineProperty(model, 'state', {
           configurable: false,

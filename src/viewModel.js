@@ -46,62 +46,70 @@ var ViewModel = {
         }
 
         //freeze arrays and viewModel instances
-        for (fld = freezeFields.length - 1; fld >= 0; fld--) {
-          if(freezeFields[fld].kind === 'instance'){
-              if(viewModel[freezeFields[fld].fieldName]){
-                tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
-                tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
+        if(freezeFields !== void(0)){
+          for (fld = freezeFields.length - 1; fld >= 0; fld--) {
+            if(freezeFields[fld].kind === 'instance'){
+                if(viewModel[freezeFields[fld].fieldName]){
+                  tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
+                  tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
 
-                Object.defineProperty(tempModel, '__stateChangeHandler', {
-                  configurable: false,
-                  enumerable: false,
-                  writable: false,
-                  value: (function(fld){
-                    return viewModel[fld].__stateChangeHandler;
-                  })(freezeFields[fld].fieldName)
-                });
+                  Object.defineProperty(tempModel, '__stateChangeHandler', {
+                    configurable: false,
+                    enumerable: false,
+                    writable: false,
+                    value: (function(fld){
+                      return viewModel[fld].__stateChangeHandler;
+                    })(freezeFields[fld].fieldName)
+                  });
 
-                Object.defineProperty(tempModel, 'state', {
-                  configurable: true,
-                  enumerable: false,
-                  writable: true,
-                  value: viewModel[freezeFields[fld].fieldName].state
-                });
+                  Object.defineProperty(tempModel, 'state', {
+                    configurable: true,
+                    enumerable: false,
+                    writable: true,
+                    value: viewModel[freezeFields[fld].fieldName].state
+                  });
 
-                Object.getPrototypeOf(tempModel).setState = function(state, callback){ //callback may be useful for DB updates
-                  callback = callback ? callback.bind(this) : void(0);
-                  this.__stateChangeHandler.call(viewModel, extend(this.state, state), callback);
-                };
+                  Object.getPrototypeOf(tempModel).setState = function(state, callback){ //callback may be useful for DB updates
+                    var clientFields = {};
+                    if(tempDesc.clientFields !== void(0)){
+                      for (var cf = tempDesc.clientFields.length - 1; cf >= 0; cf--) {
+                        clientFields[tempDesc.clientFields[cf]] = this[tempDesc.clientFields[cf]];
+                      };
+                    }
+                    callback = callback ? callback.bind(this) : void(0);
+                    this.__stateChangeHandler.call(viewModel, extend(this.state, state, clientFields), callback);
+                  };
 
-                Object.freeze(viewModel[freezeFields[fld].fieldName]);
+                  Object.freeze(viewModel[freezeFields[fld].fieldName]);
+                }
+            } else if(freezeFields[fld].kind === 'object'){
+              //Only freeze root object
+              if(isObject(nextState[freezeFields[fld].fieldName])){
+                Object.freeze(nextState[freezeFields[fld].fieldName]);
               }
-          } else if(freezeFields[fld].kind === 'object'){
-            //Only freeze root object
-            if(isObject(nextState[freezeFields[fld].fieldName])){
-              Object.freeze(nextState[freezeFields[fld].fieldName]);
-            }
-          } else if(freezeFields[fld].kind === 'object:freeze'){
-            //shallow freeze all objects and arrays one level down
-            freeze(nextState[freezeFields[fld].fieldName]);
-          } else if(freezeFields[fld].kind === 'object:deepFreeze'){
-            //freeze all objects and arrays traversing arrays for objects and arrays
-            deepFreeze(nextState[freezeFields[fld].fieldName]);
-          } else {
-            //Must be kind:'array*'
-            //initialize array if necessary
-            nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
-            if(freezeFields[fld].kind === 'array:freeze'){
-              //shallow freeze all objects and arrays in array
+            } else if(freezeFields[fld].kind === 'object:freeze'){
+              //shallow freeze all objects and arrays one level down
               freeze(nextState[freezeFields[fld].fieldName]);
-            } else if(freezeFields[fld].kind === 'array:deepFreeze'){
-              //freeze all objects and arrays in array traversing arrays and objects for arrays and objects
+            } else if(freezeFields[fld].kind === 'object:deepFreeze'){
+              //freeze all objects and arrays traversing arrays for objects and arrays
               deepFreeze(nextState[freezeFields[fld].fieldName]);
             } else {
-              //freezeFields[fld].kind === 'array'
-              Object.freeze(nextState[freezeFields[fld].fieldName]);
-            } 
-          }
-        };
+              //Must be kind:'array*'
+              //initialize array if necessary
+              nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+              if(freezeFields[fld].kind === 'array:freeze'){
+                //shallow freeze all objects and arrays in array
+                freeze(nextState[freezeFields[fld].fieldName]);
+              } else if(freezeFields[fld].kind === 'array:deepFreeze'){
+                //freeze all objects and arrays in array traversing arrays and objects for arrays and objects
+                deepFreeze(nextState[freezeFields[fld].fieldName]);
+              } else {
+                //freezeFields[fld].kind === 'array'
+                Object.freeze(nextState[freezeFields[fld].fieldName]);
+              } 
+            }
+          };
+        }
 
         Object.defineProperty(viewModel, 'state', {
           configurable: false,

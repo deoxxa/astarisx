@@ -15,8 +15,8 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		node,
 		enableUndo,
 		routingEnabled,
-		staticState = {},
-		hasStatic = false,
+		staticState = {}, //Only applicable to ControllerViewModel
+		hasStatic = false, //Only applicable to ControllerViewModel
 		dataContexts = {},
 		domain,
 		links = {},
@@ -35,17 +35,17 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		routePath,
 		external = false,
 		internal = false,
-		self = this;
+		stateMgr = this;
 
-	self.appState = {};
-	self.listeners = {};
-	self.handlers = {};
-	self.hasListeners = false;		
+	stateMgr.appState = {};
+	stateMgr.listeners = {};
+	stateMgr.handlers = {};
+	stateMgr.hasListeners = false;		
 
 	controllerViewModel = appCtx.controllerViewModel;
 	enableUndo = 'enableUndo' in appCtx ? appCtx.enableUndo : false;
 	routingEnabled = 'enableRouting' in appCtx ? appCtx.enableRouting : false;
-	self.signInUrl = appCtx.signInUrl;
+	stateMgr.signInUrl = appCtx.signInUrl;
 
 	stateChangeHandler = function(applicationDataContext){
     component.setState({appContext: applicationDataContext});
@@ -69,8 +69,9 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			willUndo = false,
 			stateChangeEvent;
 
+
     if(arguments.length < 2){
-      newState = self.appState;
+      newState = stateMgr.appState;
     }
 
     if(typeof remember === 'function'){
@@ -125,24 +126,24 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
 			if(typeof callback === 'function'){
 				try {
-						self.appState = new this.ApplicationDataContext(nextState, prevState, redoState,
-						enableUndo, routingEnabled, nextState.path !== self.appState.path,
+						stateMgr.appState = new this.ApplicationDataContext(nextState, prevState, redoState,
+						enableUndo, routingEnabled, nextState.path !== stateMgr.appState.path,
 						!external || nextState.pageNotFound, remember);
 
 	        calledBack = true;
 	        if(!!delay){
 						window.setTimeout(function(){
 						  if(caller === namespace){
-                callback.call(self.appState, void(0), self.appState);
+                callback.call(stateMgr.appState, void(0), stateMgr.appState);
               } else {
-                callback.call(self.appState[caller], void(0), self.appState);
+                callback.call(stateMgr.appState[caller], void(0), stateMgr.appState);
               }
 			      }, delay);
 					} else {
 					  if(caller === namespace){
-              callback.call(self.appState, void(0), self.appState);
+              callback.call(stateMgr.appState, void(0), stateMgr.appState);
             } else {
-              callback.call(self.appState[caller], void(0), self.appState);
+              callback.call(stateMgr.appState[caller], void(0), stateMgr.appState);
             }
 					}
 				} catch(e) {
@@ -173,7 +174,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
 				if(transientStateKeys[keyIdx] in domain){
-					nextState[transientStateKeys[keyIdx]] = extend(self.appState[transientStateKeys[keyIdx]], transientState[transientStateKeys[keyIdx]]);
+					nextState[transientStateKeys[keyIdx]] = extend(stateMgr.appState[transientStateKeys[keyIdx]], transientState[transientStateKeys[keyIdx]]);
 					nextState[transientStateKeys[keyIdx]] = new dataContexts[transientStateKeys[keyIdx]](nextState[transientStateKeys[keyIdx]]);
 				} else {
 					nextState[transientStateKeys[keyIdx]] = transientState[transientStateKeys[keyIdx]];
@@ -183,7 +184,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			processedState = extend(processedState, nextState);
 
 			//Triggers
-			nextState = extend(self.appState, processedState);
+			nextState = extend(stateMgr.appState, processedState);
 
 			transientState = {};
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
@@ -214,11 +215,11 @@ var StateManager = function(component, appCtx, initCtxObj) {
 											}
 										}
 										transientState = extend(transientState,
-											subscribers[subscriber].call(self.appState[subscriber],
+											subscribers[subscriber].call(stateMgr.appState[subscriber],
 											nextState[transientStateKeys[keyIdx]][watchedField],
-											self.appState[transientStateKeys[keyIdx]][watchedField],
+											stateMgr.appState[transientStateKeys[keyIdx]][watchedField],
 											watchedField, transientStateKeys[keyIdx],
-											nextState.path, self.appState.path));
+											nextState.path, stateMgr.appState.path));
 									}
 								}
 							}
@@ -272,17 +273,17 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				}
 	    }
 
-			if(self.appState.canRevert && calledBack){
-				prevState = self.appState.previousState;
+			if(stateMgr.appState.canRevert && calledBack){
+				prevState = stateMgr.appState.previousState;
 			} else if(hasStatic && staticState._staticUpdated && staticState._onlyStatic){
-        if(self.appState.canRevert){
-        	prevState = self.appState.previousState;
+        if(stateMgr.appState.canRevert){
+        	prevState = stateMgr.appState.previousState;
         }
-        if(self.appState.canAdvance){
-        	redoState = self.appState.nextState;
+        if(stateMgr.appState.canAdvance){
+        	redoState = stateMgr.appState.nextState;
         }
       } else {
-				prevState = self.appState;
+				prevState = stateMgr.appState;
 			}
 		}
 
@@ -291,7 +292,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		}
 
 		//check the paths to see of there has been an path change
-		pushStateChanged = nextState.path !== self.appState.path;
+		pushStateChanged = nextState.path !== stateMgr.appState.path;
 
 		try {
 			//Add dataContextWillUpdate
@@ -301,28 +302,28 @@ var StateManager = function(component, appCtx, initCtxObj) {
         nextState = extend(nextState, {dataContextWillUpdate: processedState});
       }
 
-			self.appState = new this.ApplicationDataContext(nextState, prevState, redoState,
+			stateMgr.appState = new this.ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
 			!external || nextState.pageNotFound, remember);	
 
-			Object.freeze(self.appState);
-			Object.freeze(self.appState.state);
+			Object.freeze(stateMgr.appState);
+			Object.freeze(stateMgr.appState.state);
 
 			if(typeof callback === 'function'){
 				calledBack = true;
 				if(!!delay){
 					window.setTimeout(function(){
 					  if(caller === namespace){
-	            callback.call(self.appState, void(0), self.appState);
+	            callback.call(stateMgr.appState, void(0), stateMgr.appState);
 	          } else {
-	            callback.call(self.appState[caller], void(0), self.appState);
+	            callback.call(stateMgr.appState[caller], void(0), stateMgr.appState);
 	          }
 		      }, delay);
 				} else {
 				  if(caller === namespace){
-            callback.call(self.appState, void(0), self.appState);
+            callback.call(stateMgr.appState, void(0), stateMgr.appState);
           } else {
-            callback.call(self.appState[caller], void(0), self.appState);
+            callback.call(stateMgr.appState[caller], void(0), stateMgr.appState);
           }
 					return;
 				}
@@ -335,13 +336,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		}
 
 		// Internal call routing
-		if(routingEnabled && self.appState.pushState){
-			if(('path' in self.appState) && !external){
+		if(routingEnabled && stateMgr.appState.pushState){
+			if(('path' in stateMgr.appState) && !external){
 				internal = true;
-				if(pushStateChanged && !self.appState.forceReplace){
-					page(self.appState.path);
+				if(pushStateChanged && !stateMgr.appState.forceReplace){
+					page(stateMgr.appState.path);
 				} else {
-					page.replace(self.appState.path);
+					page.replace(stateMgr.appState.path);
 				}
 			}
 			external = false;
@@ -355,37 +356,37 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		transientState = {};
 		processedState = {};
   	
-  	if(self.hasListeners){
-			stateChangeEvent = new CustomEvent("stateChange", {"detail": self.appState});
+  	if(stateMgr.hasListeners){
+			stateChangeEvent = new CustomEvent("stateChange", {"detail": stateMgr.appState});
 		  if(nextState.notify){
 		  	//Only notify specific views
 				if(isArray(nextState.notify)){
 					nextState.notify.forEach(function(viewKey){
 						if(viewKey === "*"){
-							stateChangeHandler(self.appState);
-						} else if(viewKey in self.listeners){
-							self.listeners[viewKey].dispatchEvent(stateChangeEvent);
+							stateChangeHandler(stateMgr.appState);
+						} else if(viewKey in stateMgr.listeners){
+							stateMgr.listeners[viewKey].dispatchEvent(stateChangeEvent);
 						}
 					});
 				} else {
 					if(nextState.notify === "*"){
-						stateChangeHandler(self.appState);
-					} else if(nextState.notify in self.listeners){
-						self.listeners[nextState.notify].dispatchEvent(stateChangeEvent);
+						stateChangeHandler(stateMgr.appState);
+					} else if(nextState.notify in stateMgr.listeners){
+						stateMgr.listeners[nextState.notify].dispatchEvent(stateChangeEvent);
 					}
 				}
 			} else {
 				// Notify all the views
-		    stateChangeHandler(self.appState);
-		    for(var k in self.listeners){
-		  		if(self.listeners.hasOwnProperty(k)){
-		  			self.listeners[k].dispatchEvent(stateChangeEvent);
+		    stateChangeHandler(stateMgr.appState);
+		    for(var k in stateMgr.listeners){
+		  		if(stateMgr.listeners.hasOwnProperty(k)){
+		  			stateMgr.listeners[k].dispatchEvent(stateChangeEvent);
 		  		}
 		  	}
 			}
 			stateChangeEvent = void(0);
 		} else {
-			stateChangeHandler(self.appState);
+			stateChangeHandler(stateMgr.appState);
 		}
 	};
 	/***************/
@@ -393,8 +394,8 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	/***************/
   try {
   	this.ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace));
-  	self.appState = new this.ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
-    self.appState.state = self.appState.state || {};
+  	stateMgr.appState = new this.ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
+    stateMgr.appState.state = stateMgr.appState.state || {};
   } catch (e) { 
   	if (e instanceof TypeError) {
     	throw new TypeError('Please assign a ControllerViewModel to the "controllerViewModel" prop in React.renderComponent');
@@ -403,25 +404,25 @@ var StateManager = function(component, appCtx, initCtxObj) {
   	}
   }
 
-	domain = self.appState.constructor.originalSpec.getViewModels();
-	delete Object.getPrototypeOf(self.appState).getViewModels;
-
+	domain = stateMgr.appState.constructor.originalSpec.getViewModels();
+	delete Object.getPrototypeOf(stateMgr.appState).getViewModels;
+	
 	//Initialize all dataContexts
 	for(viewModel in domain){
 		if(domain.hasOwnProperty(viewModel)){
 			dataContexts[viewModel] = domain[viewModel].call(this, appStateChangeHandler.bind(this, viewModel));
-			self.appState.state[viewModel] = new dataContexts[viewModel](self.appState.state[viewModel], true);
+			stateMgr.appState.state[viewModel] = new dataContexts[viewModel](stateMgr.appState.state[viewModel], true);
     }
   }
 
   //Store links
 	for(viewModel in domain){
 		if(domain.hasOwnProperty(viewModel)){
-			if('getWatchedState' in self.appState[viewModel].constructor.originalSpec){
-				watchedState = self.appState[viewModel].constructor.originalSpec.getWatchedState();
+			if('getWatchedState' in stateMgr.appState[viewModel].constructor.originalSpec){
+				watchedState = stateMgr.appState[viewModel].constructor.originalSpec.getWatchedState();
 				for(watchedItem in watchedState){
 					if(watchedState.hasOwnProperty(watchedItem)){
-						if(watchedItem in domain || watchedItem in self.appState){
+						if(watchedItem in domain || watchedItem in stateMgr.appState){
 							if('alias' in watchedState[watchedItem]){
 								if(!(viewModel in links)){
 									links[viewModel] = {};
@@ -464,7 +465,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		if(domain.hasOwnProperty(viewModel)){
 			for(link in links[viewModel]){
 			  if(links[viewModel].hasOwnProperty(link)){
-					self.appState[viewModel].state[links[viewModel][link]] = self.appState[link];
+					stateMgr.appState[viewModel].state[links[viewModel][link]] = stateMgr.appState[link];
 			  }
 			}
 		}
@@ -473,11 +474,11 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	//reinitialize with all data in place
 	for(viewModel in domain){
 		if(domain.hasOwnProperty(viewModel)){
-			self.appState.state[viewModel] =
-				new dataContexts[viewModel](self.appState.state[viewModel]);
+			stateMgr.appState.state[viewModel] =
+				new dataContexts[viewModel](stateMgr.appState.state[viewModel]);
 
-			if('getRoutes' in self.appState[viewModel].constructor.originalSpec){
-				routeHash = self.appState[viewModel].constructor.originalSpec.getRoutes();
+			if('getRoutes' in stateMgr.appState[viewModel].constructor.originalSpec){
+				routeHash = stateMgr.appState[viewModel].constructor.originalSpec.getRoutes();
 				for(routePath in routeHash){
 					if(routeHash.hasOwnProperty(routePath)){
 						routeMapping[routeHash[routePath].path] = routeHash[routePath].handler;
@@ -485,72 +486,72 @@ var StateManager = function(component, appCtx, initCtxObj) {
 								pathKey, ctx){
 							external = true;
 							if(!internal) {
-								if(self.appState.canRevert && self.appState.pageNotFound){
+								if(stateMgr.appState.canRevert && stateMgr.appState.pageNotFound){
                   ctx.rollbackRequest = true;
 									ctx.revert = function(){
                     this.revert.bind(this);
                     this.setState({},{path:ctx.path});
-                  }.bind(self.appState);
+                  }.bind(stateMgr.appState);
                 }
-								routeMapping[route].call(self.appState[dataContextName], ctx.params,
-								ctx.path, pathKey, ctx, ('show' in self.appState) ? self.appState.show.bind(self.appState): void(0));
+								routeMapping[route].call(stateMgr.appState[dataContextName], ctx.params,
+								ctx.path, pathKey, ctx, ('show' in stateMgr.appState) ? stateMgr.appState.show.bind(stateMgr.appState): void(0));
 							}
 							internal = false;
 						}.bind(this, viewModel, routeHash[routePath].path, routePath));
 					}
 				}
-				delete Object.getPrototypeOf(self.appState[viewModel]).getRoutes;
+				delete Object.getPrototypeOf(stateMgr.appState[viewModel]).getRoutes;
     	}
 
     	//This is if astarisx-animate mixin is used
-			if('getDisplays' in self.appState[viewModel].constructor.originalSpec){
-				self.appState.addDisplays(self.appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
-				delete Object.getPrototypeOf(self.appState[viewModel]).getDisplays;
+			if('getDisplays' in stateMgr.appState[viewModel].constructor.originalSpec){
+				stateMgr.appState.addDisplays(stateMgr.appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
+				delete Object.getPrototypeOf(stateMgr.appState[viewModel]).getDisplays;
 			}
 		}
   }
 
 	//This is if astarisx-animate mixin is used
-	if('getDisplays' in self.appState.constructor.originalSpec){
-		self.appState.addDisplays(self.appState.constructor.originalSpec.getDisplays());
-		delete Object.getPrototypeOf(self.appState).getDisplays;
+	if('getDisplays' in stateMgr.appState.constructor.originalSpec){
+		stateMgr.appState.addDisplays(stateMgr.appState.constructor.originalSpec.getDisplays());
+		delete Object.getPrototypeOf(stateMgr.appState).getDisplays;
 	}
-	delete Object.getPrototypeOf(self.appState).addDisplays;
+	delete Object.getPrototypeOf(stateMgr.appState).addDisplays;
 
-	if('getTransitions' in self.appState.constructor.originalSpec){
-		self.appState.addTransitions(self.appState.constructor.originalSpec.getTransitions());
-		delete Object.getPrototypeOf(self.appState).getTransitions;
+	if('getTransitions' in stateMgr.appState.constructor.originalSpec){
+		stateMgr.appState.addTransitions(stateMgr.appState.constructor.originalSpec.getTransitions());
+		delete Object.getPrototypeOf(stateMgr.appState).getTransitions;
 	}
-	delete Object.getPrototypeOf(self.appState).addTransitions;
+	delete Object.getPrototypeOf(stateMgr.appState).addTransitions;
 
-	self.appState = new this.ApplicationDataContext(self.appState, void(0), void(0),
+	stateMgr.appState = new this.ApplicationDataContext(stateMgr.appState, void(0), void(0),
 			enableUndo, routingEnabled);
 
 	if(routingEnabled){
 		//Setup 'pageNotFound' route
 		page(function(ctx){
 			external = true;
-			self.appState.setState({'pageNotFound':true});
+			stateMgr.appState.setState({'pageNotFound':true});
 			internal = false;
 		});
 		//Initilize first path
 		internal = true;
-		page.replace(self.appState.path);
+		page.replace(stateMgr.appState.path);
 		page.start({click: false, dispatch: false});
 		external = false;
 	}
 
-	hasStatic = self.appState.constructor.originalSpec.__processedSpec__.hasStatic;
+	hasStatic = stateMgr.appState.constructor.originalSpec.__processedSpec__.hasStatic;
 	if(hasStatic){
-		staticState = updateStatic(self.appState.constructor.originalSpec.__processedSpec__.statics, self.appState.state);
+		staticState = updateStatic(stateMgr.appState.constructor.originalSpec.__processedSpec__.statics, stateMgr.appState.state);
 	}
 
-  Object.freeze(self.appState.state);
-  Object.freeze(self.appState);
+  Object.freeze(stateMgr.appState.state);
+  Object.freeze(stateMgr.appState);
 
-  if('dataContextWillInitialize' in self.appState.constructor.originalSpec){
-    self.appState.constructor.originalSpec.dataContextWillInitialize.call(self.appState, initCtxObj);
-    delete Object.getPrototypeOf(self.appState).dataContextWillInitialize;
+  if('dataContextWillInitialize' in stateMgr.appState.constructor.originalSpec){
+    stateMgr.appState.constructor.originalSpec.dataContextWillInitialize.call(stateMgr.appState, initCtxObj);
+    delete Object.getPrototypeOf(stateMgr.appState).dataContextWillInitialize;
   }
 
 };
