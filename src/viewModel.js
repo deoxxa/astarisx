@@ -1,8 +1,6 @@
 var utils = require('./utils');
 var extend = utils.extend;
 var isObject = utils.isObject;
-var isArray = utils.isArray;
-var isModel = utils.isModel;
 var freeze = utils.freeze;
 var deepFreeze = utils.deepFreeze;
 

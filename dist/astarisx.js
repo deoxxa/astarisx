@@ -481,6 +481,8 @@ var utils = require('./utils');
 var extend = utils.extend;
 var isArray = utils.isArray;
 var isObject = utils.isObject;
+var freeze = utils.freeze;
+var deepFreeze = utils.deepFreeze;
 
 var ControllerViewModel = {
 
@@ -1166,6 +1168,9 @@ module.exports = mixin;
 
 var utils = require('./utils');
 var extend = utils.extend;
+var isObject = utils.isObject;
+var freeze = utils.freeze;
+var deepFreeze = utils.deepFreeze;
 
 var Model = {
   Mixin: {
@@ -2054,8 +2059,6 @@ module.exports = utils;
 var utils = require('./utils');
 var extend = utils.extend;
 var isObject = utils.isObject;
-var isArray = utils.isArray;
-var isModel = utils.isModel;
 var freeze = utils.freeze;
 var deepFreeze = utils.deepFreeze;
 

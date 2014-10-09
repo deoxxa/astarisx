@@ -1,6 +1,9 @@
 
 var utils = require('./utils');
 var extend = utils.extend;
+var isObject = utils.isObject;
+var freeze = utils.freeze;
+var deepFreeze = utils.deepFreeze;
 
 var Model = {
   Mixin: {

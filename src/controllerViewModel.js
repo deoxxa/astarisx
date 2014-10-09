@@ -3,6 +3,8 @@ var utils = require('./utils');
 var extend = utils.extend;
 var isArray = utils.isArray;
 var isObject = utils.isObject;
+var freeze = utils.freeze;
+var deepFreeze = utils.deepFreeze;
 
 var ControllerViewModel = {
 
