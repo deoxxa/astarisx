@@ -825,14 +825,15 @@ var AstarisxClass = {
             //assume it is a descriptor and clone
             tempDesc[key] = extend(this.originalSpec[key]);
             if(!('enumerable' in tempDesc[key])){
-              tempDesc[key].enumerable = true;
-            } else if(proto.constructor.classType === "Model" && key[0] === "_"){
-              tempDesc[key].enumerable = false;
-              clientFields = clientFields || [];
-              clientFields.push(key);
-              //place into statics list
+              if(proto.constructor.classType === "Model" && key[0] === "_"){
+                tempDesc[key].enumerable = false;
+                clientFields = clientFields || [];
+                clientFields.push(key);
+                //place into statics list
+              } else {
+                tempDesc[key].enumerable = true;
+              }
             }
-
             if(proto.constructor.classType === "ControllerViewModel" && ('viewModel' in tempDesc[key])) {
               //ensure that we don't use the reseved keys
               if(key !== '*' && key !== '_*'){
