@@ -1356,9 +1356,46 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			willUndo = false,
 			stateChangeEvent;
 
-
-    if(arguments.length < 2){
-      newState = stateMgr.appState;
+		//This covers setState with no args or with void(0) or with {} as argument
+    if(arguments.length <= 2){
+    	if(newState === void(0) || !!!Object.keys(newState).length){
+				calledBack = false;
+		  	if(stateMgr.hasListeners){
+					stateChangeEvent = new CustomEvent("stateChange", {"detail": stateMgr.appState});
+				  if(processedState.notify){
+				  	//Only notify specific views
+						if(isArray(processedState.notify)){
+							processedState.notify.forEach(function(viewKey){
+								if(viewKey === "*"){
+									stateChangeHandler(stateMgr.appState);
+								} else if(viewKey in stateMgr.listeners){
+									stateMgr.listeners[viewKey].dispatchEvent(stateChangeEvent);
+								}
+							});
+						} else {
+							if(processedState.notify === "*"){
+								stateChangeHandler(stateMgr.appState);
+							} else if(processedState.notify in stateMgr.listeners){
+								stateMgr.listeners[processedState.notify].dispatchEvent(stateChangeEvent);
+							}
+						}
+					} else {
+						// Notify all the views
+				    stateChangeHandler(stateMgr.appState);
+				    for(var k in stateMgr.listeners){
+				  		if(stateMgr.listeners.hasOwnProperty(k)){
+				  			stateMgr.listeners[k].dispatchEvent(stateChangeEvent);
+				  		}
+				  	}
+					}
+					stateChangeEvent = void(0);
+				} else {
+					stateChangeHandler(stateMgr.appState);
+				}
+				transientState = {};
+				processedState = {};
+	    	return;    		
+    	}
     }
 
     if(typeof remember === 'function'){
@@ -1413,9 +1450,9 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
 			if(typeof callback === 'function'){
 				try {
-						stateMgr.appState = new this.ApplicationDataContext(nextState, prevState, redoState,
-						enableUndo, routingEnabled, nextState.path !== stateMgr.appState.path,
-						!external || nextState.pageNotFound, remember);
+					stateMgr.appState = new this.ApplicationDataContext(nextState, prevState, redoState,
+					enableUndo, routingEnabled, nextState.path !== stateMgr.appState.path,
+					!external || nextState.pageNotFound, remember);
 
 	        calledBack = true;
 	        if(!!delay){
@@ -1640,8 +1677,6 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		/* and any other mounted Views
 		/***************/
 		calledBack = false;
-		transientState = {};
-		processedState = {};
   	
   	if(stateMgr.hasListeners){
 			stateChangeEvent = new CustomEvent("stateChange", {"detail": stateMgr.appState});
@@ -1675,6 +1710,9 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		} else {
 			stateChangeHandler(stateMgr.appState);
 		}
+
+		transientState = {};
+		processedState = {};
 	};
 	/***************/
 	/* Initialize Application Data Context
