@@ -194,6 +194,10 @@ var AstarisxClass = {
           }
         };
 
+        proto.clientFields = function(){
+          return clientFields || [];
+        };
+
       }
 
       this.originalSpec.__processedSpec__ = {
