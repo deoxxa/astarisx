@@ -904,23 +904,33 @@ var AstarisxClass = {
         }
       }
 
-      //add allValid check
-      if(validations !== void(0) && proto.constructor.classType === "Model"){
-        var validationsLen = validations.length;
-        if(validationsLen > 0){
-          descriptor.allValid = { 
-            get: function(){
-              var valid = true;
-              for(var v = 0; v < validationsLen; v++){
-                if(!!!validations[v].call(this)){
-                  valid = false;
-                  break;
+      if(proto.constructor.classType === "Model"){      
+        //add allValid check
+        if(validations !== void(0)){
+          var validationsLen = validations.length;
+          if(validationsLen > 0){
+            descriptor.allValid = { 
+              get: function(){
+                var valid = true;
+                for(var v = 0; v < validationsLen; v++){
+                  if(!!!validations[v].call(this)){
+                    valid = false;
+                    break;
+                  }
                 }
+                return valid;
               }
-              return valid;
             }
           }
         }
+
+        //add dirty field to models
+        descriptor.dirty = {
+          get: function() {
+            return this.state.dirty;
+          }
+        };
+
       }
 
       this.originalSpec.__processedSpec__ = {
@@ -2164,7 +2174,7 @@ var ViewModel = {
                   });
 
                   Object.getPrototypeOf(tempModel).setState = function(state, callback){ //callback may be useful for DB updates
-                    var clientFields = {};
+                    var clientFields = { dirty: true };
                     if(tempDesc.clientFields !== void(0)){
                       for (var cf = tempDesc.clientFields.length - 1; cf >= 0; cf--) {
                         clientFields[tempDesc.clientFields[cf]] = this[tempDesc.clientFields[cf]];

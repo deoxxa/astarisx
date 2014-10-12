@@ -68,7 +68,7 @@ var ViewModel = {
                   });
 
                   Object.getPrototypeOf(tempModel).setState = function(state, callback){ //callback may be useful for DB updates
-                    var clientFields = {};
+                    var clientFields = { dirty: true };
                     if(tempDesc.clientFields !== void(0)){
                       for (var cf = tempDesc.clientFields.length - 1; cf >= 0; cf--) {
                         clientFields[tempDesc.clientFields[cf]] = this[tempDesc.clientFields[cf]];

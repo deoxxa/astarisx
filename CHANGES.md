@@ -215,6 +215,7 @@
 - Bug fix: prevAdhocUndo removed from if statement in CVM.
 - Enable client-side only fields in Models. Getter/Setter fields prefixed with an underscore will not be sent to the server. Can be overridden if `enemurable`is set in field descriptor.
 - empty setState simply returns the processed appState and no longer processes everthing.
+- Models have `dirty` flag automatically. It get's updated to `true` when changes to the Model occur, but must be set to `false` or `undefined` by the implementator.
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.
