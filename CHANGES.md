@@ -216,6 +216,8 @@
 - Enable client-side only fields in Models. Getter/Setter fields prefixed with an underscore will not be sent to the server. Can be overridden if `enemurable`is set in field descriptor.
 - empty setState simply returns the processed appState and no longer processes everthing.
 - Models have `dirty` flag automatically. It get's updated to `true` when changes to the Model occur, but must be set to `false` or `undefined` by the implementator.
+- `clientFields` function on Models returns an array of the Model's client fields.
+- Client fields are now included in the returned object resulting from a call to `extend`.
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.

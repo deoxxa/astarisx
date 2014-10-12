@@ -1187,7 +1187,9 @@ var Model = {
     construct: function(stateChangeHandler){
 
       var desc = this.getDescriptor();
-
+      desc.proto.clientFields = function(){
+        return desc.clientFields || [];
+      };
       var ModelClass = function(nextState, extendState, initialize) {
         var freezeFields = desc.freezeFields,
           fld,
@@ -1987,6 +1989,11 @@ var utils = {
         if (obj.hasOwnProperty(key)) {
           newObj[key] = obj[key];
         }
+      }
+      if(utils.isObject(obj) && utils.isModel(obj) && ('clientFields' in obj)){
+        obj.clientFields().forEach(function(fld){
+          newObj[fld] = obj[fld];
+        });
       }
     }
     return newObj;

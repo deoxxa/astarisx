@@ -10,7 +10,9 @@ var Model = {
     construct: function(stateChangeHandler){
 
       var desc = this.getDescriptor();
-
+      desc.proto.clientFields = function(){
+        return desc.clientFields || [];
+      };
       var ModelClass = function(nextState, extendState, initialize) {
         var freezeFields = desc.freezeFields,
           fld,
