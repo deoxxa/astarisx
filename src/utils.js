@@ -5,6 +5,9 @@ var utils = {
     var newObj = {};
     for (var i = 0; i < arguments.length; i++) {
       var obj = arguments[i];
+      if(typeof obj === 'function'){
+        obj = obj();
+      }
       for (var key in obj) {
         if (obj.hasOwnProperty(key)) {
           newObj[key] = obj[key];
@@ -61,6 +64,20 @@ var utils = {
     }
   },
 
+  createMergedResultFunction: function(funcArray) {
+    return function mergedResult() {
+      return utils.extend.apply(this, funcArray);
+    };
+  },
+
+  createChainedFunction: function(funcArray) {
+    return function chainedFunction() {
+      for (var i = 0; i < funcArray.length; i++) {
+        funcArray[i].apply(this, arguments);
+      };
+    };
+  },
+
   uuid: function () {
     /*jshint bitwise:false */
     var i, random;
@@ -93,7 +110,9 @@ var utils = {
   },
   freeze: function(o) {
     if(utils.isObject(o)){
-      Object.freeze(o);
+      if(!Object.isFrozen(o)){
+        Object.freeze(o);
+      }
       for (var k in o) {
         if(o.hasOwnProperty(k)){
           if(utils.isArray(o[k]) || utils.isObject(o[k])){
@@ -104,14 +123,18 @@ var utils = {
     } else if(utils.isArray(o)){
       for (var i = o.length - 1; i >= 0; i--) {
         if(utils.isArray(o[i]) || utils.isObject(o[i])){
-          Object.freeze(o[i]);
+          if(!Object.isFrozen(o[i])){
+            Object.freeze(o[i]);
+          }
         }
       };
     }
   },
   deepFreeze: function(o) {
     if(utils.isObject(o)){
-      Object.freeze(o);
+      if(!Object.isFrozen(o)){
+        Object.freeze(o);
+      }
       for (var k in o) {
         if(o.hasOwnProperty(k)){
           if(utils.isArray(o[k]) || utils.isObject(o[k])){

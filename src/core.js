@@ -8,7 +8,10 @@ var page = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
 var mixInto = utils.mixInto;
+var createMergedResultFunction = utils.createMergedResultFunction;
+var createChainedFunction = utils.createChainedFunction;
 var uuid = utils.uuid;
+
 
 var ModelBase = function(){};
 var ViewModelBase = function(){};
@@ -69,21 +72,69 @@ var AstarisxClass = {
       if('__processedSpec__' in this.originalSpec){
         return this.originalSpec.__processedSpec__;
       }
-
-      // Mixin addons
-      if('mixins' in this.originalSpec && proto.constructor.classType !== "Model"){
+      var tempFieldsSpec = {};
+      var tempMergeMethodsSpec = {}, tempMethodsSpec = {};
+      // Mixin addons into the originalSpec
+      if('mixins' in this.originalSpec){
         for (var i = 0; i < this.originalSpec.mixins.length; i++) {
           mixinSpec = this.originalSpec.mixins[i];
-          for (var name in mixinSpec) {
-            var property = mixinSpec[name];
-            if (!mixinSpec.hasOwnProperty(name)) {
+          for (var prop in mixinSpec) {
+            if (!mixinSpec.hasOwnProperty(prop)) {
               continue;
             }
-            this.originalSpec[name] = property;
+            
+            //If field is getter or setter and is not defined in originalSpec
+            //then add it to tempFieldsSpec. originalSpec wins otherwise last prop wins.
+            if(('get' in mixinSpec[prop] || 'set' in mixinSpec[prop]) && !(prop in this.originalSpec)){
+              tempFieldsSpec[prop] = mixinSpec[prop];
+            } else {
+              //must be a function.
+              //functions starting with get return Objects. The output will be merged
+              //otherwise the function is chained
+              if(prop.substring(0, 3) === 'get'){
+                tempMergeMethodsSpec[prop] = tempMergeMethodsSpec[prop] || [];
+                tempMergeMethodsSpec[prop].push(mixinSpec[prop]);
+              } else {
+                tempMethodsSpec[prop] = tempMethodsSpec[prop] || [];
+                tempMethodsSpec[prop].push(mixinSpec[prop]);
+              }
+            }
           }
         }
+        for(var mergeMethod in tempMergeMethodsSpec){
+          if(tempMergeMethodsSpec.hasOwnProperty(mergeMethod)){
+            if(tempMergeMethodsSpec[method].length === 1){
+              this.originalSpec[method] = tempMergeMethodsSpec[method][0];
+            } else {
+              if(mergeMethod in this.originalSpec){
+                tempMergeMethodsSpec[prop].push(this.originalSpec[mergeMethod]);
+              }
+              this.originalSpec[mergeMethod] = createMergedResultFunction(tempMergeMethodsSpec[prop]);
+            }
+          }
+        }
+        for(var method in tempMethodsSpec){
+          if(tempMethodsSpec.hasOwnProperty(method)){
+            if(tempMethodsSpec[method].length === 1){
+              //If there is only 1 method then just attach to originalSpec
+              //This is used when the function returns something as the
+              //createChainedFunction ignores the return value. So methods
+              //that return a value must be unique;
+              this.originalSpec[method] = tempMethodsSpec[method][0];
+            } else {
+              if(method in this.originalSpec){
+                tempMethodsSpec[method].push(this.originalSpec[method]);
+              }
+              this.originalSpec[method] = createChainedFunction(tempMethodsSpec[method]);
+            }
+          }
+        }
+        //Then merge temp fields into originalSpec
+        this.originalSpec = extend(this.originalSpec, tempFieldsSpec);
         delete this.originalSpec.mixins;
       }
+
+      
       for(key in this.originalSpec){
         if(this.originalSpec.hasOwnProperty(key)){
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){

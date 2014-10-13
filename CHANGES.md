@@ -218,6 +218,9 @@
 - Models have `dirty` flag automatically. It get's updated to `true` when changes to the Model occur, but must be set to `false` or `undefined` by the implementator.
 - `clientFields` function on Models returns an array of the Model's client fields.
 - Client fields are now included in the returned object resulting from a call to `extend`.
+- Allow Models to have `mixins`
+- `mixins`: If a mixin field is getter or setter and is not defined in originalSpec it will be added unless it already exists in the originalSpec wins. Otherwise last prop wins.
+- `mixins`: If a mixin method begins with `get` is assumed to have no arguments and returns a merge object result. Last props win. For other methods it is assumed that they do not return a result, however if the method is unique it will be assigned directly to the originalSpec and can return a result if one has been defined. 
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.
