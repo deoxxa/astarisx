@@ -103,19 +103,19 @@ var AstarisxClass = {
         }
         for(var mergeMethod in tempMergeMethodsSpec){
           if(tempMergeMethodsSpec.hasOwnProperty(mergeMethod)){
-            if(tempMergeMethodsSpec[method].length === 1){
-              this.originalSpec[method] = tempMergeMethodsSpec[method][0];
+            if(tempMergeMethodsSpec[mergeMethod].length === 1 && !(mergeMethod in this.originalSpec)){
+              this.originalSpec[mergeMethod] = tempMergeMethodsSpec[mergeMethod][0];
             } else {
               if(mergeMethod in this.originalSpec){
-                tempMergeMethodsSpec[prop].push(this.originalSpec[mergeMethod]);
+                tempMergeMethodsSpec[mergeMethod].push(this.originalSpec[mergeMethod]);
               }
-              this.originalSpec[mergeMethod] = createMergedResultFunction(tempMergeMethodsSpec[prop]);
+              this.originalSpec[mergeMethod] = createMergedResultFunction(tempMergeMethodsSpec[mergeMethod]);
             }
           }
         }
         for(var method in tempMethodsSpec){
           if(tempMethodsSpec.hasOwnProperty(method)){
-            if(tempMethodsSpec[method].length === 1){
+            if(tempMethodsSpec[method].length === 1 && !(method in this.originalSpec)){
               //If there is only 1 method then just attach to originalSpec
               //This is used when the function returns something as the
               //createChainedFunction ignores the return value. So methods

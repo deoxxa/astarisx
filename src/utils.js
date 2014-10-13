@@ -6,7 +6,7 @@ var utils = {
     for (var i = 0; i < arguments.length; i++) {
       var obj = arguments[i];
       if(typeof obj === 'function'){
-        obj = obj();
+        obj = obj.call(this);
       }
       for (var key in obj) {
         if (obj.hasOwnProperty(key)) {
