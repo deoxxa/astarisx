@@ -1573,7 +1573,27 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			transientState = extend(nextState, transientState, newAppState);
 			transientStateKeys = Object.keys(transientState);
 			if(transientStateKeys.length === 0){
-				return;
+				if(typeof callback === 'function'){
+					calledBack = true;
+					if(!!delay){
+						window.setTimeout(function(){
+						  if(caller === namespace){
+		            callback.call(stateMgr.appState, void(0), stateMgr.appState);
+		          } else {
+		            callback.call(stateMgr.appState[caller], void(0), stateMgr.appState);
+		          }
+			      }, delay);
+					} else {
+					  if(caller === namespace){
+	            callback.call(stateMgr.appState, void(0), stateMgr.appState);
+	          } else {
+	            callback.call(stateMgr.appState[caller], void(0), stateMgr.appState);
+	          }
+						return;
+					}
+				} else {
+					return;
+				}
 			}
 
 			transientStateKeysLen = transientStateKeys.length - 1;
