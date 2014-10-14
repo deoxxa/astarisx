@@ -978,7 +978,7 @@ var AstarisxClass = {
         //add dirty field to models
         descriptor.dirty = {
           get: function() {
-            return this.state.dirty;
+            return this.state.dirty === void(0) ? false : this.state.dirty;
           }
         };
 
