@@ -212,31 +212,31 @@ var ControllerViewModel = {
         //freeze arrays and model objects and initialize if necessary
         if(freezeFields !== void(0)){
           for (fld = freezeFields.length - 1; fld >= 0; fld--) {
-            if(freezeFields[fld].kind === 'object'){
+            if(freezeFields[fld].kind === 'object' || freezeFields[fld].kind === 'pseudoObject'){
               //Only freeze root object
               if(isObject(nextState[freezeFields[fld].fieldName])){
                 Object.freeze(nextState[freezeFields[fld].fieldName]);
               }
-            } else if(freezeFields[fld].kind === 'object:freeze'){
+            } else if(freezeFields[fld].kind === 'object:freeze' || freezeFields[fld].kind === 'pseudoObject:freeze'){
               //shallow freeze all objects and arrays one level down
               freeze(nextState[freezeFields[fld].fieldName]);
-            } else if(freezeFields[fld].kind === 'object:deepFreeze'){
+            } else if(freezeFields[fld].kind === 'object:deepFreeze' || freezeFields[fld].kind === 'pseudoObject:deepFreeze'){
               //freeze all objects and arrays traversing arrays for objects and arrays
               deepFreeze(nextState[freezeFields[fld].fieldName]);
             } else {
               //Must be kind:'array*'
               //initialize array if necessary
               nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
-              if(freezeFields[fld].kind === 'array:freeze'){
+              if(freezeFields[fld].kind === 'array:freeze' || freezeFields[fld].kind === 'pseudoArray:freeze'){
                 //shallow freeze all objects and arrays in array
                 freeze(nextState[freezeFields[fld].fieldName]);
-              } else if(freezeFields[fld].kind === 'array:deepFreeze'){
+              } else if(freezeFields[fld].kind === 'array:deepFreeze' || freezeFields[fld].kind === 'pseudoArray:deepFreeze'){
                 //freeze all objects and arrays in array traversing arrays and objects for arrays and objects
                 deepFreeze(nextState[freezeFields[fld].fieldName]);
               } else {
-                //freezeFields[fld].kind === 'array'
+                //freezeFields[fld].kind === 'array' || freezeFields[fld].kind === 'pseudoArray'
                 Object.freeze(nextState[freezeFields[fld].fieldName]);
-              } 
+              }
             }
           };
         }
