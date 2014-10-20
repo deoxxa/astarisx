@@ -223,6 +223,7 @@
 - `mixins`: If a mixin method begins with `get` is assumed to have no arguments and returns a merge object result. Last props win. For other methods it is assumed that they do not return a result, however if the method is unique it will be assigned directly to the originalSpec and can return a result if one has been defined.
 - add `kind`: `pseudoObject`, `pseudoObject:freeze`, `pseudoObject:deepFreeze`, `pseudoArray`, `pseudoArray:freeze`, `pseudoArray:deepFreeze`
 - empty transientState will now call callbacks
+- `Model`'s can now specify `kind: "instance"` for embedded model objects
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.

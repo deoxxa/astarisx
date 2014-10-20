@@ -599,9 +599,10 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		external = false;
 	}
 
-	hasStatic = stateMgr.appState.constructor.originalSpec.__processedSpec__.hasStatic;
+	// hasStatic = stateMgr.appState.constructor.originalSpec.__processedSpec__.hasStatic;
+	hasStatic = stateMgr.appState.constructor.getDescriptor().hasStatic;
 	if(hasStatic){
-		staticState = updateStatic(stateMgr.appState.constructor.originalSpec.__processedSpec__.statics, stateMgr.appState.state);
+		staticState = updateStatic(stateMgr.appState.constructor.getDescriptor().statics, stateMgr.appState.state);
 	}
 
   Object.freeze(stateMgr.appState.state);
@@ -687,7 +688,7 @@ StateManager.prototype.dispose = function(){
 
 	delete this.appState.constructor.originalSpec.__processedSpec__;
 	for(viewModel in viewModels){
-		if(viewModels.hasOwnProperty(viewModel)){			
+		if(viewModels.hasOwnProperty(viewModel)){
 			delete this.appState[viewModel].constructor.originalSpec.__processedSpec__;
 		}
 	}

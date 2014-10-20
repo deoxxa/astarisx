@@ -914,7 +914,7 @@ var AstarisxClass = {
               if('kind' in tempDesc[key]){
                 if(tempDesc[key].kind === 'pseudo'){
                   tempDesc[key].enumerable = false;
-                } else if ((proto.constructor.classType === "ViewModel" && tempDesc[key].kind === 'instance') ||
+                } else if ((proto.constructor.classType !== "ControllerViewModel" && tempDesc[key].kind === 'instance') ||
                   tempDesc[key].kind === 'object' ||
                   tempDesc[key].kind === 'object:freeze' ||
                   tempDesc[key].kind === 'object:deepFreeze' ||
@@ -1265,15 +1265,28 @@ var Model = {
           fld,
           model = Object.create(desc.proto, desc.descriptor);
 
-        if(nextState === void(0)){
-          initialize = true;
+        if(typeof extendState === 'boolean'){
+          initialize = extendState;
+          extendState = void(0);
         } else if(typeof nextState === 'boolean'){
           initialize = nextState;
           nextState = void(0);
-        } else if(typeof extendState === 'boolean'){
-          initialize = extendState;
-          extendState = void(0);
+        } else if(nextState === void(0)){
+          initialize = true;
         }
+
+        if(stateChangeHandler){        
+          Object.defineProperty(model, '__stateChangeHandler', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: (function(){
+              return stateChangeHandler;
+            })()
+          });
+          // nextState = extend(nextState, model);
+        }
+        
         nextState = extend(nextState, extendState);
 
         Object.defineProperty(model, 'state', {
@@ -1282,8 +1295,6 @@ var Model = {
           writable: true,
           value: nextState
         });
-
-        nextState = extend(nextState, model);
 
         if(initialize){
           if(desc.aliases !== void(0)){
@@ -1348,15 +1359,6 @@ var Model = {
           value: nextState
         });
         
-        Object.defineProperty(model, '__stateChangeHandler', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: (function(){
-            return stateChangeHandler;
-          })()
-        });
-
         return Object.freeze(model);
       };
       return ModelClass;
@@ -1968,9 +1970,10 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		external = false;
 	}
 
-	hasStatic = stateMgr.appState.constructor.originalSpec.__processedSpec__.hasStatic;
+	// hasStatic = stateMgr.appState.constructor.originalSpec.__processedSpec__.hasStatic;
+	hasStatic = stateMgr.appState.constructor.getDescriptor().hasStatic;
 	if(hasStatic){
-		staticState = updateStatic(stateMgr.appState.constructor.originalSpec.__processedSpec__.statics, stateMgr.appState.state);
+		staticState = updateStatic(stateMgr.appState.constructor.getDescriptor().statics, stateMgr.appState.state);
 	}
 
   Object.freeze(stateMgr.appState.state);
@@ -2056,7 +2059,7 @@ StateManager.prototype.dispose = function(){
 
 	delete this.appState.constructor.originalSpec.__processedSpec__;
 	for(viewModel in viewModels){
-		if(viewModels.hasOwnProperty(viewModel)){			
+		if(viewModels.hasOwnProperty(viewModel)){
 			delete this.appState[viewModel].constructor.originalSpec.__processedSpec__;
 		}
 	}
@@ -2227,6 +2230,7 @@ module.exports = utils;
 var utils = require('./utils');
 var extend = utils.extend;
 var isObject = utils.isObject;
+var isModel = utils.isModel;
 var freeze = utils.freeze;
 var deepFreeze = utils.deepFreeze;
 
@@ -2247,6 +2251,7 @@ var ViewModel = {
         var freezeFields = desc.freezeFields,
           fld,
           viewModel = Object.create(desc.proto, desc.descriptor),
+          tempSpec,
           tempDesc,
           tempModel;
 
@@ -2273,39 +2278,78 @@ var ViewModel = {
         if(freezeFields !== void(0)){
           for (fld = freezeFields.length - 1; fld >= 0; fld--) {
             if(freezeFields[fld].kind === 'instance'){
-                if(viewModel[freezeFields[fld].fieldName]){
-                  tempDesc = viewModel[freezeFields[fld].fieldName].constructor.originalSpec.__processedSpec__;
-                  tempModel = Object.create(tempDesc.proto, tempDesc.descriptor);
+              if(viewModel[freezeFields[fld].fieldName]){
+                tempSpec = viewModel[freezeFields[fld].fieldName].constructor.getDescriptor();
+                tempModel = Object.create(tempSpec.proto, tempSpec.descriptor);
 
-                  Object.defineProperty(tempModel, '__stateChangeHandler', {
-                    configurable: false,
-                    enumerable: false,
-                    writable: false,
-                    value: (function(fld){
-                      return viewModel[fld].__stateChangeHandler;
-                    })(freezeFields[fld].fieldName)
-                  });
+                Object.defineProperty(tempModel, '__stateChangeHandler', {
+                  configurable: false,
+                  enumerable: false,
+                  writable: false,
+                  value: (function(fld){
+                    return viewModel[fld].__stateChangeHandler;
+                  })(freezeFields[fld].fieldName)
+                });
+                
+                Object.defineProperty(tempModel, 'state', {
+                  configurable: true,
+                  enumerable: false,
+                  writable: true,
+                  value: viewModel[freezeFields[fld].fieldName].state
+                });
 
-                  Object.defineProperty(tempModel, 'state', {
-                    configurable: true,
-                    enumerable: false,
-                    writable: true,
-                    value: viewModel[freezeFields[fld].fieldName].state
-                  });
+                Object.getPrototypeOf(tempModel).setState = function(state, callback){ //callback may be useful for DB updates
+                  var clientFields = { dirty: true };
+                  if(tempSpec.clientFields !== void(0)){
+                    for (var cf = tempSpec.clientFields.length - 1; cf >= 0; cf--) {
+                      clientFields[tempSpec.clientFields[cf]] = this[tempSpec.clientFields[cf]];
+                    };
+                  }
+                  callback = callback ? callback.bind(this) : void(0);
+                  this.__stateChangeHandler.call(viewModel, extend(this.state, clientFields, state), callback);
+                };
 
-                  Object.getPrototypeOf(tempModel).setState = function(state, callback){ //callback may be useful for DB updates
-                    var clientFields = { dirty: true };
-                    if(tempDesc.clientFields !== void(0)){
-                      for (var cf = tempDesc.clientFields.length - 1; cf >= 0; cf--) {
-                        clientFields[tempDesc.clientFields[cf]] = this[tempDesc.clientFields[cf]];
-                      };
+                if(!!tempSpec.freezeFields && !!tempSpec.freezeFields.length){
+                  for (var i = tempSpec.freezeFields.length - 1; i >= 0; i--) {
+                    if(tempSpec.freezeFields[i].kind === 'instance' 
+                      && isModel(viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName])){
+                      var tempSpec2 = viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName].constructor.getDescriptor();
+                      var tempModel2 = Object.create(tempSpec2.proto, tempSpec2.descriptor);
+                      
+                      Object.defineProperty(tempModel2, '__stateChangeHandler', {
+                        configurable: false,
+                        enumerable: false,
+                        writable: false,
+                        value: tempModel.__stateChangeHandler
+                      });
+
+                      Object.defineProperty(tempModel2, 'state', {
+                        configurable: true,
+                        enumerable: false,
+                        writable: true,
+                        value: tempModel[tempSpec.freezeFields[i].fieldName].state
+                      });
+
+                      Object.getPrototypeOf(tempModel2).setState = (function(fldName){
+                        return function(state, callback){ //callback may be useful for DB updates
+                          var clientFields2 = { dirty: true };
+                          var thisState = {};
+                          if(tempSpec2.clientFields !== void(0)){
+                            for (var cf = tempSpec2.clientFields.length - 1; cf >= 0; cf--) {
+                              clientFields2[tempSpec2.clientFields[cf]] = this[tempSpec2.clientFields[cf]];
+                            };
+                          }
+                          thisState[fldName] = extend(this.state, clientFields2, state);
+                          callback = callback ? callback.bind(this) : void(0);
+                          tempModel.__stateChangeHandler.call(viewModel, extend(tempModel, thisState, {dirty: true}), callback);
+                        };
+                      })(tempSpec.freezeFields[i].fieldName);
+                      Object.freeze(viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName]);
                     }
-                    callback = callback ? callback.bind(this) : void(0);
-                    this.__stateChangeHandler.call(viewModel, extend(this.state, clientFields, state), callback);
                   };
-
-                  Object.freeze(viewModel[freezeFields[fld].fieldName]);
                 }
+                Object.freeze(viewModel[freezeFields[fld].fieldName]);
+              }
             } else if(freezeFields[fld].kind === 'object' || freezeFields[fld].kind === 'pseudoObject'){
               //Only freeze root object
               if(isObject(nextState[freezeFields[fld].fieldName])){
@@ -2341,7 +2385,7 @@ var ViewModel = {
           writable: false,
           value: nextState
         });
-
+        
         return Object.freeze(viewModel);
       };
 

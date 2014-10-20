@@ -16,15 +16,28 @@ var Model = {
           fld,
           model = Object.create(desc.proto, desc.descriptor);
 
-        if(nextState === void(0)){
-          initialize = true;
+        if(typeof extendState === 'boolean'){
+          initialize = extendState;
+          extendState = void(0);
         } else if(typeof nextState === 'boolean'){
           initialize = nextState;
           nextState = void(0);
-        } else if(typeof extendState === 'boolean'){
-          initialize = extendState;
-          extendState = void(0);
+        } else if(nextState === void(0)){
+          initialize = true;
         }
+
+        if(stateChangeHandler){        
+          Object.defineProperty(model, '__stateChangeHandler', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: (function(){
+              return stateChangeHandler;
+            })()
+          });
+          // nextState = extend(nextState, model);
+        }
+        
         nextState = extend(nextState, extendState);
 
         Object.defineProperty(model, 'state', {
@@ -33,8 +46,6 @@ var Model = {
           writable: true,
           value: nextState
         });
-
-        nextState = extend(nextState, model);
 
         if(initialize){
           if(desc.aliases !== void(0)){
@@ -99,15 +110,6 @@ var Model = {
           value: nextState
         });
         
-        Object.defineProperty(model, '__stateChangeHandler', {
-          configurable: false,
-          enumerable: false,
-          writable: false,
-          value: (function(){
-            return stateChangeHandler;
-          })()
-        });
-
         return Object.freeze(model);
       };
       return ModelClass;

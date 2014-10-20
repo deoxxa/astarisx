@@ -177,7 +177,7 @@ var AstarisxClass = {
               if('kind' in tempDesc[key]){
                 if(tempDesc[key].kind === 'pseudo'){
                   tempDesc[key].enumerable = false;
-                } else if ((proto.constructor.classType === "ViewModel" && tempDesc[key].kind === 'instance') ||
+                } else if ((proto.constructor.classType !== "ControllerViewModel" && tempDesc[key].kind === 'instance') ||
                   tempDesc[key].kind === 'object' ||
                   tempDesc[key].kind === 'object:freeze' ||
                   tempDesc[key].kind === 'object:deepFreeze' ||
