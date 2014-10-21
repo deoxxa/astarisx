@@ -17,7 +17,7 @@ var ViewModel = {
 
         //nextState has already been extended with prevState in core
         nextState = nextState || {};
-        nextState = ('state' in nextState ? nextState.state : nextState);
+        nextState = ('_state' in nextState ? nextState._state : nextState);
 
         var freezeFields = desc.freezeFields,
           fld,
@@ -26,7 +26,7 @@ var ViewModel = {
           tempDesc,
           tempModel;
 
-        Object.defineProperty(viewModel, 'state', {
+        Object.defineProperty(viewModel, '_state', {
           configurable: true,
           enumerable: false,
           writable: true,
@@ -37,7 +37,7 @@ var ViewModel = {
           nextState = ('getInitialState' in desc.originalSpec) ?
             extend(nextState, desc.originalSpec.getInitialState.call(viewModel)) : nextState;
 
-          Object.defineProperty(viewModel, 'state', {
+          Object.defineProperty(viewModel, '_state', {
             configurable: true,
             enumerable: false,
             writable: true,
@@ -62,22 +62,22 @@ var ViewModel = {
                   })(freezeFields[fld].fieldName)
                 });
                 
-                Object.defineProperty(tempModel, 'state', {
+                Object.defineProperty(tempModel, '_state', {
                   configurable: true,
                   enumerable: false,
                   writable: true,
-                  value: viewModel[freezeFields[fld].fieldName].state
+                  value: viewModel[freezeFields[fld].fieldName]._state
                 });
 
-                Object.getPrototypeOf(tempModel).setState = function(state, callback){ //callback may be useful for DB updates
-                  var clientFields = { dirty: true };
+                Object.getPrototypeOf(tempModel).setState = function(_state, callback){ //callback may be useful for DB updates
+                  var clientFields = { $dirty: true };
                   if(tempSpec.clientFields !== void(0)){
                     for (var cf = tempSpec.clientFields.length - 1; cf >= 0; cf--) {
                       clientFields[tempSpec.clientFields[cf]] = this[tempSpec.clientFields[cf]];
                     };
                   }
                   callback = callback ? callback.bind(this) : void(0);
-                  this.__stateChangeHandler.call(viewModel, extend(this.state, clientFields, state), callback);
+                  this.__stateChangeHandler.call(viewModel, extend(this._state, clientFields, _state), callback);
                 };
 
                 if(!!tempSpec.freezeFields && !!tempSpec.freezeFields.length){
@@ -94,25 +94,25 @@ var ViewModel = {
                         value: tempModel.__stateChangeHandler
                       });
 
-                      Object.defineProperty(tempModel2, 'state', {
+                      Object.defineProperty(tempModel2, '_state', {
                         configurable: true,
                         enumerable: false,
                         writable: true,
-                        value: tempModel[tempSpec.freezeFields[i].fieldName].state
+                        value: tempModel[tempSpec.freezeFields[i].fieldName]._state
                       });
 
                       Object.getPrototypeOf(tempModel2).setState = (function(fldName){
-                        return function(state, callback){ //callback may be useful for DB updates
-                          var clientFields2 = { dirty: true };
+                        return function(_state, callback){ //callback may be useful for DB updates
+                          var clientFields2 = { $dirty: true };
                           var thisState = {};
                           if(tempSpec2.clientFields !== void(0)){
                             for (var cf = tempSpec2.clientFields.length - 1; cf >= 0; cf--) {
                               clientFields2[tempSpec2.clientFields[cf]] = this[tempSpec2.clientFields[cf]];
                             };
                           }
-                          thisState[fldName] = extend(this.state, clientFields2, state);
+                          thisState[fldName] = extend(this._state, clientFields2, _state);
                           callback = callback ? callback.bind(this) : void(0);
-                          tempModel.__stateChangeHandler.call(viewModel, extend(tempModel, thisState, {dirty: true}), callback);
+                          tempModel.__stateChangeHandler.call(viewModel, extend(tempModel, thisState, {$dirty: true}), callback);
                         };
                       })(tempSpec.freezeFields[i].fieldName);
                       Object.freeze(viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName]);
@@ -150,7 +150,7 @@ var ViewModel = {
           };
         }
 
-        Object.defineProperty(viewModel, 'state', {
+        Object.defineProperty(viewModel, '_state', {
           configurable: false,
           enumerable: false,
           writable: false,
@@ -160,7 +160,7 @@ var ViewModel = {
         return Object.freeze(viewModel);
       };
 
-      desc.proto.dispose = function(){
+      desc.proto.__dispose = function(){
         return ViewModelClass(void(0));
       };
 

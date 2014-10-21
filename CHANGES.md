@@ -207,7 +207,7 @@
 - add dispose() to ViewModels. Automatically called on Astarisx UI component unmount.
 - add signInUrl as init param to ControllerViewModel
 - Bug fix: removed use of `__ proto __`. Broke in IE.
-- add Model validation. Field descriptor takes a `validate` object with a getter that returns a bool. Adds [field]valid as a field to model. Also adds `allValid` field that check all the `validate` descriptors return true.
+- add Model validation. Field descriptor takes a `validate` object with a getter that returns a bool. Adds `$[fieldName]Valid` as a field to the model. Also adds `$allValid` field that check all the `validate` descriptors return true.
 - expose uuid() on Astarisx object
 - allow 'enumerable' attribute to be set in model fields. default is enumerable:true
 - added `kind:’object’`, `kind:’object:freeze’`, `kind:’object:deepFreeze’`, `kind:’array:freeze’`, `kind:’array:deepFreeze’`
@@ -215,8 +215,8 @@
 - Bug fix: prevAdhocUndo removed from if statement in CVM.
 - Enable client-side only fields in Models. Getter/Setter fields prefixed with an underscore will not be sent to the server. Can be overridden if `enemurable`is set in field descriptor.
 - empty setState simply returns the processed appState and no longer processes everthing.
-- Models have `dirty` flag automatically. It get's updated to `true` when changes to the Model occur, but must be set to `false` or `undefined` by the implementator.
-- `clientFields` function on Models returns an array of the Model's client fields.
+- Models have `$dirty` flag automatically. It get's updated to `true` when changes to the Model occur, but must be set to `false` or `undefined` by the implementator.
+- `__clientFields` function on Models returns an array of the Model's client fields.
 - Client fields are now included in the returned object resulting from a call to `extend`.
 - Allow Models to have `mixins`
 - `mixins`: If a mixin field is getter or setter and is not defined in originalSpec it will be added unless it already exists in the originalSpec wins. Otherwise last prop wins.
@@ -224,8 +224,13 @@
 - add `kind`: `pseudoObject`, `pseudoObject:freeze`, `pseudoObject:deepFreeze`, `pseudoArray`, `pseudoArray:freeze`, `pseudoArray:deepFreeze`
 - empty transientState will now call callbacks
 - `Model`'s can now specify `kind: "instance"` for embedded model objects
+- Rename objects variable names (see Breaking Changes)
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.
 - `this.intializeDataContext` now accepts either no args, '*', '_*', dataContext names as strings or Objects with dataContext names as keys with the value being the args to be passed to each dataContext OR both strings and Objects OR an array of string and Objects during initialization.
 - fields of `kind:"array"` do not have a set method, it is removed to prevent inadvertently updating the array by assignment. Must update arrays using methods and calling `setState`.
+- Renamed the following:
+  - `state` to `_state`
+  - `previousState` to `_previousState`
+  - `nextState` to `_nextState`

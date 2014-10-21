@@ -40,7 +40,7 @@ var Model = {
         
         nextState = extend(nextState, extendState);
 
-        Object.defineProperty(model, 'state', {
+        Object.defineProperty(model, '_state', {
           configurable: true,
           enumerable: false,
           writable: true,
@@ -57,7 +57,7 @@ var Model = {
             }
           }
 
-          Object.defineProperty(model, 'state', {
+          Object.defineProperty(model, '_state', {
             configurable: true,
             enumerable: false,
             writable: true,
@@ -103,7 +103,7 @@ var Model = {
           };
         }
 
-        Object.defineProperty(model, 'state', {
+        Object.defineProperty(model, '_state', {
           configurable: false,
           enumerable: false,
           writable: false,

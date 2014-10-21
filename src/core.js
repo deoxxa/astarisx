@@ -168,7 +168,7 @@ var AstarisxClass = {
                 Object.prototype.toString.call(tempDesc[key].validate) === '[object Object]'){
                 //delete setter. just in case
                 delete tempDesc[key].validate.set;
-                descriptor[key + 'Valid'] = tempDesc[key].validate;
+                descriptor['$'+key + 'Valid'] = tempDesc[key].validate;
                 validations = validations || [];
                 validations.push(tempDesc[key].validate.get);
                 delete tempDesc[key].validate;
@@ -240,7 +240,7 @@ var AstarisxClass = {
         if(validations !== void(0)){
           var validationsLen = validations.length;
           if(validationsLen > 0){
-            descriptor.allValid = { 
+            descriptor.$allValid = { 
               get: function(){
                 var valid = true;
                 for(var v = 0; v < validationsLen; v++){
@@ -255,14 +255,14 @@ var AstarisxClass = {
           }
         }
 
-        //add dirty field to models
-        descriptor.dirty = {
+        //add $dirty field to models
+        descriptor.$dirty = {
           get: function() {
-            return this.state.dirty === void(0) ? false : this.state.dirty;
+            return this._state.$dirty === void(0) ? false : this._state.$dirty;
           }
         };
 
-        proto.clientFields = function(){
+        proto.__clientFields = function(){
           return clientFields || [];
         };
 

@@ -13,8 +13,8 @@ var utils = {
           newObj[key] = obj[key];
         }
       }
-      if(utils.isObject(obj) && utils.isModel(obj) && ('clientFields' in obj)){
-        obj.clientFields().forEach(function(fld){
+      if(utils.isObject(obj) && utils.isModel(obj) && ('__clientFields' in obj)){
+        obj.__clientFields().forEach(function(fld){
           newObj[fld] = obj[fld];
         });
       }
