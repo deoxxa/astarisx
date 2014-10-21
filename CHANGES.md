@@ -220,7 +220,7 @@
 - Client fields are now included in the returned object resulting from a call to `extend`.
 - Allow Models to have `mixins`
 - `mixins`: If a mixin field is getter or setter and is not defined in originalSpec it will be added unless it already exists in the originalSpec wins. Otherwise last prop wins.
-- `mixins`: If a mixin method begins with `get` is assumed to have no arguments and returns a merge object result. Last props win. For other methods it is assumed that they do not return a result, however if the method is unique it will be assigned directly to the originalSpec and can return a result if one has been defined.
+- `mixins`: If a mixin method begins with `get` is assumed that it takes no arguments and returns a merge object result. Last props win. For other methods it is assumed that they do not return a result, however if the method is unique it will be assigned directly to the originalSpec and can return a result if one has been defined.
 - add `kind`: `pseudoObject`, `pseudoObject:freeze`, `pseudoObject:deepFreeze`, `pseudoArray`, `pseudoArray:freeze`, `pseudoArray:deepFreeze`
 - empty transientState will now call callbacks
 - `Model`'s can now specify `kind: "instance"` for embedded model objects
