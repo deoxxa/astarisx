@@ -1259,20 +1259,10 @@ var Model = {
 
       var desc = this.getDescriptor();
 
-      var ModelClass = function(nextState, extendState, initialize) {
+      var ModelClass = function(nextState, extendState) {
         var freezeFields = desc.freezeFields,
           fld,
           model = Object.create(desc.proto, desc.descriptor);
-
-        if(typeof extendState === 'boolean'){
-          initialize = extendState;
-          extendState = void(0);
-        } else if(typeof nextState === 'boolean'){
-          initialize = nextState;
-          nextState = void(0);
-        } else if(nextState === void(0)){
-          initialize = true;
-        }
 
         nextState = extend(nextState, extendState);
 
@@ -1285,28 +1275,26 @@ var Model = {
 
         nextState = extend(nextState, model);
 
-        if(initialize){
-          if(desc.aliases !== void(0)){
-            for(var aliasFor in desc.aliases){
-              if(desc.aliases.hasOwnProperty(aliasFor) && aliasFor in nextState){
-                nextState[desc.aliases[aliasFor]] = nextState[aliasFor];
-                delete nextState[aliasFor];
-              }
+        if(desc.aliases !== void(0)){
+          for(var aliasFor in desc.aliases){
+            if(desc.aliases.hasOwnProperty(aliasFor) && (aliasFor in nextState)){
+              nextState[desc.aliases[aliasFor]] = nextState[aliasFor];
+              delete nextState[aliasFor];
             }
           }
+        }
 
-          Object.defineProperty(model, '_state', {
-            configurable: true,
-            enumerable: false,
-            writable: true,
-            value: nextState
-          });
+        Object.defineProperty(model, '_state', {
+          configurable: true,
+          enumerable: false,
+          writable: true,
+          value: nextState
+        });
 
-          nextState = extend(nextState, model);
+        nextState = extend(nextState, model);
 
-          if('getInitialState' in desc.originalSpec){
-            nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
-          }
+        if('getInitialState' in desc.originalSpec){
+          nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
         }
 
         //freeze arrays and model objects and initialize if necessary
