@@ -239,3 +239,4 @@
   - `nextState` to `_nextState`
 * RouteChangeHandlers are now passed `appContext` as the second argument
 * Linked data contexts specified in `getWatchedState`, can only see "real" fields and no longer have access to the ViewModel functions
+* `revert()` and `advance()` can now take a callback as an argument

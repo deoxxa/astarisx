@@ -494,13 +494,13 @@ var ControllerViewModel = {
       var desc = extend(this.getDescriptor());
       desc.proto.setState = stateChangeHandler;
 
-      desc.proto.revert = function(){
-        this.setState(this._previousState, !!this._previousState ? this : void(0));
+      desc.proto.revert = function(callback){
+        this.setState(this._previousState, !!this._previousState ? this : void(0), callback);
       };
 
-      desc.proto.advance = function(){
+      desc.proto.advance = function(callback){
         if(this.canAdvance){
-          this.setState(this._nextState, this._nextState._nextState);
+          this.setState(this._nextState, this._nextState._nextState, callback);
         }
       };
 
