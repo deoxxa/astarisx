@@ -550,13 +550,6 @@ var StateManager = function(component, appCtx, initCtxObj) {
 								pathKey, ctx){
 							external = true;
 							if(!internal) {
-								if(stateMgr.appState.canRevert && stateMgr.appState.pageNotFound){
-                  ctx.rollbackRequest = true;
-									ctx.revert = function(){
-                    this.revert.bind(this);
-                    this.setState({},{path:ctx.path});
-                  }.bind(stateMgr.appState);
-                }
 								routeMapping[route].call(stateMgr.appState[dataContextName], ctx.params,
                 stateMgr.appState,
 								ctx.path, pathKey, ctx, ('show' in stateMgr.appState) ? stateMgr.appState.show.bind(stateMgr.appState): void(0));
