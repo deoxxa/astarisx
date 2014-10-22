@@ -227,6 +227,7 @@
 - Rename objects variable names (see Breaking Changes)
 - RouteChangeHandlers are now passed `appContext` as the second argument
 - Linked data contexts specified in `getWatchedState`, can only see "real" fields and no longer have access to the ViewModel functions
+- Models are able to pass nextAppState (i.e. state for the ControllerViewModel) to `setState` as the second argument
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.

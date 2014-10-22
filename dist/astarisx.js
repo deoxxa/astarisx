@@ -2312,15 +2312,21 @@ var ViewModel = {
                   value: viewModel[freezeFields[fld].fieldName]._state
                 });
 
-                Object.getPrototypeOf(tempModel).setState = function(_state, callback){ //callback may be useful for DB updates
+                Object.getPrototypeOf(tempModel).setState = function(state, appState, callback){ //callback may be useful for DB updates
                   var clientFields = { $dirty: true };
+
+                  if(typeof appState === 'function'){
+                    callback = appState;
+                    appState = void(0);
+                  }
+
                   if(tempSpec.clientFields !== void(0)){
                     for (var cf = tempSpec.clientFields.length - 1; cf >= 0; cf--) {
                       clientFields[tempSpec.clientFields[cf]] = this[tempSpec.clientFields[cf]];
                     };
                   }
                   callback = callback ? callback.bind(this) : void(0);
-                  this.__stateChangeHandler.call(viewModel, extend(this._state, clientFields, _state), callback);
+                  this.__stateChangeHandler.call(viewModel, extend(this._state, clientFields, state), appState, callback);
                 };
 
                 if(!!tempSpec.freezeFields && !!tempSpec.freezeFields.length){
@@ -2345,17 +2351,23 @@ var ViewModel = {
                       });
 
                       Object.getPrototypeOf(tempModel2).setState = (function(fldName){
-                        return function(_state, callback){ //callback may be useful for DB updates
+                        return function(state, appState, callback){ //callback may be useful for DB updates
                           var clientFields2 = { $dirty: true };
                           var thisState = {};
+
+                          if(typeof appState === 'function'){
+                            callback = appState;
+                            appState = void(0);
+                          }
+
                           if(tempSpec2.clientFields !== void(0)){
                             for (var cf = tempSpec2.clientFields.length - 1; cf >= 0; cf--) {
                               clientFields2[tempSpec2.clientFields[cf]] = this[tempSpec2.clientFields[cf]];
                             };
                           }
-                          thisState[fldName] = extend(this._state, clientFields2, _state);
+                          thisState[fldName] = extend(this._state, clientFields2, state);
                           callback = callback ? callback.bind(this) : void(0);
-                          tempModel.__stateChangeHandler.call(viewModel, extend(tempModel, thisState, {$dirty: true}), callback);
+                          tempModel.__stateChangeHandler.call(viewModel, extend(tempModel, thisState, {$dirty: true}), appState, callback);
                         };
                       })(tempSpec.freezeFields[i].fieldName);
                       Object.freeze(viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName]);
