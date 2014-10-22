@@ -225,6 +225,8 @@
 - empty transientState will now call callbacks
 - `Model`'s can now specify `kind: "instance"` for embedded model objects
 - Rename objects variable names (see Breaking Changes)
+- RouteChangeHandlers are now passed `appContext` as the second argument
+- Linked data contexts specified in `getWatchedState`, can only see "real" fields and no longer have access to the ViewModel functions
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.
@@ -234,3 +236,5 @@
   - `state` to `_state`
   - `previousState` to `_previousState`
   - `nextState` to `_nextState`
+* RouteChangeHandlers are now passed `appContext` as the second argument
+* Linked data contexts specified in `getWatchedState`, can only see "real" fields and no longer have access to the ViewModel functions

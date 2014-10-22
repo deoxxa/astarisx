@@ -49,7 +49,7 @@ var ViewModel = {
         if(freezeFields !== void(0)){
           for (fld = freezeFields.length - 1; fld >= 0; fld--) {
             if(freezeFields[fld].kind === 'instance'){
-              if(viewModel[freezeFields[fld].fieldName]){
+              if(isModel(viewModel[freezeFields[fld].fieldName])){
                 tempSpec = viewModel[freezeFields[fld].fieldName].constructor.getDescriptor();
                 tempModel = Object.create(tempSpec.proto, tempSpec.descriptor);
 

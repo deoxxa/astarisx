@@ -26,18 +26,6 @@ var Model = {
           initialize = true;
         }
 
-        if(stateChangeHandler){        
-          Object.defineProperty(model, '__stateChangeHandler', {
-            configurable: false,
-            enumerable: false,
-            writable: false,
-            value: (function(){
-              return stateChangeHandler;
-            })()
-          });
-          // nextState = extend(nextState, model);
-        }
-        
         nextState = extend(nextState, extendState);
 
         Object.defineProperty(model, '_state', {
@@ -46,6 +34,8 @@ var Model = {
           writable: true,
           value: nextState
         });
+
+        nextState = extend(nextState, model);
 
         if(initialize){
           if(desc.aliases !== void(0)){
@@ -85,7 +75,7 @@ var Model = {
             } else if(freezeFields[fld].kind === 'object:deepFreeze' || freezeFields[fld].kind === 'pseudoObject:deepFreeze'){
               //freeze all objects and arrays traversing arrays for objects and arrays
               deepFreeze(nextState[freezeFields[fld].fieldName]);
-            } else {
+            } else if(freezeFields[fld].kind !== 'instance'){
               //Must be kind:'array*'
               //initialize array if necessary
               nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
@@ -109,7 +99,18 @@ var Model = {
           writable: false,
           value: nextState
         });
-        
+
+        if(stateChangeHandler){
+          Object.defineProperty(model, '__stateChangeHandler', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: (function(){
+              return stateChangeHandler;
+            })()
+          });
+        }
+
         return Object.freeze(model);
       };
       return ModelClass;

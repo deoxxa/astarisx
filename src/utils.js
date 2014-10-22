@@ -100,12 +100,21 @@ var utils = {
     return toString.call(o) === '[object Array]';
   },
   isModel: function (o) {
+    if(!utils.isObject(o)){
+      return false;
+    }
     return Object.getPrototypeOf(o).constructor.classType === "Model";
   },
   isViewModel: function (o) {
+    if(!utils.isObject(o)){
+      return false;
+    }
     return Object.getPrototypeOf(o).constructor.classType === "ViewModel";
   },
   isControllerViewModel: function (o) {
+    if(!utils.isObject(o)){
+      return false;
+    }
     return Object.getPrototypeOf(o).constructor.classType === "ControllerViewModel";
   },
   freeze: function(o) {

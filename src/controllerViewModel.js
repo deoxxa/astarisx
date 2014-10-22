@@ -223,7 +223,7 @@ var ControllerViewModel = {
             } else if(freezeFields[fld].kind === 'object:deepFreeze' || freezeFields[fld].kind === 'pseudoObject:deepFreeze'){
               //freeze all objects and arrays traversing arrays for objects and arrays
               deepFreeze(nextState[freezeFields[fld].fieldName]);
-            } else {
+            } else if(freezeFields[fld].kind !== 'instance') {
               //Must be kind:'array*'
               //initialize array if necessary
               nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];

@@ -701,7 +701,7 @@ var ControllerViewModel = {
             } else if(freezeFields[fld].kind === 'object:deepFreeze' || freezeFields[fld].kind === 'pseudoObject:deepFreeze'){
               //freeze all objects and arrays traversing arrays for objects and arrays
               deepFreeze(nextState[freezeFields[fld].fieldName]);
-            } else {
+            } else if(freezeFields[fld].kind !== 'instance') {
               //Must be kind:'array*'
               //initialize array if necessary
               nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
@@ -733,7 +733,6 @@ var ControllerViewModel = {
 };
 
 module.exports = ControllerViewModel;
-
 },{"./utils":9}],5:[function(require,module,exports){
 var model = require('./model');
 var viewModel = require('./viewModel');
@@ -1275,18 +1274,6 @@ var Model = {
           initialize = true;
         }
 
-        if(stateChangeHandler){        
-          Object.defineProperty(model, '__stateChangeHandler', {
-            configurable: false,
-            enumerable: false,
-            writable: false,
-            value: (function(){
-              return stateChangeHandler;
-            })()
-          });
-          // nextState = extend(nextState, model);
-        }
-        
         nextState = extend(nextState, extendState);
 
         Object.defineProperty(model, '_state', {
@@ -1295,6 +1282,8 @@ var Model = {
           writable: true,
           value: nextState
         });
+
+        nextState = extend(nextState, model);
 
         if(initialize){
           if(desc.aliases !== void(0)){
@@ -1334,7 +1323,7 @@ var Model = {
             } else if(freezeFields[fld].kind === 'object:deepFreeze' || freezeFields[fld].kind === 'pseudoObject:deepFreeze'){
               //freeze all objects and arrays traversing arrays for objects and arrays
               deepFreeze(nextState[freezeFields[fld].fieldName]);
-            } else {
+            } else if(freezeFields[fld].kind !== 'instance'){
               //Must be kind:'array*'
               //initialize array if necessary
               nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
@@ -1358,7 +1347,18 @@ var Model = {
           writable: false,
           value: nextState
         });
-        
+
+        if(stateChangeHandler){
+          Object.defineProperty(model, '__stateChangeHandler', {
+            configurable: false,
+            enumerable: false,
+            writable: false,
+            value: (function(){
+              return stateChangeHandler;
+            })()
+          });
+        }
+
         return Object.freeze(model);
       };
       return ModelClass;
@@ -1367,7 +1367,6 @@ var Model = {
 };
 
 module.exports = Model;
-
 },{"./utils":9}],8:[function(require,module,exports){
 var page = require('page');
 var utils = require('./utils');
@@ -1380,6 +1379,7 @@ var isControllerViewModel = utils.isControllerViewModel;
 var StateManager = function(component, appCtx, initCtxObj) {
 	
 	var namespace = uuid(),
+    ApplicationDataContext,
 		controllerViewModel,
 		stateChangeHandler,
 		viewKey,
@@ -1424,21 +1424,23 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
 	var appStateChangeHandler = function(caller, newState, newAppState, remember, callback, delay) {
 		var nextState = {},
-			prevState = void(0),
-			redoState = void(0),
-			newStateKeys,
-			keyIdx,
-			transientStateKeysLen,
-			dataContext,
-			linkedDataContext,
-			processedStateKeys = [],
-			processedStateKeysLen,
-			watchedField,
-			subscribers,
-			subscriber,
-			pushStateChanged = false,
-			willUndo = false,
-			stateChangeEvent;
+      prevState = void(0),
+      redoState = void(0),
+      newStateKeys,
+      keyIdx,
+      transientStateKeysLen,
+      transientStateKeys,
+      dataContext,
+      dataContext2,
+      linkedDataContext,
+      processedStateKeys = [],
+      processedStateKeysLen,
+      watchedField,
+      subscribers,
+      subscriber,
+      pushStateChanged = false,
+      willUndo = false,
+      stateChangeEvent;
 
 		//This covers setState with no args or with void(0) or with {} as argument
     if(arguments.length <= 2){
@@ -1510,7 +1512,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			prevState = newState._previousState;
 			redoState = newAppState;
 			//Need to reset ViewModel with instance object so that setState is associated with
-			//the current ViewModel. This reason this ccurs is that when a ViewModel is created it
+			//the current ViewModel. This reason this occurs is that when a ViewModel is created it
 			//assigns a setState function to all instance fields and binds itself to it. When undo is called
 			//the data is rolled back but viewModels are not recreated and therefore the setState functions
 			//are associated with outdated viewModels and returns unexpected output. So to realign the ViewModels
@@ -1525,7 +1527,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 					for(linkedDataContext in links[dataContext]){
 						if(links[dataContext].hasOwnProperty(linkedDataContext)){
 							nextState[dataContext]._state[links[dataContext][linkedDataContext]] =
-								(linkedDataContext in domain) ? extend(nextState[linkedDataContext]._state) :
+								(linkedDataContext in domain) ? extend(nextState[linkedDataContext]) :
 									nextState[linkedDataContext];
 						}
 					}
@@ -1534,7 +1536,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
 			if(typeof callback === 'function'){
 				try {
-					stateMgr.appState = new this.ApplicationDataContext(nextState, prevState, redoState,
+					stateMgr.appState = new ApplicationDataContext(nextState, prevState, redoState,
 					enableUndo, routingEnabled, nextState.path !== stateMgr.appState.path,
 					!external || nextState.pageNotFound, remember);
 
@@ -1628,14 +1630,14 @@ var StateManager = function(component, appCtx, initCtxObj) {
 											for(dataContext in links[subscriber]){
 												if(links[subscriber].hasOwnProperty(dataContext)){
 													nextState[subscriber]._state[links[subscriber][dataContext]] =
-														(dataContext in domain) ? extend(nextState[dataContext]._state) :
+														(dataContext in domain) ? extend(nextState[dataContext]) :
 															nextState[dataContext];
 												}
 												if(dataContext in links){
 													for(dataContext2 in links[dataContext]){
 														if(links[dataContext].hasOwnProperty(dataContext2)){
 															nextState[dataContext]._state[links[dataContext][dataContext2]] =
-																(dataContext2 in domain) ? extend(nextState[dataContext2]._state) :
+																(dataContext2 in domain) ? extend(nextState[dataContext2]) :
 																	nextState[dataContext2];
 														}
 													}
@@ -1668,13 +1670,14 @@ var StateManager = function(component, appCtx, initCtxObj) {
 						for(dataContext in links[namespace][processedStateKeys[keyIdx]]){
 							if(links[namespace][processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
 								nextState[dataContext]._state[links[namespace][processedStateKeys[keyIdx]][dataContext]] =
-									nextState[processedStateKeys[keyIdx]];
+                  (processedStateKeys[keyIdx] in domain) ? extend(nextState[processedStateKeys[keyIdx]]) :
+                        nextState[processedStateKeys[keyIdx]];
 							}
 							if(dataContext in links){
 								for(dataContext2 in links[dataContext]){
 									if(links[dataContext].hasOwnProperty(dataContext2)){
 										nextState[dataContext]._state[links[dataContext][dataContext2]] =
-											(dataContext2 in domain) ? extend(nextState[dataContext2]._state) :
+											(dataContext2 in domain) ? extend(nextState[dataContext2]) :
 												nextState[dataContext2];
 									}
 								}
@@ -1686,13 +1689,14 @@ var StateManager = function(component, appCtx, initCtxObj) {
 						for(dataContext in links[processedStateKeys[keyIdx]]){
 							if(links[processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
 								nextState[processedStateKeys[keyIdx]]._state[links[processedStateKeys[keyIdx]][dataContext]] =
-									nextState[dataContext];
+									(dataContext in domain) ? extend(nextState[dataContext]) : nextState[dataContext];
 							}
 							if(dataContext in links){
 								for(dataContext2 in links[dataContext]){
 									if(links[dataContext].hasOwnProperty(dataContext2)){
 										nextState[dataContext]._state[links[dataContext][dataContext2]] =
-											nextState[dataContext2];
+											(dataContext2 in domain) ? extend(nextState[dataContext2]) :
+                        nextState[dataContext2];
 									}
 								}
 							}
@@ -1730,7 +1734,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
         nextState = extend(nextState, {dataContextWillUpdate: processedState});
       }
 
-			stateMgr.appState = new this.ApplicationDataContext(nextState, prevState, redoState,
+			stateMgr.appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
 			!external || nextState.pageNotFound, remember);	
 
@@ -1822,8 +1826,8 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	/* Initialize Application Data Context
 	/***************/
   try {
-  	this.ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace));
-  	stateMgr.appState = new this.ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
+  	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace));
+  	stateMgr.appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
     stateMgr.appState._state = stateMgr.appState._state || {};
   } catch (e) { 
   	if (e instanceof TypeError) {
@@ -1894,7 +1898,8 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		if(domain.hasOwnProperty(viewModel)){
 			for(link in links[viewModel]){
 			  if(links[viewModel].hasOwnProperty(link)){
-					stateMgr.appState[viewModel]._state[links[viewModel][link]] = stateMgr.appState[link];
+					stateMgr.appState[viewModel]._state[links[viewModel][link]] = 
+            (link in domain) ? extend(stateMgr.appState[link]) : stateMgr.appState[link];
 			  }
 			}
 		}
@@ -1923,6 +1928,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
                   }.bind(stateMgr.appState);
                 }
 								routeMapping[route].call(stateMgr.appState[dataContextName], ctx.params,
+                stateMgr.appState,
 								ctx.path, pathKey, ctx, ('show' in stateMgr.appState) ? stateMgr.appState.show.bind(stateMgr.appState): void(0));
 							}
 							internal = false;
@@ -1953,7 +1959,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	}
 	delete Object.getPrototypeOf(stateMgr.appState).addTransitions;
 
-	stateMgr.appState = new this.ApplicationDataContext(stateMgr.appState, void(0), void(0),
+	stateMgr.appState = new ApplicationDataContext(stateMgr.appState, void(0), void(0),
 			enableUndo, routingEnabled);
 
 	if(routingEnabled){
@@ -1970,7 +1976,6 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		external = false;
 	}
 
-	// hasStatic = stateMgr.appState.constructor.originalSpec.__processedSpec__.hasStatic;
 	hasStatic = stateMgr.appState.constructor.getDescriptor().hasStatic;
 	if(hasStatic){
 		staticState = updateStatic(stateMgr.appState.constructor.getDescriptor().statics, stateMgr.appState._state);
@@ -2020,7 +2025,7 @@ StateManager.prototype.mountView = function(component){
 
 StateManager.prototype.dispose = function(){
   
-  var emptyState = new this.ApplicationDataContext(void(0), void(0), void(0), false, false);
+  var emptyState = new ApplicationDataContext(void(0), void(0), void(0), false, false);
 	var resetState = {};
 	var viewModels = this.appState.constructor.originalSpec.getViewModels();
 	if(!!this.signInUrl){
@@ -2047,7 +2052,7 @@ StateManager.prototype.dispose = function(){
   }
   resetState = extend(this.appState, emptyState, resetState);
 	try {
-  	this.appState = new this.ApplicationDataContext(resetState, void(0), void(0), false, false);
+  	this.appState = new ApplicationDataContext(resetState, void(0), void(0), false, false);
     this.appState._state = this.appState._state || {};
   } catch (e) { 
   	if (e instanceof TypeError) {
@@ -2173,12 +2178,21 @@ var utils = {
     return toString.call(o) === '[object Array]';
   },
   isModel: function (o) {
+    if(!utils.isObject(o)){
+      return false;
+    }
     return Object.getPrototypeOf(o).constructor.classType === "Model";
   },
   isViewModel: function (o) {
+    if(!utils.isObject(o)){
+      return false;
+    }
     return Object.getPrototypeOf(o).constructor.classType === "ViewModel";
   },
   isControllerViewModel: function (o) {
+    if(!utils.isObject(o)){
+      return false;
+    }
     return Object.getPrototypeOf(o).constructor.classType === "ControllerViewModel";
   },
   freeze: function(o) {
@@ -2278,7 +2292,7 @@ var ViewModel = {
         if(freezeFields !== void(0)){
           for (fld = freezeFields.length - 1; fld >= 0; fld--) {
             if(freezeFields[fld].kind === 'instance'){
-              if(viewModel[freezeFields[fld].fieldName]){
+              if(isModel(viewModel[freezeFields[fld].fieldName])){
                 tempSpec = viewModel[freezeFields[fld].fieldName].constructor.getDescriptor();
                 tempModel = Object.create(tempSpec.proto, tempSpec.descriptor);
 
@@ -2399,6 +2413,5 @@ var ViewModel = {
 };
 
 module.exports = ViewModel;
-
 },{"./utils":9}]},{},[1])(1)
 });
