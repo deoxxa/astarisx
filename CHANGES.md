@@ -229,6 +229,28 @@
 - Linked data contexts specified in `getWatchedState`, can only see "real" fields and no longer have access to the ViewModel functions
 - Models are able to pass nextAppState (i.e. state for the ControllerViewModel) to `setState` as the second argument
 - Models no longer take a boolean to initialize
+- Added `$owner`. This is passed to Models if within a Model you are referencing the same Model for different fields as `kind: "instance"`. This is necessary because `setState` is assigned to the prototype and cannot differentiate the caller. The `$owner` field ensures that the correct model is updated.
+
+```javascript
+primaryContact: {
+  kind: 'instance',
+  get: function(){
+    return new Contact(this._state.primaryContact, {$owner:"primaryContact"});
+  },
+  validate: {
+    get: function(){
+      return this.primaryContact.name.length > 0;
+    }
+  }
+},
+
+secondaryContact: {
+  kind: 'instance',
+  get: function(){
+    return new Contact(this._state.secondaryContact, {$owner:"secondaryContact"});
+  }
+},
+```
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.

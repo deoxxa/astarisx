@@ -561,10 +561,18 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				delete Object.getPrototypeOf(stateMgr.appState[viewModel]).getRoutes;
     	}
 
-    	//This is if astarisx-animate mixin is used
+			//This is if astarisx-animate mixin is used
 			if('getDisplays' in stateMgr.appState[viewModel].constructor.originalSpec){
-				stateMgr.appState.addDisplays(stateMgr.appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
-				delete Object.getPrototypeOf(stateMgr.appState[viewModel]).getDisplays;
+				try {
+					stateMgr.appState.addDisplays(stateMgr.appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
+					delete Object.getPrototypeOf(stateMgr.appState[viewModel]).getDisplays;
+				} catch (e) { 
+			  	if (e instanceof TypeError) {
+			    	throw new TypeError('Please ensure that Astarisx-Animate is mixed into the ControllerViewModel.');
+			  	} else {
+			  		throw e;
+			  	}
+			  }
 			}
 		}
   }
@@ -607,6 +615,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
   Object.freeze(stateMgr.appState._state);
   Object.freeze(stateMgr.appState);
 
+  stateChangeHandler(stateMgr.appState);
   if('dataContextWillInitialize' in stateMgr.appState.constructor.originalSpec){
     stateMgr.appState.constructor.originalSpec.dataContextWillInitialize.call(stateMgr.appState, initCtxObj);
     delete Object.getPrototypeOf(stateMgr.appState).dataContextWillInitialize;

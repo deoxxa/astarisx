@@ -2,6 +2,7 @@ var utils = require('./utils');
 var extend = utils.extend;
 var isObject = utils.isObject;
 var isModel = utils.isModel;
+var isArray = utils.isArray;
 var freeze = utils.freeze;
 var deepFreeze = utils.deepFreeze;
 
@@ -10,7 +11,7 @@ var ViewModel = {
   Mixin: {
     construct: function(stateChangeHandler){
 
-      var desc = this.getDescriptor(this);
+      var desc = this.getDescriptor();
       desc.proto.setState = stateChangeHandler;
 
       var ViewModelClass = function(nextState, initialize) {
@@ -111,7 +112,7 @@ var ViewModel = {
                         return function(state, appState, callback){ //callback may be useful for DB updates
                           var clientFields2 = { $dirty: true };
                           var thisState = {};
-
+                          fldName = ('$owner' in this._state) ? this._state.$owner : fldName;
                           if(typeof appState === 'function'){
                             callback = appState;
                             appState = void(0);
@@ -147,7 +148,9 @@ var ViewModel = {
             } else {
               //Must be kind:'array*'
               //initialize array if necessary
-              nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+              if(!isArray(nextState[freezeFields[fld].fieldName])){
+                nextState[freezeFields[fld].fieldName] = [];
+              }
               if(freezeFields[fld].kind === 'array:freeze' || freezeFields[fld].kind === 'pseudoArray:freeze'){
                 //shallow freeze all objects and arrays in array
                 freeze(nextState[freezeFields[fld].fieldName]);

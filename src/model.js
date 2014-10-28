@@ -2,6 +2,7 @@
 var utils = require('./utils');
 var extend = utils.extend;
 var isObject = utils.isObject;
+var isArray = utils.isArray;
 var freeze = utils.freeze;
 var deepFreeze = utils.deepFreeze;
 
@@ -18,14 +19,14 @@ var Model = {
 
         nextState = extend(nextState, extendState);
 
-        Object.defineProperty(model, '_state', {
-          configurable: true,
-          enumerable: false,
-          writable: true,
-          value: nextState
-        });
+        // Object.defineProperty(model, '_state', {
+        //   configurable: true,
+        //   enumerable: false,
+        //   writable: true,
+        //   value: nextState
+        // });
 
-        nextState = extend(nextState, model);
+        // nextState = extend(nextState, model);
 
         if(desc.aliases !== void(0)){
           for(var aliasFor in desc.aliases){
@@ -43,7 +44,7 @@ var Model = {
           value: nextState
         });
 
-        nextState = extend(nextState, model);
+        // nextState = extend(nextState, model);
 
         if('getInitialState' in desc.originalSpec){
           nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
@@ -66,7 +67,9 @@ var Model = {
             } else if(freezeFields[fld].kind !== 'instance'){
               //Must be kind:'array*'
               //initialize array if necessary
-              nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+              if(!isArray(nextState[freezeFields[fld].fieldName])){
+                nextState[freezeFields[fld].fieldName] = [];
+              }
               if(freezeFields[fld].kind === 'array:freeze' || freezeFields[fld].kind === 'pseudoArray:freeze'){
                 //shallow freeze all objects and arrays in array
                 freeze(nextState[freezeFields[fld].fieldName]);

@@ -491,7 +491,7 @@ var ControllerViewModel = {
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
-      var desc = extend(this.getDescriptor());
+      var desc = this.getDescriptor();
       desc.proto.setState = stateChangeHandler;
 
       desc.proto.revert = function(callback){
@@ -704,7 +704,9 @@ var ControllerViewModel = {
             } else if(freezeFields[fld].kind !== 'instance') {
               //Must be kind:'array*'
               //initialize array if necessary
-              nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+              if(!isArray(nextState[freezeFields[fld].fieldName])){
+                nextState[freezeFields[fld].fieldName] = [];
+              }
               if(freezeFields[fld].kind === 'array:freeze' || freezeFields[fld].kind === 'pseudoArray:freeze'){
                 //shallow freeze all objects and arrays in array
                 freeze(nextState[freezeFields[fld].fieldName]);
@@ -1250,6 +1252,7 @@ module.exports = mixin;
 var utils = require('./utils');
 var extend = utils.extend;
 var isObject = utils.isObject;
+var isArray = utils.isArray;
 var freeze = utils.freeze;
 var deepFreeze = utils.deepFreeze;
 
@@ -1266,14 +1269,14 @@ var Model = {
 
         nextState = extend(nextState, extendState);
 
-        Object.defineProperty(model, '_state', {
-          configurable: true,
-          enumerable: false,
-          writable: true,
-          value: nextState
-        });
+        // Object.defineProperty(model, '_state', {
+        //   configurable: true,
+        //   enumerable: false,
+        //   writable: true,
+        //   value: nextState
+        // });
 
-        nextState = extend(nextState, model);
+        // nextState = extend(nextState, model);
 
         if(desc.aliases !== void(0)){
           for(var aliasFor in desc.aliases){
@@ -1291,7 +1294,7 @@ var Model = {
           value: nextState
         });
 
-        nextState = extend(nextState, model);
+        // nextState = extend(nextState, model);
 
         if('getInitialState' in desc.originalSpec){
           nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
@@ -1314,7 +1317,9 @@ var Model = {
             } else if(freezeFields[fld].kind !== 'instance'){
               //Must be kind:'array*'
               //initialize array if necessary
-              nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+              if(!isArray(nextState[freezeFields[fld].fieldName])){
+                nextState[freezeFields[fld].fieldName] = [];
+              }
               if(freezeFields[fld].kind === 'array:freeze' || freezeFields[fld].kind === 'pseudoArray:freeze'){
                 //shallow freeze all objects and arrays in array
                 freeze(nextState[freezeFields[fld].fieldName]);
@@ -1919,10 +1924,18 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				delete Object.getPrototypeOf(stateMgr.appState[viewModel]).getRoutes;
     	}
 
-    	//This is if astarisx-animate mixin is used
+			//This is if astarisx-animate mixin is used
 			if('getDisplays' in stateMgr.appState[viewModel].constructor.originalSpec){
-				stateMgr.appState.addDisplays(stateMgr.appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
-				delete Object.getPrototypeOf(stateMgr.appState[viewModel]).getDisplays;
+				try {
+					stateMgr.appState.addDisplays(stateMgr.appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
+					delete Object.getPrototypeOf(stateMgr.appState[viewModel]).getDisplays;
+				} catch (e) { 
+			  	if (e instanceof TypeError) {
+			    	throw new TypeError('Please ensure that Astarisx-Animate is mixed into the ControllerViewModel.');
+			  	} else {
+			  		throw e;
+			  	}
+			  }
 			}
 		}
   }
@@ -1965,6 +1978,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
   Object.freeze(stateMgr.appState._state);
   Object.freeze(stateMgr.appState);
 
+  stateChangeHandler(stateMgr.appState);
   if('dataContextWillInitialize' in stateMgr.appState.constructor.originalSpec){
     stateMgr.appState.constructor.originalSpec.dataContextWillInitialize.call(stateMgr.appState, initCtxObj);
     delete Object.getPrototypeOf(stateMgr.appState).dataContextWillInitialize;
@@ -2226,6 +2240,7 @@ var utils = require('./utils');
 var extend = utils.extend;
 var isObject = utils.isObject;
 var isModel = utils.isModel;
+var isArray = utils.isArray;
 var freeze = utils.freeze;
 var deepFreeze = utils.deepFreeze;
 
@@ -2234,7 +2249,7 @@ var ViewModel = {
   Mixin: {
     construct: function(stateChangeHandler){
 
-      var desc = this.getDescriptor(this);
+      var desc = this.getDescriptor();
       desc.proto.setState = stateChangeHandler;
 
       var ViewModelClass = function(nextState, initialize) {
@@ -2335,7 +2350,7 @@ var ViewModel = {
                         return function(state, appState, callback){ //callback may be useful for DB updates
                           var clientFields2 = { $dirty: true };
                           var thisState = {};
-
+                          fldName = ('$owner' in this._state) ? this._state.$owner : fldName;
                           if(typeof appState === 'function'){
                             callback = appState;
                             appState = void(0);
@@ -2371,7 +2386,9 @@ var ViewModel = {
             } else {
               //Must be kind:'array*'
               //initialize array if necessary
-              nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+              if(!isArray(nextState[freezeFields[fld].fieldName])){
+                nextState[freezeFields[fld].fieldName] = [];
+              }
               if(freezeFields[fld].kind === 'array:freeze' || freezeFields[fld].kind === 'pseudoArray:freeze'){
                 //shallow freeze all objects and arrays in array
                 freeze(nextState[freezeFields[fld].fieldName]);

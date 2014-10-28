@@ -13,7 +13,7 @@ var ControllerViewModel = {
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
-      var desc = extend(this.getDescriptor());
+      var desc = this.getDescriptor();
       desc.proto.setState = stateChangeHandler;
 
       desc.proto.revert = function(callback){
@@ -226,7 +226,9 @@ var ControllerViewModel = {
             } else if(freezeFields[fld].kind !== 'instance') {
               //Must be kind:'array*'
               //initialize array if necessary
-              nextState[freezeFields[fld].fieldName] = nextState[freezeFields[fld].fieldName] || [];
+              if(!isArray(nextState[freezeFields[fld].fieldName])){
+                nextState[freezeFields[fld].fieldName] = [];
+              }
               if(freezeFields[fld].kind === 'array:freeze' || freezeFields[fld].kind === 'pseudoArray:freeze'){
                 //shallow freeze all objects and arrays in array
                 freeze(nextState[freezeFields[fld].fieldName]);
