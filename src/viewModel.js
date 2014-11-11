@@ -71,11 +71,18 @@ var ViewModel = {
                 });
 
                 Object.getPrototypeOf(tempModel).setState = function(state, appState, callback){ //callback may be useful for DB updates
-                  var clientFields = { $dirty: true };
-
+                  var clientFields = {};
                   if(typeof appState === 'function'){
                     callback = appState;
                     appState = void(0);
+                  } else if(typeof state === 'function'){
+                    callback = state;
+                    state = void(0);
+                    appState = void(0);
+                  }
+
+                  if(state !== void(0)){
+                     clientFields.$dirty = true;
                   }
 
                   if(tempSpec.clientFields !== void(0)){
@@ -110,12 +117,21 @@ var ViewModel = {
 
                       Object.getPrototypeOf(tempModel2).setState = (function(fldName){
                         return function(state, appState, callback){ //callback may be useful for DB updates
-                          var clientFields2 = { $dirty: true };
+                          var clientFields2 = {};
                           var thisState = {};
                           fldName = ('$owner' in this._state) ? this._state.$owner : fldName;
+
                           if(typeof appState === 'function'){
                             callback = appState;
                             appState = void(0);
+                          } else if(typeof state === 'function'){
+                            callback = state;
+                            state = void(0);
+                            appState = void(0);
+                          }
+
+                          if(state !== void(0)){
+                             clientFields2.$dirty = true;
                           }
 
                           if(tempSpec2.clientFields !== void(0)){

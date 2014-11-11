@@ -1437,7 +1437,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
 		//This covers setState with no args or with void(0) or with {} as argument
     if(arguments.length <= 2){
-    	if(newState === void(0) || !!!Object.keys(newState).length){
+    	if(newState === void(0) || !!!Object.keys(newState).length || (typeof newState === 'function')){
 				calledBack = false;
 		  	if(stateMgr.hasListeners){
 					stateChangeEvent = new CustomEvent("stateChange", {"detail": stateMgr.appState});
@@ -1473,6 +1473,9 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				}
 				transientState = {};
 				processedState = {};
+				if (typeof newState === 'function'){
+					newState(void(0), stateMgr.appState);
+	    	}
 	    	return;    		
     	}
     }
@@ -1495,6 +1498,8 @@ var StateManager = function(component, appCtx, initCtxObj) {
     }
 		newState = newState || {};
 		newStateKeys = Object.keys(newState);
+
+		newAppState = newAppState || {};
 
 		//Check to see if appState is a ready made _state object. If so
 		//pass it straight to the stateChangeHandler. If a callback was passed in
@@ -1924,7 +1929,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				delete Object.getPrototypeOf(stateMgr.appState[viewModel]).getRoutes;
     	}
 
-			//This is if astarisx-animate mixin is used
+    	//This is if astarisx-animate mixin is used
 			if('getDisplays' in stateMgr.appState[viewModel].constructor.originalSpec){
 				try {
 					stateMgr.appState.addDisplays(stateMgr.appState[viewModel].constructor.originalSpec.getDisplays(), viewModel);
@@ -2309,11 +2314,18 @@ var ViewModel = {
                 });
 
                 Object.getPrototypeOf(tempModel).setState = function(state, appState, callback){ //callback may be useful for DB updates
-                  var clientFields = { $dirty: true };
-
+                  var clientFields = {};
                   if(typeof appState === 'function'){
                     callback = appState;
                     appState = void(0);
+                  } else if(typeof state === 'function'){
+                    callback = state;
+                    state = void(0);
+                    appState = void(0);
+                  }
+
+                  if(state !== void(0)){
+                     clientFields.$dirty = true;
                   }
 
                   if(tempSpec.clientFields !== void(0)){
@@ -2348,12 +2360,21 @@ var ViewModel = {
 
                       Object.getPrototypeOf(tempModel2).setState = (function(fldName){
                         return function(state, appState, callback){ //callback may be useful for DB updates
-                          var clientFields2 = { $dirty: true };
+                          var clientFields2 = {};
                           var thisState = {};
                           fldName = ('$owner' in this._state) ? this._state.$owner : fldName;
+
                           if(typeof appState === 'function'){
                             callback = appState;
                             appState = void(0);
+                          } else if(typeof state === 'function'){
+                            callback = state;
+                            state = void(0);
+                            appState = void(0);
+                          }
+
+                          if(state !== void(0)){
+                             clientFields2.$dirty = true;
                           }
 
                           if(tempSpec2.clientFields !== void(0)){
