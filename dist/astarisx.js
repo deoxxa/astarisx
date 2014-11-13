@@ -681,12 +681,12 @@ var ControllerViewModel = {
       };
 
       desc.proto.advance = function(callback){
-        if(this.canAdvance){
+        if(this.$canAdvance){
           this.setState(this._nextState, this._nextState._nextState, callback);
         }
       };
 
-      desc.proto.initializeDataContext = function(obj /* ...string and objects OR array of string and objects OR empty */){
+      desc.proto.initializeDataContext = function(obj /* ...string and objects OR array of strings and objects OR empty */){
 
         var args = Array.prototype.slice.call(arguments, 0);
         var argsLen;
@@ -750,42 +750,42 @@ var ControllerViewModel = {
         if(!init){
           if(routingEnabled){
 
-            pageNotFound = nextState.pageNotFound === void(0) ? false : nextState.pageNotFound;
+            pageNotFound = nextState.$pageNotFound === void(0) ? false : nextState.$pageNotFound;
 
-            Object.defineProperty(controllerViewModel, 'pageNotFound', {
+            Object.defineProperty(controllerViewModel, '$pageNotFound', {
               configurable: false,
               enumerable: false,
               writable: false,
               value: pageNotFound
             });
-            Object.defineProperty(controllerViewModel, 'forceReplace', {
+            Object.defineProperty(controllerViewModel, '$forceReplace', {
               configurable: false,
               enumerable: false,
               writable: false,
-              value: nextState.forceReplace === void(0) ? false : nextState.forceReplace
+              value: nextState.$forceReplace === void(0) ? false : nextState.$forceReplace
             });
-            Object.defineProperty(controllerViewModel, 'pushState', {
+            Object.defineProperty(controllerViewModel, '$pushState', {
               configurable: false,
               enumerable: true,
               writable: false,
-              value: nextState.pushState === void(0) ? true : nextState.pushState
+              value: nextState.$pushState === void(0) ? true : nextState.$pushState
             });
-            if(!('path' in controllerViewModel) && ('path' in nextState)){
-              Object.defineProperty(controllerViewModel, 'path', {
+            if(!('$path' in controllerViewModel) && ('$path' in nextState)){
+              Object.defineProperty(controllerViewModel, '$path', {
                 configurable: false,
                 enumerable: true,
                 writable: false,
-                value: nextState.path
+                value: nextState.$path
               });
             }
           }
 
-          if(nextState.enableUndo === void(0)){
+          if(nextState.$enableUndo === void(0)){
               adhocUndo = false;
           } else {
-            enableUndo = nextState.enableUndo;
-            adhocUndo = nextState.enableUndo;
-            if(!nextState.enableUndo){
+            enableUndo = nextState.$enableUndo;
+            adhocUndo = nextState.$enableUndo;
+            if(!nextState.$enableUndo){
               routingEnabled = false;
             }
           }
@@ -803,14 +803,14 @@ var ControllerViewModel = {
               writable: false,
               value: prevState
             });
-            Object.defineProperty(controllerViewModel, 'canRevert', {
+            Object.defineProperty(controllerViewModel, '$canRevert', {
               configurable: false,
               enumerable: false,
               writable: false,
               value: true
             });
           } else {
-            Object.defineProperty(controllerViewModel, 'canRevert', {
+            Object.defineProperty(controllerViewModel, '$canRevert', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -825,7 +825,7 @@ var ControllerViewModel = {
               writable: false,
               value: redoState
             });
-            Object.defineProperty(controllerViewModel, 'canAdvance', {
+            Object.defineProperty(controllerViewModel, '$canAdvance', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -834,7 +834,7 @@ var ControllerViewModel = {
           } else {
             prevAdhocUndo = adhocUndo;
             previousPageNotFound = pageNotFound;
-            Object.defineProperty(controllerViewModel, 'canAdvance', {
+            Object.defineProperty(controllerViewModel, '$canAdvance', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -848,11 +848,11 @@ var ControllerViewModel = {
           nextState = ('getInitialState' in desc.originalSpec) ?
             desc.originalSpec.getInitialState.call(controllerViewModel) : {};
           if(routingEnabled){
-            Object.defineProperty(controllerViewModel, 'path', {
+            Object.defineProperty(controllerViewModel, '$path', {
               configurable: false,
               enumerable: true,
               writable: false,
-              value: nextState.path || '/'
+              value: nextState.$path || '/'
             });
           }
 
@@ -1623,10 +1623,10 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				calledBack = false;
 		  	if(stateMgr.hasListeners){
 					stateChangeEvent = new CustomEvent("stateChange", {"detail": stateMgr.appState});
-				  if(processedState.notify){
+				  if(processedState.$notify){
 				  	//Only notify specific views
-						if(isArray(processedState.notify)){
-							processedState.notify.forEach(function(viewKey){
+						if(isArray(processedState.$notify)){
+							processedState.$notify.forEach(function(viewKey){
 								if(viewKey === "*"){
 									stateChangeHandler(stateMgr.appState);
 								} else if(viewKey in stateMgr.listeners){
@@ -1634,10 +1634,10 @@ var StateManager = function(component, appCtx, initCtxObj) {
 								}
 							});
 						} else {
-							if(processedState.notify === "*"){
+							if(processedState.$notify === "*"){
 								stateChangeHandler(stateMgr.appState);
-							} else if(processedState.notify in stateMgr.listeners){
-								stateMgr.listeners[processedState.notify].dispatchEvent(stateChangeEvent);
+							} else if(processedState.$notify in stateMgr.listeners){
+								stateMgr.listeners[processedState.$notify].dispatchEvent(stateChangeEvent);
 							}
 						}
 					} else {
@@ -1717,8 +1717,8 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			if(typeof callback === 'function'){
 				try {
 					stateMgr.appState = new ApplicationDataContext(nextState, prevState, redoState,
-					enableUndo, routingEnabled, nextState.path !== stateMgr.appState.path,
-					!external || nextState.pageNotFound, remember);
+					enableUndo, routingEnabled, nextState.$path !== stateMgr.appState.$path,
+					!external || nextState.$pageNotFound, remember);
 
 	        calledBack = true;
 	        if(!!delay){
@@ -1829,7 +1829,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 											nextState[transientStateKeys[keyIdx]][watchedField],
 											stateMgr.appState[transientStateKeys[keyIdx]][watchedField],
 											watchedField, transientStateKeys[keyIdx],
-											nextState.path, stateMgr.appState.path));
+											nextState.$path, stateMgr.appState.$path));
 									}
 								}
 							}
@@ -1885,13 +1885,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				}
 	    }
 
-			if(stateMgr.appState.canRevert && calledBack){
+			if(stateMgr.appState.$canRevert && calledBack){
 				prevState = stateMgr.appState._previousState;
 			} else if(hasStatic && staticState._staticUpdated && staticState._onlyStatic){
-        if(stateMgr.appState.canRevert){
+        if(stateMgr.appState.$canRevert){
         	prevState = stateMgr.appState._previousState;
         }
-        if(stateMgr.appState.canAdvance){
+        if(stateMgr.appState.$canAdvance){
         	redoState = stateMgr.appState._nextState;
         }
       } else {
@@ -1904,19 +1904,19 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		}
 
 		//check the paths to see of there has been an path change
-		pushStateChanged = nextState.path !== stateMgr.appState.path;
+		pushStateChanged = nextState.$path !== stateMgr.appState.$path;
 
 		try {
 			//Add dataContextWillUpdate
       if(willUndo){
-        nextState = extend(nextState, {dataContextWillUpdate: newState._state.dataContextWillUpdate});
+        nextState = extend(nextState, {$dataContextWillUpdate: newState._state.$dataContextWillUpdate});
       } else {
-        nextState = extend(nextState, {dataContextWillUpdate: processedState});
+        nextState = extend(nextState, {$dataContextWillUpdate: processedState});
       }
 
 			stateMgr.appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
-			!external || nextState.pageNotFound, remember);	
+			!external || nextState.$pageNotFound, remember);	
 
 			Object.freeze(stateMgr.appState);
 			Object.freeze(stateMgr.appState._state);
@@ -1948,13 +1948,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		}
 
 		// Internal call routing
-		if(routingEnabled && stateMgr.appState.pushState){
-			if(('path' in stateMgr.appState) && !external){
+		if(routingEnabled && stateMgr.appState.$pushState){
+			if(('$path' in stateMgr.appState) && !external){
 				internal = true;
-				if(pushStateChanged && !stateMgr.appState.forceReplace){
-					page(stateMgr.appState.path);
+				if(pushStateChanged && !stateMgr.appState.$forceReplace){
+					page(stateMgr.appState.$path);
 				} else {
-					page.replace(stateMgr.appState.path);
+					page.replace(stateMgr.appState.$path);
 				}
 			}
 			external = false;
@@ -1968,10 +1968,10 @@ var StateManager = function(component, appCtx, initCtxObj) {
   	
   	if(stateMgr.hasListeners){
 			stateChangeEvent = new CustomEvent("stateChange", {"detail": stateMgr.appState});
-		  if(nextState.notify){
+		  if(nextState.$notify){
 		  	//Only notify specific views
-				if(isArray(nextState.notify)){
-					nextState.notify.forEach(function(viewKey){
+				if(isArray(nextState.$notify)){
+					nextState.$notify.forEach(function(viewKey){
 						if(viewKey === "*"){
 							stateChangeHandler(stateMgr.appState);
 						} else if(viewKey in stateMgr.listeners){
@@ -1979,10 +1979,10 @@ var StateManager = function(component, appCtx, initCtxObj) {
 						}
 					});
 				} else {
-					if(nextState.notify === "*"){
+					if(nextState.$notify === "*"){
 						stateChangeHandler(stateMgr.appState);
-					} else if(nextState.notify in stateMgr.listeners){
-						stateMgr.listeners[nextState.notify].dispatchEvent(stateChangeEvent);
+					} else if(nextState.$notify in stateMgr.listeners){
+						stateMgr.listeners[nextState.$notify].dispatchEvent(stateChangeEvent);
 					}
 				}
 			} else {
@@ -2147,12 +2147,12 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		//Setup 'pageNotFound' route
 		page(function(ctx){
 			external = true;
-			stateMgr.appState.setState({'pageNotFound':true});
+			stateMgr.appState.setState({'$pageNotFound':true});
 			internal = false;
 		});
 		//Initilize first path
 		internal = true;
-		page.replace(stateMgr.appState.path);
+		page.replace(stateMgr.appState.$path);
 		page.start({click: false, dispatch: false});
 		external = false;
 	}
@@ -2178,7 +2178,7 @@ StateManager.prototype.currentState = function(){
 };
 
 StateManager.prototype.unmountView = function(component){
-	var viewKey = component.props.viewKey || component._rootNodeID;
+	var viewKey = component.props.$viewKey || component._rootNodeID;
 	if(this.listeners === null || this.listeners === void(0)){
 		this.handlers = null;
 		this.hasListeners = false;
@@ -2193,7 +2193,7 @@ StateManager.prototype.unmountView = function(component){
 }
 
 StateManager.prototype.mountView = function(component){
-		var viewKey = component.props.viewKey || component._rootNodeID;
+		var viewKey = component.props.$viewKey || component._rootNodeID;
 		this.handlers[viewKey] = function(e){
 	    component.setState({appContext: e.detail});
 		};

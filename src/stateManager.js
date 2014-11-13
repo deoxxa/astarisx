@@ -78,10 +78,10 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				calledBack = false;
 		  	if(stateMgr.hasListeners){
 					stateChangeEvent = new CustomEvent("stateChange", {"detail": stateMgr.appState});
-				  if(processedState.notify){
+				  if(processedState.$notify){
 				  	//Only notify specific views
-						if(isArray(processedState.notify)){
-							processedState.notify.forEach(function(viewKey){
+						if(isArray(processedState.$notify)){
+							processedState.$notify.forEach(function(viewKey){
 								if(viewKey === "*"){
 									stateChangeHandler(stateMgr.appState);
 								} else if(viewKey in stateMgr.listeners){
@@ -89,10 +89,10 @@ var StateManager = function(component, appCtx, initCtxObj) {
 								}
 							});
 						} else {
-							if(processedState.notify === "*"){
+							if(processedState.$notify === "*"){
 								stateChangeHandler(stateMgr.appState);
-							} else if(processedState.notify in stateMgr.listeners){
-								stateMgr.listeners[processedState.notify].dispatchEvent(stateChangeEvent);
+							} else if(processedState.$notify in stateMgr.listeners){
+								stateMgr.listeners[processedState.$notify].dispatchEvent(stateChangeEvent);
 							}
 						}
 					} else {
@@ -172,8 +172,8 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			if(typeof callback === 'function'){
 				try {
 					stateMgr.appState = new ApplicationDataContext(nextState, prevState, redoState,
-					enableUndo, routingEnabled, nextState.path !== stateMgr.appState.path,
-					!external || nextState.pageNotFound, remember);
+					enableUndo, routingEnabled, nextState.$path !== stateMgr.appState.$path,
+					!external || nextState.$pageNotFound, remember);
 
 	        calledBack = true;
 	        if(!!delay){
@@ -284,7 +284,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 											nextState[transientStateKeys[keyIdx]][watchedField],
 											stateMgr.appState[transientStateKeys[keyIdx]][watchedField],
 											watchedField, transientStateKeys[keyIdx],
-											nextState.path, stateMgr.appState.path));
+											nextState.$path, stateMgr.appState.$path));
 									}
 								}
 							}
@@ -340,13 +340,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				}
 	    }
 
-			if(stateMgr.appState.canRevert && calledBack){
+			if(stateMgr.appState.$canRevert && calledBack){
 				prevState = stateMgr.appState._previousState;
 			} else if(hasStatic && staticState._staticUpdated && staticState._onlyStatic){
-        if(stateMgr.appState.canRevert){
+        if(stateMgr.appState.$canRevert){
         	prevState = stateMgr.appState._previousState;
         }
-        if(stateMgr.appState.canAdvance){
+        if(stateMgr.appState.$canAdvance){
         	redoState = stateMgr.appState._nextState;
         }
       } else {
@@ -359,19 +359,19 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		}
 
 		//check the paths to see of there has been an path change
-		pushStateChanged = nextState.path !== stateMgr.appState.path;
+		pushStateChanged = nextState.$path !== stateMgr.appState.$path;
 
 		try {
 			//Add dataContextWillUpdate
       if(willUndo){
-        nextState = extend(nextState, {dataContextWillUpdate: newState._state.dataContextWillUpdate});
+        nextState = extend(nextState, {$dataContextWillUpdate: newState._state.$dataContextWillUpdate});
       } else {
-        nextState = extend(nextState, {dataContextWillUpdate: processedState});
+        nextState = extend(nextState, {$dataContextWillUpdate: processedState});
       }
 
 			stateMgr.appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
-			!external || nextState.pageNotFound, remember);	
+			!external || nextState.$pageNotFound, remember);	
 
 			Object.freeze(stateMgr.appState);
 			Object.freeze(stateMgr.appState._state);
@@ -403,13 +403,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		}
 
 		// Internal call routing
-		if(routingEnabled && stateMgr.appState.pushState){
-			if(('path' in stateMgr.appState) && !external){
+		if(routingEnabled && stateMgr.appState.$pushState){
+			if(('$path' in stateMgr.appState) && !external){
 				internal = true;
-				if(pushStateChanged && !stateMgr.appState.forceReplace){
-					page(stateMgr.appState.path);
+				if(pushStateChanged && !stateMgr.appState.$forceReplace){
+					page(stateMgr.appState.$path);
 				} else {
-					page.replace(stateMgr.appState.path);
+					page.replace(stateMgr.appState.$path);
 				}
 			}
 			external = false;
@@ -423,10 +423,10 @@ var StateManager = function(component, appCtx, initCtxObj) {
   	
   	if(stateMgr.hasListeners){
 			stateChangeEvent = new CustomEvent("stateChange", {"detail": stateMgr.appState});
-		  if(nextState.notify){
+		  if(nextState.$notify){
 		  	//Only notify specific views
-				if(isArray(nextState.notify)){
-					nextState.notify.forEach(function(viewKey){
+				if(isArray(nextState.$notify)){
+					nextState.$notify.forEach(function(viewKey){
 						if(viewKey === "*"){
 							stateChangeHandler(stateMgr.appState);
 						} else if(viewKey in stateMgr.listeners){
@@ -434,10 +434,10 @@ var StateManager = function(component, appCtx, initCtxObj) {
 						}
 					});
 				} else {
-					if(nextState.notify === "*"){
+					if(nextState.$notify === "*"){
 						stateChangeHandler(stateMgr.appState);
-					} else if(nextState.notify in stateMgr.listeners){
-						stateMgr.listeners[nextState.notify].dispatchEvent(stateChangeEvent);
+					} else if(nextState.$notify in stateMgr.listeners){
+						stateMgr.listeners[nextState.$notify].dispatchEvent(stateChangeEvent);
 					}
 				}
 			} else {
@@ -602,12 +602,12 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		//Setup 'pageNotFound' route
 		page(function(ctx){
 			external = true;
-			stateMgr.appState.setState({'pageNotFound':true});
+			stateMgr.appState.setState({'$pageNotFound':true});
 			internal = false;
 		});
 		//Initilize first path
 		internal = true;
-		page.replace(stateMgr.appState.path);
+		page.replace(stateMgr.appState.$path);
 		page.start({click: false, dispatch: false});
 		external = false;
 	}
@@ -633,7 +633,7 @@ StateManager.prototype.currentState = function(){
 };
 
 StateManager.prototype.unmountView = function(component){
-	var viewKey = component.props.viewKey || component._rootNodeID;
+	var viewKey = component.props.$viewKey || component._rootNodeID;
 	if(this.listeners === null || this.listeners === void(0)){
 		this.handlers = null;
 		this.hasListeners = false;
@@ -648,7 +648,7 @@ StateManager.prototype.unmountView = function(component){
 }
 
 StateManager.prototype.mountView = function(component){
-		var viewKey = component.props.viewKey || component._rootNodeID;
+		var viewKey = component.props.$viewKey || component._rootNodeID;
 		this.handlers[viewKey] = function(e){
 	    component.setState({appContext: e.detail});
 		};

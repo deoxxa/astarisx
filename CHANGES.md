@@ -215,7 +215,7 @@
 - Bug fix: prevAdhocUndo removed from if statement in CVM.
 - Enable client-side only fields in Models. Getter/Setter fields prefixed with an underscore will not be sent to the server. Can be overridden if `enemurable`is set in field descriptor.
 - empty setState simply returns the processed appState and no longer processes everthing.
-- Models have `$dirty` flag automatically. It get's updated to `true` when changes to the Model occur, but must be set to `false` or `undefined` by the implementator.
+- Models have `$dirty` flag automatically. It get's updated to `true` when changes to the Model occur, but must be set to `false` or `undefined` by the implementator after update and Model is no longer considered dirty.
 - `__clientFields` function on Models returns an array of the Model's client fields.
 - Client fields are now included in the returned object resulting from a call to `extend`.
 - Allow Models to have `mixins`
@@ -229,6 +229,7 @@
 - Linked data contexts specified in `getWatchedState`, can only see "real" fields and no longer have access to the ViewModel functions
 - Models are able to pass nextAppState (i.e. state for the ControllerViewModel) to `setState` as the second argument
 - Models no longer take a boolean to initialize
+- Prefix reserved `setState` attributes, CVM reserved fields and `viewKey` prop with '$' to avoid naming conflicts
 - Added `$owner`. This is passed to Models if within a Model you are referencing the same Model for different fields as `kind: "instance"`. This is necessary because `setState` is assigned to the prototype and cannot differentiate the caller. The `$owner` field ensures that the correct model is updated.
 
 ```javascript
@@ -267,3 +268,4 @@ secondaryContact: {
 * Linked data contexts specified in `getWatchedState`, can only see "real" fields and no longer have access to the ViewModel functions
 * `revert()` and `advance()` can now take a callback as an argument
 * Models no longer take a boolean to initialize. Remove all booleans from Model instantiations.
+* Prefix reserved `setState` attributes, CVM reserved fields and `viewKey` prop with '$' to avoid naming conflicts

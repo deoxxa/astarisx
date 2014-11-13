@@ -21,12 +21,12 @@ var ControllerViewModel = {
       };
 
       desc.proto.advance = function(callback){
-        if(this.canAdvance){
+        if(this.$canAdvance){
           this.setState(this._nextState, this._nextState._nextState, callback);
         }
       };
 
-      desc.proto.initializeDataContext = function(obj /* ...string and objects OR array of string and objects OR empty */){
+      desc.proto.initializeDataContext = function(obj /* ...string and objects OR array of strings and objects OR empty */){
 
         var args = Array.prototype.slice.call(arguments, 0);
         var argsLen;
@@ -90,42 +90,42 @@ var ControllerViewModel = {
         if(!init){
           if(routingEnabled){
 
-            pageNotFound = nextState.pageNotFound === void(0) ? false : nextState.pageNotFound;
+            pageNotFound = nextState.$pageNotFound === void(0) ? false : nextState.$pageNotFound;
 
-            Object.defineProperty(controllerViewModel, 'pageNotFound', {
+            Object.defineProperty(controllerViewModel, '$pageNotFound', {
               configurable: false,
               enumerable: false,
               writable: false,
               value: pageNotFound
             });
-            Object.defineProperty(controllerViewModel, 'forceReplace', {
+            Object.defineProperty(controllerViewModel, '$forceReplace', {
               configurable: false,
               enumerable: false,
               writable: false,
-              value: nextState.forceReplace === void(0) ? false : nextState.forceReplace
+              value: nextState.$forceReplace === void(0) ? false : nextState.$forceReplace
             });
-            Object.defineProperty(controllerViewModel, 'pushState', {
+            Object.defineProperty(controllerViewModel, '$pushState', {
               configurable: false,
               enumerable: true,
               writable: false,
-              value: nextState.pushState === void(0) ? true : nextState.pushState
+              value: nextState.$pushState === void(0) ? true : nextState.$pushState
             });
-            if(!('path' in controllerViewModel) && ('path' in nextState)){
-              Object.defineProperty(controllerViewModel, 'path', {
+            if(!('$path' in controllerViewModel) && ('$path' in nextState)){
+              Object.defineProperty(controllerViewModel, '$path', {
                 configurable: false,
                 enumerable: true,
                 writable: false,
-                value: nextState.path
+                value: nextState.$path
               });
             }
           }
 
-          if(nextState.enableUndo === void(0)){
+          if(nextState.$enableUndo === void(0)){
               adhocUndo = false;
           } else {
-            enableUndo = nextState.enableUndo;
-            adhocUndo = nextState.enableUndo;
-            if(!nextState.enableUndo){
+            enableUndo = nextState.$enableUndo;
+            adhocUndo = nextState.$enableUndo;
+            if(!nextState.$enableUndo){
               routingEnabled = false;
             }
           }
@@ -143,14 +143,14 @@ var ControllerViewModel = {
               writable: false,
               value: prevState
             });
-            Object.defineProperty(controllerViewModel, 'canRevert', {
+            Object.defineProperty(controllerViewModel, '$canRevert', {
               configurable: false,
               enumerable: false,
               writable: false,
               value: true
             });
           } else {
-            Object.defineProperty(controllerViewModel, 'canRevert', {
+            Object.defineProperty(controllerViewModel, '$canRevert', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -165,7 +165,7 @@ var ControllerViewModel = {
               writable: false,
               value: redoState
             });
-            Object.defineProperty(controllerViewModel, 'canAdvance', {
+            Object.defineProperty(controllerViewModel, '$canAdvance', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -174,7 +174,7 @@ var ControllerViewModel = {
           } else {
             prevAdhocUndo = adhocUndo;
             previousPageNotFound = pageNotFound;
-            Object.defineProperty(controllerViewModel, 'canAdvance', {
+            Object.defineProperty(controllerViewModel, '$canAdvance', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -188,11 +188,11 @@ var ControllerViewModel = {
           nextState = ('getInitialState' in desc.originalSpec) ?
             desc.originalSpec.getInitialState.call(controllerViewModel) : {};
           if(routingEnabled){
-            Object.defineProperty(controllerViewModel, 'path', {
+            Object.defineProperty(controllerViewModel, '$path', {
               configurable: false,
               enumerable: true,
               writable: false,
-              value: nextState.path || '/'
+              value: nextState.$path || '/'
             });
           }
 
