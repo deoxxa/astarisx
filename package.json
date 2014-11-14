@@ -26,6 +26,8 @@
   },
   "main": "main.js",
   "devDependencies": {
+    "chai": "*",
+    "mocha": "*",
     "browserify": "^6.3.2",
     "yuicompressor": "^2.4.8"
   },
