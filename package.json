@@ -35,6 +35,7 @@
     "page": "^1.4.0"
   },
   "scripts": {
+    "all": "npm test && npm run build",
     "test": "mocha -R spec ./test/index.js",
     "build": "node ./build.js"
   }
