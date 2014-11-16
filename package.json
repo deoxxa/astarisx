@@ -28,6 +28,8 @@
   "devDependencies": {
     "chai": "*",
     "mocha": "*",
+    "mochify": "*",
+    "react": "^0.12.0",
     "browserify": "^6.3.2",
     "yuicompressor": "^2.4.8"
   },
@@ -36,7 +38,10 @@
   },
   "scripts": {
     "all": "npm test && npm run build",
-    "test": "mocha -R spec ./test/index.js",
+    "start"         : "mochify --watch",
+    "test-phantom"  : "mochify",
+    "test-wd"       : "mochify --wd",
+    "test"          : "npm run test-phantom",
     "build": "node ./build.js"
   }
 }
