@@ -5,11 +5,11 @@ var updateStatic = utils.updateStatic;
 var uuid = utils.uuid;
 var isArray = utils.isArray;
 var isControllerViewModel = utils.isControllerViewModel;
+var ApplicationDataContext;
 
 var StateManager = function(component, appCtx, initCtxObj) {
 	
 	var namespace = uuid(),
-    ApplicationDataContext,
 		controllerViewModel,
 		stateChangeHandler,
 		viewKey,

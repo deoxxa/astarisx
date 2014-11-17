@@ -1,57 +1,70 @@
-var React          = require('react');
-var ReactAddons    = require('react/addons'); // You also need to require the addons
-var ReactTestUtils = React.addons.TestUtils;  // <- YEAH!
+var React = require('react');
+require('react/addons');
+var TU = React.addons.TestUtils;
+var should = require('should');
 var Astarisx = require('../src/core');
 var StateManager = require('../src/stateManager');
-var stateMgr;
+var sinon = require('sinon');
 
-// var initializeAppContext = function(options, initCtxObj){
+// var ControllerViewModel = require('../refImpl/cvm_basic');
+// var cvmDescriptor = ControllerViewModel.getDescriptor();
+// var personsDescriptor = cvmDescriptor.viewModels.persons.getDescriptor();
+// var hobbiesDescriptor = cvmDescriptor.viewModels.hobbies.getDescriptor();
 
-//   stateMgr = new StateManager(, options, initCtxObj);
-//   stateMgr.bind('mockedStateChange', function(appContext) {
-//     console.log('appContext => ', appContext);
-//   });
-// }
-var assert = require("assert")
-describe('Array', function(){
-  describe('#indexOf()', function(){
-    it('should return -1 when the value is not present', function(){
-      assert.equal(-1, [1,2,3].indexOf(5));
-      assert.equal(-1, [1,2,3].indexOf(0));
-    })
+// sinon.spy(cvmDescriptor.originalSpec, "dataContextWillInitialize");
+// sinon.spy(personsDescriptor.originalSpec, "dataContextWillInitialize");
+// sinon.spy(hobbiesDescriptor.originalSpec, "dataContextWillInitialize");
+
+describe('Basic Initialization', function(){
+  var stateMgr;
+  var app;
+  before(function() {
+
+    var ControllerViewModel = Astarisx.createControllerViewModelClass({
+      mixins:[require('../refImpl/mixinViewModels')],
+      dataContextWillInitialize: function(){
+        this.initializeDataContext('*');
+      }
+    });
+
+    var UI = React.createClass({
+      mixins: [Astarisx.mixin.ui],
+      render: function(){
+        return React.createElement('div');
+      }
+    });
+
+    app = TU.renderIntoDocument(React.createElement(UI));
+    // stateMgr = new StateManager(component, options, initCtxObj);
+    stateMgr = new StateManager(app, {
+      controllerViewModel: ControllerViewModel
+    }/*, initCtxObj*/);
+
+    sinon.spy(app, "setState");
+    // console.log(hobbiesDescriptor.originalSpec.dataContextWillInitialize.callCount);
+
   })
+  after(function(){
+    app.setState.restore();
+    // cvmDescriptor.originalSpec.dataContextWillInitialize.restore();
+    // personsDescriptor.originalSpec.dataContextWillInitialize.restore();
+    // hobbiesDescriptor.originalSpec.dataContextWillInitialize.restore();
+    stateMgr.dispose();
+  })
+  describe('appContext', function(){
+    it('expect App Component state to contain appContext', function(){
+      app.state.should.have.keys('appContext');
+    })
+    it('appContext should contain "persons" and "hobbies" data Context', function(){
+      app.state.appContext.should.have.keys('persons', 'hobbies');
+    })
+    it('persons.collection should contain 3 people', function(){
+      app.state.appContext.persons.collection.should.have.a.lengthOf(3);
+    })
+    // it('this.initializeDataContext('*');', function(){
+    //   app.state.appContext.initializeDataContext('hobbies');
+    //   hobbiesDescriptor.originalSpec.dataContextWillInitialize.callCount.should.equal(2);
+    //   //this.initializeDataContext('*');
+    // })
+  });
 })
-
-// // console.log('TESTING');
-// var page = require('webpage').create();
-// page.open('index.html', function() {
-//   console.log(' 123');
-//   // page.render('example.png');
-//   phantom.exit();
-// });
-
-
-// describe("DOM Tests", function () {
-//     var el = document.createElement("div");
-//     el.id = "myDiv";
-//     el.innerHTML = "Hi there!";
-//     el.style.background = "#ccc";
-//     document.body.appendChild(el);
- 
-//     var myEl = document.getElementById('myDiv');
-//     it("is in the DOM", function () {
-//         expect(myEl).to.not.equal(null);
-//     });
- 
-//     it("is a child of the body", function () {
-//         expect(myEl.parentElement).to.equal(document.body);
-//     });
- 
-//     it("has the right text", function () {
-//         expect(myEl.innerHTML).to.equal("Hi there!");
-//     });
- 
-//     it("has the right background", function () {
-//         expect(myEl.style.background).to.equal("rgb(204, 204, 204)");
-//     });
-// });
