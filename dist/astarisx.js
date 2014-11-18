@@ -1074,6 +1074,15 @@ var AstarisxClass = {
               //ensure that we don't use the reseved keys
               if(key !== '*' && key !== '_*'){
                 viewModels[key] = tempDesc[key].viewModel;
+                //intercept the viewModel and add $dataContext field
+                tempDesc[key].viewModel.originalSpec.$dataContext = (function(dc){
+                  return {
+                    kind: 'pseudo',
+                    get: function(){
+                      return dc;
+                    }
+                  }
+                })(key);
               }
               delete tempDesc[key].viewModel;
               delete tempDesc[key].set;
