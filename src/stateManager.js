@@ -73,7 +73,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
       stateChangeEvent;
 
 		//This covers setState with no args or with void(0) or with {} as argument
-    if(arguments.length <= 2){
+    if(arguments.length <= 2 || (typeof newState === 'function')){
     	if(newState === void(0) || !!!Object.keys(newState).length || (typeof newState === 'function')){
 				calledBack = false;
 		  	if(stateMgr.hasListeners){
@@ -110,8 +110,22 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				}
 				transientState = {};
 				processedState = {};
-				if (typeof newState === 'function'){
-					newState(void(0), stateMgr.appState);
+				if (typeof newState === 'function'){ //must be callback
+					if(newAppState !== void(0) && !isNaN(newAppState)){
+						window.setTimeout(function(){
+						  if(caller === namespace){
+		            newState.call(stateMgr.appState, void(0), stateMgr.appState);
+		          } else {
+		            newState.call(stateMgr.appState[caller], void(0), stateMgr.appState);
+		          }
+			      }, newAppState);
+					} else {
+					  if(caller === namespace){
+	            newState.call(stateMgr.appState, void(0), stateMgr.appState);
+	          } else {
+	            newState.call(stateMgr.appState[caller], void(0), stateMgr.appState);
+	          }
+					}
 	    	}
 	    	return;    		
     	}
@@ -176,7 +190,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 					!external || nextState.$pageNotFound, remember);
 
 	        calledBack = true;
-	        if(!!delay){
+	        if(delay !== void(0) && !isNaN(delay)){
 						window.setTimeout(function(){
 						  if(caller === namespace){
                 callback.call(stateMgr.appState, void(0), stateMgr.appState);
@@ -214,7 +228,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			if(transientStateKeys.length === 0){
 				if(typeof callback === 'function'){
 					calledBack = true;
-					if(!!delay){
+					if(delay !== void(0) && !isNaN(delay)){
 						window.setTimeout(function(){
 						  if(caller === namespace){
 		            callback.call(stateMgr.appState, void(0), stateMgr.appState);
@@ -378,7 +392,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
 			if(typeof callback === 'function'){
 				calledBack = true;
-				if(!!delay){
+				if(delay !== void(0) && !isNaN(delay)){
 					window.setTimeout(function(){
 					  if(caller === namespace){
 	            callback.call(stateMgr.appState, void(0), stateMgr.appState);
