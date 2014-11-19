@@ -92,7 +92,7 @@ var Model = {
         });
 
         if(stateChangeHandler){
-          Object.defineProperty(model, '_$stateChangeHandler', {
+          Object.defineProperty(model, '_stateChangeHandler', {
             configurable: false,
             enumerable: false,
             writable: false,
