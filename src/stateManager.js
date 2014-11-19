@@ -475,7 +475,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	/* Initialize Application Data Context
 	/***************/
   try {
-  	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace));
+  	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace), enableUndo || routingEnabled);
   	stateMgr.appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
     stateMgr.appState.$state = stateMgr.appState.$state || {};
   } catch (e) { 

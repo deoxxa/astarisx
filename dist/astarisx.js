@@ -669,22 +669,23 @@ var deepFreeze = utils.deepFreeze;
 var ControllerViewModel = {
 
   Mixin: {
-    construct: function(stateChangeHandler, viewStateChangeHandler){
+    construct: function(stateChangeHandler, undoAllowed){
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
       var desc = this.getDescriptor();
       desc.proto.setState = stateChangeHandler;
+      if(undoAllowed){
+        desc.proto.revert = function(callback){
+          this.setState(this.$previousState, !!this.$previousState ? this : void(0), callback);
+        };
 
-      desc.proto.revert = function(callback){
-        this.setState(this.$previousState, !!this.$previousState ? this : void(0), callback);
-      };
-
-      desc.proto.advance = function(callback){
-        if(this.$canAdvance){
-          this.setState(this.$nextState, this.$nextState.$nextState, callback);
-        }
-      };
+        desc.proto.advance = function(callback){
+          if(this.$canAdvance){
+            this.setState(this.$nextState, this.$nextState.$nextState, callback);
+          }
+        };
+      }
 
       desc.proto.initializeDataContext = function(obj /* ...string and objects OR array of strings and objects OR empty */){
 
@@ -2029,7 +2030,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	/* Initialize Application Data Context
 	/***************/
   try {
-  	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace));
+  	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace), enableUndo || routingEnabled);
   	stateMgr.appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
     stateMgr.appState.$state = stateMgr.appState.$state || {};
   } catch (e) { 
