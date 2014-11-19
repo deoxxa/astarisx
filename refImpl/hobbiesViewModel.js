@@ -17,14 +17,14 @@ var hobbyStateChangeHandler = function(nextState/*, callback*/){
     //This will invoke setState within the persons Data Context
     appContext.persons.selectedPerson.updateHobby(newState.current);
 
-    //maybe test calling this.setState.call(this._state.personsContext, {});
+    //maybe test calling this.setState.call(this.$state.personsContext, {});
     //probably won't work because the caller has been bound and probably
     //not a good idea anyway because it leads to spegetti
   });
 
 };
 
-//Use this if _state change is triggered by others action
+//Use this if $state change is triggered by others action
 var onPersonChangeHandler = function(nextState, prevState, field, context,
     nextPath, prevPath){
 
@@ -93,21 +93,21 @@ var HobbiesViewModel = Astarisx.createViewModelClass({  //short form => createVM
   hobbies: {
     kind: 'pseudo',
     get: function(){
-      return this._state.personsContext.selectedPerson ? this._state.personsContext.selectedPerson.hobbies : [];
+      return this.$state.personsContext.selectedPerson ? this.$state.personsContext.selectedPerson.hobbies : [];
     }
   },
 
   busyText: {
     kind: 'pseudo', //kind: 'pseudo' because its value is supplied externally
     get: function(){
-      return this._state.busy ? 'Im Busy! Go away...' : 'Not doing too much.';
+      return this.$state.busy ? 'Im Busy! Go away...' : 'Not doing too much.';
     }
   },
 
   current: {
     kind: 'instance',
     get: function(){
-      return this._state.current;
+      return this.$state.current;
     }
   },
 
@@ -121,7 +121,7 @@ var HobbiesViewModel = Astarisx.createViewModelClass({  //short form => createVM
         },
         {
           busy: true,
-          $path: '/person/'+ this._state.personsContext.selectedPerson.id +
+          $path: '/person/'+ this.$state.personsContext.selectedPerson.id +
           '/hobby/'+this.hobbies[i].id
         });
         return;

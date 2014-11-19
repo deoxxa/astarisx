@@ -19,7 +19,7 @@ var Model = {
 
         nextState = extend(nextState, extendState);
 
-        // Object.defineProperty(model, '_state', {
+        // Object.defineProperty(model, '$state', {
         //   configurable: true,
         //   enumerable: false,
         //   writable: true,
@@ -37,7 +37,7 @@ var Model = {
           }
         }
 
-        Object.defineProperty(model, '_state', {
+        Object.defineProperty(model, '$state', {
           configurable: true,
           enumerable: false,
           writable: true,
@@ -84,7 +84,7 @@ var Model = {
           };
         }
 
-        Object.defineProperty(model, '_state', {
+        Object.defineProperty(model, '$state', {
           configurable: false,
           enumerable: false,
           writable: false,
@@ -92,7 +92,7 @@ var Model = {
         });
 
         if(stateChangeHandler){
-          Object.defineProperty(model, '__stateChangeHandler', {
+          Object.defineProperty(model, '_$stateChangeHandler', {
             configurable: false,
             enumerable: false,
             writable: false,

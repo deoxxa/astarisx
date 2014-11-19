@@ -11,14 +11,14 @@ var HobbyClass = Astarisx.createModelClass({ // short form => createMClass()
   id: {
     kind: 'uid',
     get: function(){
-      return this._state.id;
+      return this.$state.id;
     }
   },
 
   name: {
     aliasFor: 'hobby',
     get: function(){
-      return this._state.name;
+      return this.$state.name;
     },
     set: function(newValue){
       this.setState({'name': newValue });

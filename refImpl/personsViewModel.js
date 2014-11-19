@@ -71,26 +71,26 @@ var PersonsViewModel = Astarisx.createViewModelClass({  //short form => createVM
     // imOnline: {
     //   kind:'pseudo',
     //   get: function(){
-    //     return this._state.imOnline;
+    //     return this.$state.imOnline;
     //   }
     // },
 
     // selectedHobby: {
     //   kind: 'pseudo',
     //   get: function() {
-    //     return this._state.hobbiesContext.current ?
-    //       this._state.hobbiesContext.current.name: void(0);
+    //     return this.$state.hobbiesContext.current ?
+    //       this.$state.hobbiesContext.current.name: void(0);
     //   }
     // },
 
     selectedPerson: {
       kind: 'instance',
-      get: function() { return this._state.selectedPerson; }
+      get: function() { return this.$state.selectedPerson; }
     },
 
     collection: {
       kind: 'array',
-      get: function(){ return this._state.collection; },
+      get: function(){ return this.$state.collection; },
     },
 
     // selectPerson: function(id, callback){

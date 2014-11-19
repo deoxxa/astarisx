@@ -60,9 +60,9 @@ secondaryContact: {
 - `this.intializeDataContext` now accepts either no args, '*', '_*', dataContext names as strings or Objects with dataContext names as keys with the value being the args to be passed to each dataContext OR both strings and Objects OR an array of string and Objects during initialization.
 - fields of `kind:"array"` do not have a set method, it is removed to prevent inadvertently updating the array by assignment. Must update arrays using methods and calling `setState`.
 - Renamed the following:
-  - `state` to `_state`
-  - `previousState` to `_previousState`
-  - `nextState` to `_nextState`
+  - `state` to `$state`
+  - `previousState` to `$previousState`
+  - `nextState` to `$nextState`
 * RouteChangeHandlers are now passed `appContext` as the second argument
 * Linked data contexts specified in `getWatchedState`, can only see "real" fields and no longer have access to the ViewModel functions
 * `revert()` and `advance()` can now take a callback as an argument

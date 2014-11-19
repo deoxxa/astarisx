@@ -677,12 +677,12 @@ var ControllerViewModel = {
       desc.proto.setState = stateChangeHandler;
 
       desc.proto.revert = function(callback){
-        this.setState(this._previousState, !!this._previousState ? this : void(0), callback);
+        this.setState(this.$previousState, !!this.$previousState ? this : void(0), callback);
       };
 
       desc.proto.advance = function(callback){
         if(this.$canAdvance){
-          this.setState(this._nextState, this._nextState._nextState, callback);
+          this.setState(this.$nextState, this.$nextState.$nextState, callback);
         }
       };
 
@@ -797,7 +797,7 @@ var ControllerViewModel = {
             internal && remember){
             prevAdhocUndo = adhocUndo;
             previousPageNotFound = pageNotFound;
-            Object.defineProperty(controllerViewModel, '_previousState', {
+            Object.defineProperty(controllerViewModel, '$previousState', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -817,9 +817,9 @@ var ControllerViewModel = {
               value: false
             });
           }
-          if(!!redoState && ('_state' in redoState) && !prevAdhocUndo &&
+          if(!!redoState && ('$state' in redoState) && !prevAdhocUndo &&
             !previousPageNotFound){
-            Object.defineProperty(controllerViewModel, '_nextState', {
+            Object.defineProperty(controllerViewModel, '$nextState', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -844,7 +844,7 @@ var ControllerViewModel = {
         }
 
         if(init){
-          //Add _state prop so that it can be referenced from within getInitialState
+          //Add $state prop so that it can be referenced from within getInitialState
           nextState = ('getInitialState' in desc.originalSpec) ?
             desc.originalSpec.getInitialState.call(controllerViewModel) : {};
           if(routingEnabled){
@@ -856,11 +856,11 @@ var ControllerViewModel = {
             });
           }
 
-        } else if('_state' in nextState){
-          delete nextState._state;
+        } else if('$state' in nextState){
+          delete nextState.$state;
 
-          //Need to have '_state' prop in controllerViewModel before can extend controllerViewModel to get correct _state
-          Object.defineProperty(controllerViewModel, '_state', {
+          //Need to have '$state' prop in controllerViewModel before can extend controllerViewModel to get correct $state
+          Object.defineProperty(controllerViewModel, '$state', {
             configurable: true,
             enumerable: false,
             writable: true,
@@ -903,7 +903,7 @@ var ControllerViewModel = {
           };
         }
 
-        Object.defineProperty(controllerViewModel, '_state', {
+        Object.defineProperty(controllerViewModel, '$state', {
           configurable: false,
           enumerable: false,
           writable: false,
@@ -1187,7 +1187,7 @@ var AstarisxClass = {
         //add $dirty field to models
         descriptor.$dirty = {
           get: function() {
-            return this._state.$dirty === void(0) ? false : this._state.$dirty;
+            return this.$state.$dirty === void(0) ? false : this.$state.$dirty;
           }
         };
 
@@ -1460,7 +1460,7 @@ var Model = {
 
         nextState = extend(nextState, extendState);
 
-        // Object.defineProperty(model, '_state', {
+        // Object.defineProperty(model, '$state', {
         //   configurable: true,
         //   enumerable: false,
         //   writable: true,
@@ -1478,7 +1478,7 @@ var Model = {
           }
         }
 
-        Object.defineProperty(model, '_state', {
+        Object.defineProperty(model, '$state', {
           configurable: true,
           enumerable: false,
           writable: true,
@@ -1525,7 +1525,7 @@ var Model = {
           };
         }
 
-        Object.defineProperty(model, '_state', {
+        Object.defineProperty(model, '$state', {
           configurable: false,
           enumerable: false,
           writable: false,
@@ -1533,7 +1533,7 @@ var Model = {
         });
 
         if(stateChangeHandler){
-          Object.defineProperty(model, '__stateChangeHandler', {
+          Object.defineProperty(model, '_$stateChangeHandler', {
             configurable: false,
             enumerable: false,
             writable: false,
@@ -1706,13 +1706,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
 		newAppState = newAppState || {};
 
-		//Check to see if appState is a ready made _state object. If so
+		//Check to see if appState is a ready made $state object. If so
 		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(isControllerViewModel(newState)) {
 			willUndo = true;
 			nextState = extend(newState, staticState);
-			prevState = newState._previousState;
+			prevState = newState.$previousState;
 			redoState = newAppState;
 			//Need to reset ViewModel with instance object so that setState is associated with
 			//the current ViewModel. This reason this occurs is that when a ViewModel is created it
@@ -1729,7 +1729,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				if(domain.hasOwnProperty(dataContext)){
 					for(linkedDataContext in links[dataContext]){
 						if(links[dataContext].hasOwnProperty(linkedDataContext)){
-							nextState[dataContext]._state[links[dataContext][linkedDataContext]] =
+							nextState[dataContext].$state[links[dataContext][linkedDataContext]] =
 								(linkedDataContext in domain) ? extend(nextState[linkedDataContext]) :
 									nextState[linkedDataContext];
 						}
@@ -1832,14 +1832,14 @@ var StateManager = function(component, appCtx, initCtxObj) {
 										if(subscriber in links){
 											for(dataContext in links[subscriber]){
 												if(links[subscriber].hasOwnProperty(dataContext)){
-													nextState[subscriber]._state[links[subscriber][dataContext]] =
+													nextState[subscriber].$state[links[subscriber][dataContext]] =
 														(dataContext in domain) ? extend(nextState[dataContext]) :
 															nextState[dataContext];
 												}
 												if(dataContext in links){
 													for(dataContext2 in links[dataContext]){
 														if(links[dataContext].hasOwnProperty(dataContext2)){
-															nextState[dataContext]._state[links[dataContext][dataContext2]] =
+															nextState[dataContext].$state[links[dataContext][dataContext2]] =
 																(dataContext2 in domain) ? extend(nextState[dataContext2]) :
 																	nextState[dataContext2];
 														}
@@ -1872,14 +1872,14 @@ var StateManager = function(component, appCtx, initCtxObj) {
 					if(processedStateKeys[keyIdx] in links[namespace]){
 						for(dataContext in links[namespace][processedStateKeys[keyIdx]]){
 							if(links[namespace][processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
-								nextState[dataContext]._state[links[namespace][processedStateKeys[keyIdx]][dataContext]] =
+								nextState[dataContext].$state[links[namespace][processedStateKeys[keyIdx]][dataContext]] =
                   (processedStateKeys[keyIdx] in domain) ? extend(nextState[processedStateKeys[keyIdx]]) :
                         nextState[processedStateKeys[keyIdx]];
 							}
 							if(dataContext in links){
 								for(dataContext2 in links[dataContext]){
 									if(links[dataContext].hasOwnProperty(dataContext2)){
-										nextState[dataContext]._state[links[dataContext][dataContext2]] =
+										nextState[dataContext].$state[links[dataContext][dataContext2]] =
 											(dataContext2 in domain) ? extend(nextState[dataContext2]) :
 												nextState[dataContext2];
 									}
@@ -1891,13 +1891,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 					if(processedStateKeys[keyIdx] in links){
 						for(dataContext in links[processedStateKeys[keyIdx]]){
 							if(links[processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
-								nextState[processedStateKeys[keyIdx]]._state[links[processedStateKeys[keyIdx]][dataContext]] =
+								nextState[processedStateKeys[keyIdx]].$state[links[processedStateKeys[keyIdx]][dataContext]] =
 									(dataContext in domain) ? extend(nextState[dataContext]) : nextState[dataContext];
 							}
 							if(dataContext in links){
 								for(dataContext2 in links[dataContext]){
 									if(links[dataContext].hasOwnProperty(dataContext2)){
-										nextState[dataContext]._state[links[dataContext][dataContext2]] =
+										nextState[dataContext].$state[links[dataContext][dataContext2]] =
 											(dataContext2 in domain) ? extend(nextState[dataContext2]) :
                         nextState[dataContext2];
 									}
@@ -1909,13 +1909,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	    }
 
 			if(stateMgr.appState.$canRevert && calledBack){
-				prevState = stateMgr.appState._previousState;
+				prevState = stateMgr.appState.$previousState;
 			} else if(hasStatic && staticState._staticUpdated && staticState._onlyStatic){
         if(stateMgr.appState.$canRevert){
-        	prevState = stateMgr.appState._previousState;
+        	prevState = stateMgr.appState.$previousState;
         }
         if(stateMgr.appState.$canAdvance){
-        	redoState = stateMgr.appState._nextState;
+        	redoState = stateMgr.appState.$nextState;
         }
       } else {
 				prevState = stateMgr.appState;
@@ -1932,7 +1932,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		try {
 			//Add dataContextWillUpdate
       if(willUndo){
-        nextState = extend(nextState, {$dataContextWillUpdate: newState._state.$dataContextWillUpdate});
+        nextState = extend(nextState, {$dataContextWillUpdate: newState.$state.$dataContextWillUpdate});
       } else {
         nextState = extend(nextState, {$dataContextWillUpdate: processedState});
       }
@@ -1942,7 +1942,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			!external || nextState.$pageNotFound, remember);	
 
 			Object.freeze(stateMgr.appState);
-			Object.freeze(stateMgr.appState._state);
+			Object.freeze(stateMgr.appState.$state);
 
 			if(typeof callback === 'function'){
 				calledBack = true;
@@ -2031,7 +2031,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
   try {
   	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace));
   	stateMgr.appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
-    stateMgr.appState._state = stateMgr.appState._state || {};
+    stateMgr.appState.$state = stateMgr.appState.$state || {};
   } catch (e) { 
   	if (e instanceof TypeError) {
     	throw new TypeError('Please assign a ControllerViewModel to the "controllerViewModel" prop in React.renderComponent');
@@ -2047,7 +2047,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	for(viewModel in domain){
 		if(domain.hasOwnProperty(viewModel)){
 			dataContexts[viewModel] = domain[viewModel].call(this, appStateChangeHandler.bind(this, viewModel));
-			stateMgr.appState._state[viewModel] = new dataContexts[viewModel](stateMgr.appState._state[viewModel], true);
+			stateMgr.appState.$state[viewModel] = new dataContexts[viewModel](stateMgr.appState.$state[viewModel], true);
     }
   }
 
@@ -2101,7 +2101,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		if(domain.hasOwnProperty(viewModel)){
 			for(link in links[viewModel]){
 			  if(links[viewModel].hasOwnProperty(link)){
-					stateMgr.appState[viewModel]._state[links[viewModel][link]] = 
+					stateMgr.appState[viewModel].$state[links[viewModel][link]] = 
             (link in domain) ? extend(stateMgr.appState[link]) : stateMgr.appState[link];
 			  }
 			}
@@ -2111,8 +2111,8 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	//reinitialize with all data in place
 	for(viewModel in domain){
 		if(domain.hasOwnProperty(viewModel)){
-			stateMgr.appState._state[viewModel] =
-				new dataContexts[viewModel](stateMgr.appState._state[viewModel]);
+			stateMgr.appState.$state[viewModel] =
+				new dataContexts[viewModel](stateMgr.appState.$state[viewModel]);
 
 			if('getRoutes' in stateMgr.appState[viewModel].constructor.originalSpec){
 				routeHash = stateMgr.appState[viewModel].constructor.originalSpec.getRoutes();
@@ -2182,10 +2182,10 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
 	hasStatic = stateMgr.appState.constructor.getDescriptor().hasStatic;
 	if(hasStatic){
-		staticState = updateStatic(stateMgr.appState.constructor.getDescriptor().statics, stateMgr.appState._state);
+		staticState = updateStatic(stateMgr.appState.constructor.getDescriptor().statics, stateMgr.appState.$state);
 	}
 
-  Object.freeze(stateMgr.appState._state);
+  Object.freeze(stateMgr.appState.$state);
   Object.freeze(stateMgr.appState);
 
   stateChangeHandler(stateMgr.appState);
@@ -2258,7 +2258,7 @@ StateManager.prototype.dispose = function(){
   resetState = extend(this.appState, emptyState, resetState);
 	try {
   	this.appState = new ApplicationDataContext(resetState, void(0), void(0), false, false);
-    this.appState._state = this.appState._state || {};
+    this.appState.$state = this.appState.$state || {};
   } catch (e) { 
   	if (e instanceof TypeError) {
     	throw new TypeError('Something went wrong');
@@ -2466,7 +2466,7 @@ var ViewModel = {
 
         //nextState has already been extended with prevState in core
         nextState = nextState || {};
-        nextState = ('_state' in nextState ? nextState._state : nextState);
+        nextState = ('$state' in nextState ? nextState.$state : nextState);
 
         var freezeFields = desc.freezeFields,
           fld,
@@ -2475,7 +2475,7 @@ var ViewModel = {
           tempDesc,
           tempModel;
 
-        Object.defineProperty(viewModel, '_state', {
+        Object.defineProperty(viewModel, '$state', {
           configurable: true,
           enumerable: false,
           writable: true,
@@ -2486,7 +2486,7 @@ var ViewModel = {
           nextState = ('getInitialState' in desc.originalSpec) ?
             extend(nextState, desc.originalSpec.getInitialState.call(viewModel)) : nextState;
 
-          Object.defineProperty(viewModel, '_state', {
+          Object.defineProperty(viewModel, '$state', {
             configurable: true,
             enumerable: false,
             writable: true,
@@ -2502,20 +2502,20 @@ var ViewModel = {
                 tempSpec = viewModel[freezeFields[fld].fieldName].constructor.getDescriptor();
                 tempModel = Object.create(tempSpec.proto, tempSpec.descriptor);
 
-                Object.defineProperty(tempModel, '__stateChangeHandler', {
+                Object.defineProperty(tempModel, '_$stateChangeHandler', {
                   configurable: false,
                   enumerable: false,
                   writable: false,
                   value: (function(fld){
-                    return viewModel[fld].__stateChangeHandler;
+                    return viewModel[fld]._$stateChangeHandler;
                   })(freezeFields[fld].fieldName)
                 });
                 
-                Object.defineProperty(tempModel, '_state', {
+                Object.defineProperty(tempModel, '$state', {
                   configurable: true,
                   enumerable: false,
                   writable: true,
-                  value: viewModel[freezeFields[fld].fieldName]._state
+                  value: viewModel[freezeFields[fld].fieldName].$state
                 });
 
                 Object.getPrototypeOf(tempModel).setState = function(state, appState, callback){ //callback may be useful for DB updates
@@ -2539,7 +2539,7 @@ var ViewModel = {
                     };
                   }
                   callback = callback ? callback.bind(this) : void(0);
-                  this.__stateChangeHandler.call(viewModel, extend(this._state, clientFields, state), appState, callback);
+                  this._$stateChangeHandler.call(viewModel, extend(this.$state, clientFields, state), appState, callback);
                 };
 
                 if(!!tempSpec.freezeFields && !!tempSpec.freezeFields.length){
@@ -2549,25 +2549,25 @@ var ViewModel = {
                       var tempSpec2 = viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName].constructor.getDescriptor();
                       var tempModel2 = Object.create(tempSpec2.proto, tempSpec2.descriptor);
                       
-                      Object.defineProperty(tempModel2, '__stateChangeHandler', {
+                      Object.defineProperty(tempModel2, '_$stateChangeHandler', {
                         configurable: false,
                         enumerable: false,
                         writable: false,
-                        value: tempModel.__stateChangeHandler
+                        value: tempModel._$stateChangeHandler
                       });
 
-                      Object.defineProperty(tempModel2, '_state', {
+                      Object.defineProperty(tempModel2, '$state', {
                         configurable: true,
                         enumerable: false,
                         writable: true,
-                        value: tempModel[tempSpec.freezeFields[i].fieldName]._state
+                        value: tempModel[tempSpec.freezeFields[i].fieldName].$state
                       });
 
                       Object.getPrototypeOf(tempModel2).setState = (function(fldName){
                         return function(state, appState, callback){ //callback may be useful for DB updates
                           var clientFields2 = {};
                           var thisState = {};
-                          fldName = ('$owner' in this._state) ? this._state.$owner : fldName;
+                          fldName = ('$owner' in this.$state) ? this.$state.$owner : fldName;
 
                           if(typeof appState === 'function'){
                             callback = appState;
@@ -2587,9 +2587,9 @@ var ViewModel = {
                               clientFields2[tempSpec2.clientFields[cf]] = this[tempSpec2.clientFields[cf]];
                             };
                           }
-                          thisState[fldName] = extend(this._state, clientFields2, state);
+                          thisState[fldName] = extend(this.$state, clientFields2, state);
                           callback = callback ? callback.bind(this) : void(0);
-                          tempModel.__stateChangeHandler.call(viewModel, extend(tempModel, thisState, {$dirty: true}), appState, callback);
+                          tempModel._$stateChangeHandler.call(viewModel, extend(tempModel, thisState, {$dirty: true}), appState, callback);
                         };
                       })(tempSpec.freezeFields[i].fieldName);
                       Object.freeze(viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName]);
@@ -2629,7 +2629,7 @@ var ViewModel = {
           };
         }
 
-        Object.defineProperty(viewModel, '_state', {
+        Object.defineProperty(viewModel, '$state', {
           configurable: false,
           enumerable: false,
           writable: false,

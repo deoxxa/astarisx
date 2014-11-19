@@ -37,12 +37,12 @@ var PersonClass = Astarisx.createModelClass({
   id: {
     kind: 'uid',
     get: function(){
-      return this._state.id;
+      return this.$state.id;
     }
   },
 
   firstName: {
-    get: function(){ return this._state.firstName; },
+    get: function(){ return this.$state.firstName; },
     set: function(newValue){
       var nextState = {};
       nextState.firstName = newValue.length === 0 ? void(0) : newValue;
@@ -51,7 +51,7 @@ var PersonClass = Astarisx.createModelClass({
   },
 
   lastName: {
-    get: function(){ return this._state.lastName; },
+    get: function(){ return this.$state.lastName; },
     set: function(newValue){
       var nextState = {};
       nextState.lastName = newValue.length === 0 ? void(0) : newValue;
@@ -84,7 +84,7 @@ var PersonClass = Astarisx.createModelClass({
   occupation: {
     aliasFor: 'job',
     get: function(){
-      return this._state.occupation;
+      return this.$state.occupation;
     },
     set: function(newValue){
       this.setState({'occupation': newValue });
@@ -93,7 +93,7 @@ var PersonClass = Astarisx.createModelClass({
 
   dob: {
     get: function(){
-      return this._state.dob;
+      return this.$state.dob;
     },
     set: function(newValue){
       var nextState = {};
@@ -111,12 +111,12 @@ var PersonClass = Astarisx.createModelClass({
   //Calculated field <- dob
   age: {
     get: function(){
-      return this._state.age;
+      return this.$state.age;
     }
   },
 
   gender: {
-    get: function(){ return this._state.gender; },
+    get: function(){ return this.$state.gender; },
     set: function(newValue){
       //This is to test callback context
       this.setState({}, function(){
@@ -129,7 +129,7 @@ var PersonClass = Astarisx.createModelClass({
 
   hobbies: {
     kind: 'array',
-    get: function(){ return this._state.hobbies; },
+    get: function(){ return this.$state.hobbies; },
   },
 
   updateHobby: function(obj){

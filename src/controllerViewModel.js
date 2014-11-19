@@ -17,12 +17,12 @@ var ControllerViewModel = {
       desc.proto.setState = stateChangeHandler;
 
       desc.proto.revert = function(callback){
-        this.setState(this._previousState, !!this._previousState ? this : void(0), callback);
+        this.setState(this.$previousState, !!this.$previousState ? this : void(0), callback);
       };
 
       desc.proto.advance = function(callback){
         if(this.$canAdvance){
-          this.setState(this._nextState, this._nextState._nextState, callback);
+          this.setState(this.$nextState, this.$nextState.$nextState, callback);
         }
       };
 
@@ -137,7 +137,7 @@ var ControllerViewModel = {
             internal && remember){
             prevAdhocUndo = adhocUndo;
             previousPageNotFound = pageNotFound;
-            Object.defineProperty(controllerViewModel, '_previousState', {
+            Object.defineProperty(controllerViewModel, '$previousState', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -157,9 +157,9 @@ var ControllerViewModel = {
               value: false
             });
           }
-          if(!!redoState && ('_state' in redoState) && !prevAdhocUndo &&
+          if(!!redoState && ('$state' in redoState) && !prevAdhocUndo &&
             !previousPageNotFound){
-            Object.defineProperty(controllerViewModel, '_nextState', {
+            Object.defineProperty(controllerViewModel, '$nextState', {
               configurable: false,
               enumerable: false,
               writable: false,
@@ -184,7 +184,7 @@ var ControllerViewModel = {
         }
 
         if(init){
-          //Add _state prop so that it can be referenced from within getInitialState
+          //Add $state prop so that it can be referenced from within getInitialState
           nextState = ('getInitialState' in desc.originalSpec) ?
             desc.originalSpec.getInitialState.call(controllerViewModel) : {};
           if(routingEnabled){
@@ -196,11 +196,11 @@ var ControllerViewModel = {
             });
           }
 
-        } else if('_state' in nextState){
-          delete nextState._state;
+        } else if('$state' in nextState){
+          delete nextState.$state;
 
-          //Need to have '_state' prop in controllerViewModel before can extend controllerViewModel to get correct _state
-          Object.defineProperty(controllerViewModel, '_state', {
+          //Need to have '$state' prop in controllerViewModel before can extend controllerViewModel to get correct $state
+          Object.defineProperty(controllerViewModel, '$state', {
             configurable: true,
             enumerable: false,
             writable: true,
@@ -243,7 +243,7 @@ var ControllerViewModel = {
           };
         }
 
-        Object.defineProperty(controllerViewModel, '_state', {
+        Object.defineProperty(controllerViewModel, '$state', {
           configurable: false,
           enumerable: false,
           writable: false,

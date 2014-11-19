@@ -152,13 +152,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
 		newAppState = newAppState || {};
 
-		//Check to see if appState is a ready made _state object. If so
+		//Check to see if appState is a ready made $state object. If so
 		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
 		if(isControllerViewModel(newState)) {
 			willUndo = true;
 			nextState = extend(newState, staticState);
-			prevState = newState._previousState;
+			prevState = newState.$previousState;
 			redoState = newAppState;
 			//Need to reset ViewModel with instance object so that setState is associated with
 			//the current ViewModel. This reason this occurs is that when a ViewModel is created it
@@ -175,7 +175,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 				if(domain.hasOwnProperty(dataContext)){
 					for(linkedDataContext in links[dataContext]){
 						if(links[dataContext].hasOwnProperty(linkedDataContext)){
-							nextState[dataContext]._state[links[dataContext][linkedDataContext]] =
+							nextState[dataContext].$state[links[dataContext][linkedDataContext]] =
 								(linkedDataContext in domain) ? extend(nextState[linkedDataContext]) :
 									nextState[linkedDataContext];
 						}
@@ -278,14 +278,14 @@ var StateManager = function(component, appCtx, initCtxObj) {
 										if(subscriber in links){
 											for(dataContext in links[subscriber]){
 												if(links[subscriber].hasOwnProperty(dataContext)){
-													nextState[subscriber]._state[links[subscriber][dataContext]] =
+													nextState[subscriber].$state[links[subscriber][dataContext]] =
 														(dataContext in domain) ? extend(nextState[dataContext]) :
 															nextState[dataContext];
 												}
 												if(dataContext in links){
 													for(dataContext2 in links[dataContext]){
 														if(links[dataContext].hasOwnProperty(dataContext2)){
-															nextState[dataContext]._state[links[dataContext][dataContext2]] =
+															nextState[dataContext].$state[links[dataContext][dataContext2]] =
 																(dataContext2 in domain) ? extend(nextState[dataContext2]) :
 																	nextState[dataContext2];
 														}
@@ -318,14 +318,14 @@ var StateManager = function(component, appCtx, initCtxObj) {
 					if(processedStateKeys[keyIdx] in links[namespace]){
 						for(dataContext in links[namespace][processedStateKeys[keyIdx]]){
 							if(links[namespace][processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
-								nextState[dataContext]._state[links[namespace][processedStateKeys[keyIdx]][dataContext]] =
+								nextState[dataContext].$state[links[namespace][processedStateKeys[keyIdx]][dataContext]] =
                   (processedStateKeys[keyIdx] in domain) ? extend(nextState[processedStateKeys[keyIdx]]) :
                         nextState[processedStateKeys[keyIdx]];
 							}
 							if(dataContext in links){
 								for(dataContext2 in links[dataContext]){
 									if(links[dataContext].hasOwnProperty(dataContext2)){
-										nextState[dataContext]._state[links[dataContext][dataContext2]] =
+										nextState[dataContext].$state[links[dataContext][dataContext2]] =
 											(dataContext2 in domain) ? extend(nextState[dataContext2]) :
 												nextState[dataContext2];
 									}
@@ -337,13 +337,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 					if(processedStateKeys[keyIdx] in links){
 						for(dataContext in links[processedStateKeys[keyIdx]]){
 							if(links[processedStateKeys[keyIdx]].hasOwnProperty(dataContext)){
-								nextState[processedStateKeys[keyIdx]]._state[links[processedStateKeys[keyIdx]][dataContext]] =
+								nextState[processedStateKeys[keyIdx]].$state[links[processedStateKeys[keyIdx]][dataContext]] =
 									(dataContext in domain) ? extend(nextState[dataContext]) : nextState[dataContext];
 							}
 							if(dataContext in links){
 								for(dataContext2 in links[dataContext]){
 									if(links[dataContext].hasOwnProperty(dataContext2)){
-										nextState[dataContext]._state[links[dataContext][dataContext2]] =
+										nextState[dataContext].$state[links[dataContext][dataContext2]] =
 											(dataContext2 in domain) ? extend(nextState[dataContext2]) :
                         nextState[dataContext2];
 									}
@@ -355,13 +355,13 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	    }
 
 			if(stateMgr.appState.$canRevert && calledBack){
-				prevState = stateMgr.appState._previousState;
+				prevState = stateMgr.appState.$previousState;
 			} else if(hasStatic && staticState._staticUpdated && staticState._onlyStatic){
         if(stateMgr.appState.$canRevert){
-        	prevState = stateMgr.appState._previousState;
+        	prevState = stateMgr.appState.$previousState;
         }
         if(stateMgr.appState.$canAdvance){
-        	redoState = stateMgr.appState._nextState;
+        	redoState = stateMgr.appState.$nextState;
         }
       } else {
 				prevState = stateMgr.appState;
@@ -378,7 +378,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		try {
 			//Add dataContextWillUpdate
       if(willUndo){
-        nextState = extend(nextState, {$dataContextWillUpdate: newState._state.$dataContextWillUpdate});
+        nextState = extend(nextState, {$dataContextWillUpdate: newState.$state.$dataContextWillUpdate});
       } else {
         nextState = extend(nextState, {$dataContextWillUpdate: processedState});
       }
@@ -388,7 +388,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 			!external || nextState.$pageNotFound, remember);	
 
 			Object.freeze(stateMgr.appState);
-			Object.freeze(stateMgr.appState._state);
+			Object.freeze(stateMgr.appState.$state);
 
 			if(typeof callback === 'function'){
 				calledBack = true;
@@ -477,7 +477,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
   try {
   	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace));
   	stateMgr.appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
-    stateMgr.appState._state = stateMgr.appState._state || {};
+    stateMgr.appState.$state = stateMgr.appState.$state || {};
   } catch (e) { 
   	if (e instanceof TypeError) {
     	throw new TypeError('Please assign a ControllerViewModel to the "controllerViewModel" prop in React.renderComponent');
@@ -493,7 +493,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	for(viewModel in domain){
 		if(domain.hasOwnProperty(viewModel)){
 			dataContexts[viewModel] = domain[viewModel].call(this, appStateChangeHandler.bind(this, viewModel));
-			stateMgr.appState._state[viewModel] = new dataContexts[viewModel](stateMgr.appState._state[viewModel], true);
+			stateMgr.appState.$state[viewModel] = new dataContexts[viewModel](stateMgr.appState.$state[viewModel], true);
     }
   }
 
@@ -547,7 +547,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		if(domain.hasOwnProperty(viewModel)){
 			for(link in links[viewModel]){
 			  if(links[viewModel].hasOwnProperty(link)){
-					stateMgr.appState[viewModel]._state[links[viewModel][link]] = 
+					stateMgr.appState[viewModel].$state[links[viewModel][link]] = 
             (link in domain) ? extend(stateMgr.appState[link]) : stateMgr.appState[link];
 			  }
 			}
@@ -557,8 +557,8 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	//reinitialize with all data in place
 	for(viewModel in domain){
 		if(domain.hasOwnProperty(viewModel)){
-			stateMgr.appState._state[viewModel] =
-				new dataContexts[viewModel](stateMgr.appState._state[viewModel]);
+			stateMgr.appState.$state[viewModel] =
+				new dataContexts[viewModel](stateMgr.appState.$state[viewModel]);
 
 			if('getRoutes' in stateMgr.appState[viewModel].constructor.originalSpec){
 				routeHash = stateMgr.appState[viewModel].constructor.originalSpec.getRoutes();
@@ -628,10 +628,10 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
 	hasStatic = stateMgr.appState.constructor.getDescriptor().hasStatic;
 	if(hasStatic){
-		staticState = updateStatic(stateMgr.appState.constructor.getDescriptor().statics, stateMgr.appState._state);
+		staticState = updateStatic(stateMgr.appState.constructor.getDescriptor().statics, stateMgr.appState.$state);
 	}
 
-  Object.freeze(stateMgr.appState._state);
+  Object.freeze(stateMgr.appState.$state);
   Object.freeze(stateMgr.appState);
 
   stateChangeHandler(stateMgr.appState);
@@ -704,7 +704,7 @@ StateManager.prototype.dispose = function(){
   resetState = extend(this.appState, emptyState, resetState);
 	try {
   	this.appState = new ApplicationDataContext(resetState, void(0), void(0), false, false);
-    this.appState._state = this.appState._state || {};
+    this.appState.$state = this.appState.$state || {};
   } catch (e) { 
   	if (e instanceof TypeError) {
     	throw new TypeError('Something went wrong');
