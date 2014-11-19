@@ -81,8 +81,10 @@ var ViewModel = {
                     appState = void(0);
                   }
 
-                  if(state !== void(0)){
+                  if(state !== void(0) && !!Object.keys(state).length){
                      clientFields.$dirty = true;
+                  } else {
+                    clientFields.$dirty = tempModel.$dirty;
                   }
 
                   if(tempSpec.clientFields !== void(0)){
@@ -130,8 +132,10 @@ var ViewModel = {
                             appState = void(0);
                           }
 
-                          if(state !== void(0)){
-                             clientFields2.$dirty = true;
+                          if(state !== void(0) && !!Object.keys(state).length){
+                            clientFields2.$dirty = true;
+                          } else {
+                            clientFields2.$dirty = tempModel2.$dirty;
                           }
 
                           if(tempSpec2.clientFields !== void(0)){
