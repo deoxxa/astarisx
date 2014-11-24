@@ -54,7 +54,7 @@ var hobbyRouteHandler = function(params, appContext, path, pathId, ctx){
 var HobbiesViewModel = Astarisx.createViewModelClass({  //short form => createVMClass()
 
   dataContextWillInitialize: function(){
-    console.log('This should only be called once.');
+    // console.log('This should only be called once.');
   },
 
   getWatchedState: function() {

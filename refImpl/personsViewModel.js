@@ -57,23 +57,23 @@ var PersonsViewModel = Astarisx.createViewModelClass({  //short form => createVM
     //   };
     // },
 
-    // getWatchedState: function() {
-    //   return {
-    //     'hobbies': {
-    //       alias: 'hobbiesContext',
-    //     },
-    //     'online': {
-    //       alias: 'imOnline'
-    //     }
-    //   };
-    // },
+    getWatchedState: function() {
+      return {
+        'hobbies': {
+          alias: 'hobbiesContext',
+        },
+        'online': {
+          alias: 'imOnline'
+        }
+      };
+    },
 
-    // imOnline: {
-    //   kind:'pseudo',
-    //   get: function(){
-    //     return this.$state.imOnline;
-    //   }
-    // },
+    imOnline: {
+      kind:'pseudo',
+      get: function(){
+        return this.$state.imOnline;
+      }
+    },
 
     // selectedHobby: {
     //   kind: 'pseudo',
@@ -93,44 +93,44 @@ var PersonsViewModel = Astarisx.createViewModelClass({  //short form => createVM
       get: function(){ return this.$state.collection; },
     },
 
-    // selectPerson: function(id, callback){
-    //   var selectedPerson;
+    selectPerson: function(id, callback){
+      var selectedPerson;
 
-    //   if(!id){
-    //       this.setState({selectedPerson: selectedPerson },
-    //         {$path: '/people' }, callback);
-    //         return;
-    //   }
-    //   for (var i = this.collection.length - 1; i >= 0; i--) {
-    //     if(this.collection[i].id === id){
-    //       selectedPerson = new Person(this.collection[i]);
-    //       this.setState({ selectedPerson: selectedPerson },
-    //         {$path: '/person/' + selectedPerson.id }, callback);
-    //       break;
-    //     }
-    //   }
-    //   if(!selectedPerson){
-    //     this.setState({selectedPerson: selectedPerson },
-    //       {$pageNotFound: true }, callback);
-    //   }
-    // },
+      if(!id){
+          this.setState({selectedPerson: selectedPerson },
+            {$path: '/people' }, callback);
+            return;
+      }
+      for (var i = this.collection.length - 1; i >= 0; i--) {
+        if(this.collection[i].id === id){
+          selectedPerson = new Person(this.collection[i]);
+          this.setState({ selectedPerson: selectedPerson },
+            {$path: '/person/' + selectedPerson.id }, callback);
+          break;
+        }
+      }
+      if(!selectedPerson){
+        this.setState({selectedPerson: selectedPerson },
+          {$pageNotFound: true }, callback);
+      }
+    },
 
-    // addPerson: function(value){
-    //   var nextState = {};
-    //   var name;
+    addPerson: function(value){
+      var nextState = {};
+      var name;
 
-    //   if(value && value.length > 0){
-    //     name = value.split(' ');
-    //     nextState.selectedPerson = new Person({
-    //       firstName: name[0],
-    //       lastName: name.slice(1).join(' ')
-    //     });
-    //     nextState.collection = this.collection.slice(0);
-    //     nextState.collection = nextState.collection.concat(nextState.selectedPerson);
-    //     this.setState(nextState,
-    //       {$path: '/person/' + nextState.selectedPerson.id });
-    //   }
-    // },
+      if(value && value.length > 0){
+        name = value.split(' ');
+        nextState.selectedPerson = new Person({
+          firstName: name[0],
+          lastName: name.slice(1).join(' ')
+        });
+        nextState.collection = this.collection.slice(0);
+        nextState.collection = nextState.collection.concat(nextState.selectedPerson);
+        this.setState(nextState,
+          {$path: '/person/' + nextState.selectedPerson.id });
+      }
+    },
 
     // deletePerson: function(uid){
     //   var nextState = {};
