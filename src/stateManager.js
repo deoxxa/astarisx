@@ -223,7 +223,16 @@ var StateManager = function(component, appCtx, initCtxObj) {
 					nextState[caller] = extend(newState);
 				}
 			}
-			transientState = extend(nextState, transientState, newAppState);
+			//If newAppState included the current caller dataContext then newAppState stomped on
+			//nextState. Below I merge the current caller state into one object then use that
+			//to extend the transientState 
+			if(caller !== void(0) && caller in newAppState){
+				var mergedNextState = {};
+				mergedNextState[caller] = extend(nextState[caller], newAppState[caller]);
+				transientState = extend(newAppState, mergedNextState, transientState);
+			} else {
+				transientState = extend(newAppState, nextState, transientState);
+			}
 			transientStateKeys = Object.keys(transientState);
 			if(transientStateKeys.length === 0){
 				if(typeof callback === 'function'){
