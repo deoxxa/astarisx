@@ -30,7 +30,7 @@ describe('Initialize ControllerViewModel with no options', function(){
     stateMgr.dispose();
   });
 
-  describe('check existance of properties', function(){
+  describe('check existance of keys', function(){
     
     it('React Component state object must have "appContext"', function(){
       app.state.must.have.keys(['appContext']);
@@ -46,6 +46,7 @@ describe('Initialize ControllerViewModel with no options', function(){
       app.state.appContext.must.not.have.nonenumerable('$nextState');
       expect(app.state.appContext.advance).be.undefined();
       expect(app.state.appContext.revert).be.undefined();
+      app.state.appContext.setState.must.be.a.function();
     });
   });
 
@@ -77,13 +78,14 @@ describe('Initialize ControllerViewModel with enableUndo=true', function(){
     stateMgr.dispose();
   });
 
-  describe('check existance of undo properties', function(){
+  describe('check existance of undo keys', function(){
     
     it('appContext keys & nonenumerables & functions', function(){
       app.state.appContext.must.have.nonenumerable('$canAdvance');
       app.state.appContext.must.have.nonenumerable('$canRevert');
       app.state.appContext.advance.must.be.a.function()
       app.state.appContext.revert.must.be.a.function();
+      app.state.appContext.setState.must.be.a.function();
     });
     
     it('"$canAdvance" must initialize to false', function(){
@@ -123,7 +125,7 @@ describe('Initialize ControllerViewModel with enableRouting=true', function(){
     stateMgr.dispose();
   });
 
-  describe('check existance of routing properties', function(){
+  describe('check existance of routing keys', function(){
     
     it('appContext keys & nonenumerables & functions', function(){
       app.state.appContext.must.have.nonenumerable('$canAdvance');
@@ -134,6 +136,7 @@ describe('Initialize ControllerViewModel with enableRouting=true', function(){
       app.state.appContext.must.have.ownKeys(['$path', '$pushState']);
       app.state.appContext.advance.must.be.a.function()
       app.state.appContext.revert.must.be.a.function();
+      app.state.appContext.setState.must.be.a.function();
       
     });
 
@@ -171,4 +174,93 @@ describe('Initialize ControllerViewModel with enableRouting=true', function(){
     });
 
   });
-})
+
+});
+
+describe('Initialize ControllerViewModel with fields & dataContexts', function(){
+  var stateMgr;
+  var app;
+  before(function() {
+
+    var ControllerViewModel = Astarisx.createControllerViewModelClass({
+      mixins:[require('../refImpl/mixinViewModels')],
+      getInitialState: function(){ //optional
+        return {
+          online: true,
+          busy: false,
+        };
+      },
+      busy: {
+        get: function(){
+          return this.$state.busy;
+        },
+      },
+      online: {
+        get: function(){
+          return this.$state.online;
+        },
+        set: function(newValue){
+          this.setState({'online': newValue });
+        }
+      }
+    });
+
+    var UI = React.createClass({
+      mixins: [Astarisx.mixin.ui],
+      render: function(){
+        return React.createElement('div');
+      }
+    });
+
+    app = TU.renderIntoDocument(React.createElement(UI));
+    stateMgr = new StateManager(app, {
+      controllerViewModel: ControllerViewModel
+    });
+
+  });
+
+  after(function(){
+    stateMgr.dispose();
+  });
+
+  describe('check existance of dataContexts', function(){
+    
+    it('appContext must contain "persons" and "hobbies" keys', function(){
+      app.state.appContext.must.have.ownKeys(['persons', 'hobbies','online', 'busy']);
+    });
+    
+    it('appContext keys initialization', function(){
+      app.state.appContext.persons.must.be.an.object();
+      app.state.appContext.hobbies.must.be.an.object();
+      app.state.appContext.online.must.be.true();
+      app.state.appContext.busy.must.be.false();
+    });
+
+    it('"persons" must have nonenumerable "$state"', function(){
+      app.state.appContext.$state.persons.must.have.nonenumerable('$state');
+    });
+
+    it('"hobbies" must have nonenumerable "$state"', function(){
+      app.state.appContext.$state.hobbies.must.have.nonenumerable('$state');
+    });
+
+    it('"persons" must have nonenumerable "$dataContext" equal to "persons"', function(){
+      app.state.appContext.$state.persons.must.have.nonenumerable('$dataContext');
+      app.state.appContext.$state.persons.$dataContext.must.equal('persons');
+    });
+
+    it('"hobbies" must have nonenumerable "$dataContext" equal to "hobbies"', function(){
+      app.state.appContext.$state.hobbies.must.have.nonenumerable('$dataContext');
+      app.state.appContext.$state.hobbies.$dataContext.must.equal('hobbies');
+    });
+
+    it('"persons" must have setState', function(){
+      app.state.appContext.$state.persons.setState.must.be.a.function();
+    });
+
+    it('"hobbies" must have setState', function(){
+      app.state.appContext.$state.hobbies.setState.must.be.a.function();
+    });    
+  });
+
+});
