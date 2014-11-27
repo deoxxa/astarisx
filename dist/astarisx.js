@@ -669,23 +669,23 @@ var deepFreeze = utils.deepFreeze;
 var ControllerViewModel = {
 
   Mixin: {
-    construct: function(stateChangeHandler, undoAllowed){
+    construct: function(stateChangeHandler){
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
       var desc = this.getDescriptor();
       desc.proto.setState = stateChangeHandler;
-      if(undoAllowed){
-        desc.proto.revert = function(callback){
-          this.setState(this.$previousState, !!this.$previousState ? this : void(0), callback);
-        };
 
-        desc.proto.advance = function(callback){
-          if(this.$canAdvance){
-            this.setState(this.$nextState, this.$nextState.$nextState, callback);
-          }
-        };
-      }
+      //revert and advance should always be available to allow for adhoc undo.
+      desc.proto.revert = function(callback){
+        this.setState(this.$previousState, !!this.$previousState ? this : void(0), callback);
+      };
+
+      desc.proto.advance = function(callback){
+        if(this.$canAdvance){
+          this.setState(this.$nextState, this.$nextState.$nextState, callback);
+        }
+      };
 
       desc.proto.initializeDataContext = function(obj /* ...string and objects OR array of strings and objects OR empty */){
 
@@ -2039,7 +2039,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 	/* Initialize Application Data Context
 	/***************/
   try {
-  	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace), enableUndo || routingEnabled);
+  	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace));
   	stateMgr.appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
     stateMgr.appState.$state = stateMgr.appState.$state || {};
   } catch (e) { 
@@ -2531,7 +2531,7 @@ var ViewModel = {
 
                 Object.getPrototypeOf(tempModel).setState = function(state, appState, callback){ //callback may be useful for DB updates
                   var clientFields = {};
-                  var modelNextState, callbackCtx;
+                  var modelNextState;
                   if(typeof appState === 'function'){
                     callback = appState;
                     appState = void(0);
@@ -2557,8 +2557,7 @@ var ViewModel = {
                   
                   if(callback && (typeof callback === 'function')){
                     //We need to create a model with the next state and bind it to the callback
-                    var callbackCtx = new tempCstor(this._stateChangeHandler)(modelNextState);
-                    callback.bind(callbackCtx);
+                    callback = callback.bind(new tempCstor(this._stateChangeHandler)(modelNextState));
                   }
                   this._stateChangeHandler.call(viewModel, modelNextState, appState, callback);
                 };
@@ -2588,7 +2587,7 @@ var ViewModel = {
                       Object.getPrototypeOf(tempModel2).setState = (function(fldName){
                         return function(state, appState, callback){ //callback may be useful for DB updates
                           var clientFields2 = {};
-                          var modelNextState2, callbackCtx2;
+                          var modelNextState2;
                           var thisState = {};
                           fldName = ('$owner' in this.$state) ? this.$state.$owner : fldName;
 
@@ -2619,8 +2618,7 @@ var ViewModel = {
 
                           if(callback && (typeof callback === 'function')){
                             //We need to create a model with the next state and bind it to the callback
-                            callbackCtx2 = new tempCstor2(tempModel._stateChangeHandler)(modelNextState2);
-                            callback.bind(callbackCtx2);
+                            callback = callback.bind(new tempCstor2(tempModel._stateChangeHandler)(modelNextState2));
                           }
                           tempModel._stateChangeHandler.call(viewModel, modelNextState2, appState, callback);
                         };

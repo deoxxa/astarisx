@@ -9,23 +9,23 @@ var deepFreeze = utils.deepFreeze;
 var ControllerViewModel = {
 
   Mixin: {
-    construct: function(stateChangeHandler, undoAllowed){
+    construct: function(stateChangeHandler){
 
       var prevAdhocUndo = false;
       var previousPageNotFound = false;
       var desc = this.getDescriptor();
       desc.proto.setState = stateChangeHandler;
-      if(undoAllowed){
-        desc.proto.revert = function(callback){
-          this.setState(this.$previousState, !!this.$previousState ? this : void(0), callback);
-        };
 
-        desc.proto.advance = function(callback){
-          if(this.$canAdvance){
-            this.setState(this.$nextState, this.$nextState.$nextState, callback);
-          }
-        };
-      }
+      //revert and advance should always be available to allow for adhoc undo.
+      desc.proto.revert = function(callback){
+        this.setState(this.$previousState, !!this.$previousState ? this : void(0), callback);
+      };
+
+      desc.proto.advance = function(callback){
+        if(this.$canAdvance){
+          this.setState(this.$nextState, this.$nextState.$nextState, callback);
+        }
+      };
 
       desc.proto.initializeDataContext = function(obj /* ...string and objects OR array of strings and objects OR empty */){
 

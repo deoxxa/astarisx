@@ -73,7 +73,7 @@ var ViewModel = {
 
                 Object.getPrototypeOf(tempModel).setState = function(state, appState, callback){ //callback may be useful for DB updates
                   var clientFields = {};
-                  var modelNextState, callbackCtx;
+                  var modelNextState;
                   if(typeof appState === 'function'){
                     callback = appState;
                     appState = void(0);
@@ -99,8 +99,7 @@ var ViewModel = {
                   
                   if(callback && (typeof callback === 'function')){
                     //We need to create a model with the next state and bind it to the callback
-                    var callbackCtx = new tempCstor(this._stateChangeHandler)(modelNextState);
-                    callback.bind(callbackCtx);
+                    callback = callback.bind(new tempCstor(this._stateChangeHandler)(modelNextState));
                   }
                   this._stateChangeHandler.call(viewModel, modelNextState, appState, callback);
                 };
@@ -130,7 +129,7 @@ var ViewModel = {
                       Object.getPrototypeOf(tempModel2).setState = (function(fldName){
                         return function(state, appState, callback){ //callback may be useful for DB updates
                           var clientFields2 = {};
-                          var modelNextState2, callbackCtx2;
+                          var modelNextState2;
                           var thisState = {};
                           fldName = ('$owner' in this.$state) ? this.$state.$owner : fldName;
 
@@ -161,8 +160,7 @@ var ViewModel = {
 
                           if(callback && (typeof callback === 'function')){
                             //We need to create a model with the next state and bind it to the callback
-                            callbackCtx2 = new tempCstor2(tempModel._stateChangeHandler)(modelNextState2);
-                            callback.bind(callbackCtx2);
+                            callback = callback.bind(new tempCstor2(tempModel._stateChangeHandler)(modelNextState2));
                           }
                           tempModel._stateChangeHandler.call(viewModel, modelNextState2, appState, callback);
                         };

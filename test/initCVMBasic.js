@@ -41,11 +41,12 @@ describe('Initialize ControllerViewModel with no options', function(){
       app.state.appContext.must.have.nonenumerable('$state');
       app.state.appContext.$state.must.be.an.object();
       app.state.appContext.must.not.have.nonenumerable('$canAdvance');
-      app.state.appContext.must.have.not.nonenumerable('$canRevert');
+      app.state.appContext.must.not.have.nonenumerable('$canRevert');
       app.state.appContext.must.not.have.nonenumerable('$previousState');
       app.state.appContext.must.not.have.nonenumerable('$nextState');
-      expect(app.state.appContext.advance).be.undefined();
-      expect(app.state.appContext.revert).be.undefined();
+      //revert and advance must be available for adhoc undo
+      app.state.appContext.revert.must.be.a.function();
+      app.state.appContext.advance.must.be.a.function();
       app.state.appContext.setState.must.be.a.function();
     });
   });
@@ -184,7 +185,7 @@ describe('Initialize ControllerViewModel with fields & dataContexts', function()
 
     var ControllerViewModel = Astarisx.createControllerViewModelClass({
       mixins:[require('../refImpl/mixinViewModels')],
-      getInitialState: function(){ //optional
+      getInitialState: function(){
         return {
           online: true,
           busy: false,
