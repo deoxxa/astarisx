@@ -18,7 +18,7 @@ var ControllerViewModel = {
 
       //revert and advance should always be available to allow for adhoc undo.
       desc.proto.revert = function(callback){
-        this.setState(this.$previousState, !!this.$previousState ? this : void(0), callback);
+        this.setState(this.$previousState, !!this.$previousState ? this : void(0), true, callback, void(0), true);
       };
 
       desc.proto.advance = function(callback){

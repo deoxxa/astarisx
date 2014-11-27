@@ -52,7 +52,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
     component.setState({appContext: applicationDataContext});
   };
 
-	var appStateChangeHandler = function(caller, newState, newAppState, remember, callback, delay) {
+	var appStateChangeHandler = function(caller, newState, newAppState, remember, callback, delay, revert) {
 		var nextState = {},
       prevState = void(0),
       redoState = void(0),
@@ -71,6 +71,9 @@ var StateManager = function(component, appCtx, initCtxObj) {
       pushStateChanged = false,
       willUndo = false,
       stateChangeEvent;
+
+    //If reverting to previousState remove any processedState from the prior call
+    processedState = revert ? void(0) : processedState;
 
 		//This covers setState with no args or with void(0) or with {} as argument
     if(arguments.length <= 2 || (typeof newState === 'function')){
