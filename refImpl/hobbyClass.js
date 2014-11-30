@@ -1,6 +1,6 @@
 var Astarisx = require('../src/core');
 
-var HobbyClass = Astarisx.createModelClass({ // short form => createMClass()
+var HobbyClass = Astarisx.createMClass({
 
   getInitialState: function(){
     return {

@@ -31,10 +31,22 @@ var PersonsViewModel = Astarisx.createViewModelClass({  //short form => createVM
       nextState.collection = DataService.getPersonData().map(function(person, idx){
         return new Person(person);
       }.bind(this));
-
+      nextState.passedInArgs = Array.prototype.slice.call(arguments, 0);
+      nextState.initialized = true;
       this.setState(nextState, {$notify: "SideBarView"}, false);
     },
 
+    initialized: {
+      get: function(){
+        return this.$state.initialized;
+      }
+    },
+    passedInArgs: {
+      kind: 'array',
+      get: function(){
+        return this.$state.passedInArgs;
+      }
+    },
     // // getDisplays: function(){
     // //   return {
     // //     "main":{

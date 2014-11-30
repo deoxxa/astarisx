@@ -120,8 +120,6 @@ var PersonClass = Astarisx.createModelClass({
     set: function(newValue){
       //This is to test callback context
       this.setState({}, function(){
-        console.log('test auto bind: Should show a Model');
-        console.log(this);
         this.setState({'gender': newValue});
       });
     }

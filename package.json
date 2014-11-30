@@ -40,7 +40,7 @@
   "scripts": {
     "all": "npm test && npm run build",
     "start": "mochify --watch",
-    "test-phantom": "mochify",
+    "test-phantom": "mochify -R spec",
     "test-wd": "mochify --wd",
     "test": "npm run test-phantom",
     "build": "node ./build.js"

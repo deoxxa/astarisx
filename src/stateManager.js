@@ -7,7 +7,7 @@ var isArray = utils.isArray;
 var isControllerViewModel = utils.isControllerViewModel;
 var ApplicationDataContext;
 
-var StateManager = function(component, appCtx, initCtxObj) {
+var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 	
 	var namespace = uuid(),
 		controllerViewModel,
@@ -37,6 +37,8 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		external = false,
 		internal = false,
 		stateMgr = this;
+
+	var initCtxArgs = Array.prototype.slice.call(arguments, 2);
 
 	stateMgr.appState = {};
 	stateMgr.listeners = {};
@@ -73,6 +75,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
       stateChangeEvent;
 
     //If reverting to previousState remove any processedState from the prior call
+    //This occurs because of the callback batching process
     processedState = revert ? void(0) : processedState;
 
 		//This covers setState with no args or with void(0) or with {} as argument
@@ -648,7 +651,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
   stateChangeHandler(stateMgr.appState);
   if('dataContextWillInitialize' in stateMgr.appState.constructor.originalSpec){
-    stateMgr.appState.constructor.originalSpec.dataContextWillInitialize.call(stateMgr.appState, initCtxObj);
+    stateMgr.appState.constructor.originalSpec.dataContextWillInitialize.apply(stateMgr.appState, initCtxArgs);
     delete Object.getPrototypeOf(stateMgr.appState).dataContextWillInitialize;
   }
 

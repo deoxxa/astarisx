@@ -27,23 +27,22 @@ var ControllerViewModel = {
         }
       };
 
-      desc.proto.initializeDataContext = function(obj /* ...string and objects OR array of strings and objects OR empty */){
+      desc.proto.initializeDataContext = function(/* empty OR an array of strings and objects OR ...strings and ...objects */){
 
         var args = Array.prototype.slice.call(arguments, 0);
         var argsLen;
         var objArg = {};
         var arg, ctx, contexts, ctxArgs;
 
-        if(obj === void(0)){
+        if(args[0] === void(0)){
           objArg = { '*':[] };
         } else {
-          if(isArray(obj)){
+          if(isArray(args[0])){
             args = args[0];
           }
           argsLen = args.length;
           for (var i = 0; i < argsLen; i++) {
-            args[i]
-          
+            args[i]          
             if(isObject(args[i])){
               for(arg in args[i]){
                 if(args[i].hasOwnProperty(arg)){
@@ -66,10 +65,17 @@ var ControllerViewModel = {
           if(contexts.hasOwnProperty(ctx)){
             if((ctx in this) && !!this[ctx].dataContextWillInitialize){
               //build args
-              ctxArgs = objArg[ctx] || [];
+              ctxArgs = [];
               //append '*' args
-              ctxArgs = ctxArgs.concat(objArg['*'] || objArg['_*'] || []);
+              ctxArgs = ctxArgs.concat(objArg['*'] || [])
+              if(ctx !== '*' && ctx !== '_*' && ctx in objArg){
+                //pass args to dataContexts listed in objArg
+                ctxArgs = ctxArgs.concat(objArg['_*'] || []);
+                //pass args to specific dataContexts
+                ctxArgs = ctxArgs.concat(objArg[ctx] || []);
+              }
               this[ctx].dataContextWillInitialize.apply(this[ctx], ctxArgs);
+              //dataContext dataContextWillInitialize should not be invoked again
               delete Object.getPrototypeOf(this[ctx]).dataContextWillInitialize;
             }
           }

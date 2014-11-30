@@ -145,7 +145,6 @@ var AstarisxClass = {
                 tempDesc[key].enumerable = false;
                 clientFields = clientFields || [];
                 clientFields.push(key);
-                //place into statics list
               } else {
                 tempDesc[key].enumerable = true;
               }
@@ -155,11 +154,11 @@ var AstarisxClass = {
               if(key !== '*' && key !== '_*'){
                 viewModels[key] = tempDesc[key].viewModel;
                 //intercept the viewModel and add $dataContext field
-                tempDesc[key].viewModel.originalSpec.$dataContext = (function(dc){
+                tempDesc[key].viewModel.originalSpec.$dataContext = (function(dataContextName){
                   return {
                     kind: 'pseudo',
                     get: function(){
-                      return dc;
+                      return dataContextName;
                     }
                   }
                 })(key);
