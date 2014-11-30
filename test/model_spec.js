@@ -5,6 +5,16 @@ var expect = require('must');
 var Astarisx = require('../src/core');
 var StateManager = require('../src/stateManager');
 
+var calculateAge = function(dob){ // dob is a date
+  if(dob.length < 10){
+    return 'Enter your Birthday';
+  }
+  var DOB = new Date(dob);
+  var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from
+  var age = Math.abs(ageDate.getFullYear() - 1970);
+  return isNaN(age) ? 'Enter your Birthday' : age + ' years old';
+};
+
 //Only initialize persons dataContext
 var ControllerViewModel = Astarisx.createCVMClass({
   mixins:[require('../refImpl/mixinViewModels')],
@@ -74,9 +84,9 @@ describe('persons dataContext', function(){
     it('$dirty must be false', function(){
       model.must.have.ownProperty('$dirty', false);
     });
-    it('calculated field "age" must equal "34 years old"', function(){
+    it('calculated field "age" must equal the calculated age', function(){
       model.must.have.nonenumerable('age');
-      model.age.must.equal('34 years old');
+      model.age.must.equal(calculateAge(model.dob));
     });
     it('check existence of pseudo keys', function(){
       model.must.have.nonenumerable('fullName');
