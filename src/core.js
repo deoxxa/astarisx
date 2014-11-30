@@ -191,29 +191,11 @@ var AstarisxClass = {
                   tempDesc[key].kind === 'object:deepFreeze' ||
                   tempDesc[key].kind === 'array' ||
                   tempDesc[key].kind === 'array:freeze' ||
-                  tempDesc[key].kind === 'array:deepFreeze' ||
-                  tempDesc[key].kind === 'pseudoObject' ||
-                  tempDesc[key].kind === 'pseudoObject:freeze' ||
-                  tempDesc[key].kind === 'pseudoObject:deepFreeze' ||
-                  tempDesc[key].kind === 'pseudoArray' ||
-                  tempDesc[key].kind === 'pseudoArray:freeze' ||
-                  tempDesc[key].kind === 'pseudoArray:deepFreeze') {
+                  tempDesc[key].kind === 'array:deepFreeze') {
                   
                   autoFreeze = autoFreeze || [];
                   autoFreeze.push({fieldName: key, kind: tempDesc[key].kind});
 
-                  //set enumerable to false because they are pseudo
-                  if(tempDesc[key].kind === 'pseudoObject' ||
-                  tempDesc[key].kind === 'pseudoObject:freeze' ||
-                  tempDesc[key].kind === 'pseudoObject:deepFreeze' ||
-                  tempDesc[key].kind === 'pseudoArray' ||
-                  tempDesc[key].kind === 'pseudoArray:freeze' ||
-                  tempDesc[key].kind === 'pseudoArray:deepFreeze') {
-                    tempDesc[key].enumerable = false;
-                  }
-                  //There's no need for set statments for these kinds. Can only update via functions & setState.
-                  //If the object needs to be updated then it should be a Model                  
-                  delete tempDesc[key].set;
                 } else if (proto.constructor.classType === "ControllerViewModel" && tempDesc[key].kind === 'static') {
                   statics = statics || {};
                   hasStatic = true;

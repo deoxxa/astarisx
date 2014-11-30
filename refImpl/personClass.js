@@ -16,7 +16,6 @@ var calculateAge = function(dob){ // dob is a date
   return isNaN(age) ? 'Enter your Birthday' : age + ' years old';
 };
 
-
 var PersonClass = Astarisx.createModelClass({
 
   getInitialState: function(){
@@ -148,43 +147,6 @@ var PersonClass = Astarisx.createModelClass({
     kind: 'pseudo',
     get: function(){
       return 'pseudoField';
-    }
-  },
-  pseudoObjectField: {
-    kind: 'pseudoObject',
-    get: function(){
-      return {};
-    }
-  },
-  pseudoObjectFreezeField: {
-    kind: 'pseudoObject:freeze',
-    get: function(){
-      return {};
-    }
-  },
-  pseudoObjectDeepFreezeField: {
-    kind: 'pseudoObject:deepFreeze',
-    get: function(){
-      return {};
-    }
-  },
-
-  pseudoArrayField: {
-    kind: 'pseudoArray',
-    get: function(){
-      return [];
-    }
-  }, 
-  pseudoArrayFreezeField: {
-    kind: 'pseudoArray:freeze',
-    get: function(){
-      return [];
-    }
-  },
-  pseudoArrayDeepFreezeField: {
-    kind: 'pseudoArray:deepFreeze',
-    get: function(){
-      return [];
     }
   },
 

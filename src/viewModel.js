@@ -171,15 +171,15 @@ var ViewModel = {
                 }
                 Object.freeze(viewModel[freezeFields[fld].fieldName]);
               }
-            } else if(freezeFields[fld].kind === 'object' || freezeFields[fld].kind === 'pseudoObject'){
+            } else if(freezeFields[fld].kind === 'object'){
               //Only freeze root object
               if(isObject(nextState[freezeFields[fld].fieldName])){
                 Object.freeze(nextState[freezeFields[fld].fieldName]);
               }
-            } else if(freezeFields[fld].kind === 'object:freeze' || freezeFields[fld].kind === 'pseudoObject:freeze'){
+            } else if(freezeFields[fld].kind === 'object:freeze'){
               //shallow freeze all objects and arrays one level down
               freeze(nextState[freezeFields[fld].fieldName]);
-            } else if(freezeFields[fld].kind === 'object:deepFreeze' || freezeFields[fld].kind === 'pseudoObject:deepFreeze'){
+            } else if(freezeFields[fld].kind === 'object:deepFreeze'){
               //freeze all objects and arrays traversing arrays for objects and arrays
               deepFreeze(nextState[freezeFields[fld].fieldName]);
             } else {
@@ -188,14 +188,14 @@ var ViewModel = {
               if(!isArray(nextState[freezeFields[fld].fieldName])){
                 nextState[freezeFields[fld].fieldName] = [];
               }
-              if(freezeFields[fld].kind === 'array:freeze' || freezeFields[fld].kind === 'pseudoArray:freeze'){
+              if(freezeFields[fld].kind === 'array:freeze'){
                 //shallow freeze all objects and arrays in array
                 freeze(nextState[freezeFields[fld].fieldName]);
-              } else if(freezeFields[fld].kind === 'array:deepFreeze' || freezeFields[fld].kind === 'pseudoArray:deepFreeze'){
+              } else if(freezeFields[fld].kind === 'array:deepFreeze'){
                 //freeze all objects and arrays in array traversing arrays and objects for arrays and objects
                 deepFreeze(nextState[freezeFields[fld].fieldName]);
               } else {
-                //freezeFields[fld].kind === 'array' || freezeFields[fld].kind === 'pseudoArray'
+                //freezeFields[fld].kind === 'array'
                 Object.freeze(nextState[freezeFields[fld].fieldName]);
               } 
             }

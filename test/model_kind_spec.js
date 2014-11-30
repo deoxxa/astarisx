@@ -110,29 +110,6 @@ describe('persons dataContext', function(){
       model.must.have.enumerable('arrayDeepFreezeField');
     });
 
-    it('model must have nonenumerable pseudoField', function(){
-      model.must.have.nonenumerable('pseudoField');
-    });
-
-    it('model must have nonenumerable field pseudoObjectField', function(){
-      model.must.have.nonenumerable('pseudoObjectField');
-    });
-    it('model must have nonenumerable field pseudoObjectFreezeField', function(){
-      model.must.have.nonenumerable('pseudoObjectFreezeField');
-    });
-    it('model must have nonenumerable field pseudoObjectDeepFreezeField', function(){
-      model.must.have.nonenumerable('pseudoObjectDeepFreezeField');
-    });
-    it('model must have nonenumerable field pseudoArrayField', function(){
-      model.must.have.nonenumerable('pseudoArrayField');
-    });
-    it('model must have nonenumerable field pseudoArrayFreezeField', function(){
-      model.must.have.nonenumerable('pseudoArrayFreezeField');
-    });
-    it('model must have nonenumerable field pseudoArrayDeepFreezeField', function(){
-      model.must.have.nonenumerable('pseudoArrayDeepFreezeField');
-    });
-
   });
 });
 

@@ -1194,29 +1194,11 @@ var AstarisxClass = {
                   tempDesc[key].kind === 'object:deepFreeze' ||
                   tempDesc[key].kind === 'array' ||
                   tempDesc[key].kind === 'array:freeze' ||
-                  tempDesc[key].kind === 'array:deepFreeze' ||
-                  tempDesc[key].kind === 'pseudoObject' ||
-                  tempDesc[key].kind === 'pseudoObject:freeze' ||
-                  tempDesc[key].kind === 'pseudoObject:deepFreeze' ||
-                  tempDesc[key].kind === 'pseudoArray' ||
-                  tempDesc[key].kind === 'pseudoArray:freeze' ||
-                  tempDesc[key].kind === 'pseudoArray:deepFreeze') {
+                  tempDesc[key].kind === 'array:deepFreeze') {
                   
                   autoFreeze = autoFreeze || [];
                   autoFreeze.push({fieldName: key, kind: tempDesc[key].kind});
 
-                  //set enumerable to false because they are pseudo
-                  if(tempDesc[key].kind === 'pseudoObject' ||
-                  tempDesc[key].kind === 'pseudoObject:freeze' ||
-                  tempDesc[key].kind === 'pseudoObject:deepFreeze' ||
-                  tempDesc[key].kind === 'pseudoArray' ||
-                  tempDesc[key].kind === 'pseudoArray:freeze' ||
-                  tempDesc[key].kind === 'pseudoArray:deepFreeze') {
-                    tempDesc[key].enumerable = false;
-                  }
-                  //There's no need for set statments for these kinds. Can only update via functions & setState.
-                  //If the object needs to be updated then it should be a Model                  
-                  delete tempDesc[key].set;
                 } else if (proto.constructor.classType === "ControllerViewModel" && tempDesc[key].kind === 'static') {
                   statics = statics || {};
                   hasStatic = true;
@@ -1542,15 +1524,6 @@ var Model = {
 
         nextState = extend(nextState, extendState);
 
-        // Object.defineProperty(model, '$state', {
-        //   configurable: true,
-        //   enumerable: false,
-        //   writable: true,
-        //   value: nextState
-        // });
-
-        // nextState = extend(nextState, model);
-
         if(desc.aliases !== void(0)){
           for(var aliasFor in desc.aliases){
             if(desc.aliases.hasOwnProperty(aliasFor) && (aliasFor in nextState)){
@@ -1567,8 +1540,6 @@ var Model = {
           value: nextState
         });
 
-        // nextState = extend(nextState, model);
-
         if('getInitialState' in desc.originalSpec){
           nextState = extend(nextState, desc.originalSpec.getInitialState.call(model));
         }
@@ -1576,15 +1547,15 @@ var Model = {
         //freeze arrays and model objects and initialize if necessary
         if(freezeFields !== void(0)){
           for (fld = freezeFields.length - 1; fld >= 0; fld--) {
-            if(freezeFields[fld].kind === 'object' || freezeFields[fld].kind === 'pseudoObject'){
+            if(freezeFields[fld].kind === 'object'){
               //Only freeze root object
               if(isObject(nextState[freezeFields[fld].fieldName])){
                 Object.freeze(nextState[freezeFields[fld].fieldName]);
               }
-            } else if(freezeFields[fld].kind === 'object:freeze' || freezeFields[fld].kind === 'pseudoObject:freeze'){
+            } else if(freezeFields[fld].kind === 'object:freeze'){
               //shallow freeze all objects and arrays one level down
               freeze(nextState[freezeFields[fld].fieldName]);
-            } else if(freezeFields[fld].kind === 'object:deepFreeze' || freezeFields[fld].kind === 'pseudoObject:deepFreeze'){
+            } else if(freezeFields[fld].kind === 'object:deepFreeze'){
               //freeze all objects and arrays traversing arrays for objects and arrays
               deepFreeze(nextState[freezeFields[fld].fieldName]);
             } else if(freezeFields[fld].kind !== 'instance'){
@@ -1593,14 +1564,14 @@ var Model = {
               if(!isArray(nextState[freezeFields[fld].fieldName])){
                 nextState[freezeFields[fld].fieldName] = [];
               }
-              if(freezeFields[fld].kind === 'array:freeze' || freezeFields[fld].kind === 'pseudoArray:freeze'){
+              if(freezeFields[fld].kind === 'array:freeze'){
                 //shallow freeze all objects and arrays in array
                 freeze(nextState[freezeFields[fld].fieldName]);
-              } else if(freezeFields[fld].kind === 'array:deepFreeze' || freezeFields[fld].kind === 'pseudoArray:deepFreeze'){
+              } else if(freezeFields[fld].kind === 'array:deepFreeze'){
                 //freeze all objects and arrays in array traversing arrays and objects for arrays and objects
                 deepFreeze(nextState[freezeFields[fld].fieldName]);
               } else {
-                //freezeFields[fld].kind === 'array' || freezeFields[fld].kind === 'pseudoArray'
+                //freezeFields[fld].kind === 'array'
                 Object.freeze(nextState[freezeFields[fld].fieldName]);
               }
             }
@@ -2718,15 +2689,15 @@ var ViewModel = {
                 }
                 Object.freeze(viewModel[freezeFields[fld].fieldName]);
               }
-            } else if(freezeFields[fld].kind === 'object' || freezeFields[fld].kind === 'pseudoObject'){
+            } else if(freezeFields[fld].kind === 'object'){
               //Only freeze root object
               if(isObject(nextState[freezeFields[fld].fieldName])){
                 Object.freeze(nextState[freezeFields[fld].fieldName]);
               }
-            } else if(freezeFields[fld].kind === 'object:freeze' || freezeFields[fld].kind === 'pseudoObject:freeze'){
+            } else if(freezeFields[fld].kind === 'object:freeze'){
               //shallow freeze all objects and arrays one level down
               freeze(nextState[freezeFields[fld].fieldName]);
-            } else if(freezeFields[fld].kind === 'object:deepFreeze' || freezeFields[fld].kind === 'pseudoObject:deepFreeze'){
+            } else if(freezeFields[fld].kind === 'object:deepFreeze'){
               //freeze all objects and arrays traversing arrays for objects and arrays
               deepFreeze(nextState[freezeFields[fld].fieldName]);
             } else {
@@ -2735,14 +2706,14 @@ var ViewModel = {
               if(!isArray(nextState[freezeFields[fld].fieldName])){
                 nextState[freezeFields[fld].fieldName] = [];
               }
-              if(freezeFields[fld].kind === 'array:freeze' || freezeFields[fld].kind === 'pseudoArray:freeze'){
+              if(freezeFields[fld].kind === 'array:freeze'){
                 //shallow freeze all objects and arrays in array
                 freeze(nextState[freezeFields[fld].fieldName]);
-              } else if(freezeFields[fld].kind === 'array:deepFreeze' || freezeFields[fld].kind === 'pseudoArray:deepFreeze'){
+              } else if(freezeFields[fld].kind === 'array:deepFreeze'){
                 //freeze all objects and arrays in array traversing arrays and objects for arrays and objects
                 deepFreeze(nextState[freezeFields[fld].fieldName]);
               } else {
-                //freezeFields[fld].kind === 'array' || freezeFields[fld].kind === 'pseudoArray'
+                //freezeFields[fld].kind === 'array'
                 Object.freeze(nextState[freezeFields[fld].fieldName]);
               } 
             }
