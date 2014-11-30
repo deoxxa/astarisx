@@ -100,14 +100,34 @@ describe('persons dataContext', function(){
       Object.isFrozen(lvl3Obj.lvl3ArrKey[1]).must.be.true();
     });
 
-    it('model must have enumerable field arrayField', function(){
+    it('model must have enumerable field arrayField root level frozen', function(){
       model.must.have.enumerable('arrayField');
+      var lvl1 = model.arrayField;
+      
+      Object.isFrozen(model.arrayField).must.be.true();
+      Object.isFrozen(lvl1[1]).must.be.false();
+      Object.isFrozen(lvl1[2]).must.be.false();
     });
-    it('model must have enumerable field arrayFreezeField', function(){
+    it('model must have enumerable field arrayFreezeField first level frozen', function(){
       model.must.have.enumerable('arrayFreezeField');
+      var lvl1 = model.arrayFreezeField;
+      
+      Object.isFrozen(model.arrayFreezeField).must.be.true();
+      Object.isFrozen(lvl1[1]).must.be.true();
+      Object.isFrozen(lvl1[2]).must.be.true();
+      Object.isFrozen(lvl1[1].lvl1Obj.lvl1ArrKey[0]).must.be.false();
+      Object.isFrozen(lvl1[2][1].lvl1Obj.lvl1ArrKey[0]).must.be.false();
     });
-    it('model must have enumerable field arrayDeepFreezeField', function(){
+    it('model must have enumerable field arrayDeepFreezeField all levels frozen', function(){
       model.must.have.enumerable('arrayDeepFreezeField');
+      var lvl1 = model.arrayDeepFreezeField;
+      
+      Object.isFrozen(model.arrayDeepFreezeField).must.be.true();
+      Object.isFrozen(lvl1[1]).must.be.true();
+      Object.isFrozen(lvl1[2]).must.be.true();
+      Object.isFrozen(lvl1[1].lvl1Obj.lvl1ArrKey[0]).must.be.true();
+      Object.isFrozen(lvl1[2][1].lvl1Obj.lvl1ArrKey[0]).must.be.true();
+
     });
 
   });

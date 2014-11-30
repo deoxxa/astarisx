@@ -2480,6 +2480,9 @@ var utils = {
         }
       }
     } else if(utils.isArray(o)){
+      if(!Object.isFrozen(o)){
+        Object.freeze(o);
+      }
       for (var i = o.length - 1; i >= 0; i--) {
         if(utils.isArray(o[i]) || utils.isObject(o[i])){
           if(!Object.isFrozen(o[i])){
