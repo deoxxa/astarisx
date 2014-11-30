@@ -7,11 +7,15 @@ var Hobby = function(){
 };
 
 var calculateAge = function(dob){ // dob is a date
+  if(dob.length < 10){
+    return 'Enter your Birthday';
+  }
   var DOB = new Date(dob);
   var ageDate = new Date(Date.now() - DOB.getTime()); // miliseconds from
   var age = Math.abs(ageDate.getFullYear() - 1970);
   return isNaN(age) ? 'Enter your Birthday' : age + ' years old';
 };
+
 
 var PersonClass = Astarisx.createModelClass({
 
@@ -26,11 +30,56 @@ var PersonClass = Astarisx.createModelClass({
     } else {
       hobbies = this.hobbies;
     }
-
     return {
-      age: this.age || calculateAge(this.dob),
+      age: calculateAge(this.dob),
       id: this.id || Astarisx.uuid(),
-      hobbies: hobbies
+      hobbies: hobbies,
+      objectField: {'rootKey': 'rootVal',
+                    'lvl1Obj':{
+                      'lvl1ObjKey': 'lvl1ObjVal',
+                      'lvl1ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                      'lvl2Obj':{
+                        'lvl2ObjKey': 'lvl2ObjVal',
+                        'lvl2ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                        'lvl3Obj':{
+                          'lvl3ObjKey': 'lvl3ObjVal',
+                          'lvl3ArrKey': [{'key1':'val1'},{'key2':'val2'}]
+                        }
+                      }
+                    }
+                  },
+      objectFreezeField: {'rootKey': 'rootVal',
+                    'lvl1Obj':{
+                      'lvl1ObjKey': 'lvl1ObjVal',
+                      'lvl1ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                      'lvl2Obj':{
+                        'lvl2ObjKey': 'lvl2ObjVal',
+                        'lvl2ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                        'lvl3Obj':{
+                          'lvl3ObjKey': 'lvl3ObjVal',
+                          'lvl3ArrKey': [{'key1':'val1'},{'key2':'val2'}]
+                        }
+                      }
+                    }
+                  },
+      objectDeepFreezeField: {'rootKey': 'rootVal',
+                    'lvl1Obj':{
+                      'lvl1ObjKey': 'lvl1ObjVal',
+                      'lvl1ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                      'lvl2Obj':{
+                        'lvl2ObjKey': 'lvl2ObjVal',
+                        'lvl2ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                        'lvl3Obj':{
+                          'lvl3ObjKey': 'lvl3ObjVal',
+                          'lvl3ArrKey': [{'key1':'val1'},{'key2':'val2'}]
+                        }
+                      }
+                    }
+                  },
+      arrayField: [],
+      arrayFreezeField: [],
+      arrayDeepFreezeField: []
+
     };
   },
 
@@ -41,7 +90,110 @@ var PersonClass = Astarisx.createModelClass({
     }
   },
 
+  _clientField: {
+    get: function(){
+      return this.$state._clientField;
+    },
+    set: function(newValue){
+      this.setState({_clientField: newValue});
+    }
+  },
+
+  _clientFieldEnumOverride: {
+    enumerable: true,
+    get: function(){
+      return "override";
+    }
+  },
+  
+  objectField: {
+    kind: 'object',
+    get: function(){
+      return this.$state.objectField;
+    }
+  },
+  objectFreezeField: {
+    kind: 'object:freeze',
+    get: function(){
+      return this.$state.objectFreezeField;
+    }
+  },
+  objectDeepFreezeField: {
+    kind: 'object:deepFreeze',
+    get: function(){
+      return this.$state.objectDeepFreezeField;
+    }
+  },
+
+  arrayField: {
+    kind: 'array',
+    get: function(){
+      return this.$state.arrayField;
+    }
+  },
+  arrayFreezeField: {
+    kind: 'array:freeze',
+    get: function(){
+      return this.$state.arrayFreezeField;
+    }
+  },
+  arrayDeepFreezeField: {
+    kind: 'array:deepFreeze',
+    get: function(){
+      return this.$state.arrayDeepFreezeField;
+    }
+  },
+
+  pseudoField: {
+    kind: 'pseudo',
+    get: function(){
+      return 'pseudoField';
+    }
+  },
+  pseudoObjectField: {
+    kind: 'pseudoObject',
+    get: function(){
+      return {};
+    }
+  },
+  pseudoObjectFreezeField: {
+    kind: 'pseudoObject:freeze',
+    get: function(){
+      return {};
+    }
+  },
+  pseudoObjectDeepFreezeField: {
+    kind: 'pseudoObject:deepFreeze',
+    get: function(){
+      return {};
+    }
+  },
+
+  pseudoArrayField: {
+    kind: 'pseudoArray',
+    get: function(){
+      return [];
+    }
+  }, 
+  pseudoArrayFreezeField: {
+    kind: 'pseudoArray:freeze',
+    get: function(){
+      return [];
+    }
+  },
+  pseudoArrayDeepFreezeField: {
+    kind: 'pseudoArray:deepFreeze',
+    get: function(){
+      return [];
+    }
+  },
+
   firstName: {
+    validate: {
+      get: function(){
+        return this.firstName.length > 0;
+      }
+    },
     get: function(){ return this.$state.firstName; },
     set: function(newValue){
       var nextState = {};
@@ -51,6 +203,11 @@ var PersonClass = Astarisx.createModelClass({
   },
 
   lastName: {
+    validate: {
+      get: function(){
+        return this.lastName.length > 0;
+      }
+    },
     get: function(){ return this.$state.lastName; },
     set: function(newValue){
       var nextState = {};
@@ -96,22 +253,15 @@ var PersonClass = Astarisx.createModelClass({
       return this.$state.dob;
     },
     set: function(newValue){
-      var nextState = {};
-      if(newValue.length === 10){
-        nextState.age = calculateAge(newValue);
-      }
-      if(newValue.length === 0){
-        nextState.age = 'C\'mon. When\'s your Birthday?';
-      }
-      nextState.dob = newValue;
-      this.setState(nextState);
+      this.setState({'dob': newValue});
     }
   },
 
   //Calculated field <- dob
   age: {
+    kind: 'pseudo',
     get: function(){
-      return this.$state.age;
+      return calculateAge(this.dob);
     }
   },
 

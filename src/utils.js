@@ -147,14 +147,17 @@ var utils = {
       for (var k in o) {
         if(o.hasOwnProperty(k)){
           if(utils.isArray(o[k]) || utils.isObject(o[k])){
-            deepFreeze(Object.freeze(o[k]));
-          }          
+            utils.deepFreeze(o[k]);
+          }
         }
       }
     } else if(utils.isArray(o)){
-      for (var i = o.length - 1; i >= 0; i--) {
+      if(!Object.isFrozen(o)){
+        Object.freeze(o);
+      }
+      for (var i = 0, len = o.length; i < len; i++) {
         if(utils.isArray(o[i]) || utils.isObject(o[i])){
-          deepFreeze(Object.freeze(o[i]));
+          utils.deepFreeze(o[i]);
         }
       };
     }

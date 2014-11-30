@@ -36,7 +36,13 @@ describe('Initialize ControllerViewModel with no options', function(){
       app.state.must.have.keys(['appContext']);
       app.state.appContext.must.be.an.object();
     });
-    
+    it('app.state.appContext must be frozen', function(){
+      Object.isFrozen(app.state.appContext).must.be.true();
+    });
+    it('app.state.appContext.$state must be frozen', function(){
+      Object.isFrozen(app.state.appContext.$state).must.be.true();
+    });
+
     it('"appContext" must have nonenumerable "$state"', function(){
       app.state.appContext.must.have.nonenumerable('$state');
       app.state.appContext.$state.must.be.an.object();

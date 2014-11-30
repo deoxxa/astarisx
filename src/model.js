@@ -88,7 +88,7 @@ var Model = {
           configurable: false,
           enumerable: false,
           writable: false,
-          value: nextState
+          value: Object.freeze(nextState)
         });
 
         if(stateChangeHandler){
@@ -101,7 +101,6 @@ var Model = {
             })()
           });
         }
-
         return Object.freeze(model);
       };
       return ModelClass;

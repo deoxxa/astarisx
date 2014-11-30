@@ -47,6 +47,20 @@ describe('Initialize all dataContexts with no Args', function(){
     it('appContext must have keys "persons", "hobbies" and "mockVM"', function(){
       app.state.appContext.must.have.ownKeys(['persons', 'hobbies', 'mockVM']);
     })
+    it('app.state.appContext dataContexts must be frozen', function(){
+      Object.isFrozen(app.state.appContext.persons).must.be.true();
+      Object.isFrozen(app.state.appContext.hobbies).must.be.true();
+      Object.isFrozen(app.state.appContext.mockVM).must.be.true();
+    });
+
+    it('app.state.appContext dataContext $state must not be frozen', function(){
+      //WatchedState i.e. linking needs this to not be Frozen
+      //This is false for the moment. May freeze $state in a future release
+      Object.isFrozen(app.state.appContext.persons.$state).must.be.false();
+      Object.isFrozen(app.state.appContext.hobbies.$state).must.be.false();
+      Object.isFrozen(app.state.appContext.mockVM.$state).must.be.false();
+    });
+
     it('must be 3 people', function(){
       app.state.appContext.persons.collection.must.have.length(3);
     })

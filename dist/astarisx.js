@@ -76,14 +76,23 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   var hashbang = false;
 
   /**
+   * Previous context, for capturing
+   * page exit events.
+   */
+
+  var prevContext;
+
+  /**
    * Register `path` with callback `fn()`,
-   * or route `path`, or `page.start()`.
+   * or route `path`, or redirection,
+   * or `page.start()`.
    *
    *   page(fn);
    *   page('*', fn);
    *   page('/user/:id', load, user);
    *   page('/user/' + user.id, { some: 'thing' });
    *   page('/user/' + user.id);
+   *   page('/from', '/to')
    *   page();
    *
    * @param {String|Function} path
@@ -119,6 +128,7 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
    */
 
   page.callbacks = [];
+  page.exits = [];
 
   /**
    * Get or set basepath to `path`.
@@ -154,7 +164,7 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
     if (false !== options.click) window.addEventListener('click', onclick, false);
     if (true === options.hashbang) hashbang = true;
     if (!dispatch) return;
-    var url = (hashbang && location.hash.indexOf('#!') === 0)
+    var url = (hashbang && ~location.hash.indexOf('#!'))
       ? location.hash.substr(2) + location.search
       : location.pathname + location.search + location.hash;
     page.replace(url, null, true, dispatch);
@@ -167,9 +177,10 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
    */
 
   page.stop = function(){
+    if (!running) return;
     running = false;
-    removeEventListener('click', onclick, false);
-    removeEventListener('popstate', onpopstate, false);
+    window.removeEventListener('click', onclick, false);
+    window.removeEventListener('popstate', onpopstate, false);
   };
 
   /**
@@ -190,18 +201,29 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   };
 
   /**
-   * Show `path` with optional `state` object.
+   * Register route to redirect from one path to other
+   * or just redirect to another route
    *
-   * @param {String} from
-   * @param {String} to
+   * @param {String} from - if param 'to' is undefined redirects to 'from'
+   * @param {String} [to]
    * @api public
    */
   page.redirect = function(from, to) {
-    page(from, function (e) {
-      setTimeout(function() {
-        page.replace(to);
+    // Define route from a path to another
+    if ('string' === typeof from && 'string' === typeof to) {
+      page(from, function (e) {
+        setTimeout(function() {
+          page.replace(to);
+        },0);
       });
-    });
+    }
+
+    // Wait for the push state and replace it with another
+    if('string' === typeof from && 'undefined' === typeof to) {
+      setTimeout(function() {
+          page.replace(from);
+      },0);
+    }
   };
 
   /**
@@ -229,15 +251,29 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
    */
 
   page.dispatch = function(ctx){
+    var prev = prevContext;
     var i = 0;
+    var j = 0;
 
-    function next() {
-      var fn = page.callbacks[i++];
-      if (!fn) return unhandled(ctx);
-      fn(ctx, next);
+    prevContext = ctx;
+
+    function nextExit() {
+      var fn = page.exits[j++];
+      if (!fn) return nextEnter();
+      fn(prev, nextExit);
     }
 
-    next();
+    function nextEnter() {
+      var fn = page.callbacks[i++];
+      if (!fn) return unhandled(ctx);
+      fn(ctx, nextEnter);
+    }
+
+    if (prev) {
+      nextExit();
+    } else {
+      nextEnter();
+    }
   };
 
   /**
@@ -251,11 +287,46 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
 
   function unhandled(ctx) {
     if (ctx.handled) return;
-    var current = location.pathname + location.search;
+    var current;
+
+    if (hashbang) {
+      current = base + location.hash.replace('#!','');
+    } else {
+      current = location.pathname + location.search;
+    }
+
     if (current === ctx.canonicalPath) return;
     page.stop();
     ctx.handled = false;
     location.href = ctx.canonicalPath;
+  }
+
+  /**
+   * Register an exit route on `path` with
+   * callback `fn()`, which will be called
+   * on the previous context when a new
+   * page is visited.
+   */
+  page.exit = function(path, fn) {
+    if (typeof path == 'function') {
+      return page.exit('*', path);
+    };
+
+    var route = new Route(path);
+    for (var i = 1; i < arguments.length; ++i) {
+      page.exits.push(route.middleware(arguments[i]));
+    }
+  };
+
+  /**
+  * Remove URL encoding from the given `str`.
+  * Accommodates whitespace in both x-www-form-urlencoded
+  * and regular percent-encoded form.
+  *
+  * @param {str} URL component to decode
+  */
+  function decodeURLEncodedURIComponent(str) {
+    return decodeURIComponent(str.replace(/\+/g, ' '));
   }
 
   /**
@@ -268,6 +339,7 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
    */
 
   function Context(path, state) {
+    path = decodeURLEncodedURIComponent(path);
     if ('/' === path[0] && 0 !== path.indexOf(base)) path = base + path;
     var i = path.indexOf('?');
 
@@ -309,8 +381,8 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   Context.prototype.pushState = function(){
     history.pushState(this.state
       , this.title
-      , hashbang && this.canonicalPath !== '/'
-        ? '#!' + this.canonicalPath
+      , hashbang && this.path !== '/'
+        ? '#!' + this.path
         : this.canonicalPath);
   };
 
@@ -323,8 +395,8 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   Context.prototype.save = function(){
     history.replaceState(this.state
       , this.title
-      , hashbang && this.canonicalPath !== '/'
-        ? '#!' + this.canonicalPath
+      , hashbang && this.path !== '/'
+        ? '#!' + this.path
         : this.canonicalPath);
   };
 
@@ -439,6 +511,9 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
     while (el && 'A' != el.nodeName) el = el.parentNode;
     if (!el || 'A' != el.nodeName) return;
 
+    // Ignore if tag has a "download" attribute
+    if (el.getAttribute("download")) return;
+
     // ensure non-hash for the same path
     var link = el.getAttribute('href');
     if (el.pathname === location.pathname && (el.hash || '#' === link)) return;
@@ -456,9 +531,10 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
     var path = el.pathname + el.search + (el.hash || '');
 
     // same page
-    var orig = path + el.hash;
+    var orig = path;
 
     path = path.replace(base, '');
+
     if (base && orig === path) return;
 
     e.preventDefault();
@@ -687,23 +763,22 @@ var ControllerViewModel = {
         }
       };
 
-      desc.proto.initializeDataContext = function(obj /* ...string and objects OR array of strings and objects OR empty */){
+      desc.proto.initializeDataContext = function(/* empty OR an array of strings and objects OR ...strings and ...objects */){
 
         var args = Array.prototype.slice.call(arguments, 0);
         var argsLen;
         var objArg = {};
         var arg, ctx, contexts, ctxArgs;
 
-        if(obj === void(0)){
+        if(args[0] === void(0)){
           objArg = { '*':[] };
         } else {
-          if(isArray(obj)){
+          if(isArray(args[0])){
             args = args[0];
           }
           argsLen = args.length;
           for (var i = 0; i < argsLen; i++) {
-            args[i]
-          
+            args[i]          
             if(isObject(args[i])){
               for(arg in args[i]){
                 if(args[i].hasOwnProperty(arg)){
@@ -726,10 +801,17 @@ var ControllerViewModel = {
           if(contexts.hasOwnProperty(ctx)){
             if((ctx in this) && !!this[ctx].dataContextWillInitialize){
               //build args
-              ctxArgs = objArg[ctx] || [];
+              ctxArgs = [];
               //append '*' args
-              ctxArgs = ctxArgs.concat(objArg['*'] || objArg['_*'] || []);
+              ctxArgs = ctxArgs.concat(objArg['*'] || [])
+              if(ctx !== '*' && ctx !== '_*' && ctx in objArg){
+                //pass args to dataContexts listed in objArg
+                ctxArgs = ctxArgs.concat(objArg['_*'] || []);
+                //pass args to specific dataContexts
+                ctxArgs = ctxArgs.concat(objArg[ctx] || []);
+              }
               this[ctx].dataContextWillInitialize.apply(this[ctx], ctxArgs);
+              //dataContext dataContextWillInitialize should not be invoked again
               delete Object.getPrototypeOf(this[ctx]).dataContextWillInitialize;
             }
           }
@@ -1066,7 +1148,6 @@ var AstarisxClass = {
                 tempDesc[key].enumerable = false;
                 clientFields = clientFields || [];
                 clientFields.push(key);
-                //place into statics list
               } else {
                 tempDesc[key].enumerable = true;
               }
@@ -1076,11 +1157,11 @@ var AstarisxClass = {
               if(key !== '*' && key !== '_*'){
                 viewModels[key] = tempDesc[key].viewModel;
                 //intercept the viewModel and add $dataContext field
-                tempDesc[key].viewModel.originalSpec.$dataContext = (function(dc){
+                tempDesc[key].viewModel.originalSpec.$dataContext = (function(dataContextName){
                   return {
                     kind: 'pseudo',
                     get: function(){
-                      return dc;
+                      return dataContextName;
                     }
                   }
                 })(key);
@@ -1530,7 +1611,7 @@ var Model = {
           configurable: false,
           enumerable: false,
           writable: false,
-          value: nextState
+          value: Object.freeze(nextState)
         });
 
         if(stateChangeHandler){
@@ -1543,7 +1624,6 @@ var Model = {
             })()
           });
         }
-
         return Object.freeze(model);
       };
       return ModelClass;
@@ -1562,7 +1642,7 @@ var isArray = utils.isArray;
 var isControllerViewModel = utils.isControllerViewModel;
 var ApplicationDataContext;
 
-var StateManager = function(component, appCtx, initCtxObj) {
+var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 	
 	var namespace = uuid(),
 		controllerViewModel,
@@ -1592,6 +1672,8 @@ var StateManager = function(component, appCtx, initCtxObj) {
 		external = false,
 		internal = false,
 		stateMgr = this;
+
+	var initCtxArgs = Array.prototype.slice.call(arguments, 2);
 
 	stateMgr.appState = {};
 	stateMgr.listeners = {};
@@ -1628,6 +1710,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
       stateChangeEvent;
 
     //If reverting to previousState remove any processedState from the prior call
+    //This occurs because of the callback batching process
     processedState = revert ? void(0) : processedState;
 
 		//This covers setState with no args or with void(0) or with {} as argument
@@ -2203,7 +2286,7 @@ var StateManager = function(component, appCtx, initCtxObj) {
 
   stateChangeHandler(stateMgr.appState);
   if('dataContextWillInitialize' in stateMgr.appState.constructor.originalSpec){
-    stateMgr.appState.constructor.originalSpec.dataContextWillInitialize.call(stateMgr.appState, initCtxObj);
+    stateMgr.appState.constructor.originalSpec.dataContextWillInitialize.apply(stateMgr.appState, initCtxArgs);
     delete Object.getPrototypeOf(stateMgr.appState).dataContextWillInitialize;
   }
 
@@ -2443,14 +2526,17 @@ var utils = {
       for (var k in o) {
         if(o.hasOwnProperty(k)){
           if(utils.isArray(o[k]) || utils.isObject(o[k])){
-            deepFreeze(Object.freeze(o[k]));
-          }          
+            utils.deepFreeze(o[k]);
+          }
         }
       }
     } else if(utils.isArray(o)){
-      for (var i = o.length - 1; i >= 0; i--) {
+      if(!Object.isFrozen(o)){
+        Object.freeze(o);
+      }
+      for (var i = 0, len = o.length; i < len; i++) {
         if(utils.isArray(o[i]) || utils.isObject(o[i])){
-          deepFreeze(Object.freeze(o[i]));
+          utils.deepFreeze(o[i]);
         }
       };
     }
