@@ -241,7 +241,7 @@ var TodoApp = React.createClass({
 });
 ```
 
-#### React Components Interact with Application Data Context
+#### React Components Interact with Data Contexts
 ```javascript
 var MainSection = React.createClass({
 
