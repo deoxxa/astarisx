@@ -59,13 +59,13 @@ var TodoClass = Astarisx.createModelClass({
 
   id: {
     get: function(){
-      return this.state.id;
+      return this.$state.id;
     }
   },
   
   text: {
     get: function(){
-      return this.state.text;
+      return this.$state.text;
     },
     set: function(newVal){
       this.setState({text: newVal});
@@ -74,7 +74,7 @@ var TodoClass = Astarisx.createModelClass({
 
   complete: {
     get: function(){
-      return this.state.complete;
+      return this.$state.complete;
     },
     set: function(newVal){
       this.setState({complete: newVal});
@@ -106,7 +106,7 @@ var TodoViewModel = Astarisx.createViewModelClass({
 
   todos: {
     get: function(){
-      return this.state.todos;
+      return this.$state.todos;
     }
   },
 
@@ -126,7 +126,7 @@ var TodoViewModel = Astarisx.createViewModelClass({
   selectedTodo: {
     kind: 'instance',
     get: function(){
-      return this.state.selectedTodo;
+      return this.$state.selectedTodo;
     }
   },
 
@@ -205,7 +205,7 @@ var TodoControllerViewModel = Astarisx.createControllerViewModelClass({
   Todos: {
     viewModel: TodoViewModel,
     get: function(){
-      return this.state.Todos;
+      return this.$state.Todos;
     }
   }
 });
@@ -219,7 +219,11 @@ var TodoApp = React.createClass({
   * events dispatched from the State Manager
   */
   mixins: [Astarisx.mixin.ui],
-
+  componentWillMount: function(){
+    this.initializeAppContext({
+      controllerViewModel: TodoControllerViewModel
+    });
+  },
   render: function() {
     var todosDataContext = this.state.appContext.Todos;
     return (
@@ -429,9 +433,8 @@ var TodoItem = React.createClass({
 
 #### Start the Application
 ```javascript
-/* Use controllerViewModel prop to reference the TodoControllerViewModel */
 React.renderComponent(
-  <TodoApp controllerViewModel={TodoControllerViewModel}/>,
+  <TodoApp />,
   document.getElementById('todoapp')
 );
 ```
