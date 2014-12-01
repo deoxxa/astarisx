@@ -1,9 +1,14 @@
 var Astarisx = require('../src/core');
 var HobbyClass = require('./hobbyClass');
+var ContactClass = require('./contact');
 var DataService = require('./data');
 
 var Hobby = function(){
   return new HobbyClass().apply(this, arguments);
+};
+
+var Contact = function(){
+  return new ContactClass().apply(this, arguments);
 };
 
 var calculateAge = function(dob){ // dob is a date
@@ -318,6 +323,26 @@ var PersonClass = Astarisx.createModelClass({
   hobbies: {
     kind: 'array',
     get: function(){ return this.$state.hobbies; },
+  },
+
+ //primary||Secondary||Admin||Technical||customer
+  primaryContact: {
+    kind: 'instance',
+    get: function(){
+      return new Contact(this.$state.primaryContact, {$owner:"primaryContact"});
+    },
+    validate: {
+      get: function(){
+        return this.primaryContact.name.length > 0;
+      }
+    }
+  },
+
+  secondaryContact: {
+    kind: 'instance',
+    get: function(){
+      return new Contact(this.$state.secondaryContact, {$owner:"secondaryContact"});
+    }
   },
 
   updateHobby: function(obj){

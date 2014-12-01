@@ -32,7 +32,7 @@ var UI = React.createClass({
 
 var app = TU.renderIntoDocument(React.createElement(UI));
 
-describe('persons dataContext', function(){
+describe('persons dataContext model', function(){
   var stateMgr;
   var model;
   before(function() {
@@ -44,7 +44,7 @@ describe('persons dataContext', function(){
   after(function(){
     stateMgr.dispose();
   });
-  describe('persons context', function(){
+  describe('model context', function(){
     it('model must be frozen', function(){
       Object.isFrozen(model).must.be.true();
     });
@@ -100,10 +100,52 @@ describe('persons dataContext', function(){
       app.state.appContext.persons.selectPerson('1', function(err, appContext){
         appContext.persons.selectedPerson.id.must.equal('1');
         appContext.persons.selectedPerson.setState.must.be.a.function();
+        Object.isFrozen(appContext.persons.selectedPerson).must.be.true();
         done();
       });
     });
   });
+
+
+  describe('embedded models', function(){
+    
+    it('must enumerable fields primaryContact and secondaryContact', function(){
+      model.must.have.enumerable('primaryContact');
+      model.must.have.enumerable('secondaryContact');
+    });
+    it('validation prop $primaryContactValid === true', function(){
+      model.must.have.ownProperty('$primaryContactValid', true);
+    });
+    
+    it('primaryContact $dirty must be false', function(){
+      model.primaryContact.must.have.ownProperty('$dirty', false);
+    });
+    it('secondaryContact $dirty must be false', function(){
+      model.secondaryContact.must.have.ownProperty('$dirty', false);
+    });
+
+    it('primaryContact must be frozen', function(){
+      Object.isFrozen(model.primaryContact).must.be.true();
+    });
+    it('secondaryContact must be frozen', function(){
+      Object.isFrozen(model.secondaryContact).must.be.true();
+    });
+    it('primaryContact must have enumerable key $owner with value "primaryContact"', function(){
+      model.primaryContact.$state.must.have.enumerable('$owner');
+      model.primaryContact.$state.$owner.must.equal("primaryContact");
+    });
+    it('secondaryContact must have enumerable key $owner with value "secondaryContact"', function(){
+      model.secondaryContact.$state.must.have.enumerable('$owner');
+      model.secondaryContact.$state.$owner.must.equal("secondaryContact");
+    });
+    it('primaryContact must have setState', function(){
+      model.primaryContact.setState.must.be.a.function();
+    });
+    it('secondaryContact must have setState', function(){
+      model.secondaryContact.setState.must.be.a.function();
+    });
+  });
+
 });
 
 

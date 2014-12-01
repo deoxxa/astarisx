@@ -35,7 +35,133 @@ var PersonsViewModel = Astarisx.createViewModelClass({  //short form => createVM
       nextState.initialized = true;
       this.setState(nextState, {$notify: "SideBarView"}, false);
     },
-
+    getInitialState: function(){
+      return {
+        objectField: {'rootKey': 'rootVal',
+                    'lvl1Obj':{
+                      'lvl1ObjKey': 'lvl1ObjVal',
+                      'lvl1ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                      'lvl2Obj':{
+                        'lvl2ObjKey': 'lvl2ObjVal',
+                        'lvl2ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                        'lvl3Obj':{
+                          'lvl3ObjKey': 'lvl3ObjVal',
+                          'lvl3ArrKey': [{'key1':'val1'},{'key2':'val2'}]
+                        }
+                      }
+                    }
+                  },
+      objectFreezeField: {'rootKey': 'rootVal',
+                    'lvl1Obj':{
+                      'lvl1ObjKey': 'lvl1ObjVal',
+                      'lvl1ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                      'lvl2Obj':{
+                        'lvl2ObjKey': 'lvl2ObjVal',
+                        'lvl2ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                        'lvl3Obj':{
+                          'lvl3ObjKey': 'lvl3ObjVal',
+                          'lvl3ArrKey': [{'key1':'val1'},{'key2':'val2'}]
+                        }
+                      }
+                    }
+                  },
+      objectDeepFreezeField: {'rootKey': 'rootVal',
+                    'lvl1Obj':{
+                      'lvl1ObjKey': 'lvl1ObjVal',
+                      'lvl1ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                      'lvl2Obj':{
+                        'lvl2ObjKey': 'lvl2ObjVal',
+                        'lvl2ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                        'lvl3Obj':{
+                          'lvl3ObjKey': 'lvl3ObjVal',
+                          'lvl3ArrKey': [{'key1':'val1'},{'key2':'val2'}]
+                        }
+                      }
+                    }
+                  },
+      arrayField: ["aValue1", {'rootKey': 'rootVal',
+                    'lvl1Obj':{
+                      'lvl1ObjKey': 'lvl1ObjVal',
+                      'lvl1ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                      'lvl2Obj':{
+                        'lvl2ObjKey': 'lvl2ObjVal',
+                        'lvl2ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                        'lvl3Obj':{
+                          'lvl3ObjKey': 'lvl3ObjVal',
+                          'lvl3ArrKey': [{'key1':'val1'},{'key2':'val2'}]
+                        }
+                      }
+                    }
+                  }, ["aValue2", {'rootKey': 'rootVal',
+                    'lvl1Obj':{
+                      'lvl1ObjKey': 'lvl1ObjVal',
+                      'lvl1ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                      'lvl2Obj':{
+                        'lvl2ObjKey': 'lvl2ObjVal',
+                        'lvl2ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                        'lvl3Obj':{
+                          'lvl3ObjKey': 'lvl3ObjVal',
+                          'lvl3ArrKey': [{'key1':'val1'},{'key2':'val2'}]
+                        }
+                      }
+                    }
+                  }]],
+      arrayFreezeField: ["aValue1", {'rootKey': 'rootVal',
+                    'lvl1Obj':{
+                      'lvl1ObjKey': 'lvl1ObjVal',
+                      'lvl1ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                      'lvl2Obj':{
+                        'lvl2ObjKey': 'lvl2ObjVal',
+                        'lvl2ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                        'lvl3Obj':{
+                          'lvl3ObjKey': 'lvl3ObjVal',
+                          'lvl3ArrKey': [{'key1':'val1'},{'key2':'val2'}]
+                        }
+                      }
+                    }
+                  }, ["aValue2", {'rootKey': 'rootVal',
+                    'lvl1Obj':{
+                      'lvl1ObjKey': 'lvl1ObjVal',
+                      'lvl1ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                      'lvl2Obj':{
+                        'lvl2ObjKey': 'lvl2ObjVal',
+                        'lvl2ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                        'lvl3Obj':{
+                          'lvl3ObjKey': 'lvl3ObjVal',
+                          'lvl3ArrKey': [{'key1':'val1'},{'key2':'val2'}]
+                        }
+                      }
+                    }
+                  }]],
+      arrayDeepFreezeField: ["aValue1", {'rootKey': 'rootVal',
+                    'lvl1Obj':{
+                      'lvl1ObjKey': 'lvl1ObjVal',
+                      'lvl1ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                      'lvl2Obj':{
+                        'lvl2ObjKey': 'lvl2ObjVal',
+                        'lvl2ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                        'lvl3Obj':{
+                          'lvl3ObjKey': 'lvl3ObjVal',
+                          'lvl3ArrKey': [{'key1':'val1'},{'key2':'val2'}]
+                        }
+                      }
+                    }
+                  }, ["aValue2", {'rootKey': 'rootVal',
+                    'lvl1Obj':{
+                      'lvl1ObjKey': 'lvl1ObjVal',
+                      'lvl1ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                      'lvl2Obj':{
+                        'lvl2ObjKey': 'lvl2ObjVal',
+                        'lvl2ArrKey': [{'key1':'val1'},{'key2':'val2'}],
+                        'lvl3Obj':{
+                          'lvl3ObjKey': 'lvl3ObjVal',
+                          'lvl3ArrKey': [{'key1':'val1'},{'key2':'val2'}]
+                        }
+                      }
+                    }
+                  }]]
+        };
+    },
     initialized: {
       get: function(){
         return this.$state.initialized;
@@ -47,6 +173,55 @@ var PersonsViewModel = Astarisx.createViewModelClass({  //short form => createVM
         return this.$state.passedInArgs;
       }
     },
+  
+  objectField: {
+    kind: 'object',
+    get: function(){
+      return this.$state.objectField;
+    }
+  },
+  objectFreezeField: {
+    kind: 'object:freeze',
+    get: function(){
+      return this.$state.objectFreezeField;
+    }
+  },
+  objectDeepFreezeField: {
+    kind: 'object:deepFreeze',
+    get: function(){
+      return this.$state.objectDeepFreezeField;
+    }
+  },
+
+  arrayField: {
+    kind: 'array',
+    get: function(){
+      return this.$state.arrayField;
+    }
+  },
+  arrayFreezeField: {
+    kind: 'array:freeze',
+    get: function(){
+      return this.$state.arrayFreezeField;
+    }
+  },
+  arrayDeepFreezeField: {
+    kind: 'array:deepFreeze',
+    get: function(){
+      return this.$state.arrayDeepFreezeField;
+    }
+  },
+
+  pseudoField: {
+    kind: 'pseudo',
+    get: function(){
+      return 'pseudoField';
+    }
+  },
+
+
+
+
     // // getDisplays: function(){
     // //   return {
     // //     "main":{
