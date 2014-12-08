@@ -234,6 +234,9 @@ a.pure-button-primary {
 .social-icons {
     text-align: center;
 }
+.copyright {
+    text-align: center;
+}
 
 /*
  * -- TABLET (AND UP) MEDIA QUERIES --
@@ -287,9 +290,7 @@ a.pure-button-primary {
     .content-text {
         text-align: center;
     }
-    .copyright {
-        margin-top: -35px;
-    }
+
 }
 /*
  * -- DESKTOP (AND UP) MEDIA QUERIES --
@@ -301,6 +302,9 @@ a.pure-button-primary {
     .splash-head {
         font-size: 400%;
     }
-
+    .copyright {
+        text-align: left;
+        margin-top: -35px;
+    }
 
 }
