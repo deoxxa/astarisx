@@ -46,7 +46,11 @@ label {
     text-align: center;
 }
 
-
+div.tabcontents {
+    border-top: none;
+    padding: 0;
+    text-align: left;
+}
 
 /*
  * -- PURE FORM STYLES --
