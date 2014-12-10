@@ -54,6 +54,7 @@ secondaryContact: {
 - setState can now receive a callback as it's first argument
 - Bug fix: Models are not marked as `$dirty` if they do not have new state. Note that private fields (i.e. fields starting with an underscore) do not mark a Model as `$dirty` if their state changes as these fields do not persist to the backend.
 - Added `$dataContext` property to ViewModels indicating the dataContext name given to it in the ControllerViewModel
+- $notify -> when '*' was present in array it notified all and if any other dataContexts were listed, it notified them. This is not necessary. If '*' is present all it ignores everything and notifies all.
 
 ### Breaking Changes
 - New initialization process. React.renderComponent no longer takes Astarisx application arguments. Initialization occurs in the `ui` component in `componentWillMount` using `this.initializeAppContext` which takes the necessary arguments to be passed to the ControllerViewModel `dataContextWillInitialize`.

@@ -87,13 +87,15 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 				  if(processedState.$notify){
 				  	//Only notify specific views
 						if(isArray(processedState.$notify)){
-							processedState.$notify.forEach(function(viewKey){
-								if(viewKey === "*"){
-									stateChangeHandler(stateMgr.appState);
-								} else if(viewKey in stateMgr.listeners){
-									stateMgr.listeners[viewKey].dispatchEvent(stateChangeEvent);
-								}
-							});
+							if (processedState.$notify.indexOf('*') !== -1) {
+		            stateChangeHandler(stateMgr.appState);
+		          } else {
+		            processedState.$notify.forEach(function (viewKey) {
+		              if (viewKey in stateMgr.listeners) {
+		                stateMgr.listeners[viewKey].dispatchEvent(stateChangeEvent);
+		              }
+		            });
+		          }
 						} else {
 							if(processedState.$notify === "*"){
 								stateChangeHandler(stateMgr.appState);
@@ -455,13 +457,15 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 		  if(nextState.$notify){
 		  	//Only notify specific views
 				if(isArray(nextState.$notify)){
-					nextState.$notify.forEach(function(viewKey){
-						if(viewKey === "*"){
-							stateChangeHandler(stateMgr.appState);
-						} else if(viewKey in stateMgr.listeners){
-							stateMgr.listeners[viewKey].dispatchEvent(stateChangeEvent);
-						}
-					});
+					if (nextState.$notify.indexOf('*') !== -1) {
+            stateChangeHandler(stateMgr.appState);
+          } else {
+            nextState.$notify.forEach(function (viewKey) {
+              if (viewKey in stateMgr.listeners) {
+                stateMgr.listeners[viewKey].dispatchEvent(stateChangeEvent);
+              }
+            });
+          }
 				} else {
 					if(nextState.$notify === "*"){
 						stateChangeHandler(stateMgr.appState);
