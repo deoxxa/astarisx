@@ -237,7 +237,10 @@ a.pure-button-primary {
 .copyright {
     text-align: center;
 }
-
+.content {
+    padding: 0em 2em;
+}
+ 
 /*
  * -- TABLET (AND UP) MEDIA QUERIES --
  * On tablets and other medium-sized devices, we want to customize some
@@ -250,9 +253,9 @@ a.pure-button-primary {
         font-size: 16px;
     }
     /* We want to give the content area some more padding */
-    .content {
-        padding: 1em;
-    }
+    /*.content {
+        padding: 2em;
+    }*/
 
     /* We can align the menu header to the left, but float the
     menu items to the right. */
@@ -290,6 +293,9 @@ a.pure-button-primary {
     .content-text {
         text-align: center;
     }
+.sample {
+    display: block;
+}
 
 }
 /*
@@ -306,5 +312,4 @@ a.pure-button-primary {
         text-align: left;
         margin-top: -35px;
     }
-
 }
