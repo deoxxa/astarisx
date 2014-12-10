@@ -133,6 +133,15 @@ a.pure-button-primary {
     color: #AECFE5;
 }
 
+.social a {
+    color: #6FBEF3;
+}
+.social a:hover,
+.social a:focus {
+    background: none;
+    border: none;
+    color: #AECFE5;
+}
 
 /*
  * -- SPLASH STYLES --
@@ -238,6 +247,7 @@ a.pure-button-primary {
 .social-icons {
     text-align: center;
 }
+
 .copyright {
     text-align: center;
 }
