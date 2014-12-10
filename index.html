@@ -198,10 +198,12 @@ var ControllerViewModel = Astarisx.createCVMClass({
                     <div id="ui">
 <pre><code>/* UI */
 var TodoList = React.createClass({
-
+  //Make component an Astarisx view
   mixins: [Astarisx.mixin.view],
 
   render: function(){
+    //No props are passed in. All state is stored
+    //in this.state.appContext
     var todos = this.state.appContext.todos;
     var list = todos.todosList.map(function(todo){
       return &lt;li&gt;{todo.description}&lt;/li&gt;;
@@ -211,10 +213,11 @@ var TodoList = React.createClass({
 });
 
 var UI = React.createClass({
-
+  //Make component an Astarisx UI
   mixins: [Astarisx.mixin.ui],
   
   componentWillMount: function(){
+    //Associate ControllerViewModel with your app
     this.initializeAppContext({ 
       controllerViewModel: CVM
     });
@@ -222,10 +225,14 @@ var UI = React.createClass({
   
   addTodo: function(e){
     e.preventDefault();
+    //Invoke an action on the todos dataContext
     this.state.appContext.todos.addTodo();
   },
   
   updateDescription: function(e){
+    //Assign a value to currentDescription defined in the todos dataContext.
+    //This would usually be a field in a Model. We are doing this
+    //to keep the demo simple
     this.state.appContext.todos.currentDescription = e.target.value;
   },
   
@@ -238,6 +245,7 @@ var UI = React.createClass({
         value={this.state.appContext.todos.currentDescription} /&gt;
         &lt;button onClick={this.addTodo}&gt;Add&lt;/button&gt;
       &lt;/fieldset&gt;
+      {/* Note: no props need to passed into the List component */}
       &lt;List /&gt;
     &lt;/form&gt;);
   }
