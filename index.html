@@ -128,12 +128,12 @@
                 <div id="appContainer"></div>
             </div>
 
-            <div class="l-box-lrg pure-u-1 pure-u-md-3-5">
+            <div class="code-box-sml pure-u-1 pure-u-md-3-5">
                 <ul class="tabs">
                     <li><a href="#model">Model</a></li>
                     <li><a href="#viewModel">ViewModel</a></li>
                     <li><a href="#cvm">ControllerViewModel</a></li>
-                    <li><a href="#ui">UI</a></li>
+                    <li><a href="#ui">View</a></li>
                 </ul>
                 <div class="tabcontents">
                     <div id="model">
@@ -207,8 +207,11 @@ var TodoList = React.createClass({
   mixins: [Astarisx.mixin.view],
 
   render: function(){
-    //No props are passed in. All state is stored
-    //in this.state.appContext
+    /*
+      No props are passed in.
+      All state is stored
+      in this.state.appContext
+    */
     var todos = this.state.appContext.todos;
     var list = todos.todosList.map(function(todo){
       return &lt;li&gt;{todo.description}&lt;/li&gt;;
@@ -222,8 +225,10 @@ var UI = React.createClass({
   mixins: [Astarisx.mixin.ui],
   
   componentWillMount: function(){
-    //Reference the ControllerViewModel
-    //and initialize your AppContext
+    /*
+      Reference the ControllerViewModel
+      and initialize AppContext
+    */
     this.initializeAppContext({ 
       controllerViewModel: CVM
     });
@@ -236,11 +241,13 @@ var UI = React.createClass({
   },
   
   updateDescription: function(e){
-    //Assign value to currentDescription
-    //defined in the todos dataContext.
-    //This would usually be a field
-    //in a Model. We are doing this to
-    //keep the demo simple.
+    /*
+      Assign value to currentDescription
+      defined in the todos dataContext.
+      This would usually be a field
+      in a Model. We are doing this to
+      keep the demo simple.
+    */
     var todos = this.state.appContext.todos;
     todos.currentDescription = e.target.value;
   },

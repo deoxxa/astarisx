@@ -42,6 +42,13 @@ label {
     border-bottom: 1px solid rgba(0,0,0,0.1);
 }
 
+.code-box-sml {
+    /*border: none;
+    padding: 0;
+    margin: 0;*/
+    padding: 2em 0em;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
 .is-center {
     text-align: center;
 }
@@ -256,7 +263,7 @@ a.pure-button-primary {
 .content {
     padding: 0em 2em;
 }
- 
+
 /*
  * -- TABLET (AND UP) MEDIA QUERIES --
  * On tablets and other medium-sized devices, we want to customize some
@@ -300,6 +307,7 @@ a.pure-button-primary {
 
 
     /* We remove the border-separator assigned to .l-box-lrg */
+    .code-box-sml,
     .l-box-lrg {
         border: none;
     }
@@ -309,9 +317,6 @@ a.pure-button-primary {
     .content-text {
         text-align: center;
     }
-.sample {
-    display: block;
-}
 
 }
 /*
