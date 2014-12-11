@@ -32,4 +32,14 @@
         toggleClass(menuLink, active);
     };
 
+    menu.onclick = function (e) {
+        var active = 'active';
+        var classes = menu.className.split(/\s+/);
+        if(classes.indexOf('active') !== -1){
+            toggleClass(layout, active);
+            toggleClass(menu, active);
+            toggleClass(menuLink, active);            
+        }
+    };
+
 }(this, this.document));
