@@ -47,7 +47,12 @@
 
             <ul>
                 <li><a href="#download">Download</a></li>
-                <li><a href="#guide">Guide</a></li>
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#guide">Guide</a>
+                    
+                </li>
+                <li class="sub"><a href="#concepts">Concepts</a></li>
+                <li class="sub"><a href="#concepts">Concepts</a></li>
                 <!-- <li class="menu-item-divided pure-menu-selected">
                     <a href="#">Services</a>
                 </li> -->
@@ -55,11 +60,11 @@
                     <a href="#api">API</a>
                 </li>
                 <li>
-                    <a href="#">License</a>
-                </li>
-                <li>
                     <a href="#">Support</a>
                 </li>                
+                <li>
+                    <a href="#">License</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -94,7 +99,37 @@
         // Do something with Astarisx
     });
             </pre></code>
+            
+
+            <h2 class="content-subhead"><a name="overview">Overview</a></h2>
+            <p>
+                So you've invested some time becoming au fait with React and believe that you have a pretty good handle on it. Great! Why not capitalize on that. Astarisx allows you to leverage what you've learned to start creating your next Astarisx application with little ramp up. That's because Astarisx feels like React. Making it easy to comprehend and quick to learn. There's no need to change your coding style to suit the framework
+            </p>
+            <h3>Highly Composable</h3>
+            <p>Astarisx UI's are highly composable. The UI can comprise of regular React components or Astarisx Views. An Astarisx View is a self contained React component. They differ from regular React components in that they are stateless and completely decoupled from their Owner, as they do not require any props to be passed in to function. Every View has its own copy of the Application Data Context. This means you're able to develop and deploy Views independently of each other. Views can be moved to anywhere within your application and they will work without changing a line of code. A View can even be completely removed from your application without breaking your application or any interrelationships. A View doesn't care whether it's at the top of a component hierarchy or deeply nested within the bowels of your application. State changes in one View are reflected in another if they share the same Data Context.</p>
+
+    <h3>Integrated PushState Router</h3>
+    <p>Client-side Routing is painful. But you really can't build a web application without it. Astarisx makes it real easy to implement client-side pushState routing, with an optional pushState Router baked right in. It moves Routing configuration and logic out of the View and into the Business Logic Layer where it belongs.
+
+Astarisx uses Page, a micro client-side router inspired by the Express router, written by TJ Holowaychuk the creator of Express, amongst other things. If you haven't heard of him look him up. You're probably using something that he has written in your latest project.</p>
+<h3>MediaQueryList Notifications</h3>
+<p>Responsive Web Design is all the rage. Your application needs to display correctly on the myriad of screen form factors out in the market place today. Astarisx is able to receive MediaQueryList Notifications within JavaScript. So as a screen changes size or orientation, you can be notified of the change and respond to in your JavaScript code. This may be handy if you would like to make an ajax request for more data based on a screens orientation. You could even do some or all of your Responsive Design in JavaScript rather than in CSS.</p>
+            
+<h3>Accelerated JavaScript Animation with Velocity</h3>
+<p>The addition of subtle flare is not only aesthically pleasing, but it can enhance the user experience and usability of your application. By providing visual queues in response to actions, your UI becomes more intuitive to use. It also adds a level of professionalism which will set you apart from the crowd.
+
+Astarisx provides a mixin, called AstarisxAnimate, that allows you to easily integarte animations into your application. Use pre-defined transitions or create your own. You will be able to quickly incorporate super smooth page transitions into your applications that the likes of Apple will envy.
+
+But animations are not limited to page transitions. AstarisxAnimate incorporates Velocity, an accelerated JavaScript animation library. You will be able to harness the full potential of Velocity when and where you need it.</p>
+
+            
+            
             <h2 class="content-subhead"><a name="guide">Guide</a></h2>
+            <div class="pure-g">
+                <div class="pure-u-1">
+                    <img class="pure-img-responsive" src="../img/common/Astarisx.png" alt="Anatomy">
+                </div>
+            </div>
             <p>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
             </p>
@@ -114,6 +149,8 @@
             <p>
                 Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
             </p>
+            <h2 class="content-subhead"><a name="api">Support</a></h2>
+            <h2 class="content-subhead"><a name="api">License</a></h2>
         </div>
     </div>
 </div>

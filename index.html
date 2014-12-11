@@ -92,7 +92,7 @@
                     Single Source of Truth
                 </h2>
                 <p class="content-text">
-                    Application state is stored within ViewModels and Models. Astarisx handles state transitions, creating a Single Data Model, which is passed to the View and is accessible from anywhere within the application. This simplifies development. Invoke actions on data contexts from within the existing View or ViewModel. You are always garanteed that the View will have the latest copy of the Applications state when you need it.
+                    Application state is stored within ViewModels and Models. Astarisx handles state transitions, creating a Single Data Model, which is passed to the View and is accessible from anywhere within the application. Invoke actions on data contexts from within the existing View or ViewModel. You are always garanteed that the View will have the latest copy of the Application's state when you need it.
                 </p>
             </div>
         </div>
@@ -157,7 +157,6 @@ var Todo = function(){
 };
 
 var TodosViewModel = Astarisx.createViewModelClass({
-
   todosList: {
     kind: 'array',
     get: function(){
@@ -166,8 +165,14 @@ var TodosViewModel = Astarisx.createViewModelClass({
   },
 
   addTodo: function(){
-    var nextTaskList = this.$state.todosList.concat(new Todo({description: this.currentDescription}));
-    this.setState({todosList: nextTaskList, currentDescription: ""});
+    var newTodo = new Todo({
+        description: this.currentDescription
+    });
+    var next = this.$state.todosList.concat(newTodo);
+    this.setState({
+        todosList: next,
+        currentDescription: ""
+    });
   },
 
   currentDescription: {
@@ -215,7 +220,8 @@ var UI = React.createClass({
   mixins: [Astarisx.mixin.ui],
   
   componentWillMount: function(){
-    //Associate ControllerViewModel with your app
+    //Reference the ControllerViewModel
+    //and initialize your AppContext
     this.initializeAppContext({ 
       controllerViewModel: CVM
     });
@@ -228,22 +234,31 @@ var UI = React.createClass({
   },
   
   updateDescription: function(e){
-    //Assign a value to currentDescription defined in the todos dataContext.
-    //This would usually be a field in a Model. We are doing this
-    //to keep the demo simple
-    this.state.appContext.todos.currentDescription = e.target.value;
+    //Assign a value to currentDescription
+    //defined in the todos dataContext.
+    //This would usually be a field in a Model.
+    //We are doing this to keep the demo simple.
+    var todos = this.state.appContext.todos;
+    todos.currentDescription = e.target.value;
   },
   
   render: function(){
+    //reference the todos dataContext
+    var todos = this.state.appContext.todos;
     return (&lt;form&gt;
       &lt;fieldset&gt;
         &lt;label htmlFor="task">TODO&lt;/label&gt;
-        &lt;input ref="inputFld" id="task" type="text" placeholder="Enter Task"
+        &lt;input ref="inputFld" 
+        id="task" 
+        type="text" 
+        placeholder="Enter Task"
         onChange={this.updateDescription}
-        value={this.state.appContext.todos.currentDescription} /&gt;
+        value={todos.currentDescription} /&gt;
         &lt;button onClick={this.addTodo}&gt;Add&lt;/button&gt;
       &lt;/fieldset&gt;
-      {/* Note: no props need to passed into the List component */}
+      {/* 
+        No props are passed to the List component
+      */}
       &lt;List /&gt;
     &lt;/form&gt;);
   }
