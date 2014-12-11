@@ -231,15 +231,16 @@ var UI = React.createClass({
   
   addTodo: function(e){
     e.preventDefault();
-    //Invoke an action on the todos dataContext
+    //Invoke action on dataContext
     this.state.appContext.todos.addTodo();
   },
   
   updateDescription: function(e){
-    //Assign a value to currentDescription
+    //Assign value to currentDescription
     //defined in the todos dataContext.
-    //This would usually be a field in a Model.
-    //We are doing this to keep the demo simple.
+    //This would usually be a field
+    //in a Model. We are doing this to
+    //keep the demo simple.
     var todos = this.state.appContext.todos;
     todos.currentDescription = e.target.value;
   },
@@ -259,7 +260,8 @@ var UI = React.createClass({
         &lt;button onClick={this.addTodo}&gt;Add&lt;/button&gt;
       &lt;/fieldset&gt;
       {/* 
-        No props are passed to the List component
+        No props are passed
+        to the List component
       */}
       &lt;List /&gt;
     &lt;/form&gt;);
