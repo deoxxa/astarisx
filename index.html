@@ -180,7 +180,9 @@ var TodosViewModel = Astarisx.createViewModelClass({
       return this.$state.currentDescription;
     },
     set: function(newVal){
-      this.setState({currentDescription: newVal});
+      this.setState({
+        currentDescription: newVal
+      });
     }
   }
 });</code></pre>
@@ -189,7 +191,7 @@ var TodosViewModel = Astarisx.createViewModelClass({
                     <div id="cvm">
 <pre><code>/* ControllerViewModel */
 var ControllerViewModel = Astarisx.createCVMClass({
-    //Specify a ViewModel's dataContext name
+    //Specify a ViewModel's dataContext
     todos: {
         viewModel: require('./todos'),
         get: function(){
