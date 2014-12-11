@@ -145,7 +145,6 @@ appears on the left side of the page.
     #menu .pure-menu-heading {
         /*background: #1f8dd6;*/
         border: none;
-
     }
 
     /*
@@ -166,10 +165,11 @@ appears on the left side of the page.
         color: white;
         font-weight: 200;
         font-size: 120%;
-        margin-left: 17px;
-        margin-top: 2px;
     }
-
+.fa-arrow-left {
+    padding-right: 0.5em;
+    color: #1f8dd6;
+}
 #menu .sub {
     font-size: small;
 }
