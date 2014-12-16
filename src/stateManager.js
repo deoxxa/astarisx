@@ -38,6 +38,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 		internal = false,
 		stateMgr = this;
 
+	var shouldComponentUpdateIsNull = component.shouldComponentUpdate === null;
 	var initCtxArgs = Array.prototype.slice.call(arguments, 2);
 
 	stateMgr.appState = {};
@@ -50,8 +51,86 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 	routingEnabled = 'enableRouting' in appCtx ? appCtx.enableRouting : false;
 	stateMgr.signInUrl = appCtx.signInUrl;
 
-	stateChangeHandler = function(applicationDataContext){
-    component.setState({appContext: applicationDataContext});
+	stateChangeHandler = function(applicationDataContext, shouldUpdate){
+    	component.setState({appContext: applicationDataContext});
+    	//will not override shouldComponentUpdate if exists
+    	if(shouldComponentUpdateIsNull){
+	    	component.shouldComponentUpdate = function(){
+	    		return shouldUpdate === void(0) ? true : shouldUpdate;
+	    	}
+    	}
+  };
+
+  notifyViews = function(notify){
+  	var temp;
+		if(stateMgr.hasListeners){
+			stateChangeEvent = new CustomEvent("stateChange", {
+				"detail": {
+					"appContext": stateMgr.appState
+				}
+			});
+			passiveStateChangeEvent = new CustomEvent("stateChange", {
+				"detail": {
+					"appContext": stateMgr.appState,
+					"shouldUpdate": false
+				}
+			});
+			
+			//Notify views of a state change. If a view is specified in
+			//$notify then update specified views. Otherwise only notify the other 
+			//views without rendering them.
+		  if(notify){
+				if(isArray(notify)){
+		  		temp = {};
+		  		//notify specific views
+          notify.forEach(function (viewKey) {
+          	if(viewKey === "*"){
+							stateChangeHandler(stateMgr.appState);
+          	} else if(viewKey in stateMgr.listeners) {
+              stateMgr.listeners[viewKey].dispatchEvent(stateChangeEvent);
+            }
+            temp[viewKey] = true;
+          });
+	        //notify other views but do not render component
+	        if(!('*' in temp)){
+	        	stateChangeHandler(stateMgr.appState, false);
+	        }
+			    for(var k in stateMgr.listeners){
+			  		if(stateMgr.listeners.hasOwnProperty(k) && !(k in temp)){
+			  			stateMgr.listeners[k].dispatchEvent(passiveStateChangeEvent);
+			  		}
+			  	}
+		  		temp = void(0);
+        } else {
+					if(notify === "*"){
+						stateChangeHandler(stateMgr.appState);
+					} else {
+						stateChangeHandler(stateMgr.appState, false);
+					}
+					for(var k2 in stateMgr.listeners){
+			  		if(stateMgr.listeners.hasOwnProperty(k2)){
+			  			if(k2 === notify){
+								stateMgr.listeners[k2].dispatchEvent(stateChangeEvent);
+			  			} else {
+			  				stateMgr.listeners[k2].dispatchEvent(passiveStateChangeEvent);
+			  			}
+			  		}
+			  	}
+				}
+			} else {
+				// Notify all the views
+		    stateChangeHandler(stateMgr.appState);
+		    for(var k3 in stateMgr.listeners){
+		  		if(stateMgr.listeners.hasOwnProperty(k3)){
+		  			stateMgr.listeners[k3].dispatchEvent(stateChangeEvent);
+		  		}
+		  	}
+			}
+			stateChangeEvent = void(0);
+			passiveStateChangeEvent = void(0);
+		} else {
+			stateChangeHandler(stateMgr.appState);
+		}
   };
 
 	var appStateChangeHandler = function(caller, newState, newAppState, remember, callback, delay, revert) {
@@ -72,7 +151,8 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
       subscriber,
       pushStateChanged = false,
       willUndo = false,
-      stateChangeEvent;
+      stateChangeEvent,
+      passiveStateChangeEvent;
 
     //If reverting to previousState remove any processedState from the prior call
     //This occurs because of the callback batching process
@@ -82,40 +162,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
     if(arguments.length <= 2 || (typeof newState === 'function')){
     	if(newState === void(0) || !!!Object.keys(newState).length || (typeof newState === 'function')){
 				calledBack = false;
-		  	if(stateMgr.hasListeners){
-					stateChangeEvent = new CustomEvent("stateChange", {"detail": stateMgr.appState});
-				  if(processedState.$notify){
-				  	//Only notify specific views
-						if(isArray(processedState.$notify)){
-							if (processedState.$notify.indexOf('*') !== -1) {
-		            stateChangeHandler(stateMgr.appState);
-		          } else {
-		            processedState.$notify.forEach(function (viewKey) {
-		              if (viewKey in stateMgr.listeners) {
-		                stateMgr.listeners[viewKey].dispatchEvent(stateChangeEvent);
-		              }
-		            });
-		          }
-						} else {
-							if(processedState.$notify === "*"){
-								stateChangeHandler(stateMgr.appState);
-							} else if(processedState.$notify in stateMgr.listeners){
-								stateMgr.listeners[processedState.$notify].dispatchEvent(stateChangeEvent);
-							}
-						}
-					} else {
-						// Notify all the views
-				    stateChangeHandler(stateMgr.appState);
-				    for(var k in stateMgr.listeners){
-				  		if(stateMgr.listeners.hasOwnProperty(k)){
-				  			stateMgr.listeners[k].dispatchEvent(stateChangeEvent);
-				  		}
-				  	}
-					}
-					stateChangeEvent = void(0);
-				} else {
-					stateChangeHandler(stateMgr.appState);
-				}
+				notifyViews(processedState.$notify);
 				transientState = {};
 				processedState = {};
 				if (typeof newState === 'function'){ //must be callback
@@ -451,42 +498,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 		/* and any other mounted Views
 		/***************/
 		calledBack = false;
-  	
-  	if(stateMgr.hasListeners){
-			stateChangeEvent = new CustomEvent("stateChange", {"detail": stateMgr.appState});
-		  if(nextState.$notify){
-		  	//Only notify specific views
-				if(isArray(nextState.$notify)){
-					if (nextState.$notify.indexOf('*') !== -1) {
-            stateChangeHandler(stateMgr.appState);
-          } else {
-            nextState.$notify.forEach(function (viewKey) {
-              if (viewKey in stateMgr.listeners) {
-                stateMgr.listeners[viewKey].dispatchEvent(stateChangeEvent);
-              }
-            });
-          }
-				} else {
-					if(nextState.$notify === "*"){
-						stateChangeHandler(stateMgr.appState);
-					} else if(nextState.$notify in stateMgr.listeners){
-						stateMgr.listeners[nextState.$notify].dispatchEvent(stateChangeEvent);
-					}
-				}
-			} else {
-				// Notify all the views
-		    stateChangeHandler(stateMgr.appState);
-		    for(var k in stateMgr.listeners){
-		  		if(stateMgr.listeners.hasOwnProperty(k)){
-		  			stateMgr.listeners[k].dispatchEvent(stateChangeEvent);
-		  		}
-		  	}
-			}
-			stateChangeEvent = void(0);
-		} else {
-			stateChangeHandler(stateMgr.appState);
-		}
-
+  	notifyViews(nextState.$notify);
 		transientState = {};
 		processedState = {};
 	};
@@ -682,8 +694,16 @@ StateManager.prototype.unmountView = function(component){
 
 StateManager.prototype.mountView = function(component){
 		var viewKey = component.props.$viewKey || component._rootNodeID;
+		var shouldUpdate;
 		this.handlers[viewKey] = function(e){
-	    component.setState({appContext: e.detail});
+			shouldUpdate = e.detail.shouldUpdate === void(0) ? true : e.detail.shouldUpdate;
+			component.setState({appContext: e.detail.appContext});
+			//Do not override shouldComponentUpdate if exists
+			if(component.shouldComponentUpdate === null){
+		    component.shouldComponentUpdate = function(){
+		    	return shouldUpdate;
+		    }
+			}
 		};
 		var node = component.getDOMNode();
 		// if node is null i.e. return 'null' from render(). then create a dummy element
