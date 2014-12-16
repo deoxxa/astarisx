@@ -67,32 +67,59 @@
     <div class="content">
         <div class="pure-g">
             <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
-
-                <h2 class="content-subhead">
-                    <i class="fa fa-2x fa-rocket"></i>
+              <h2 class="content-subhead">
+                <i class="fa fa-2x fa-rocket"></i>
                 Productive
-                </h2>
-                <p class="content-text">
-                    Leverage your React skills to start creating your next Astarisx application with little ramp up. That's because Astarisx feels like React, making it easy to comprehend and quick to learn. There's no need to change your coding style to suit the framework and it can easily be integrated into existing projects.
-                    <b>Astatrisx comes with an easy to use, client-side push state router out of the box.</b>
-                </p>
+              </h2>
+              <p class="content-text">
+                Leverage your <a href="http://facebook.github.io/react/">React</a> skills to start creating your next Astarisx application with little ramp up. That's because Astarisx feels like React, making it easy to comprehend and quick to learn. There's no need to change your coding style to suit the framework and it can easily be integrated into existing projects.
+              </p>
             </div>
             <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
                 <h2 class="content-subhead">
-                    <i class="fa fa-2x fa-cogs"></i>
+                    <i class="fa fa-2x fa-cubes"></i>
                     Highly Composable
                 </h2>
                 <p class="content-text">
                     Astarisx View's are stateless and completely decoupled from their Owner Component, making them highly composable. They can be moved to anywhere within your application and will work without changing a line of code. A View can even be completely removed without breaking your application or any interrelationships. State changes in one View are reflected in another.
                 </p>
             </div>
-            <div class="l-box pure-u-1 pure-u-md-1 pure-u-lg-1-3">
+            <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
                 <h2 class="content-subhead">
                     <i class="fa fa-2x fa-database"></i>
                     Single Source of Truth
                 </h2>
                 <p class="content-text">
                     Application state is stored within ViewModels and Models. Astarisx handles state transitions, creating a Single Data Model, which is passed to the View and is accessible from anywhere within the application. Invoke actions on data contexts from within the existing View or ViewModel. You are always garanteed that the View will have the latest copy of the Application's state when you need it.
+                </p>
+            </div>
+            <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+              <h2 class="content-subhead">
+                <i class="fa fa-2x fa-sitemap"></i>
+                PushState Router
+              </h2>
+              <p class="content-text">
+               Astarisx makes it real easy to implement client-side pushState routing, with an optional pushState Router baked right in. Routing configuration and logic is moved out of the View and into the Business Logic Layer.
+
+Astarisx uses Page, a micro client-side router inspired by the Express router, written by TJ Holowaychuk the creator of Express, amongst other things.
+              </p>
+            </div>
+            <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+                <h2 class="content-subhead">
+                    <i class="fa fa-2x fa-tablet"></i>
+                    MediaQueryList Notifications
+                </h2>
+                <p class="content-text">
+                    Responsive Web Design is all the rage. Astarisx is able to receive MediaQueryList Notifications within JavaScript. So as a screen changes size or orientation, tha application can be notified of the change and respond to in your JavaScript code. This may be handy if you would like to make an ajax request for more data based on a screens orientation. You could even do some or all of your Responsive Design in JavaScript rather than in CSS.
+                </p>
+            </div>
+            <div class="l-box pure-u-1 pure-u-md-1-2 pure-u-lg-1-3">
+                <h2 class="content-subhead">
+                    <i class="fa fa-2x fa-film"></i>
+                    Accelerated Animation
+                </h2>
+                <p class="content-text">
+Astarisx provides a mixin, called AstarisxAnimate, that allows you to easily integarte animations into your application. AstarisxAnimate incorporates Velocity, an accelerated JavaScript animation library. Use pre-defined transitions or create your own. You will be able to quickly incorporate super smooth page transitions into your applications that the likes of Apple will envy. You will be able to harness the full potential of Velocity when and where you need it.
                 </p>
             </div>
         </div>
@@ -104,7 +131,7 @@
             <h3 class="content-head content-head-ribbon">Quick Overview</h3>
 
             <p>
-                Astarisx uses the Model-View-ViewModel (MVVM) pattern, which was developed by Microsoft in 2005 and is a specialization of the Presentation Model. The View in MVVM is handled by React and is the User Interface (UI). Astarisx provides the framwork for the Models and ViewModels with which the UI will interact. 
+                Astarisx helps implement the Model-View-ViewModel (MVVM) pattern, which was developed by Microsoft in 2005 and is a specialization of the Presentation Model. React's role is to provide the View (UI) within the MVVM pattern, whilst Astarisx provides the Models and ViewModels with which the UI will interact. 
             </p>
             <p>
                 Models store the Application's Domain State and Data Domain Logic. A ViewModel is a "View's Model" and stores View State and Business Logic, referred to as a Data Context. The UI is completely decoupled from Business Logic and State.
