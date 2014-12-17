@@ -152,13 +152,13 @@
             </p>
            
             <h3 class="content-subhead"><a name="dataflow">Unidirectional Data Flow</a></h3>
-            <p>Astarisx application data flows are unidirectional. Data, or state, flows out through the ControllerViewModel and ViewModels to the State Manager. The State Manager merges this state with the current Application State, effectively transitioning the Application Data Context to the next state. The State Manager notifies all Views that state has changed and sends them the new Application Data Context. The Views propagate any changes down through to its components which gets reflected in the UI. A View will invoke Actions on the Application Data Context, usually via User interactions on the UI, which get handled by the relevant Model, ViewModel or ControllerViewModel. The ControllerViewModel and/or Viewmodels process these actions and transition their Data Context to the next State. Once again, this state is passed to the State Manager, which transitions the Application Data Context to the next state and notifies the Views.</p>
 
             <div class="pure-g">
                 <div class="pure-u-1">
                     <img class="pure-img-responsive" src="../img/common/unidata.png" alt="Unidirectional Data Flow">
                 </div>
             </div>
+            <p>Astarisx application data flows are unidirectional. A View will invoke an Actions on a Data Context, usually via User interactions on the UI, which gets handled by the relevant Model, ViewModel or ControllerViewModel. The ControllerViewModel and/or Viewmodels process these actions and transition their Data Context to the next State. Data, or state, flows out through the ControllerViewModel and ViewModels to the State Manager. The State Manager merges this state with the current Application State, effectively transitioning the Application Data Context to the next state. The State Manager notifies all Views that state has changed and sends them the new Application Data Context. The Views propagate any changes down through to its components which gets reflected in the UI.</p>
 
             <h2 class="content-subhead"><a name="guide">Guide</a></h2>
             <h2 class="content-subhead"><a name="api">API</a></h2>
