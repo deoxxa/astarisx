@@ -32,27 +32,25 @@
             <a class="pure-menu-heading" href="../index.html"><span class="fa fa-arrow-left"></span>Astarisx</a>
 
             <ul>
-                <li><a href="#overview">Overview</a></li>
+                <li><a href="#concepts">Concepts</a></li>
                 <li class="sub"><a href="#mvvm">MVVM Pattern</a></li>
                 <li class="sub"><a href="#anatomy">Application Anatomy</a></li>
                 <li class="sub"><a href="#dataflow">Unidirectional Data Flow</a></li>
-                <li><a href="#guide">Guide</a>
-                    
-                </li>
+
                 <!-- <li class="menu-item-divided pure-menu-selected">
                     <a href="#">Services</a>
                 </li> -->
                 <li>
-                    <a href="#api">API</a>
+                    <a href="#browser">Browser Support</a>
                 </li>
                 <li>
                     <a href="#support">Support</a>
                 </li>
-                <li>
-                    <a href="#browser">Browser Support</a>
+                <li class="menu-item-divided">
+                    <a href="tutorials.html">Tutorials</a>
                 </li>
                 <li>
-                    <a href="#license">License</a>
+                    <a href="api.html">API</a>
                 </li>
             </ul>
         </div>
@@ -60,13 +58,13 @@
 
     <div id="main">
         <div class="header">
-            <h1>Astarisx Documentation</h1>
+            <h1>Astarisx Developer's Guide</h1>
             <h2>v0.10.0</h2>
         </div>
 
         <div class="content">
             
-            <h2 class="content-subhead"><a name="overview">Overview</a></h2>
+            <h2 class="content-subhead"><a name="concepts">Concepts</a></h2>
              <h3 class="content-subhead"><a name="mvvm">MVVM Pattern</a></h3>
             <p>
                 Astarisx helps implement the Model-View-ViewModel pattern, which is a specialization of the <a href="http://martinfowler.com/eaaDev/PresentationModel.html">Presentation Model</a> developed by Microsoft in 2005 to leverage WPF and Silverlight technologies. John Gossman, one of the Architects of WPF and Silverlight at Microsoft during that time, coined the term. <a href="http://msdn.microsoft.com/en-us/magazine/dd419663.aspx">WPF Apps With The Model-View-ViewModel Design Pattern</a> by Josh Smith, explains the pattern and its history if you're interested. Another article I would recommend is Addy Osmani's <a href="http://addyosmani.com/blog/understanding-mvvm-a-guide-for-javascript-developers/">Understanding MVVM – A Guide For JavaScript Developers</a>. He does a great job at explaining MVVM for the JavaScript developer.
@@ -103,7 +101,7 @@
                     <img class="pure-img-responsive" src="../img/common/Astarisx.png" alt="Anatomy">
                 </div>
             </div>
-            <h4 class="content-subhead"><a href="#concepts_models" name="concepts_models">Models</a></h4>
+            <h4 class="content-subhead">Models</h4>
             <p>
                 Yes, I know, you don't really need Models in React Applications. But these Models will really help simplify how your React application interacts with your data.
 
@@ -115,7 +113,7 @@
 
                 A Model has no knowledge of the View or ViewModels. Whenever a Model changes state, a ViewModel is notified. It receives the model's new state and handles transitioning the model to the next state.
             </p>
-            <h4 class="content-subhead"><a href="#concepts_cvm" name="concepts_cvm">The ControllerViewModel</a></h4>
+            <h4 class="content-subhead">The ControllerViewModel</h4>
             <p>
                 Every Astarisx application will have a ControllerViewModel. The ControllerViewModel is a specilialized ViewModel and is the entry point to your Astarisx application. It's responsibility is to manage and store Application State. This is where you define application level logic. The sort of things you might define in the ControllerViewModel may be application navigation, undo functionality or the application's online or busy status.
 
@@ -123,7 +121,7 @@
 
                 <!-- See ControllerViewModel -->
             </p>
-            <h4 class="content-subhead"><a href="#concepts_viewModels" name="concepts_viewModels">ViewModels</a></h4>
+            <h4 class="content-subhead">ViewModels</h4>
             <p>
                 A ViewModel is where you define Business Logic and store View State. All methods and fields defined in a ViewModel are visible in the View via the ControllerViewModel. A ViewModel is also responsible for exposing Models, and consequently their methods and fields, to the View.
 
@@ -133,11 +131,11 @@
 
                 <!-- See ViewModels -->
             </p>
-            <h4 class="content-subhead"><a href="#concepts_ui" name="concepts_ui">The UI Container</a></h4>
+            <h4 class="content-subhead">The UI Container</h4>
             <p>
                 React uses a single component to host all of the application's components. This component is at the apex of the component hierarchy. Astarisx refers to this component as the UI Container. The UI Container can hold regular React components and/or Astarisx Views. The UI Container receives a copy of the entire Application Data Context whenever there is a state change anywhere in the application.
             </p>
-            <h4 class="content-subhead"><a href="#concepts_views" name="concepts_views">Views</a></h4>
+            <h4 class="content-subhead">Views</h4>
             <p>
                 An Astarisx View is a self contained React component. They differ from regular React components in that they are stateless and completely decoupled from their Owner. Every View gets its own copy of the Application Data Context. Astarisx is capable of displaying multiple Views in the UI at any one time. These Views are also capable and most likely to contain any number of Views themselves.
 
@@ -145,7 +143,7 @@
 
                 <!-- See Views -->
             </p>
-            <h4 class="content-subhead"><a href="#concepts_stateManager" name="concepts_stateManager">State Manager</a></h4>
+            <h4 class="content-subhead">State Manager</h4>
             <p>
                 Astarisx takes on the responsibility of storing and managing the Application's State. Models, ViewModels and the ControllerViewModel store and manager their own state. The State Manager receives state change notifications from these objects, merges their state and transtions the application to the next state, the output being the Application Data Context. The Application Data Context is available to all Views and always holds the most current version of the Application's state. A View can interact with the Application Data Context, invoking Actions which are subsequently handled by the appropriate Model, ViewModel or the ControllerViewModel. The State Manager will then notify the Views of any state changes and pass them the latest Application Data Context. The State Manager is a system object. You don't need to create one of these.
                 <!-- See Views -->
@@ -160,28 +158,14 @@
             </div>
             <p>Astarisx application data flows are unidirectional. A View will invoke an Action, usually via User interactions on the UI, which gets handled by a Data Context. Data, or state, then flows out to the State Manager. The State Manager merges this state with the current Application State, effectively transitioning the Application Data Context to the next state. It then notifies all Views that state has changed and sends them the new Application Data Context. The Views propagate any changes down through to its components.</p>
 
-            <h2 class="content-subhead"><a name="guide">Guide</a></h2>
-            <h2 class="content-subhead"><a name="api">API</a></h2>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </p>
-            <h2 class="content-subhead"><a name="support">Support</a></h2>
             <h2 class="content-subhead"><a name="browser">Browser Support</a></h2>
             <p>Most ECMAScript 5 compliant browsers.</p>
 
-<p><b>IE8 and below is not supported.</b></p>
+            <p><b>IE8 and below is not supported.</b></p>
 
-<p><b>IE9 and below is not supported if the pushState option is enabled.</b></p>
-            <h2 class="content-subhead"><a name="license">License</a></h2>
-            <h3 class="content-subhead">The MIT License (MIT)</h3>
-
-<h4 class="content-subhead">Copyright &copy 2014-2015 Entrendipity Pty. Ltd.</h4>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+            <p><b>IE9 and below is not supported if the pushState option is enabled.</b></p>
+            <h2 class="content-subhead"><a name="support">Support</a></h2>
+            
         </div>
     </div>
 </div>
