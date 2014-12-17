@@ -76,7 +76,9 @@
                 A quote from WPF Apps With The Model-View-ViewModel Design Pattern summarizes MVVM nicely.
                 </p>
                 <blockquote>
-                ... a ViewModel does not need a reference to a view. The view binds to properties on a ViewModel, which, in turn, exposes data contained in model objects and other state specific to the view. The bindings between view and ViewModel are simple to construct because a ViewModel object is set as the DataContext of a view. If property values in the ViewModel change, those new values automatically propagate to the view via data binding. When the user clicks a button in the View, a command on the ViewModel executes to perform the requested action. The ViewModel, never the View, performs all modifications made to the model data. The view classes have no idea that the model classes exist, while the ViewModel and model are unaware of the view. In fact, the model is completely oblivious to the fact that the ViewModel and view exist. This is a very loosely coupled design, which pays dividends in many ways ...
+                    <p>
+                        ... a ViewModel does not need a reference to a view. The view binds to properties on a ViewModel, which, in turn, exposes data contained in model objects and other state specific to the view. The bindings between view and ViewModel are simple to construct because a ViewModel object is set as the DataContext of a view. If property values in the ViewModel change, those new values automatically propagate to the view via data binding. When the user clicks a button in the View, a command on the ViewModel executes to perform the requested action. The ViewModel, never the View, performs all modifications made to the model data. The view classes have no idea that the model classes exist, while the ViewModel and model are unaware of the view. In fact, the model is completely oblivious to the fact that the ViewModel and view exist. This is a very loosely coupled design, which pays dividends in many ways ...
+                    </p>
                     <footer>
                         <cite><a href="http://msdn.microsoft.com/en-us/magazine/dd419663.aspx">Josh Smith</a></cite>
                     </footer>
@@ -84,17 +86,17 @@
                 <p>
                 In addition to the above.
                 </p>
-                <p>
                 <blockquote>
-                ... the [ViewModel] will observe the view and respond to events by changing any appropriate state and reloading the entire view.
+                    <p>... the [ViewModel] will observe the view and respond to events by changing any appropriate state and reloading the entire view.</p>
                     <footer>
                         <cite><a href="http://martinfowler.com/eaaDev/PresentationModel.html">Martin Fowler</a></cite>
                     </footer>
                 </blockquote>
-                So in the context of Astarisx, React components act as the View, "data binding" is one-way and a "command" on the ViewModel is simply referred to as an Action.
+                <p>
+                    So in the context of Astarisx, React components act as the View, "data binding" is one-way and a "command" on the ViewModel is simply referred to as an Action.
 
-                Astarisx also includes a specialized ViewModel, referred to as the ControllerViewModel. It determines which ViewModels are exposed to the View.
-            </p>
+                    Astarisx also includes a specialized ViewModel, referred to as the ControllerViewModel. It determines which ViewModels are exposed to the View.
+                </p>
             <h3 class="content-subhead"><a name="anatomy">Application Anatomy</a></h3>
             <div class="pure-g">
                 <div class="pure-u-1">
