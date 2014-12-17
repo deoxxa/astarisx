@@ -33,8 +33,8 @@
 
             <ul>
                 <li><a href="#overview">Overview</a></li>
-                <li class="sub"><a href="#anatomy">Application Anatomy</a></li>
                 <li class="sub"><a href="#mvvm">MVVM Pattern</a></li>
+                <li class="sub"><a href="#anatomy">Application Anatomy</a></li>
                 <li class="sub"><a href="#dataflow">Unidirectional Data Flow</a></li>
                 <li><a href="#guide">Guide</a>
                     
@@ -67,6 +67,34 @@
         <div class="content">
             
             <h2 class="content-subhead"><a name="overview">Overview</a></h2>
+             <h3 class="content-subhead"><a name="mvvm">MVVM Pattern</a></h3>
+            <p>
+                Astarisx helps implement the Model-View-ViewModel pattern, which is a specialization of the <a href="http://martinfowler.com/eaaDev/PresentationModel.html">Presentation Model</a> developed by Microsoft in 2005 to leverage WPF and Silverlight technologies. John Gossman, one of the Architects of WPF and Silverlight at Microsoft during that time, coined the term. <a href="http://msdn.microsoft.com/en-us/magazine/dd419663.aspx">WPF Apps With The Model-View-ViewModel Design Pattern</a> by Josh Smith, explains the pattern and its history if you're interested. Another article I would recommend is Addy Osmani's <a href="http://addyosmani.com/blog/understanding-mvvm-a-guide-for-javascript-developers/">Understanding MVVM – A Guide For JavaScript Developers</a>. He does a great job at explaining MVVM for the JavaScript developer.
+
+                Anyway, what does this mean for Astarisx. Well, in a nut shell, the MVVM pattern allows you to write Business Logic that is completely sepearate from the View.
+
+                A quote from WPF Apps With The Model-View-ViewModel Design Pattern summarizes MVVM nicely.
+                </p>
+                <blockquote>
+                ... a ViewModel does not need a reference to a view. The view binds to properties on a ViewModel, which, in turn, exposes data contained in model objects and other state specific to the view. The bindings between view and ViewModel are simple to construct because a ViewModel object is set as the DataContext of a view. If property values in the ViewModel change, those new values automatically propagate to the view via data binding. When the user clicks a button in the View, a command on the ViewModel executes to perform the requested action. The ViewModel, never the View, performs all modifications made to the model data. The view classes have no idea that the model classes exist, while the ViewModel and model are unaware of the view. In fact, the model is completely oblivious to the fact that the ViewModel and view exist. This is a very loosely coupled design, which pays dividends in many ways ...
+                    <footer>
+                        <cite><a href="http://msdn.microsoft.com/en-us/magazine/dd419663.aspx">Josh Smith</a></cite>
+                    </footer>
+                </blockquote>
+                <p>
+                In addition to the above.
+                </p>
+                <p>
+                <blockquote>
+                ... the [ViewModel] will observe the view and respond to events by changing any appropriate state and reloading the entire view.
+                    <footer>
+                        <cite><a href="http://martinfowler.com/eaaDev/PresentationModel.html">Martin Fowler</a></cite>
+                    </footer>
+                </blockquote>
+                So in the context of Astarisx, React components act as the View, "data binding" is one-way and a "command" on the ViewModel is simply referred to as an Action.
+
+                Astarisx also includes a specialized ViewModel, referred to as the ControllerViewModel. It determines which ViewModels are exposed to the View.
+            </p>
             <h3 class="content-subhead"><a name="anatomy">Application Anatomy</a></h3>
             <div class="pure-g">
                 <div class="pure-u-1">
@@ -122,24 +150,7 @@ A Model has no knowledge of the View or ViewModels. Whenever a Model changes sta
                 Astarisx takes on the responsibility of storing and managing the Application's State. Models, ViewModels and the ControllerViewModel store and manager their own state. The State Manager merges their state and transtions the application to the next state, the output being the Application Data Context. The State Manager will then notify the Views of the state change and pass them the Application Data Context in the new state. The State Manager is a system object. You don't need to create one of these.
                 <!-- See Views -->
             </p>
-            <h3 class="content-subhead"><a name="mvvm">MVVM Pattern</a></h3>
-            <p>
-                Astarisx helps implement the Model-View-ViewModel pattern, which is a specialization of the Presentation Model developed by Microsoft in 2005 to leverage WPF and Silverlight technologies. John Gossman, one of the Architects of WPF and Silverlight at Microsoft during that time, coined the term. WPF Apps With The Model-View-ViewModel Design Pattern explains the pattern and its history if you're interested. Another article I would recommend is Addy Osmani's Understanding MVVM – A Guide For JavaScript Developers. He does a great job at explaining MVVM for the JavaScript developer.
-
-Anyway, what does this mean for Astarisx. Well, in a nut shell, the MVVM pattern allows you to write Business Logic that is completely sepearate from the View.
-
-A quote from WPF Apps With The Model-View-ViewModel Design Pattern summarizes MVVM nicely.
-
-... a ViewModel does not need a reference to a view. The view binds to properties on a ViewModel, which, in turn, exposes data contained in model objects and other state specific to the view. The bindings between view and ViewModel are simple to construct because a ViewModel object is set as the DataContext of a view. If property values in the ViewModel change, those new values automatically propagate to the view via data binding. When the user clicks a button in the View, a command on the ViewModel executes to perform the requested action. The ViewModel, never the View, performs all modifications made to the model data. The view classes have no idea that the model classes exist, while the ViewModel and model are unaware of the view. In fact, the model is completely oblivious to the fact that the ViewModel and view exist. This is a very loosely coupled design, which pays dividends in many ways ...
-In addition to the above,
-
-a [ViewModel] will observe the view and respond to events by changing any appropriate state and reloading the entire view.
-Taken from Presentation Model by Martin Fowler
-
-So in the context of Astarisx, React components act as the View, "data binding" is one-way and a "command" on the ViewModel is simply referred to as an Action.
-
-Astarisx also includes a specialized ViewModel, referred to as the ControllerViewModel. It determines which ViewModels are exposed to the View.
-            </p>
+           
             <h3 class="content-subhead"><a name="dataflow">Unidirectional Data Flow</a></h3>
             <p>Astarisx application data flows are unidirectional. Data, or state, flows out through the ControllerViewModel and ViewModels into the State Manager. The State Manager merges this state with the current Application State, effectively transitioning the Application Data Context to the next state. The State Manager notifies any registered Views that state has changed and sends them the new Application Data Context. The Views propagate any changes down through to its components which gets reflected in the UI. A View will invoke Actions on the Application Data Context, usually via User interactions on the UI, which get handled by the relevant Model, ViewModel or ControllerViewModel. The ControllerViewModel and/or Viewmodels process these actions and transition their Data Context to the next State. Once again, this state is passed to the State Manager, which transitions the Application Data Context to the next state and notifies the Views.</p>
             <div class="pure-g">
