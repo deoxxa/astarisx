@@ -38,6 +38,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 		internal = false,
 		stateMgr = this;
 
+	//Ensures that UI shouldComponentUpdate will not be overridden
 	var shouldComponentUpdateIsNull = component.shouldComponentUpdate === null;
 	var initCtxArgs = Array.prototype.slice.call(arguments, 2);
 
@@ -51,14 +52,8 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 	routingEnabled = 'enableRouting' in appCtx ? appCtx.enableRouting : false;
 	stateMgr.signInUrl = appCtx.signInUrl;
 
-	stateChangeHandler = function(applicationDataContext, shouldUpdate){
+	stateChangeHandler = function(applicationDataContext){
     	component.setState({appContext: applicationDataContext});
-    	//will not override shouldComponentUpdate if exists
-    	if(shouldComponentUpdateIsNull){
-	    	component.shouldComponentUpdate = function(){
-	    		return shouldUpdate === void(0) ? true : shouldUpdate;
-	    	}
-    	}
   };
 
   notifyViews = function(notify){
@@ -85,6 +80,12 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 		  		//notify specific views
           notify.forEach(function (viewKey) {
           	if(viewKey === "*"){
+          		//Ensure UI IS rendered
+	        		if(shouldComponentUpdateIsNull){
+					    	component.shouldComponentUpdate = function(){
+					    		return true;
+					    	}
+				    	};
 							stateChangeHandler(stateMgr.appState);
           	} else if(viewKey in stateMgr.listeners) {
               stateMgr.listeners[viewKey].dispatchEvent(stateChangeEvent);
@@ -93,6 +94,12 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
           });
 	        //notify other views but do not render component
 	        if(!('*' in temp)){
+	        	//Ensure UI IS NOT rendered
+	        	if(shouldComponentUpdateIsNull){
+				    	component.shouldComponentUpdate = function(){
+				    		return false;
+				    	}
+			    	};
 	        	stateChangeHandler(stateMgr.appState, false);
 	        }
 			    for(var k in stateMgr.listeners){
@@ -103,8 +110,20 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 		  		temp = void(0);
         } else {
 					if(notify === "*"){
+						//Ensure UI IS rendered
+	        	if(shouldComponentUpdateIsNull){
+				    	component.shouldComponentUpdate = function(){
+				    		return true;
+				    	}
+			    	};
 						stateChangeHandler(stateMgr.appState);
 					} else {
+						//Ensure UI IS NOT rendered
+	        	if(shouldComponentUpdateIsNull){
+				    	component.shouldComponentUpdate = function(){
+				    		return false;
+				    	}
+			    	};
 						stateChangeHandler(stateMgr.appState, false);
 					}
 					for(var k2 in stateMgr.listeners){
@@ -118,6 +137,12 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 			  	}
 				}
 			} else {
+				//Ensure UI IS rendered
+	      if(shouldComponentUpdateIsNull){
+		    	component.shouldComponentUpdate = function(){
+		    		return true;
+		    	}
+	    	};
 				// Notify all the views
 		    stateChangeHandler(stateMgr.appState);
 		    for(var k3 in stateMgr.listeners){
@@ -129,6 +154,12 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 			stateChangeEvent = void(0);
 			passiveStateChangeEvent = void(0);
 		} else {
+			//Ensure UI IS rendered
+	    if(shouldComponentUpdateIsNull){
+	    	component.shouldComponentUpdate = function(){
+	    		return true;
+	    	}
+    	};
 			stateChangeHandler(stateMgr.appState);
 		}
   };
