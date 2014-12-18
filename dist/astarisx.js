@@ -4,7 +4,7 @@ require('./lib/custom-event-polyfill');
 
 module.exports = Astarisx;
 
-},{"./lib/custom-event-polyfill":2,"./src/core.js":6}],2:[function(require,module,exports){
+},{"./lib/custom-event-polyfill":2,"./src/core.js":7}],2:[function(require,module,exports){
 // Polyfill for creating CustomEvents on IE9/10
 
 // code pulled from:
@@ -565,6 +565,8 @@ if (!window.CustomEvent || typeof window.CustomEvent !== 'function') {
   page.sameOrigin = sameOrigin;
 
 },{"path-to-regexp":4}],4:[function(require,module,exports){
+var isArray = require('isarray');
+
 /**
  * Expose `pathtoRegexp`.
  */
@@ -607,7 +609,7 @@ function escapeGroup (group) {
  * @param  {Array}  keys
  * @return {RegExp}
  */
-var attachKeys = function (re, keys) {
+function attachKeys (re, keys) {
   re.keys = keys;
 
   return re;
@@ -625,7 +627,7 @@ var attachKeys = function (re, keys) {
  * @return {RegExp}
  */
 function pathtoRegexp (path, keys, options) {
-  if (keys && !Array.isArray(keys)) {
+  if (!isArray(keys)) {
     options = keys;
     keys = null;
   }
@@ -640,32 +642,35 @@ function pathtoRegexp (path, keys, options) {
 
   if (path instanceof RegExp) {
     // Match all capturing groups of a regexp.
-    var groups = path.source.match(/\((?!\?)/g) || [];
+    var groups = path.source.match(/\((?!\?)/g);
 
-    // Map all the matches to their numeric keys and push into the keys.
-    keys.push.apply(keys, groups.map(function (match, index) {
-      return {
-        name:      index,
-        delimiter: null,
-        optional:  false,
-        repeat:    false
-      };
-    }));
+    // Map all the matches to their numeric indexes and push into the keys.
+    if (groups) {
+      for (var i = 0; i < groups.length; i++) {
+        keys.push({
+          name:      i,
+          delimiter: null,
+          optional:  false,
+          repeat:    false
+        });
+      }
+    }
 
     // Return the source back to the user.
     return attachKeys(path, keys);
   }
 
-  if (Array.isArray(path)) {
-    // Map array parts into regexps and return their source. We also pass
-    // the same keys and options instance into every generation to get
-    // consistent matching groups before we join the sources together.
-    path = path.map(function (value) {
-      return pathtoRegexp(value, keys, options).source;
-    });
+  // Map array parts into regexps and return their source. We also pass
+  // the same keys and options instance into every generation to get
+  // consistent matching groups before we join the sources together.
+  if (isArray(path)) {
+    var parts = [];
 
+    for (var i = 0; i < path.length; i++) {
+      parts.push(pathtoRegexp(path[i], keys, options).source);
+    }
     // Generate a new regexp instance by joining all the parts together.
-    return attachKeys(new RegExp('(?:' + path.join('|') + ')', flags), keys);
+    return attachKeys(new RegExp('(?:' + parts.join('|') + ')', flags), keys);
   }
 
   // Alter the path string into a usable regexp.
@@ -733,7 +738,12 @@ function pathtoRegexp (path, keys, options) {
   return attachKeys(new RegExp('^' + path + (end ? '$' : ''), flags), keys);
 };
 
-},{}],5:[function(require,module,exports){
+},{"isarray":5}],5:[function(require,module,exports){
+module.exports = Array.isArray || function (arr) {
+  return Object.prototype.toString.call(arr) == '[object Array]';
+};
+
+},{}],6:[function(require,module,exports){
 
 var utils = require('./utils');
 var extend = utils.extend;
@@ -1000,7 +1010,7 @@ var ControllerViewModel = {
 };
 
 module.exports = ControllerViewModel;
-},{"./utils":10}],6:[function(require,module,exports){
+},{"./utils":11}],7:[function(require,module,exports){
 var model = require('./model');
 var viewModel = require('./viewModel');
 var controllerViewModel = require('./controllerViewModel');
@@ -1295,7 +1305,7 @@ module.exports = {
   page: page
 };
 
-},{"./controllerViewModel":5,"./mixin":7,"./model":8,"./utils":10,"./viewModel":11,"page":3}],7:[function(require,module,exports){
+},{"./controllerViewModel":6,"./mixin":8,"./model":9,"./utils":11,"./viewModel":12,"page":3}],8:[function(require,module,exports){
 var StateManager = require('./stateManager');
 var stateMgr;
 
@@ -1502,7 +1512,7 @@ Object.defineProperty(mixin.view, 'page', {
 
 module.exports = mixin;
 
-},{"./stateManager":9}],8:[function(require,module,exports){
+},{"./stateManager":10}],9:[function(require,module,exports){
 
 var utils = require('./utils');
 var extend = utils.extend;
@@ -1603,7 +1613,7 @@ var Model = {
 };
 
 module.exports = Model;
-},{"./utils":10}],9:[function(require,module,exports){
+},{"./utils":11}],10:[function(require,module,exports){
 var page = require('page');
 var utils = require('./utils');
 var extend = utils.extend;
@@ -2402,7 +2412,7 @@ StateManager.prototype.dispose = function(){
 };
 
 module.exports = StateManager;
-},{"./utils":10,"page":3}],10:[function(require,module,exports){
+},{"./utils":11,"page":3}],11:[function(require,module,exports){
 var toString = Object.prototype.toString;
 var utils = {
   
@@ -2573,7 +2583,7 @@ var utils = {
 };
 
 module.exports = utils;
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 var utils = require('./utils');
 var extend = utils.extend;
 var isObject = utils.isObject;
@@ -2798,5 +2808,5 @@ var ViewModel = {
 };
 
 module.exports = ViewModel;
-},{"./utils":10}]},{},[1])(1)
+},{"./utils":11}]},{},[1])(1)
 });
