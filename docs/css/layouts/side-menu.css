@@ -33,15 +33,19 @@ This is the parent `<div>` that contains the menu and the content area.
 }
 #layout.active {
     position: relative;
-    left: 150px;
+    /*left: 150px;*/
+    left: 200px;
 }
 #layout.active #menu {
-    left: 150px;
-    width: 150px;
+    /*left: 150px;
+    width: 150px;*/
+    left: 200px;
+    width: 200px;
 }
 
 #layout.active .menu-link {
-    left: 150px;
+    /*left: 150px;*/
+    width: 200px;
 }
 /*
 The content `<div>` is where all your content goes.
@@ -87,83 +91,94 @@ appears on the left side of the page.
 */
 
 #menu {
-    margin-left: -150px; /* "#menu" width */
-    width: 150px;
+    /*margin-left: -150px;*/ /* "#menu" width */
+    /*width: 150px;*/
+    margin-left: -200px;
+    width: 200px;
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
     z-index: 1000; /* so the menu or its navicon stays above all content */
     background: #5b2d89;
+    /*background: white;*/
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }
-    /*
-    All anchors inside the menu should be styled like this.
-    */
-    #menu a {
-        /*color: #999;*/
-        /*color: #6FBEF3;*/
-        color: white;
-        border: none;
-        padding: 0.6em 0 0.6em 0.6em;
-    }
+/*
+All anchors inside the menu should be styled like this.
+*/
+#menu a {
+    color: #999;
+    /*color: #6FBEF3;*/
+    border: none;
+    padding: 0em 0em 0.4em 0.6em;
+}
 
-    /*
-    Remove all background/borders, since we are applying them to #menu.
-    */
-     #menu .pure-menu,
-     #menu .pure-menu ul {
-        border: none;
-        background: transparent;
-    }
+#menu .group-header a {
+    /*font-weight: 400;*/
+    color: white;
+    padding: 0.4em 0em 0em 0.3em;
+}
+/*
+Remove all background/borders, since we are applying them to #menu.
+*/
+ #menu .pure-menu,
+ #menu .pure-menu ul {
+    border: none;
+    background: transparent;
+}
 
-    /*
-    Add that light border to separate items into groups.
-    */
-    #menu .pure-menu ul,
-    #menu .pure-menu .menu-item-divided {
-        border-top: 2px solid #663399;
-    }
-    /*
-    Change color of the anchor links on hover/focus.
-    */
-    #menu .pure-menu li a:hover,
-    #menu .pure-menu li a:focus {
-        /*background: #333;*/
-        background: none;
-        border: none;
-        color: #AECFE5;
-    }
+/*
+Add that light border to separate items into groups.
+*/
+#menu .pure-menu ul,
+#menu .pure-menu .menu-item-divided {
+    border-top: 2px solid #663399;
+}
+.section-divider {
+    border-top: 2px solid #663399;
+    padding-top: 1.5em;
+}
+/*
+Change color of the anchor links on hover/focus.
+*/
+#menu .pure-menu li a:hover,
+#menu .pure-menu li a:focus {
+    /*background: #333;*/
+    background: none;
+    border: none;
+    color: #AECFE5;
+}
 
-    /*
-    This styles the selected menu item `<li>`.
-    */
-    #menu .pure-menu-selected,
-    #menu .pure-menu-heading {
-        /*background: #1f8dd6;*/
-        border: none;
-    }
+/*
+This styles the selected menu item `<li>`.
+*/
+#menu .pure-menu-selected,
+#menu .pure-menu-heading {
+    /*background: #1f8dd6;*/
+    border: none;
+}
 
-    /*
-    This styles a link within a selected menu item `<li>`.
-    */
-    #menu .pure-menu-selected a {
-        color: #fff;
-        border: none;
-    }
+/*
+This styles a link within a selected menu item `<li>`.
+*/
+#menu .pure-menu-selected a {
+    /*color: #fff;*/
+    border: none;
+}
 
-    /*
-    This styles the menu heading.
-    */
-    #menu .pure-menu-heading {
-        /*font-size: 110%;
-        color: #fff;
-        margin: 0;*/
-        color: white;
-        font-weight: 200;
-        font-size: 120%;
-    }
+/*
+This styles the menu heading.
+*/
+#menu .pure-menu-heading {
+    /*font-size: 110%;*/
+    color: #fff;
+    margin: 0;
+    color: white;
+    font-weight: 200;
+    font-size: 120%;
+}
 .fa-arrow-left {
     padding-right: 0.5em;
     color: #1f8dd6;
@@ -198,35 +213,35 @@ small screens.
     border-radius: 0px 5px 5px 0px;
 }
 
-    .menu-link:hover,
-    .menu-link:focus {
-        background: #5b2d89;
-    }
+.menu-link:hover,
+.menu-link:focus {
+    background: #5b2d89;
+}
 
-    .menu-link span {
-        position: relative;
-        display: block;
-    }
+.menu-link span {
+    position: relative;
+    display: block;
+}
 
-    .menu-link span,
-    .menu-link span:before,
-    .menu-link span:after {
-        background-color: #fff;
-        /*background: rgba(91,45,137,0.5);*/
-        width: 100%;
-        height: .25em;
-    }
+.menu-link span,
+.menu-link span:before,
+.menu-link span:after {
+    background-color: #fff;
+    /*background: rgba(91,45,137,0.5);*/
+    width: 100%;
+    height: .25em;
+}
 
-    .menu-link span:before,
-    .menu-link span:after {
-        position: absolute;
-        margin-top: -0.6em;
-        content: " ";
-    }
+.menu-link span:before,
+.menu-link span:after {
+    position: absolute;
+    margin-top: -0.6em;
+    content: " ";
+}
 
-    .menu-link span:after {
-        margin-top: 0.6em;
-    }
+.menu-link span:after {
+    margin-top: 0.6em;
+}
 
 q,
 blockquote {
@@ -266,20 +281,24 @@ Hides the menu at `48em`, but modify this based on your app's needs.
     }
 
     #layout {
-        padding-left: 150px; /* left col width "#menu" */
+        /*padding-left: 150px;*/
+        padding-left: 200px; /* left col width "#menu" */
         left: 0;
     }
     #menu {
-        left: 150px;
+        /*left: 150px;*/
+        left: 200px;
     }
 
     .menu-link {
         position: fixed;
-        left: 150px;
+        /*left: 150px;*/
         display: none;
+        left: 200px;
     }
 
     #layout.active .menu-link {
-        left: 150px;
+        /*left: 150px;*/
+        left: 200px;
     }
 }
