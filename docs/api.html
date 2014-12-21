@@ -40,8 +40,6 @@
                 <li class="sub"><a data-scroll href="#astarisxcreatecontrollerviewmodelclass">createControllerViewModelClass</a></li>
                 <li class="sub"><a data-scroll href="#astarisxcreatecvmclass">createCVMClass</a></li>
                 <li class="sub"><a data-scroll href="#astarisxextend">extend</a></li>
-                <li class="sub"><a data-scroll href="#astarisxuuid">uuid</a></li>
-                <li class="sub"><a data-scroll href="#astarisxpage">page</a></li>
                 
                 <li class="group-header"><a data-scroll href="#mixins">Mixins</a></li>
                 <li class="sub"><a data-scroll href="#astarisxmixinui">mixin.ui</a></li>
@@ -105,14 +103,14 @@
         </div>
 
         <div class="content">
-            <!-- Static Methods -->
-            <h2 class="content-subhead"><a id="staticmethods">Static Methods</a></h2>
+            <!-- Static -->
+            <h2 class="content-subhead"><a id="staticmethods">Static</a></h2>
             
             <!-- Astarisx.createModelClass -->
             <h2 class="section-divider" id="astarisxcreatemodelclass">Astarisx.createModelClass</h2>
             <p>Defines a Model Class.</p>
             
-            <h3 class="content-subhead" id="usage">Usage</h3>
+            <h3 class="content-subhead">Usage</h3>
             <pre class="javscript"><code>Astarisx.createModelClass(descriptor);</code></pre>
             
             <h3 class="content-subhead" id="arguments">Arguments</h3>
@@ -131,7 +129,7 @@
                         <td align="left">Model Descriptor</td>
                     </tr>
                 </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             
             <h3 class="content-subhead">Returns</h3>
             <p><code>Object</code> - Reference to Model Class Constructor</p>
@@ -149,56 +147,67 @@
             
             <h3>Arguments</h3>
             <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Param</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">descriptor</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">ViewModel Descriptor</td>
-            </tr>
-            </tbody>
-            </table class="pure-table pure-table-striped">
+                <thead>
+                    <tr class="header">
+                    <th align="left">Param</th>
+                    <th align="center">Type</th>
+                    <th align="left">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="odd">
+                    <td align="left">descriptor</td>
+                    <td align="center"><code>Object</code></td>
+                    <td align="left">ViewModel Descriptor</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="content-subhead">Returns</h3>
+            <p><code>Object</code> - Reference to ViewModel Class Constructor</p>
+
             
             <!-- Astarisx.createVMClass -->
             <h2 class="section-divider" id="astarisx.createvmclass">Astarisx.createVMClass</h2>
             <p>Alias for <a data-scroll href="#astarisxcreateviewmodelclass">Astarisx.createViewModelClass</a></p>
-            <h2 id="astarisxcreatecontrollerviewmodelclass">Astarisx.createControllerViewModelClass</h2>
-            <p><code>Astarisx.createControllerViewModelClass</code> is used to define a ControllerViewModel. Astarisx uses this class definition to create a ControllerViewModel instance.</p>
-            <h3 id="signature-2">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Object &lt;= <span class="ot">Astarisx</span>.<span class="fu">createControllerViewModelClass</span>(descriptor)</code></pre>
-            <h3 id="arguments-2">Arguments</h3>
+            
+            <!-- Astarisx.createControllerViewModelClass -->
+            <h2 class="section-divider" id="astarisxcreatecontrollerviewmodelclass">Astarisx.createControllerViewModelClass</h2>
+            <p>Defines a ControllerViewModel Class.</p>
+            <h3 class="content-subhead">Usage</h3>
+            <pre class="javscript"><code>Astarisx.createControllerViewModelClass(descriptor);</code></pre>
+            
+            <h3 class="content-subhead">Arguments</h3>
             <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Param</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">descriptor</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">ControllerViewModel Descriptor</td>
-            </tr>
-            </tbody>
-            </table class="pure-table pure-table-striped">
-            <h3 id="usage-2">Usage</h3>
-            <pre class="javscript"><code>var ControllerViewModel = Astarisx.createControllerViewModelClass({...});</code></pre>
-            <h2 id="astarisx.createcvmclass">Astarisx.createCVMClass</h2>
+                <thead>
+                    <tr class="header">
+                        <th align="left">Param</th>
+                        <th align="center">Type</th>
+                        <th align="left">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="odd">
+                        <td align="left">descriptor</td>
+                        <td align="center"><code>Object</code></td>
+                        <td align="left">ControllerViewModel Descriptor</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3 class="content-subhead">Returns</h3>
+            <p><code>Object</code> - Reference to ControllerViewModel Class Constructor</p>
+
+            <!-- Astarisx.createCVMClass -->
+            <h2 class="section-divider">Astarisx.createCVMClass</h2>
             <p>Alias for <a data-scroll href="#astarisxcreatecontrollerviewmodelclass">Astarisx.createControllerViewModelClass</a></p>
-            <h2 id="astarisx.extend">Astarisx.extend</h2>
-            <p><code>Astarisx.extend</code> creates and returns a shallow copy of an object and merges the properties of any subsequent objects passed in. Arguments that are null or undefined are ignored.</p>
+            
+            <!-- Astarisx.extend -->
+            <h2 class="section-divider" id="astarisxextend">Astarisx.extend</h2>
+            <p>Creates and returns a shallow copy of an object and merges the properties of any subsequent objects passed in. Arguments that are null or undefined are ignored.</p>
             <p>Properties of preceding objects will be completely overwritten by a property with the same key in subsequent objects. The values are not merged.</p>
-            <h3 id="signature-3">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Object &lt;= <span class="ot">Astarisx</span>.<span class="fu">extend</span>(obj[, objN])</code></pre>
-            <h3 id="arguments-3">Arguments</h3>
+            <h3 class="content-subhead">Usage</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">Astarisx</span>.<span>extend</span>(obj[, objN])</code></pre>
+            <h3 class="content-subhead">Arguments</h3>
             <table class="pure-table pure-table-striped">
             <thead>
             <tr class="header">
@@ -219,125 +228,290 @@
             <td align="left">Additional objects containing properties to merge into the target object.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
-            <h3 id="usage-3">Usage</h3>
-            <pre class="javscript"><code>var extObj = Astarisx.extend(objA, objB);</code></pre>
+            </table>
 
 
 
-            <h2 id="astarisx.mixin.ui">Astarisx.mixin.ui</h2>
-            <p>Adds <code>appContext</code> to the ControllerView state object and registers stateChangeHandler.</p>
-            <h3 id="usage">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> Application = <span class="ot">React</span>.<span class="fu">createClass</span>({
-              <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">ui</span>],
-              <span class="dt">render</span>: <span class="kw">function</span>(){
-                <span class="kw">return</span> &lt;DetailsView /&gt;;
-              }
-            });</code></pre>
-            <h2 id="astarisx.mixin.view">Astarisx.mixin.view</h2>
-            <p>Transforms a React component into an Astarisx View. Adds <code>appContext</code> to the View state object and registers a stateChange Handler and event listner.</p>
-            <h3 id="usage-1">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> AView = <span class="ot">React</span>.<span class="fu">createClass</span>({
-              <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">view</span>],
-              <span class="dt">render</span>: <span class="kw">function</span>(){
-                <span class="kw">return</span> &lt;DetailsView myCxt={<span class="kw">this</span>.<span class="ot">state</span>.<span class="fu">appContext</span>} <span class="ot">/&gt;;</span>
-            <span class="ot">  }</span>
-            <span class="ot">}</span><span class="fl">)</span><span class="ot">;</span></code></pre>
-            <h2 id="astarisx.mixin.pushstate">Astarisx.mixin.pushState</h2>
+            <h3 class="content-subhead">Returns</h3>
+            <p><code>Object</code> - Shallow copy of merged object</p>
+            
+
+            <!-- Mixins -->
+            <h2 class="content-subhead"><a id="mixins">Mixins</a></h2>
+
+            <h2 class="section-divider" id="astarisxmixinui">Astarisx.mixin.ui</h2>
+            <p>Registers a component as an Astarisx UI component and registers stateChangeHandler.</p>
+            <h3 class="content-subhead">Usage</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>React</span>.<span>createClass</span>({
+  <span>mixins</span>: [<span>Astarisx</span>.<span>mixin</span>.<span>ui</span>],
+  <span>render</span>: <span>function</span>(){...}
+});</code></pre>
+
+            <!-- Astarisx.mixin.view -->
+            <h2 class="section-divider" id="astarisxmixinview">Astarisx.mixin.view</h2>
+            <p>Registers a component as an Astarisx View and registers a <code>stateChange</code> event listner.</p>
+            <h3 class="content-subhead">Usage</h3>
+                        <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>React</span>.<span>createClass</span>({
+  <span>mixins</span>: [<span>Astarisx</span>.<span>mixin</span>.<span>view</span>],
+  <span>render</span>: <span>function</span>(){...}
+});</code></pre>
+
+            <!-- Astarisx.mixin.pushState -->
+            <h2 class="section-divider" id="astarisxmixinpushstate">Astarisx.mixin.pushState</h2>
             <p>Enables automatic handling of pushState for <code>&lt;a&gt;</code> tags. There is no need to include this mixin in order to use the built-in pushState functionality. This mixin is only required if pushState is enable <strong>and</strong> <code>&lt;a&gt;</code> tags are used in the UI for navigation.</p>
-            <h3 id="usage-2">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> Application = <span class="ot">React</span>.<span class="fu">createClass</span>({
-              <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">ui</span>, <span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">pushState</span>],
-              <span class="dt">render</span>: <span class="kw">function</span>(){
-                <span class="kw">return</span> (...
-                  &lt;ul&gt;
-                    &lt;li&gt;&lt;a href=<span class="st">&quot;/home&quot;</span>&gt;Home&lt;<span class="ot">/a&gt;&lt;/li</span>&gt;
-                    &lt;li&gt;&lt;a href=<span class="st">&quot;/person/3&quot;</span>&gt;John Citizen&lt;<span class="ot">/a&gt;&lt;/li</span>&gt;
-                  &lt;<span class="ot">/ul&gt;</span>
-            <span class="ot">    ...</span><span class="fl">)</span><span class="ot">;</span>
-            <span class="ot">  }</span>
-            <span class="ot">}</span><span class="fl">)</span><span class="ot">;</span></code></pre>
-            <h2 id="astarisx.mixin.mediaquery">Astarisx.mixin.mediaQuery</h2>
+            <h3 class="content-subhead">Usage</h3>
+
+ <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>React</span>.<span>createClass</span>({
+  <span>mixins</span>: [Astarisx.mixin.ui, Astarisx.mixin.pushState],
+  <span>render</span>: <span>function</span>(){...}
+});</code></pre>
+            
+            <!-- Astarisx.mixin.mediaQuery -->
+            <h2 class="section-divider" id="astarisxmixinmediaquery">Astarisx.mixin.mediaQuery</h2>
             <p>Enables media query notifications to be sent to <code>mediaChangeHandler</code> in the ControllerViewModel.</p>
-            <h3 id="usage-3">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> Application = <span class="ot">React</span>.<span class="fu">createClass</span>({
-              <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">ui</span>, <span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">mediaQuery</span>],
-              <span class="dt">render</span>: <span class="kw">function</span>(){
-                <span class="kw">return</span> (
-                  &lt;ul&gt;
-                    ...
-                  &lt;<span class="ot">/ul&gt;</span>
-            <span class="ot">    </span><span class="fl">)</span><span class="ot">;</span>
-            <span class="ot">  }</span>
-            <span class="ot">}</span><span class="fl">)</span><span class="ot">;</span></code></pre>
-            <h2 id="astarisxanimate">AstarisxAnimate</h2>
-            <p>Enables animation within the Astarisx library. Note, this mixin is added to the ControllerViewModel.</p>
-            <h3 id="usage-4">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> ControllerViewModel = <span class="ot">React</span>.<span class="fu">createControllerViewModelClass</span>({
-              <span class="dt">mixins</span>: [AstarisxAnimate],
-              ...
-            });</code></pre>
-            <h2 id="astarisx.mixin.display">Astarisx.mixin.display</h2>
-            <p>Transforms a React component into an Astarisx Display which is capable of being animated.</p>
-            <h3 id="usage-5">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> MainDisplay = <span class="ot">React</span>.<span class="fu">createClass</span>({
-              <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">display</span>],
-              <span class="dt">render</span>: <span class="kw">function</span>(){
-                <span class="kw">return</span> (
-                  &lt;ul&gt;
-                    ...
-                  &lt;<span class="ot">/ul&gt;</span>
-            <span class="ot">    </span><span class="fl">)</span><span class="ot">;</span>
-            <span class="ot">  }</span>
-            <span class="ot">}</span><span class="fl">)</span><span class="ot">;</span></code></pre>
-            <h2 id="astarisx.mixin.page">Astarisx.mixin.page</h2>
-            <p>Transforms a React component into an Astarisx Page which is capable of being animated.</p>
-            <h3 id="usage-6">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> aPage = <span class="ot">React</span>.<span class="fu">createClass</span>({
-              <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">page</span>],
-              <span class="dt">render</span>: <span class="kw">function</span>(){
-                <span class="kw">return</span> (
-                  &lt;ul&gt;
-                    ...
-                  &lt;<span class="ot">/ul&gt;</span>
-            <span class="ot">    </span><span class="fl">)</span><span class="ot">;</span>
-            <span class="ot">  }</span>
-            <span class="ot">}</span><span class="fl">)</span><span class="ot">;</span></code></pre>
-            <h2 id="astarisx.mixin.view.display">Astarisx.mixin.view.display</h2>
-            <p>Transforms a React component into an Astarisx Display that is also an Astarisx View capable of being animated.</p>
-            <h3 id="usage-7">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> MainDisplay = <span class="ot">React</span>.<span class="fu">createClass</span>({
-              <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="ot">view</span>.<span class="fu">display</span>],
-              <span class="dt">render</span>: <span class="kw">function</span>(){
-                <span class="kw">return</span> (
-                  &lt;ul&gt;
-                    ...
-                  &lt;<span class="ot">/ul&gt;</span>
-            <span class="ot">    </span><span class="fl">)</span><span class="ot">;</span>
-            <span class="ot">  }</span>
-            <span class="ot">}</span><span class="fl">)</span><span class="ot">;</span></code></pre>
-            <h2 id="astarisx.mixin.view.page">Astarisx.mixin.view.page</h2>
-            <p>Transforms a React component into an Astarisx Page that is also an Astarisx View capable of being animated.</p>
+            <h3 class="content-subhead">Usage</h3>
+             <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>React</span>.<span>createClass</span>({
+  <span>mixins</span>: [Astarisx.mixin.ui, Astarisx.mixin.mediaQuery],
+  <span>render</span>: <span>function</span>(){...}
+});</code></pre>
+
+            
+            <!-- Methods -->
+            <h2 id="methods">Methods</h2>
+
+            <!-- getInitialState -->
+            <h2 class="section-divider" id="getinitialstate">getInitialState</h2>
+            <p>Called during initalization in order to initialize state.</p>
+            <h3 class="content-subhead">Usage</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">getInitialState: <span>function</span>(){
+  <span>var</span> id = <span>this</span>.<span>id</span> || <span>uuid</span>();
+  <span>return</span> {
+    <span class="st">&#39;id&#39;</span>: id,
+    <span class="st">&#39;age&#39;</span>: <span>calculateAge</span>(<span>this</span>.<span>dob</span>)
+  };
+}</code></pre>
+
+            <h3 class="content-subhead">Arguments</h3>
+            <p><code>None</code></p>
+
+            <h3 class="content-subhead">Returns</h3>
+            <p><code>Object</code> - Returns a state object</p>
+
+
+            <h3 class="content-subhead">Scope</h3>
+            <ul><li>ControllerViewModel</li><li>ViewModel</li><li>Model</li></ul>
+            
+
+            <!-- getWatchedState -->
+            <h2 class="section-divider" id="getwatchedstate">getWatchedState</h2>
+            <p>Watch fields and/or dataContexts, specifying a stateChange handler, which is invoke if the watched state changes.</p>
+            <h3 class="content-subhead">Usage</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">getWatchedState: <span>function</span>() {
+  <span>return</span> {
+    <span class="st">&#39;persons&#39;</span>: {
+      <span>alias</span>: <span class="st">&#39;personsContext&#39;</span>,
+      <span>fields</span>: {
+        <span class="st">&#39;selected&#39;</span>: onSelectionChange
+      }
+    },
+    <span class="st">&#39;busy&#39;</span>: {
+      <span>alias</span>: <span class="st">&#39;busy&#39;</span>
+    }
+  }
+}</code></pre>
+
+            <h3 class="content-subhead">Arguments</h3>
+            <p><code>None</code></p>
+            <h3 class="content-subhead">Returns</h3>
+            <p><code>Object</code> - WatchedState object definition.</p>
+
+            <h3 class="content-subhead">Scope</h3>
+            <ul><li>ViewModel</li></ul>
+
+            <!-- getRoutes -->
+            <h2 class="section-divider" id="getroutes">getRoutes</h2>
+            <p>Provides routing definition and specifies the routeChange handler invoked when the route is navigated to as a result of a <code>popState</code> Event. i.e Browser’s back or forward is clicked.</p>
+            <h3 class="content-subhead">Usage</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">getRoutes: <span>function</span>(){
+  <span>return</span> {
+    <span class="st">&#39;displayPerson&#39;</span>: {
+      <span>path</span>: <span class="st">&#39;/person/:id&#39;</span>,
+      <span>handler</span>: personRouteHandler
+    },
+    <span class="st">&#39;list&#39;</span>: {
+      <span>path</span>: <span class="st">&#39;/people&#39;</span>,
+      <span>handler</span>: personRouteHandler
+    }
+  }
+}</code></pre>
+            <h3 class="content-subhead">Arguments</h3>
+            <p><code>None</code></p>
+            <h3 class="content-subhead">Returns</h3>
+            <p><code>Object</code> - Route object definition.</p>
+
+            <h3 class="content-subhead">Scope</h3>
+            <ul><li>ViewModel</li></ul>
+
+            <!-- dataContextWillInitialize -->
+            <h2 class="section-divider" id="datacontextwillinitialize">dataContextWillInitialize</h2>
+            <p>Called before data context is intialized and after it has been bootstrapped. This is where ajax calls are made to retrieve data to set up the data context.</p>
+            <h3 class="content-subhead">Usage</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">dataContextWillInitialize: <span>function</span>(){
+  <span>$</span>.<span>get</span>(<span class="st">&quot;/api/something&quot;</span>).<span>done</span>(<span>function</span>(data) {
+    ...    
+    <span>this</span>.<span>setState</span>(...);
+  }.<span>bind</span>(<span>this</span>)).<span>fail</span>(<span>function</span>() {
+    <span>alert</span>( <span class="st">&quot;error&quot;</span> );
+  });
+}</code></pre>
+            <h3 class="content-subhead">Arguments</h3>
+            <p><code>User Defined</code></p>
+            <h3 class="content-subhead">Returns</h3>
+            <p><code>void</code></p>
+
+            
+            <h3 class="content-subhead">Scope</h3>
+            <ul><li>ControllerViewModel</li><li>ViewModel</li></ul>
+
+            <!-- mediaChangeHandler -->
+            <h2 class="section-divider" id="mediachangehandler">mediaChangeHandler</h2>
+            <p>Triggered for registered media queries, whenever a query notification is raised. To register a media query you must specify an <code>id</code> within the <code>@madia</code> query attribute. The format of the <code>id</code> is <code>.media#[id]</code>, replacing <code>[id]</code> with whatever identifier you would like to reference that query. See <a href="https://github.com/entrendipity/astarisx/wiki/MediaQueryList-Notifications#registering-a-media-query">Registering a media query</a> in the Developers Guide for more information.</p>
+            <h3 class="content-subhead">Usage</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">mediaChangeHandler: function(id, mql, initializing){
+  if(id === "tinyScreen" && mql.matches){
+    this.setState({mql:mql});
+  }
+}</code></pre>
+
+            <h3 class="content-subhead">Arguments</h3>
+            <table class="pure-table pure-table-striped">
+            <thead>
+            <tr class="header">
+            <th align="left">Param</th>
+            <th align="center">Type</th>
+            <th align="left">Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="odd">
+            <td align="left">id</td>
+            <td align="center"><code>String</code></td>
+            <td align="left">Identifier associated with the calling media query.</td>
+            </tr>
+            <tr class="even">
+            <td align="left">mql</td>
+            <td align="center"><code>Object</code></td>
+            <td align="left"><a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList">MediaQueryList</a> Object.</td>
+            </tr>
+            <tr class="odd">
+            <td align="left">initializing</td>
+            <td align="center"><code>Boolean</code></td>
+            <td align="left"><code>true</code> if initializing otherwise <code>undefined</code>.</td>
+            </tr>
+            </tbody>
+            </table>
+
+            <h3 class="content-subhead">Scope</h3>
+            <ul><li>ControllerViewModel</li></ul>
+
+
+            <!-- initializeDataContext -->
+            <h2 class="section-divider" id="setstate">initializeDataContext</h2>
+            <p>Triggers a data Context to initialize. dataContextWillInitialize will be called once only.</p>
+
+
+            <h3 class="content-subhead">Usage</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">{}</code></pre>
+
+            <h3 class="content-subhead">Arguments</h3>
+
+            <h3 class="content-subhead">Returns</h3>
+            <p><code>void</code></p>
+
+            <h3 class="content-subhead">Scope</h3>
+            <ul><li>ControllerViewModel</li></ul>
+
+
+
+
+            <!-- setState -->
+            <h2 class="section-divider" id="setstate">setState</h2>
+            <p>Triggers a state transition.</p>
+            <h3 id="signature">Signature</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>void</span> &lt;= <span>setState</span>([nextState, otherNextState, remember, callback, delay])</code></pre>
+            <h3 id="arguments">Arguments</h3>
+            <table class="pure-table pure-table-striped">
+            <thead>
+            <tr class="header">
+            <th align="left">Param</th>
+            <th align="center">Type</th>
+            <th align="left">Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="odd">
+            <td align="left">nextState (optional)</td>
+            <td align="center"><code>Object</code></td>
+            <td align="left">Object containing the next state values.</td>
+            </tr>
+            <tr class="even">
+            <td align="left">otherNextState (optional)</td>
+            <td align="center"><code>Object</code></td>
+            <td align="left">Object containing the next state values for other data contexts. <strong>Only available in ViewModels</strong></td>
+            </tr>
+            <tr class="odd">
+            <td align="left">remember <strong>(default = <code>true</code>)</strong></td>
+            <td align="center"><code>Boolean</code></td>
+            <td align="left"><code>false</code> = Force the state controller to not retain previous state during this setState transition. <strong>Only available in the ControllerViewModel and ViewModels</strong></td>
+            </tr>
+            <tr class="even">
+            <td align="left">callback (optional)</td>
+            <td align="center"><code>Function</code></td>
+            <td align="left">Used to do sequential setState calls and is passed an error or the latest Domain Data Context state. i.e. function(err, appCtx){…}</td>
+            </tr>
+            <tr class="odd">
+            <td align="left">delay (optional)</td>
+            <td align="center"><code>Number</code></td>
+            <td align="left">The number of milliseconds (thousandths of a second) that the <code>callback</code> function call should be delayed by. A <code>callback</code> <strong>must</strong> be specified. This will not batch updates.</td>
+            </tr>
+            </tbody>
+            </table>
+            <p>If no arguments are passed in, then the latest Domain Data Context is returned to the View.</p>
+            <p>If the arguments include a callback, setState must also be called in the callback for the View to recieve the Domain Data Context.</p>
             <h3 id="usage">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> aPage = <span class="ot">React</span>.<span class="fu">createClass</span>({
-              <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">page</span>],
-              <span class="dt">render</span>: <span class="kw">function</span>(){
-                <span class="kw">return</span> (
-                  &lt;ul&gt;
-                    ...
-                  &lt;<span class="ot">/ul&gt;</span>
-            <span class="ot">    </span><span class="fl">)</span><span class="ot">;</span>
-            <span class="ot">  }</span>
-            <span class="ot">}</span><span class="fl">)</span><span class="ot">;</span></code></pre>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>this</span>.<span>setState</span>({ <span>current</span>: <span>void</span>(<span class="dv">0</span>) }, {
+              <span>busy</span>: <span>false</span>,
+              <span>person</span>: { <span>online</span>: <span>true</span> }
+            }, <span>function</span>(appContext){
+              ...
+              <span class="co">//setState must be called to update View.</span>
+              <span class="co">// It can be called without arguments eg. this.setState();</span>
+              <span>this</span>.<span>setState</span>({ <span>current</span>: aPerson });  
+            }.<span>bind</span>(<span>this</span>));</code></pre>
+            <p><strong>OR with delay set</strong></p>
+            <pre class="javascipt"><code>this.setState({fadeOut: true}, function(){
+                this.setState({currentView: View});
+            }.bind(this), 300); //delay callback by 300 milliseconds</code></pre>
+            <h2 id="revert">revert</h2>
+            <p>Transitions the Data Context to the previous state. <strong>Only available in the ControllerViewModel and is usually called from the View</strong></p>
+            <h3 id="signature-1">Signature</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>void</span> &lt;= <span>revert</span>()</code></pre>
+            <h3 id="usage-1">Usage</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>this</span>.<span>state</span>.<span>appContext</span>.<span>revert</span>();</code></pre>
+            <h2 id="advance">advance</h2>
+            <p>Transitions the Data Context back to the state, prior to <code>revert</code>ing. <strong>Only available in the ControllerViewModel and is usually called from the View</strong></p>
+            <h3 id="signature-2">Signature</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>void</span> &lt;= <span>advance</span>()</code></pre>
+            <h3 id="usage-2">Usage</h3>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>this</span>.<span>state</span>.<span>appContext</span>.<span>advance</span>();</code></pre>
 
 
 
-
-
+            <h2 class="content-subhead" id="attributes">Attributes</h2>
 
             <h2 id="viewmodel">viewModel</h2>
             <p>Associates a field with a ViewModel. The field is then exposed to the View as a data context. The View interacts with the ViewModel by invoking methods and accessing properties via the data context.</p>
-            <h3 id="attributes">Attributes</h3>
+            <h3>Attributes</h3>
             <table class="pure-table pure-table-striped">
             <thead>
             <tr class="header">
@@ -353,12 +527,12 @@
             <td align="left">Associates a field with a ViewModel. <strong>Only available within the DomainViewModel</strong></td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage">Usage</h3>
             <pre class="sourceCode javascript"><code class="sourceCode javascript">persons: {
-              <span class="dt">viewModel</span>: PersonsViewModel,
-              <span class="dt">get</span>: <span class="kw">function</span>(){
-                <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="fu">persons</span>;
+              <span>viewModel</span>: PersonsViewModel,
+              <span>get</span>: <span>function</span>(){
+                <span>return</span> <span>this</span>.<span>state</span>.<span>persons</span>;
               }
             }</code></pre>
             <h2 id="aliasfor">aliasFor</h2>
@@ -379,15 +553,15 @@
             <td align="left">source key to transform. <strong>Only available within a Model</strong></td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-1">Usage</h3>
             <pre class="sourceCode javascript"><code class="sourceCode javascript">occupation: {
-              <span class="dt">aliasFor</span>: <span class="st">&#39;job&#39;</span>,
-              <span class="dt">get</span>: <span class="kw">function</span>(){
-                <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="fu">occupation</span>;
+              <span>aliasFor</span>: <span class="st">&#39;job&#39;</span>,
+              <span>get</span>: <span>function</span>(){
+                <span>return</span> <span>this</span>.<span>state</span>.<span>occupation</span>;
               },
-              <span class="dt">set</span>: <span class="kw">function</span>(newValue){
-                <span class="kw">this</span>.<span class="fu">setState</span>({<span class="st">&#39;occupation&#39;</span>: newValue });
+              <span>set</span>: <span>function</span>(newValue){
+                <span>this</span>.<span>setState</span>({<span class="st">&#39;occupation&#39;</span>: newValue });
               }
             },</code></pre>
             <h2 id="kind">kind</h2>
@@ -428,239 +602,69 @@
             <td align="left">Specifies that the field should not change and will persist it’s state during state transitions unless <em>explicitly</em> updated.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-2">Usage</h3>
             <pre class="sourceCode javascript"><code class="sourceCode javascript">id: {
-              <span class="dt">kind</span>: <span class="st">&#39;uid&#39;</span>,
-              <span class="dt">get</span>: <span class="kw">function</span>() { <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="fu">id</span>; }
+              <span>kind</span>: <span class="st">&#39;uid&#39;</span>,
+              <span>get</span>: <span>function</span>() { <span>return</span> <span>this</span>.<span>state</span>.<span>id</span>; }
             }
 
             selectedPerson: {
-              <span class="dt">kind</span>: <span class="st">&#39;instance&#39;</span>,
-              <span class="dt">get</span>: <span class="kw">function</span>() { <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="fu">selectedPerson</span>; }
+              <span>kind</span>: <span class="st">&#39;instance&#39;</span>,
+              <span>get</span>: <span>function</span>() { <span>return</span> <span>this</span>.<span>state</span>.<span>selectedPerson</span>; }
             }
 
             collection: {
-              <span class="dt">kind</span>: <span class="st">&#39;array&#39;</span>,
-              <span class="dt">get</span>: <span class="kw">function</span>(){ <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="fu">collection</span>; },
+              <span>kind</span>: <span class="st">&#39;array&#39;</span>,
+              <span>get</span>: <span>function</span>(){ <span>return</span> <span>this</span>.<span>state</span>.<span>collection</span>; },
             },
 
             selectedHobby: {
-              <span class="dt">kind</span>: <span class="st">&#39;pseudo&#39;</span>,
-              <span class="dt">get</span>: <span class="kw">function</span>() {
-                <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">hobbiesContext</span>.<span class="fu">current</span> ?
-                  <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">hobbiesContext</span>.<span class="ot">current</span>.<span class="fu">name</span>: <span class="kw">void</span>(<span class="dv">0</span>);
+              <span>kind</span>: <span class="st">&#39;pseudo&#39;</span>,
+              <span>get</span>: <span>function</span>() {
+                <span>return</span> <span>this</span>.<span>state</span>.<span>hobbiesContext</span>.<span>current</span> ?
+                  <span>this</span>.<span>state</span>.<span>hobbiesContext</span>.<span>current</span>.<span>name</span>: <span>void</span>(<span class="dv">0</span>);
               }
             }
             <span class="co">// OR</span>
             progress: {
-              <span class="dt">kind</span>: <span class="st">&#39;pseudo&#39;</span>,
-              <span class="dt">get</span>: <span class="kw">function</span>() {
-                <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="fu">progress</span> ? <span class="kw">this</span>.<span class="ot">state</span>.<span class="fu">progress</span> : <span class="dv">0</span>;
+              <span>kind</span>: <span class="st">&#39;pseudo&#39;</span>,
+              <span>get</span>: <span>function</span>() {
+                <span>return</span> <span>this</span>.<span>state</span>.<span>progress</span> ? <span>this</span>.<span>state</span>.<span>progress</span> : <span class="dv">0</span>;
               }
             }
 
             screenOrientation: {
-              <span class="dt">kind</span>: <span class="st">&#39;static&#39;</span>,
-              <span class="dt">get</span>: <span class="kw">function</span>() {
-                <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="fu">screenOrientation</span>;
+              <span>kind</span>: <span class="st">&#39;static&#39;</span>,
+              <span>get</span>: <span>function</span>() {
+                <span>return</span> <span>this</span>.<span>state</span>.<span>screenOrientation</span>;
               }
             }</code></pre>
 
-            <h2 id="getinitialstate">getInitialState</h2>
-            <p>Called once during initalization in order to provide an oppotunity to initialize state. Returns a state object;</p>
-            <h3 id="signature">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Object &lt;= <span class="fu">getInitialState</span>()</code></pre>
-            <h3 id="usage">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">getInitialState: <span class="kw">function</span>(){
-              <span class="kw">var</span> id = <span class="kw">this</span>.<span class="fu">id</span> || <span class="fu">uuid</span>();
-              <span class="kw">return</span> {
-                <span class="st">&#39;id&#39;</span>: id,
-                <span class="st">&#39;age&#39;</span>: <span class="fu">calculateAge</span>(<span class="kw">this</span>.<span class="fu">dob</span>)
-              };
-            }</code></pre>
-            <h3 id="usage-context">Usage Context</h3>
-            <p><strong>optional</strong> :: ControllerViewModel, ViewModel, Model</p>
-            <h2 id="getwatchedstate">getWatchedState</h2>
-            <p>Watch fields and dataContexts and specify a stateChange handler, which is invoke if the watched state changes. Returns a WatchedState object definition.</p>
-            <h3 id="signature-1">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Object &lt;= <span class="fu">getWatchedState</span>()</code></pre>
-            <h3 id="usage-1">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">getWatchedState: <span class="kw">function</span>() {
-              <span class="kw">return</span> {
-                <span class="st">&#39;persons&#39;</span>: {
-                  <span class="dt">alias</span>: <span class="st">&#39;personsContext&#39;</span>,
-                  <span class="dt">fields</span>: {
-                    <span class="st">&#39;selected&#39;</span>: onPersonChange
-                  }
-                },
-                <span class="st">&#39;busy&#39;</span>: {
-                  <span class="dt">alias</span>: <span class="st">&#39;busy&#39;</span>
-                }
-              }
-            }</code></pre>
-            <h3 id="usage-context-1">Usage Context</h3>
-            <p><strong>optional</strong> :: ViewModel</p>
-            <h2 id="getroutes">getRoutes</h2>
-            <p>Provides routing definition and specifies the routeChange handler invoked when the route is navigated to as a result of a popState Event. i.e Browser’s back or forward is clicked.</p>
-            <h3 id="signature-2">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Object &lt;= <span class="fu">getRoutes</span>()</code></pre>
-            <h3 id="usage-2">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">getRoutes: <span class="kw">function</span>(){
-              <span class="kw">return</span> {
-                <span class="st">&#39;displayPerson&#39;</span>: {
-                  <span class="dt">path</span>: <span class="st">&#39;/person/:id&#39;</span>,
-                  <span class="dt">handler</span>: personRouteHandler
-                },
-                <span class="st">&#39;list&#39;</span>: {
-                  <span class="dt">path</span>: <span class="st">&#39;/people&#39;</span>,
-                  <span class="dt">handler</span>: personRouteHandler
-                }
-              }
-            }</code></pre>
-            <h3 id="usage-context-2">Usage Context</h3>
-            <p><strong>optional</strong> :: ViewModel</p>
-            <h2 id="datacontextwillinitialize">dataContextWillInitialize</h2>
-            <p>Called before data context is intialized and after it has been bootstrapped. This is where you make ajax calls to retrieve data.</p>
-            <h3 id="signature-3">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">void</span> &lt;= <span class="fu">dataContextWillInitialize</span>()</code></pre>
-            <h3 id="usage-3">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">dataContextWillInitialize: <span class="kw">function</span>(){
-              <span class="ot">$</span>.<span class="fu">get</span>(<span class="st">&quot;/api/something&quot;</span>).<span class="fu">done</span>(<span class="kw">function</span>(data) {
-                ...    
-                <span class="kw">this</span>.<span class="fu">setState</span>(...);
-              }.<span class="fu">bind</span>(<span class="kw">this</span>)).<span class="fu">fail</span>(<span class="kw">function</span>() {
-                <span class="fu">alert</span>( <span class="st">&quot;error&quot;</span> );
-              });
-            }</code></pre>
-            <h3 id="usage-context-3">Usage Context</h3>
-            <p><strong>optional</strong> :: ControllerViewModel, ViewModel</p>
-            <h2 id="mediachangehandler">mediaChangeHandler</h2>
-            <p>Triggered for registered media queries, whenever a query notification is raised. To register a media query you must specify an <code>id</code> within the <code>@madia</code> query attribute. The format of the <code>id</code> is <code>.media#[id]</code>, replacing <code>[id]</code> with whatever identifier you would like to reference that query. See <a href="https://github.com/entrendipity/astarisx/wiki/MediaQueryList-Notifications#registering-a-media-query">Registering a media query</a> in the Developers Guide for more information.</p>
-            <h3 id="signature-4">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">void</span>  &lt;= <span class="fu">mediaChangeHandler</span>(id, mql, initializing)</code></pre>
-            <h3 id="arguments">Arguments</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Param</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">id</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">Identifier associated with the calling media query.</td>
-            </tr>
-            <tr class="even">
-            <td align="left">mql</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left"><a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList">MediaQueryList</a> Object.</td>
-            </tr>
-            <tr class="odd">
-            <td align="left">initializing</td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left"><code>true</code> if initializing otherwise <code>undefined</code>.</td>
-            </tr>
-            </tbody>
-            </table class="pure-table pure-table-striped">
-            <h3 id="usage-4">Usage</h3>
-            <p>```javascript /* Required if mediaQuery Astarisx.mixin.mediaQuery is used and must be</p>
 
 
 
-            <h2 id="setstate">setState</h2>
-            <p>Transitions a Data Context to the next state.</p>
-            <h3 id="signature">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">void</span> &lt;= <span class="fu">setState</span>([nextState, otherNextState, remember, callback, delay])</code></pre>
-            <h3 id="arguments">Arguments</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Param</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">nextState (optional)</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Object containing the next state values.</td>
-            </tr>
-            <tr class="even">
-            <td align="left">otherNextState (optional)</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Object containing the next state values for other data contexts. <strong>Only available in ViewModels</strong></td>
-            </tr>
-            <tr class="odd">
-            <td align="left">remember <strong>(default = <code>true</code>)</strong></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left"><code>false</code> = Force the state controller to not retain previous state during this setState transition. <strong>Only available in the ControllerViewModel and ViewModels</strong></td>
-            </tr>
-            <tr class="even">
-            <td align="left">callback (optional)</td>
-            <td align="center"><code>Function</code></td>
-            <td align="left">Used to do sequential setState calls and is passed an error or the latest Domain Data Context state. i.e. function(err, appCtx){…}</td>
-            </tr>
-            <tr class="odd">
-            <td align="left">delay (optional)</td>
-            <td align="center"><code>Number</code></td>
-            <td align="left">The number of milliseconds (thousandths of a second) that the <code>callback</code> function call should be delayed by. A <code>callback</code> <strong>must</strong> be specified. This will not batch updates.</td>
-            </tr>
-            </tbody>
-            </table class="pure-table pure-table-striped">
-            <p>If no arguments are passed in, then the latest Domain Data Context is returned to the View.</p>
-            <p>If the arguments include a callback, setState must also be called in the callback for the View to recieve the Domain Data Context.</p>
-            <h3 id="usage">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">this</span>.<span class="fu">setState</span>({ <span class="dt">current</span>: <span class="kw">void</span>(<span class="dv">0</span>) }, {
-              <span class="dt">busy</span>: <span class="kw">false</span>,
-              <span class="dt">person</span>: { <span class="dt">online</span>: <span class="kw">true</span> }
-            }, <span class="kw">function</span>(appContext){
-              ...
-              <span class="co">//setState must be called to update View.</span>
-              <span class="co">// It can be called without arguments eg. this.setState();</span>
-              <span class="kw">this</span>.<span class="fu">setState</span>({ <span class="dt">current</span>: aPerson });  
-            }.<span class="fu">bind</span>(<span class="kw">this</span>));</code></pre>
-            <p><strong>OR with delay set</strong></p>
-            <pre class="javascipt"><code>this.setState({fadeOut: true}, function(){
-                this.setState({currentView: View});
-            }.bind(this), 300); //delay callback by 300 milliseconds</code></pre>
-            <h2 id="revert">revert</h2>
-            <p>Transitions the Data Context to the previous state. <strong>Only available in the ControllerViewModel and is usually called from the View</strong></p>
-            <h3 id="signature-1">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">void</span> &lt;= <span class="fu">revert</span>()</code></pre>
-            <h3 id="usage-1">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="fu">revert</span>();</code></pre>
-            <h2 id="advance">advance</h2>
-            <p>Transitions the Data Context back to the state, prior to <code>revert</code>ing. <strong>Only available in the ControllerViewModel and is usually called from the View</strong></p>
-            <h3 id="signature-2">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">void</span> &lt;= <span class="fu">advance</span>()</code></pre>
-            <h3 id="usage-2">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="fu">advance</span>();</code></pre>
             <h1 id="animation">Animation</h1>
             <h2 id="animate">animate</h2>
             <p>Exposes <a href="http://julian.com/research/velocity/">Velocity</a> Accelerated Javascript animation library. Please see <a href="http://julian.com/research/velocity/">Velocity</a> on how to use the jQuery free version of their API. This function includes the Velocity UI Pack transitions and returns a <a href="http://www.html5rocks.com/en/tutorials/es6/promises/">Promise</a>.</p>
             <p>Note: The the first argument can be a either a DOM Node (this.getDOMNode()) or or the component itself.</p>
             <h3 id="signature-3">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Promise &lt;= <span class="fu">advance</span>([Velocity arguments])</code></pre>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">Promise &lt;= <span>advance</span>([Velocity arguments])</code></pre>
             <h3 id="usage-3">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="fu">animate</span>(<span class="kw">this</span>, { <span class="dt">opacity</span>: <span class="fl">0.5</span> }, { <span class="dt">duration</span>: <span class="dv">1000</span> });</code></pre>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>this</span>.<span>state</span>.<span>appContext</span>.<span>animate</span>(<span>this</span>, { <span>opacity</span>: <span>0.5</span> }, { <span>duration</span>: <span class="dv">1000</span> });</code></pre>
             <h2 id="display">display</h2>
             <p>Returns a Astarisx component which is the next Display to be transitioned in.</p>
             <h3 id="signature">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Component &lt;= <span class="fu">display</span>()</code></pre>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">Component &lt;= <span>display</span>()</code></pre>
             <h3 id="usage">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">render: <span class="kw">function</span>(){
-                <span class="kw">var</span> display = <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="fu">display</span>();
-                <span class="kw">return</span> (
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">render: <span>function</span>(){
+                <span>var</span> display = <span>this</span>.<span>state</span>.<span>appContext</span>.<span>display</span>();
+                <span>return</span> (
                     &lt;div&gt;
                       {display}
-                    &lt;<span class="ot">/div&gt;</span>
-            <span class="ot">    </span><span class="fl">)</span><span class="ot">;</span>
-            <span class="ot">}</span></code></pre>
+                    &lt;<span>/div&gt;</span>
+            <span>    </span><span>)</span><span>;</span>
+            <span>}</span></code></pre>
             <h2 id="cuedisplay">cueDisplay</h2>
             <p>Cues the next Display. This is automatically called by the mixins <code>Astarisx.mixin.display</code> and <code>Astarisx.mixin.view.display</code></p>
             <h2 id="dropdisplay">dropDisplay</h2>
@@ -668,16 +672,16 @@
             <h2 id="page">page</h2>
             <p>Returns a Astarisx component which is the next Page to be transitioned in.</p>
             <h3 id="signature-1">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Component &lt;= <span class="fu">page</span>()</code></pre>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">Component &lt;= <span>page</span>()</code></pre>
             <h3 id="usage-1">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">render: <span class="kw">function</span>(){
-                <span class="kw">var</span> page = <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="fu">page</span>();
-                <span class="kw">return</span> (
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">render: <span>function</span>(){
+                <span>var</span> page = <span>this</span>.<span>state</span>.<span>appContext</span>.<span>page</span>();
+                <span>return</span> (
                     &lt;div&gt;
                       {page}
-                    &lt;<span class="ot">/div&gt;</span>
-            <span class="ot">    </span><span class="fl">)</span><span class="ot">;</span>
-            <span class="ot">}</span></code></pre>
+                    &lt;<span>/div&gt;</span>
+            <span>    </span><span>)</span><span>;</span>
+            <span>}</span></code></pre>
             <h2 id="cuepage">cuePage</h2>
             <p>Cues the next Page. This is automatically called by the mixins <code>Astarisx.mixin.page</code> and <code>Astarisx.mixin.view.page</code></p>
             <h2 id="droppage">dropPage</h2>
@@ -685,34 +689,34 @@
             <h2 id="addlistitem">addListItem</h2>
             <p>Transitions in a list item.</p>
             <h3 id="signature-2">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Promise &lt;= <span class="fu">addListItem</span>(<span class="kw">this</span>, [listItemKey, Velocity Arguments])</code></pre>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">Promise &lt;= <span>addListItem</span>(<span>this</span>, [listItemKey, Velocity Arguments])</code></pre>
             <h3 id="usage-2">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">componentDidMount: <span class="kw">function</span>(){
-                <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="fu">addListItem</span>(<span class="kw">this</span>, <span class="st">&quot;personList&quot;</span>);
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">componentDidMount: <span>function</span>(){
+                <span>this</span>.<span>state</span>.<span>appContext</span>.<span>addListItem</span>(<span>this</span>, <span class="st">&quot;personList&quot;</span>);
             }</code></pre>
             <h2 id="droplistitem">dropListItem</h2>
             <p>Transitions out a list item.</p>
             <h3 id="signature-3">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Promise &lt;= <span class="fu">dropListItem</span>(<span class="kw">this</span>, [listItemKey, Velocity Arguments])</code></pre>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">Promise &lt;= <span>dropListItem</span>(<span>this</span>, [listItemKey, Velocity Arguments])</code></pre>
             <h3 id="usage-3">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">remove: <span class="kw">function</span>(){
-                <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="fu">dropListItem</span>(<span class="kw">this</span>, <span class="st">&quot;personList&quot;</span>).<span class="fu">then</span>(<span class="kw">function</span>(elements){
-                  <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="ot">sites</span>.<span class="fu">remove</span>(id);
-                }.<span class="fu">bind</span>(<span class="kw">this</span>));
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">remove: <span>function</span>(){
+                <span>this</span>.<span>state</span>.<span>appContext</span>.<span>dropListItem</span>(<span>this</span>, <span class="st">&quot;personList&quot;</span>).<span>then</span>(<span>function</span>(elements){
+                  <span>this</span>.<span>state</span>.<span>appContext</span>.<span>sites</span>.<span>remove</span>(id);
+                }.<span>bind</span>(<span>this</span>));
               }</code></pre>
             <h2 id="show">show</h2>
             <p>Cue the next Display and Page to be transitioned in.</p>
             <h3 id="signature-4">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">void</span> &lt;= <span class="fu">show</span>(displayKey, page);</code></pre>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>void</span> &lt;= <span>show</span>(displayKey, page);</code></pre>
             <h3 id="usage-4">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">gotoPage1: <span class="kw">function</span>(){
-                <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="fu">show</span>(<span class="st">&#39;sites.main&#39;</span>, <span class="st">&#39;page1&#39;</span>);
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">gotoPage1: <span>function</span>(){
+                <span>this</span>.<span>state</span>.<span>appContext</span>.<span>show</span>(<span class="st">&#39;sites.main&#39;</span>, <span class="st">&#39;page1&#39;</span>);
             }</code></pre>
 
             <h2 id="statechangehandler">#StateChangeHandler</h2>
             <p>Invoked when model fields change. i.e. setState was called within the model.</p>
             <h3 id="signature">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">void</span> &lt;= <span class="fu">StateChangeHandler</span>(nextState[, callback])</code></pre>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>void</span> &lt;= <span>StateChangeHandler</span>(nextState[, callback])</code></pre>
             <h3 id="arguments">Arguments</h3>
             <table class="pure-table pure-table-striped">
             <thead>
@@ -734,25 +738,25 @@
             <td align="left">callback function passed in from the model</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">personStateChangeHandler: <span class="kw">function</span>(nextState){
-              <span class="kw">var</span> persons = {};
-              <span class="ot">persons</span>.<span class="fu">collection</span> = <span class="kw">this</span>.<span class="ot">collection</span>.<span class="fu">map</span>(<span class="kw">function</span>(person){
-                <span class="kw">if</span>(<span class="ot">person</span>.<span class="fu">id</span> === <span class="ot">nextState</span>.<span class="fu">id</span>){
-                  <span class="ot">persons</span>.<span class="fu">selected</span> = <span class="kw">new</span> <span class="fu">Person</span>(nextState, person, <span class="kw">true</span>);
-                  <span class="kw">return</span> <span class="ot">persons</span>.<span class="fu">selected</span>;
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">personStateChangeHandler: <span>function</span>(nextState){
+              <span>var</span> persons = {};
+              <span>persons</span>.<span>collection</span> = <span>this</span>.<span>collection</span>.<span>map</span>(<span>function</span>(person){
+                <span>if</span>(<span>person</span>.<span>id</span> === <span>nextState</span>.<span>id</span>){
+                  <span>persons</span>.<span>selected</span> = <span>new</span> <span>Person</span>(nextState, person, <span>true</span>);
+                  <span>return</span> <span>persons</span>.<span>selected</span>;
                 }
-                <span class="kw">return</span> person;
-              }.<span class="fu">bind</span>(<span class="kw">this</span>));
-              <span class="kw">this</span>.<span class="fu">setState</span>(persons);
+                <span>return</span> person;
+              }.<span>bind</span>(<span>this</span>));
+              <span>this</span>.<span>setState</span>(persons);
             },</code></pre>
             <h3 id="usage-context">Usage Context</h3>
             <p><strong>optional</strong> :: ViewModel</p>
             <h2 id="watchedstatechangehandler">#WatchedStateChangeHandler</h2>
             <p>Invoked when watched items change.</p>
             <h3 id="signature-1">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Object &lt;= <span class="fu">WatchedStateChangeHandler</span>(nextState, previousState, field, context, nextPath, prevPath)</code></pre>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">Object &lt;= <span>WatchedStateChangeHandler</span>(nextState, previousState, field, context, nextPath, prevPath)</code></pre>
             <h3 id="arguments-1">Arguments</h3>
             <table class="pure-table pure-table-striped">
             <thead>
@@ -794,13 +798,13 @@
             <td align="left">previous url path</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-1">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> onPersonChangeHandler = <span class="kw">function</span>(nextState, prevState, field, context,
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>var</span> onPersonChangeHandler = <span>function</span>(nextState, prevState, field, context,
                 nextPath, prevPath){
-              <span class="kw">if</span>(<span class="kw">this</span>.<span class="fu">current</span> !== <span class="kw">void</span>(<span class="dv">0</span>) &amp;&amp; context === <span class="st">&#39;persons&#39;</span> &amp;&amp;
-            (<span class="ot">nextState</span>.<span class="fu">id</span> !== <span class="ot">prevState</span>.<span class="fu">id</span> || nextPath !== prevPath)){
-                <span class="kw">return</span> { <span class="dt">hobbies</span>: { <span class="dt">current</span>: <span class="kw">void</span>(<span class="dv">0</span>) }, <span class="dt">busy</span>: <span class="kw">false</span> };
+              <span>if</span>(<span>this</span>.<span>current</span> !== <span>void</span>(<span class="dv">0</span>) &amp;&amp; context === <span class="st">&#39;persons&#39;</span> &amp;&amp;
+            (<span>nextState</span>.<span>id</span> !== <span>prevState</span>.<span>id</span> || nextPath !== prevPath)){
+                <span>return</span> { <span>hobbies</span>: { <span>current</span>: <span>void</span>(<span class="dv">0</span>) }, <span>busy</span>: <span>false</span> };
               }
             };</code></pre>
             <h3 id="usage-context-1">Usage Context</h3>
@@ -808,7 +812,7 @@
             <h2 id="routechangehandler">#RouteChangeHandler</h2>
             <p>Invoked when watched routes change and the browser fires a <code>popstate</code> event.</p>
             <h3 id="signature-2">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Object &lt;= <span class="fu">RouteChangeHandler</span>(params, path, pathId, ctx)</code></pre>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">Object &lt;= <span>RouteChangeHandler</span>(params, path, pathId, ctx)</code></pre>
             <h3 id="arguments-2">Arguments</h3>
             <table class="pure-table pure-table-striped">
             <thead>
@@ -840,14 +844,14 @@
             <td align="left">Page.js context object</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-2">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> personRouteHandler = <span class="kw">function</span>(params, path, pathId, ctx){
-              <span class="kw">if</span>(<span class="ot">ctx</span>.<span class="fu">rollbackRequest</span>){
-                <span class="ot">ctx</span>.<span class="fu">revert</span>();
-                <span class="kw">return</span>;
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>var</span> personRouteHandler = <span>function</span>(params, path, pathId, ctx){
+              <span>if</span>(<span>ctx</span>.<span>rollbackRequest</span>){
+                <span>ctx</span>.<span>revert</span>();
+                <span>return</span>;
               }
-              <span class="kw">this</span>.<span class="fu">selectPerson</span>(<span class="ot">params</span>.<span class="fu">id</span>);
+              <span>this</span>.<span>selectPerson</span>(<span>params</span>.<span>id</span>);
             };</code></pre>
             <h3 id="usage-context-2">Usage Context</h3>
             <p><strong>optional</strong> :: ViewModel</p>
@@ -858,7 +862,7 @@
             <p>A user defined function is used to create model instances.</p>
             <p><em>Please refer to <a href="https://github.com/entrendipity/astarisx/wiki/Models#instantiating-a-model-instance">Instantiating a Model instance</a> for an explaination on why and how to structure your code to instantiate model instances.</em></p>
             <h3 id="signature">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">ModelInstance &lt;= #<span class="fu">ModelConstructorClass</span>([stateChangeHandler])([nextState, extendState, initialize])</code></pre>
+            <pre class="sourceCode javascript"><code class="sourceCode javascript">ModelInstance &lt;= #<span>ModelConstructorClass</span>([stateChangeHandler])([nextState, extendState, initialize])</code></pre>
             <h3 id="arguments">Arguments</h3>
             <table class="pure-table pure-table-striped">
             <thead>
@@ -890,10 +894,10 @@
             <td align="left"><code>true</code> = Indicates that this is a new Model instance and that <code>getInitialState</code> should be called. <strong>(default = <code>false</code> unless no arguments are passed in the assumed to be initialising ie. initialize = <code>true</code>)</strong></td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> Person: <span class="kw">function</span>(){
-              <span class="kw">return</span> <span class="kw">new</span> <span class="fu">PersonCtr</span>(personStateChangeHandler).<span class="fu">apply</span>(<span class="kw">this</span>, arguments);
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>var</span> Person: <span>function</span>(){
+              <span>return</span> <span>new</span> <span>PersonCtr</span>(personStateChangeHandler).<span>apply</span>(<span>this</span>, arguments);
             },</code></pre>
             <h3 id="usage-context">Usage Context</h3>
             <p><strong>optional</strong> :: ViewModel, Model</p>
@@ -916,7 +920,7 @@
             <td align="left">object’s current state.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context">Usage Context</h3>
             <p>ControllerViewModel, ViewModel, Model</p>
             <h2 id="previousstate">previousState</h2>
@@ -937,7 +941,7 @@
             <td align="left">object’s previous state.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-1">Usage Context</h3>
             <p>ControllerViewModel</p>
             <h2 id="nextstate">nextState</h2>
@@ -958,7 +962,7 @@
             <td align="left">object’s next state.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-2">Usage Context</h3>
             <p>ControllerViewModel</p>
             <h2 id="canrevert">canRevert</h2>
@@ -984,7 +988,7 @@
             <td align="left">cannot revert to previous state.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-3">Usage Context</h3>
             <p>ControllerViewModel</p>
             <h2 id="canadvance">canAdvance</h2>
@@ -1010,7 +1014,7 @@
             <td align="left">cannot advance to next state.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-4">Usage Context</h3>
             <p>ControllerViewModel</p>
             <h2 id="path">path</h2>
@@ -1031,7 +1035,7 @@
             <td align="left">valid path</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-5">Usage Context</h3>
             <p>ControllerViewModel - set from ViewModel</p>
             <h2 id="pushstate">pushState</h2>
@@ -1057,7 +1061,7 @@
             <td align="left">Turn <code>pushState</code> off. i.e. suspend pushState operations</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-6">Usage Context</h3>
             <p>ControllerViewModel</p>
             <h2 id="forcereplace">forceReplace</h2>
@@ -1087,7 +1091,7 @@
             <td align="left">disable an Undo. It is not necessary to set <code>enableUndo</code> back to <code>false</code> as it will revert to <code>false</code> once the operation has been performed.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-7">Usage Context</h3>
             <p>ControllerViewModel</p>
 
@@ -1114,7 +1118,7 @@
             <td align="left">list of View identifiers.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <p><em>N.B. The main UI container is given a default <code>viewKey</code> of <code>*</code>.</em></p>
             <h3 id="usage-context">Usage Context</h3>
             <p>ControllerViewModel</p>
@@ -1141,7 +1145,7 @@
             <td align="left">path is valid.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-1">Usage Context</h3>
             <p>ControllerViewModel</p>
             <h2 id="datacontextwillupdate">dataContextWillUpdate</h2>
@@ -1162,7 +1166,7 @@
             <td align="left">Holds only the data contexts with the state that will be transitioned.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-2">Usage Context</h3>
             <p>ControllerViewModel</p>
             <p><strong><em>n.b.</em></strong> <em>This property is located in <code>appContext.state</code> and not on the root object</em></p>
@@ -1184,7 +1188,7 @@
             <td align="left">The current display name.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-3">Usage Context</h3>
             <p>ControllerViewModel</p>
             <h2 id="displaygroup">displayGroup</h2>
@@ -1205,7 +1209,7 @@
             <td align="left">The current displayGroup.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-4">Usage Context</h3>
             <p>ControllerViewModel</p>
             <h2 id="displaykey">displayKey</h2>
@@ -1226,7 +1230,7 @@
             <td align="left">The current displayKey.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-5">Usage Context</h3>
             <p>ControllerViewModel</p>
             <h2 id="pagename">pageName</h2>
@@ -1247,7 +1251,7 @@
             <td align="left">The current page name.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-context-6">Usage Context</h3>
             <p>ControllerViewModel</p>
             <h2 id="react.rendercomponent">React.renderComponent</h2>
@@ -1278,17 +1282,17 @@
             <td align="left">Set to <code>true</code> to use built in pushState Router. This overrides the ’<code>enableUndo</code> setting as routing manages Undo functionality differently.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="ot">React</span>.<span class="fu">renderComponent</span>(&lt;Application
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>React</span>.<span>renderComponent</span>(&lt;Application
                 controllerViewModel={ControllerViewModel}
-                enableUndo={<span class="kw">true</span>}<span class="ot">/&gt;,</span>
-            <span class="ot">  document.getElementById</span><span class="fl">(</span><span class="ot">&#39;container&#39;</span><span class="fl">))</span><span class="ot">;</span></code></pre>
+                enableUndo={<span>true</span>}<span>/&gt;,</span>
+            <span>  document.getElementById</span><span>(</span><span>&#39;container&#39;</span><span>))</span><span>;</span></code></pre>
             <p><strong>OR</strong></p>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="ot">React</span>.<span class="fu">renderComponent</span>(&lt;Application
+            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>React</span>.<span>renderComponent</span>(&lt;Application
                 controllerViewModel={ControllerViewModel}
-                enableRouting={<span class="kw">true</span>}<span class="ot">/&gt;,</span>
-            <span class="ot">  document.getElementById</span><span class="fl">(</span><span class="ot">&#39;container&#39;</span><span class="fl">))</span><span class="ot">;</span></code></pre>
+                enableRouting={<span>true</span>}<span>/&gt;,</span>
+            <span>  document.getElementById</span><span>(</span><span>&#39;container&#39;</span><span>))</span><span>;</span></code></pre>
 
             <h2 id="viewkey">$viewKey</h2>
             <p>Used to identify a View if <a href="https://github.com/entrendipity/astarisx/wiki/Instance-properties#notify"><code>notify</code></a> has been passed to setState. Please note that the component must be designated as a View by including the <code>Astarisx.mixin.view</code> mixin.</p>
@@ -1309,9 +1313,9 @@
             <td align="left">prop passed to uniquely identify a View.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage">Usage</h3>
-            <pre class="sourceCode html"><code class="sourceCode html"><span class="kw">&lt;aView</span><span class="ot"> $viewKey=</span><span class="st">{</span><span class="er">&quot;mainView&quot;}</span><span class="kw">/&gt;</span></code></pre>
+            <pre class="sourceCode html"><code class="sourceCode html"><span>&lt;aView</span><span> $viewKey=</span><span class="st">{</span><span class="er">&quot;mainView&quot;}</span><span>/&gt;</span></code></pre>
             <h2 id="mediakey">.media#[key]</h2>
             <p>Used to identify a media query in a CSS file.</p>
             <h3 id="props-1">Props</h3>
@@ -1330,10 +1334,10 @@
             <td align="left">Unique key to identify a media query.</td>
             </tr>
             </tbody>
-            </table class="pure-table pure-table-striped">
+            </table>
             <h3 id="usage-1">Usage</h3>
-            <pre class="sourceCode css"><code class="sourceCode css"><span class="dv">@media</span> <span class="dv">(min-width: </span><span class="dt">992px</span><span class="dv">) and (max-width: </span><span class="dt">1199px</span><span class="dv">)</span> <span class="dv">{</span>
-                <span class="fl">.media#myUniqueKey</span> <span class="kw">{</span><span class="co">/**/</span><span class="kw">}</span>
+            <pre class="sourceCode css"><code class="sourceCode css"><span class="dv">@media</span> <span class="dv">(min-width: </span><span>992px</span><span class="dv">) and (max-width: </span><span>1199px</span><span class="dv">)</span> <span class="dv">{</span>
+                <span>.media#myUniqueKey</span> <span>{</span><span class="co">/**/</span><span>}</span>
             <span class="dv">}</span></code></pre>
 
 
