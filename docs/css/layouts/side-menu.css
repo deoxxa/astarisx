@@ -285,7 +285,7 @@ blockquote p {
     overflow: auto;
     display: inline-block;
     font-size: 0.8em;
-    white-space: nowrap;
+    white-space: pre; /*nowrap;*/
     margin-top: -10px;
 }
 
