@@ -389,11 +389,11 @@
                         <b>value</b> = arguments to be passed to <code>dataContextWillInitialize</code> for the specified data context.
                         </p>
                         <p>There are 2 special key names that an <em>dataCtxInitObj</em> can have. They are an asterisk ("*") and an underscore followed by an asterisk ("_*"). The value for these keys specify the scope of the arguments. For example the asterisks indicates that all data contexts are to be intialized with the specified arguments. The key with the underscore followed by an asterisk specifies that all the data contexts list in the current initialization are to receive the specified arguments. It's like scoping the passed in args. Below is an example.</p>
-                        <pre><code><div class="code-block">this.initializeDataContext({
+                        <!-- <pre><code><div class="code-block">this.initializeDataContext({
   "*": ["globalArg1", "globalArg2"],
    "_*": ["contextArg1", "contextArg2"],
    "mockVM": ["mockVMArg1", "mockVMArg2"]
-}, "hobbies");</div></code></pre>
+}, "hobbies");</div></code></pre> -->
 <p>The above example uses the asterisk to initialize all data contexts with the <code>globalArg1</code> and <code>globalArg2</code> arguments. Even the data contexts that are not listed. You will need to take care with this as once a data context has been initialized you are unable to initialize it again.</p>
 <p>It uses the underscore and asterisk to initialize listed data contexts with the <code>contextArg1</code> and <code>contextArg2</code> arguments. mockVM and hobbies for this example.</p>
 <p>mockVM will also receive its own arguments <code>mockVMArg1</code> and <code>mockVMArg2</code>. mockVM and hobbies for this example.</p>
