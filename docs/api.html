@@ -29,7 +29,9 @@
     <div id="menu">
         <div class="pure-menu pure-menu-open">
             
-            <a class="pure-menu-heading" href="../index.html"><span class="fa fa-arrow-left"></span>Astarisx</a>
+            <a class="pure-menu-heading" 
+            href="../index.html"><span class="fa fa-arrow-left"></span>Astarisx
+            </a>
 
             <ul>
                 <li class="group-header"><a data-scroll href="#staticmethods">Static</a></li>
@@ -63,12 +65,12 @@
                 <li class="sub"><a data-scroll href="#routechangehandler">routeChangeHandler</a></li>
                 <li class="sub"><a data-scroll href="#mediachangehandler">mediaChangeHandler</a></li>
                 
-                <li class="group-header"><a data-scroll href="#fieldattributes">Attributes</a></li>
+                <li class="group-header"><a data-scroll href="#attributes">Attributes</a></li>
                 <li class="sub"><a data-scroll href="#viewmodel">viewModel</a></li>
-                <li class="sub"><a data-scroll href="#kind">kind</a></li>
                 <li class="sub"><a data-scroll href="#aliasfor">aliasFor</a></li>
+                <li class="sub"><a data-scroll href="#kind">kind</a></li>
                 
-                <li class="group-header"><a data-scroll href="#instancefields">Properties</a></li>
+                <li class="group-header"><a data-scroll href="#properties">Properties</a></li>
                 <li class="sub"><a data-scroll href="#state">$state</a></li>
                 <li class="sub"><a data-scroll href="#previousstate">$previousState</a></li>
                 <li class="sub"><a data-scroll href="#nextstate">$nextState</a></li>
@@ -77,7 +79,7 @@
                 <li class="sub"><a data-scroll href="#pagenotfound">$pageNotFound</a></li>
                 <li class="sub"><a data-scroll href="#datacontextwillupdate">$dataContextWillUpdate</a></li>
 
-                <li class="group-header"><a href="#directives">Directives</a></li>
+                <li class="group-header"><a data-scroll href="#directives">Directives</a></li>
                 <li class="sub"><a data-scroll href="#path">$path</a></li>
                 <li class="sub"><a data-scroll href="#pushstate">$pushState</a></li>
                 <li class="sub"><a data-scroll href="#forcereplace">$forceReplace</a></li>
@@ -85,19 +87,42 @@
                 <li class="sub"><a data-scroll href="#notify">$notify</a></li>
 
 
-                <li class="group-header"><a data-scroll href="#viewprops">View</a></li>
+                <li class="group-header"><a data-scroll href="#view">View</a></li>
                 <li class="sub"><a data-scroll href="#initializeappcontext">initializeAppContext</a></li>
                 <li class="sub"><a data-scroll href="#viewkey">$viewKey</a></li>
                 <li class="sub"><a data-scroll href="#mediakey">.media#[key]</a></li>
+            </ul>
 
-                <li class="group-header menu-item-divided"><a data-scroll href="#astarisxanimate">AstarisxAnimate</a></li>
-
-                <li class="group-header menu-item-divided">
-                    <a href="guide.html">Guide</a>
-                </li>
-                <li class="group-header">
-                    <a href="tutorials.html">Tutorials</a>
-                </li>
+            <a class="pure-menu-heading" 
+            href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate
+            </a>
+            <ul class="last-menu-group">
+                <li class="group-header"><a data-scroll href="#astarisxanimatemethods">Methods</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateanimate">animate</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateshow">show</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimatedisplay">display</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimatepage">page</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateadddisplays">addDisplays</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateaddtransitions">addTransitions</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimatecuedisplay">cueDisplay</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimatedropdisplay">dropDisplay</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimatecuepage">cuePage</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimatedroppage">dropPage</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateaddlistitem">addListItem</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimatedroplistitem">dropListItem</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateresetdisplay">resetDisplay</a></li>
+                <li class="group-header"><a data-scroll href="#astarisxanimateproperties">Properties</a></li>
+                <li class="sub"><a data-scroll href="#displaykey">$displayKey</a></li>
+                <li class="sub"><a data-scroll href="#displayname">$displayName</a></li>
+                <li class="sub"><a data-scroll href="#displaygroup">$displayGroup</a></li>
+                <li class="sub"><a data-scroll href="#pagename">$pageName</a></li>
+            </ul>
+            <!-- <li class="group-header menu-item-divided">
+                <a href="guide.html">Guide</a>
+            </li>
+            <li class="group-header">
+                <a href="tutorials.html">Tutorials</a>
+            </li> -->
             </ul>
         </div>
     </div>
@@ -117,7 +142,7 @@
             <p>Defines a Model Class.</p>
             
             <h3 class="content-subhead">Usage</h3>
-            <pre class="javscript"><code>Astarisx.createModelClass(descriptor);</code></pre>
+            <pre><code><div class="code-block">Astarisx.createModelClass(descriptor);</div></code></pre>
             
             <h3 class="content-subhead" id="arguments">Arguments</h3>
             <table class="pure-table pure-table-striped">
@@ -149,7 +174,7 @@
             <p>Defines a ViewModel Class.</p>
             
             <h3>Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>Astarisx</span>.<span>createViewModelClass</span>(descriptor)</code></pre>
+            <pre><code><div class="code-block"><span>Astarisx</span>.<span>createViewModelClass</span>(descriptor)</div></code></pre>
             
             <h3>Arguments</h3>
             <table class="pure-table pure-table-striped">
@@ -181,7 +206,7 @@
             <h2 class="section-divider" id="astarisxcreatecontrollerviewmodelclass">Astarisx.createControllerViewModelClass</h2>
             <p>Defines a ControllerViewModel Class.</p>
             <h3 class="content-subhead">Usage</h3>
-            <pre class="javscript"><code>Astarisx.createControllerViewModelClass(descriptor);</code></pre>
+            <pre><code><div class="code-block">Astarisx.createControllerViewModelClass(descriptor);</div></code></pre>
             
             <h3 class="content-subhead">Arguments</h3>
             <table class="pure-table pure-table-striped">
@@ -212,7 +237,7 @@
             <p>Creates and returns a shallow copy of an object and merges the properties of any subsequent objects passed in. Arguments that are null or undefined are ignored.</p>
             <p>Properties of preceding objects will be completely overwritten by a property with the same key in subsequent objects. The values are not merged.</p>
             <h3 class="content-subhead">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Astarisx</span>.<span>extend</span>(obj[, objN])</code></pre>
+            <pre><code><div class="code-block">Astarisx</span>.<span>extend</span>(obj[, objN])</div></code></pre>
             <h3 class="content-subhead">Arguments</h3>
             <table class="pure-table pure-table-striped">
             <thead>
@@ -248,38 +273,38 @@
             <h2 class="section-divider" id="astarisxmixinui">Astarisx.mixin.ui</h2>
             <p>Registers a component as an Astarisx UI component and registers stateChangeHandler.</p>
             <h3 class="content-subhead">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>React</span>.<span>createClass</span>({
+            <pre><code><div class="code-block"><span>React</span>.<span>createClass</span>({
   <span>mixins</span>: [<span>Astarisx</span>.<span>mixin</span>.<span>ui</span>],
   <span>render</span>: <span>function</span>(){...}
-});</code></pre>
+});</div></code></pre>
 
             <!-- Astarisx.mixin.view -->
             <h2 class="section-divider" id="astarisxmixinview">Astarisx.mixin.view</h2>
             <p>Registers a component as an Astarisx View and registers a <code>stateChange</code> event listner.</p>
             <h3 class="content-subhead">Usage</h3>
-                        <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>React</span>.<span>createClass</span>({
+                        <pre><code><div class="code-block"><span>React</span>.<span>createClass</span>({
   <span>mixins</span>: [<span>Astarisx</span>.<span>mixin</span>.<span>view</span>],
   <span>render</span>: <span>function</span>(){...}
-});</code></pre>
+});</div></code></pre>
 
             <!-- Astarisx.mixin.pushState -->
             <h2 class="section-divider" id="astarisxmixinpushstate">Astarisx.mixin.pushState</h2>
             <p>Enables automatic handling of pushState for <code>&lt;a&gt;</code> tags. There is no need to include this mixin in order to use the built-in pushState functionality. This mixin is only required if pushState is enable <strong>and</strong> <code>&lt;a&gt;</code> tags are used in the UI for navigation.</p>
             <h3 class="content-subhead">Usage</h3>
 
- <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>React</span>.<span>createClass</span>({
+ <pre><code><div class="code-block"><span>React</span>.<span>createClass</span>({
   <span>mixins</span>: [Astarisx.mixin.ui, Astarisx.mixin.pushState],
   <span>render</span>: <span>function</span>(){...}
-});</code></pre>
+});</div></code></pre>
             
             <!-- Astarisx.mixin.mediaQuery -->
             <h2 class="section-divider" id="astarisxmixinmediaquery">Astarisx.mixin.mediaQuery</h2>
-            <p>Enables media query notifications to be sent to <code>mediaChangeHandler</code> in the ControllerViewModel.</p>
+            <p>Enables media query notifications to be sent to <a data-scroll href="#mediachangehandler"><code>mediaChangeHandler</code></a>.</p>
             <h3 class="content-subhead">Usage</h3>
-             <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>React</span>.<span>createClass</span>({
+             <pre><code><div class="code-block"><span>React</span>.<span>createClass</span>({
   <span>mixins</span>: [Astarisx.mixin.ui, Astarisx.mixin.mediaQuery],
   <span>render</span>: <span>function</span>(){...}
-});</code></pre>
+});</div></code></pre>
 
             
             <!-- Methods -->
@@ -289,13 +314,13 @@
             <h2 class="section-divider" id="getinitialstate">getInitialState</h2>
             <p>Called during initalization in order to initialize data context state.</p>
             <h3 class="content-subhead">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">getInitialState: <span>function</span>(){
+            <pre><code><div class="code-block">getInitialState: <span>function</span>(){
   <span>var</span> id = <span>this</span>.<span>id</span> || <span>uuid</span>();
   <span>return</span> {
     <span class="st">&#39;id&#39;</span>: id,
     <span class="st">&#39;age&#39;</span>: <span>calculateAge</span>(<span>this</span>.<span>dob</span>)
   };
-}</code></pre>
+}</div></code></pre>
 
             <h3 class="content-subhead">Arguments</h3>
             <p><code>None</code></p>
@@ -310,41 +335,42 @@
 
             <!-- dataContextWillInitialize -->
             <h2 class="section-divider" id="datacontextwillinitialize">dataContextWillInitialize</h2>
-            <p>Called before data context is intialized and after it has been bootstrapped. This is where ajax calls are made to retrieve data to set up the data context. <code>dataContextWillInitialize</code> will be called once only.</p>
+            <p>Called before data context is intialized and after it has been bootstrapped. This is where ajax calls are made to retrieve data and set up the data context. <code>dataContextWillInitialize</code> will only be called once per data context.</p>
+
             <h3 class="content-subhead">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">dataContextWillInitialize: <span>function</span>(){
+            <pre><code><div class="code-block">dataContextWillInitialize: <span>function</span>(){
   <span>$</span>.<span>get</span>(<span class="st">&quot;/api/something&quot;</span>).<span>done</span>(<span>function</span>(data) {
     ...    
     <span>this</span>.<span>setState</span>(...);
   }.<span>bind</span>(<span>this</span>)).<span>fail</span>(<span>function</span>() {
     <span>alert</span>( <span class="st">&quot;error&quot;</span> );
   });
-}</code></pre>
+}</div></code></pre>
             <h3 class="content-subhead">Arguments</h3>
             <p><code>none</code></p>
+            <p>Although <code>dataContextWillInitialize</code> has no arguments. Custom arguments can be passed in during initialization from <code><a data-scroll href="#initializedatacontext">initializeDataContext</a></code></p>
             <h3 class="content-subhead">Returns</h3>
             <p><code>void</code></p>
 
-            
             <h3 class="content-subhead">Scope</h3>
             <ul><li>ControllerViewModel</li><li>ViewModel</li></ul>
 
-            <!-- initializeDataContext -->
+<!-- initializeDataContext -->
             <h2 class="section-divider" id="initializedatacontext">initializeDataContext</h2>
-            <p>Initializes specified data context (i.e. ViewModel).</p>
+            <p>Initializes the specified data context(s). This method will invoke <code>dataContextWillInitialize</code> for the specified data contexts.</p>
+            <p><em>n.b. <code>initializeDataContext</code> can be invoked multiple times for the same data context, but <code>dataContextWillInitialize</code> will only be invoked the first time per data context.</em></p>
 
 <h3 class="content-subhead" >Usage</h3>
-            <pre><code>dataContextWillInitialize: function(){
-    this.initializeDataContext(['persons', 'hobbies']);
-    // OR intialize ALL dataContexts
-    // this.initializeDataContext('*', 'testArgs');
-  }</code></pre>
-
-<em>Or from the View Component</em>
-            <pre><code>componentWillMount: function(){
-    this.state.appContext.initializeDataContext({...});
-}</code></pre>
+            <em>From ControllerViewModel</em>
+            <pre><code><div class="code-block">this.initializeDataContext([dataCtxInitObjN]);</div></code></pre>
+            <em>From a View Component</em>
+            <pre><code><div class="code-block">this.state.appContext.initializeDataContext([dataCtxInitObjN]);</div></code></pre>
             <h3 class="content-subhead" >Arguments</h3>
+            <h4 class="content-subhead" >Option 1</h4>
+            <p><code>none</code></p>
+            <p>All data contexts are initialized.</p>
+
+            <h4 class="content-subhead">Option 2</h4>
             <table class="pure-table pure-table-striped">
                 <thead>
                     <tr class="header">
@@ -355,23 +381,30 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td align="left">Options</td>
-                        <td align="center"><code>Object</code></td>
-                        <td align="left">Available Options:
-                        <ul>
-                            <li>controllerViewModel - Reference to ControllerViewModel</li>
-                            <li>enableUndo - (Default = <code>false); true: </code>Enable undo\redo functionality.</li>
-                            <li>enableRouting - (Default = <code>false); true: </code>Enable pushState routing and undo\redo functionality.</li>
-                        </ul>
+                        <td align="left">dataCtxInitObjN</td>
+                        <td align="center"><code>String | Object | Mixed | Mixed Array</code></td>
+                        <td align="left"><p>Specifies data contexts to be initialized. Can be "*" (asterisk) to initialize all data contexts OR a list of data context names AND/OR <em>dataCtxInitObjs</em> OR an array of data context names AND/OR <em>dataCtxInitObjs</em>.</p>
+                        <p>An <em>dataCtxInitObj</em> has to following attributes:
+                        <b>key</b> = a data context name,
+                        <b>value</b> = arguments to be passed to <code>dataContextWillInitialize</code> for the specified data context.
+                        </p>
+                        <p>There are 2 special key names that an <em>dataCtxInitObj</em> can have. They are an asterisk ("*") and an underscore followed by an asterisk ("_*"). The value for these keys specify the scope of the arguments. For example the asterisks indicates that all data contexts are to be intialized with the specified arguments. The key with the underscore followed by an asterisk specifies that all the data contexts list in the current initialization are to receive the specified arguments. It's like scoping the passed in args. Below is an example.</p>
+                        <pre><code><div class="code-block">this.initializeDataContext({
+  "*": ["globalArg1", "globalArg2"],
+   "_*": ["contextArg1", "contextArg2"],
+   "mockVM": ["mockVMArg1", "mockVMArg2"]
+}, "hobbies");</div></code></pre>
+<p>The above example uses the asterisk to initialize all data contexts with the <code>globalArg1</code> and <code>globalArg2</code> arguments. Even the data contexts that are not listed. You will need to take care with this as once a data context has been initialized you are unable to initialize it again.</p>
+<p>It uses the underscore and asterisk to initialize listed data contexts with the <code>contextArg1</code> and <code>contextArg2</code> arguments. mockVM and hobbies for this example.</p>
+<p>mockVM will also receive its own arguments <code>mockVMArg1</code> and <code>mockVMArg2</code>. mockVM and hobbies for this example.</p>
+<p>The order in which the arguments are passed to <code>datContextWillInitialize</code> is Global, Context then Own. If any of the arguments are missing then they are simply not present. For example if there are no Context arguments then only Global and Own arguments will be present.</p>
                         </td>
-                    </tr>
-                    <tr>
-                        <td align="left">Data Context Init Args</td>
-                        <td align="center"><code>String || Object || Mixed Array</code></td>
-                        <td align="left">Model Descriptor</td>
                     </tr>
                 </tbody>
             </table>
+
+
+
 
             <h3 class="content-subhead">Returns</h3>
             <p><code>void</code></p>
@@ -383,9 +416,9 @@
 
             <!-- getWatchedState -->
             <h2 class="section-divider" id="getwatchedstate">getWatchedState</h2>
-            <p>Watch fields and/or dataContexts, specifying a stateChange handler, which is invoke if the watched state changes.</p>
+            <p>Watch fields and/or data contexts, specifying a stateChange handler, which is invoked if the watched state changes. See <a data-scroll href="#watchedstatechangehandler"><code>watchedStateChangeHandler</code></a>.</p>
             <h3 class="content-subhead">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">getWatchedState: <span>function</span>() {
+            <pre><code><div class="code-block">getWatchedState: <span>function</span>() {
   <span>return</span> {
     <span class="st">&#39;persons&#39;</span>: {
       <span>alias</span>: <span class="st">&#39;personsContext&#39;</span>,
@@ -397,7 +430,7 @@
       <span>alias</span>: <span class="st">&#39;busy&#39;</span>
     }
   }
-}</code></pre>
+}</div></code></pre>
 
             <h3 class="content-subhead">Arguments</h3>
             <p><code>None</code></p>
@@ -411,7 +444,7 @@
             <h2 class="section-divider" id="getroutes">getRoutes</h2>
             <p>Provides routing definition and specifies the routeChange handler invoked when the route is navigated to as a result of a <code>popState</code> Event. i.e Browser’s back or forward is clicked.</p>
             <h3 class="content-subhead">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">getRoutes: <span>function</span>(){
+            <pre><code><div class="code-block">getRoutes: <span>function</span>(){
   <span>return</span> {
     <span class="st">&#39;displayPerson&#39;</span>: {
       <span>path</span>: <span class="st">&#39;/person/:id&#39;</span>,
@@ -422,7 +455,7 @@
       <span>handler</span>: personRouteHandler
     }
   }
-}</code></pre>
+}</div></code></pre>
             <h3 class="content-subhead">Arguments</h3>
             <p><code>None</code></p>
             <h3 class="content-subhead">Returns</h3>
@@ -436,19 +469,19 @@
             <p>Triggers a state transition.</p>
 
             <h3 class="content-subhead">Usage</h3>
-<pre class="sourceCode javascript"><code class="sourceCode javascript"><span>this</span>.<span>setState</span>({ <span>current</span>: <span>void</span>(<span class="dv">0</span>) }, {
+<pre><code><div class="code-block"><span>this</span>.<span>setState</span>({ <span>current</span>: <span>void</span>(<span class="dv">0</span>) }, {
   <span>busy</span>: <span>false</span>,
   <span>person</span>: { <span>online</span>: <span>true</span> }
-}, <span>function</span>(appContext){
+}, <span>function</span>(err, appContext){
   ...
   <span class="co">//setState must be called to update View.</span>
   <span class="co">// It can be called without arguments eg. this.setState();</span>
   <span>this</span>.<span>setState</span>({ <span>current</span>: aPerson });  
-}.<span>bind</span>(<span>this</span>));</code></pre>
+});</div></code></pre>
 <p><em>OR with delay parameter set</em></p>
-<pre class="javascipt"><code>this.setState({fadeOut: true}, function(){
+<pre><code><div class="code-block">this.setState({fadeOut: true}, function(){
     this.setState({currentView: View});
-}.bind(this), 300); //delay callback by 300 milliseconds. nb. will not batch</code></pre>
+}, 300); //delay callback by 300 milliseconds. nb. will not batch</div></code></pre>
 
             <h3 id="arguments">Arguments</h3>
             <table class="pure-table pure-table-striped">
@@ -466,7 +499,7 @@
             <td align="left">Object containing the next state values.</td>
             </tr>
             <tr class="even">
-            <td align="left">otherNextState (optional)</td>
+            <td align="left">AppNextState (optional)</td>
             <td align="center"><code>Object</code></td>
             <td align="left">Object containing the next state values for other data contexts. <strong>Only available in ViewModels</strong></td>
             </tr>
@@ -478,7 +511,7 @@
             <tr class="even">
             <td align="left">callback (optional)</td>
             <td align="center"><code>Function</code></td>
-            <td align="left">Used to do sequential setState calls and is passed an error or the latest Domain Data Context state. i.e. function(err, appCtx){…}</td>
+            <td align="left">Used to do sequential setState calls and is passed an error or the latest Application Data Context state. i.e. function(err, appCtx){…}</td>
             </tr>
             <tr class="odd">
             <td align="left">delay (optional)</td>
@@ -487,8 +520,8 @@
             </tr>
             </tbody>
             </table>
-            <p>If no arguments are passed in, then the latest Domain Data Context is returned to the View.</p>
-            <p>If the arguments include a callback, setState must also be called in the callback for the View to recieve the Domain Data Context.</p>
+            <p>If no arguments are passed in, then the latest Application Data Context is returned to the View.</p>
+            <p>If <code>delay</code> is not set, callbacks are batched until <code>setState</code> is called again. Therefore, <code>setState</code> must be called in a callback for the Data Context to transition to the next state. A call to <code>setState</code> with no arguments will suffice.</p>
 
             <h3 class="content-subhead">Returns</h3>
             <p><code>void</code></p>
@@ -500,7 +533,7 @@
             <h2 class="section-divider" id="revert">revert</h2>
             <p>Transitions the Data Context to the previous state.
             <h3 class="content-subhead">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>this</span>.<span>state</span>.<span>appContext</span>.<span>revert</span>();</code></pre>
+            <pre><code><div class="code-block"><span>this</span>.<span>state</span>.<span>appContext</span>.<span>revert</span>([callback(err, appCtx)]);</div></code></pre>
             
             <h2 class="content-subhead">Arguments</h2>
             <table class="pure-table pure-table-striped">
@@ -513,9 +546,9 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td align="left">??</td>
-                        <td align="center"><code>??</code></td>
-                        <td align="left">??</td>
+                        <td align="left">callback</td>
+                        <td align="center"><code>Function</code></td>
+                        <td align="left">Called after state has changed</td>
                     </tr>
                 </tbody>
             </table>
@@ -532,7 +565,7 @@
 
 
 <h3 class="content-subhead">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>this</span>.<span>state</span>.<span>appContext</span>.<span>advance</span>();</code></pre>
+            <pre><code><div class="code-block"><span>this</span>.<span>state</span>.<span>appContext</span>.<span>advance</span>([callback(err, appCtx)]);</div></code></pre>
             
             <h2 class="content-subhead">Arguments</h2>
             <table class="pure-table pure-table-striped">
@@ -545,9 +578,9 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td align="left">??</td>
-                        <td align="center"><code>??</code></td>
-                        <td align="left">??</td>
+                        <td align="left">callback</td>
+                        <td align="center"><code>Function</code></td>
+                        <td align="left">Called after state has changed</td>
                     </tr>
                 </tbody>
             </table>
@@ -567,7 +600,7 @@
             <h2 class="section-divider" id="modelchangehandler">modelChangeHandler</h2>
             <p>Invoked when model state changes. i.e. setState is called from within the model.</p>
             <h3 class="content-subhead">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">personStateChangeHandler: <span>function</span>(nextState){
+            <pre><code><div class="code-block">personStateChangeHandler: <span>function</span>(nextState, appNextState, callback){
   <span>var</span> persons = {};
   <span>persons</span>.<span>collection</span> = <span>this</span>.<span>collection</span>.<span>map</span>(<span>function</span>(person){
     <span>if</span>(<span>person</span>.<span>id</span> === <span>nextState</span>.<span>id</span>){
@@ -577,7 +610,7 @@
     <span>return</span> person;
   }.<span>bind</span>(<span>this</span>));
   <span>this</span>.<span>setState</span>(persons);
-},</code></pre>
+},</div></code></pre>
 
             <h3 id="arguments">Arguments</h3>
             <table class="pure-table pure-table-striped">
@@ -618,13 +651,13 @@
             <p>Invoked when watched state changes.</p>
             
             <h3 class="content-subhead">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>var</span> onPersonChangeHandler = <span>function</span>(nextState, prevState, field, context,
+            <pre><code><div class="code-block"><span>var</span> onPersonChangeHandler = <span>function</span>(nextState, prevState, field, context,
     nextPath, prevPath){
   <span>if</span>(<span>this</span>.<span>current</span> !== <span>void</span>(<span class="dv">0</span>) &amp;&amp; context === <span class="st">&#39;persons&#39;</span> &amp;&amp;
 (<span>nextState</span>.<span>id</span> !== <span>prevState</span>.<span>id</span> || nextPath !== prevPath)){
     <span>return</span> { <span>hobbies</span>: { <span>current</span>: <span>void</span>(<span class="dv">0</span>) }, <span>busy</span>: <span>false</span> };
   }
-};</code></pre>
+};</div></code></pre>
 
             <h3 class="content-subhead">Arguments</h3>
             <table class="pure-table pure-table-striped">
@@ -678,7 +711,11 @@
 <!-- routeChangeHandler -->
             <h2 class="section-divider" id="routechangehandler">routeChangeHandler</h2>
             <p>Invoked when watched routes changes in response to the browser firing a <code>popstate</code> event.</p>
-
+            <h3 class="content-subhead">Usage</h3>
+<pre><code><div class="code-block"><span>var</span> personRouteHandler = <span>function</span>(params, appCtx, path, pathKey, ctx, showFunc??){
+  this.selectPerson(params.id);
+};</div></code></pre>
+            
             <h3 class="content-subhead">Arguments</h3>
             <table class="pure-table pure-table-striped">
             <thead>
@@ -692,34 +729,32 @@
             <tr class="odd">
             <td align="left">params</td>
             <td align="center"><code>Object</code></td>
-            <td align="left">path parameters</td>
+            <td align="left">Route parameters</td>
+            </tr>
+            <tr class="even">
+            <td align="left">appCtx</td>
+            <td align="center"><code>Object</code></td>
+            <td align="left">Reference to the Application Data Context</td>
+            </tr>
             </tr>
             <tr class="even">
             <td align="left">path</td>
             <td align="center"><code>String</code></td>
-            <td align="left">path string</td>
+            <td align="left">Current path string</td>
             </tr>
             <tr class="odd">
-            <td align="left">pathId</td>
+            <td align="left">pathKey</td>
             <td align="center"><code>String</code></td>
-            <td align="left">path id assigned to route in <code>getRoutes</code></td>
+            <td align="left">Key assigned to route in <code>getRoutes</code></td>
             </tr>
             <tr class="even">
             <td align="left">ctx</td>
             <td align="center"><code>Object</code></td>
-            <td align="left">Page.js context object</td>
+            <td align="left">Reference to Page.js context object</td>
             </tr>
             </tbody>
             </table>
-            <h3 class="content-subhead">Usage</h3>
-<pre class="sourceCode javascript"><code class="sourceCode javascript"><span>var</span> personRouteHandler = <span>function</span>(params, path, pathId, ctx){
-  <span>if</span>(<span>ctx</span>.<span>rollbackRequest</span>){
-    <span>ctx</span>.<span>revert</span>();
-    <span>return</span>;
-  }
-  <span>this</span>.<span>selectPerson</span>(<span>params</span>.<span>id</span>);
-};</code></pre>
-            
+
             <h3 class="content-subhead">Returns</h3>
             <p><code>void</code></p>
 
@@ -731,11 +766,15 @@
             <h2 class="section-divider" id="mediachangehandler">mediaChangeHandler</h2>
             <p>Triggered for registered media queries, whenever a query notification is raised. To register a media query you must specify an <code>id</code> within the <code>@madia</code> query attribute. The format of the <code>id</code> is <code>.media#[id]</code>, replacing <code>[id]</code> with whatever identifier you would like to reference that query. See <a href="https://github.com/entrendipity/astarisx/wiki/MediaQueryList-Notifications#registering-a-media-query">Registering a media query</a> in the Developers Guide for more information.</p>
             <h3 class="content-subhead">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">mediaChangeHandler: function(id, mql, initializing){
-  if(id === "tinyScreen" && mql.matches){
-    this.setState({mql:mql});
-  }
-}</code></pre>
+            <pre><code><div class="code-block">mediaChangeHandler: function(id, mql, initializing){
+    if(mql.matches){
+      if(this.$canRevert){
+        this.setState({mql:mql, media: id, $notify:'NavBarView'});
+      } else {
+        this.setState({mql:mql, media: id, $notify:'NavBarView'}, false);
+      }
+    }
+}</div></code></pre>
 
             <h3 class="content-subhead">Arguments</h3>
             <table class="pure-table pure-table-striped">
@@ -795,12 +834,12 @@
             </tbody>
             </table>
             <h3 id="usage">Usage</h3>
-<pre class="sourceCode javascript"><code class="sourceCode javascript">persons: {
+<pre><code><div class="code-block">persons: {
   <span>viewModel</span>: PersonsViewModel,
   <span>get</span>: <span>function</span>(){
     <span>return</span> <span>this</span>.<span>state</span>.<span>persons</span>;
   }
-}</code></pre>
+}</div></code></pre>
             <h3 class="content-subhead">Scope</h3>
             <ul><li>ViewModel</li></ul>
 
@@ -824,7 +863,7 @@
             </tbody>
             </table>
             <h3 id="usage-1">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">occupation: {
+            <pre><code><div class="code-block">occupation: {
               <span>aliasFor</span>: <span class="st">&#39;job&#39;</span>,
               <span>get</span>: <span>function</span>(){
                 <span>return</span> <span>this</span>.<span>state</span>.<span>occupation</span>;
@@ -832,7 +871,7 @@
               <span>set</span>: <span>function</span>(newValue){
                 <span>this</span>.<span>setState</span>({<span class="st">&#39;occupation&#39;</span>: newValue });
               }
-            },</code></pre>
+            },</div></code></pre>
             <h2 id="kind">kind</h2>
             <p>Assigns a field type.</p>
             <h3 id="attributes-2">Attributes</h3>
@@ -873,7 +912,7 @@
             </tbody>
             </table>
             <h3 id="usage-2">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">id: {
+            <pre><code><div class="code-block">id: {
               <span>kind</span>: <span class="st">&#39;uid&#39;</span>,
               <span>get</span>: <span>function</span>() { <span>return</span> <span>this</span>.<span>state</span>.<span>id</span>; }
             }
@@ -908,7 +947,7 @@
               <span>get</span>: <span>function</span>() {
                 <span>return</span> <span>this</span>.<span>state</span>.<span>screenOrientation</span>;
               }
-            }</code></pre>
+            }</div></code></pre>
 
 
 
@@ -918,22 +957,22 @@
             <p>Exposes <a href="http://julian.com/research/velocity/">Velocity</a> Accelerated Javascript animation library. Please see <a href="http://julian.com/research/velocity/">Velocity</a> on how to use the jQuery free version of their API. This function includes the Velocity UI Pack transitions and returns a <a href="http://www.html5rocks.com/en/tutorials/es6/promises/">Promise</a>.</p>
             <p>Note: The the first argument can be a either a DOM Node (this.getDOMNode()) or or the component itself.</p>
             <h3 id="signature-3">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Promise &lt;= <span>advance</span>([Velocity arguments])</code></pre>
+            <pre><code><div class="code-block">Promise &lt;= <span>advance</span>([Velocity arguments])</div></code></pre>
             <h3 id="usage-3">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>this</span>.<span>state</span>.<span>appContext</span>.<span>animate</span>(<span>this</span>, { <span>opacity</span>: <span>0.5</span> }, { <span>duration</span>: <span class="dv">1000</span> });</code></pre>
+            <pre><code><div class="code-block"><span>this</span>.<span>state</span>.<span>appContext</span>.<span>animate</span>(<span>this</span>, { <span>opacity</span>: <span>0.5</span> }, { <span>duration</span>: <span class="dv">1000</span> });</div></code></pre>
             <h2 id="display">display</h2>
             <p>Returns a Astarisx component which is the next Display to be transitioned in.</p>
             <h3 id="signature">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Component &lt;= <span>display</span>()</code></pre>
+            <pre><code><div class="code-block">Component &lt;= <span>display</span>()</div></code></pre>
             <h3 id="usage">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">render: <span>function</span>(){
+            <pre><code><div class="code-block">render: <span>function</span>(){
                 <span>var</span> display = <span>this</span>.<span>state</span>.<span>appContext</span>.<span>display</span>();
                 <span>return</span> (
                     &lt;div&gt;
                       {display}
                     &lt;<span>/div&gt;</span>
             <span>    </span><span>)</span><span>;</span>
-            <span>}</span></code></pre>
+            <span>}</span></div></code></pre>
             <h2 id="cuedisplay">cueDisplay</h2>
             <p>Cues the next Display. This is automatically called by the mixins <code>Astarisx.mixin.display</code> and <code>Astarisx.mixin.view.display</code></p>
             <h2 id="dropdisplay">dropDisplay</h2>
@@ -941,16 +980,16 @@
             <h2 id="page">page</h2>
             <p>Returns a Astarisx component which is the next Page to be transitioned in.</p>
             <h3 id="signature-1">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Component &lt;= <span>page</span>()</code></pre>
+            <pre><code><div class="code-block">Component &lt;= <span>page</span>()</div></code></pre>
             <h3 id="usage-1">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">render: <span>function</span>(){
+            <pre><code><div class="code-block">render: <span>function</span>(){
                 <span>var</span> page = <span>this</span>.<span>state</span>.<span>appContext</span>.<span>page</span>();
                 <span>return</span> (
                     &lt;div&gt;
                       {page}
                     &lt;<span>/div&gt;</span>
             <span>    </span><span>)</span><span>;</span>
-            <span>}</span></code></pre>
+            <span>}</span></div></code></pre>
             <h2 id="cuepage">cuePage</h2>
             <p>Cues the next Page. This is automatically called by the mixins <code>Astarisx.mixin.page</code> and <code>Astarisx.mixin.view.page</code></p>
             <h2 id="droppage">dropPage</h2>
@@ -958,29 +997,29 @@
             <h2 id="addlistitem">addListItem</h2>
             <p>Transitions in a list item.</p>
             <h3 id="signature-2">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Promise &lt;= <span>addListItem</span>(<span>this</span>, [listItemKey, Velocity Arguments])</code></pre>
+            <pre><code><div class="code-block">Promise &lt;= <span>addListItem</span>(<span>this</span>, [listItemKey, Velocity Arguments])</div></code></pre>
             <h3 id="usage-2">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">componentDidMount: <span>function</span>(){
+            <pre><code><div class="code-block">componentDidMount: <span>function</span>(){
                 <span>this</span>.<span>state</span>.<span>appContext</span>.<span>addListItem</span>(<span>this</span>, <span class="st">&quot;personList&quot;</span>);
-            }</code></pre>
+            }</div></code></pre>
             <h2 id="droplistitem">dropListItem</h2>
             <p>Transitions out a list item.</p>
             <h3 id="signature-3">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">Promise &lt;= <span>dropListItem</span>(<span>this</span>, [listItemKey, Velocity Arguments])</code></pre>
+            <pre><code><div class="code-block">Promise &lt;= <span>dropListItem</span>(<span>this</span>, [listItemKey, Velocity Arguments])</div></code></pre>
             <h3 id="usage-3">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">remove: <span>function</span>(){
+            <pre><code><div class="code-block">remove: <span>function</span>(){
                 <span>this</span>.<span>state</span>.<span>appContext</span>.<span>dropListItem</span>(<span>this</span>, <span class="st">&quot;personList&quot;</span>).<span>then</span>(<span>function</span>(elements){
                   <span>this</span>.<span>state</span>.<span>appContext</span>.<span>sites</span>.<span>remove</span>(id);
                 }.<span>bind</span>(<span>this</span>));
-              }</code></pre>
+              }</div></code></pre>
             <h2 id="show">show</h2>
             <p>Cue the next Display and Page to be transitioned in.</p>
             <h3 id="signature-4">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>void</span> &lt;= <span>show</span>(displayKey, page);</code></pre>
+            <pre><code><div class="code-block"><span>void</span> &lt;= <span>show</span>(displayKey, page);</div></code></pre>
             <h3 id="usage-4">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">gotoPage1: <span>function</span>(){
+            <pre><code><div class="code-block">gotoPage1: <span>function</span>(){
                 <span>this</span>.<span>state</span>.<span>appContext</span>.<span>show</span>(<span class="st">&#39;sites.main&#39;</span>, <span class="st">&#39;page1&#39;</span>);
-            }</code></pre>
+            }</div></code></pre>
 
 
 <!-- !!!!!!!!!!!!!!! -->
@@ -988,7 +1027,7 @@
             <p>A user defined function is used to create model instances.</p>
             <p><em>Please refer to <a href="https://github.com/entrendipity/astarisx/wiki/Models#instantiating-a-model-instance">Instantiating a Model instance</a> for an explaination on why and how to structure your code to instantiate model instances.</em></p>
             <h3 id="signature">Signature</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript">ModelInstance &lt;= #<span>ModelConstructorClass</span>([modelChangeHandler])([nextState, extendState, initialize])</code></pre>
+            <pre><code><div class="code-block">ModelInstance &lt;= #<span>ModelConstructorClass</span>([modelChangeHandler])([nextState, extendState, initialize])</div></code></pre>
             <h3 id="arguments">Arguments</h3>
             <table class="pure-table pure-table-striped">
             <thead>
@@ -1022,14 +1061,18 @@
             </tbody>
             </table>
             <h3 id="usage">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>var</span> Person: <span>function</span>(){
+            <pre><code><div class="code-block"><span>var</span> Person: <span>function</span>(){
               <span>return</span> <span>new</span> <span>PersonCtr</span>(personStateChangeHandler).<span>apply</span>(<span>this</span>, arguments);
-            },</code></pre>
+            },</div></code></pre>
             <h3 id="usage-context">Usage Context</h3>
             <p><strong>optional</strong> :: ViewModel, Model</p>
 
-            <h2 id="state">state</h2>
-            <p>Holds object state.</p>
+<!-- Properties -->
+            <h2 class="content-subhead" id="properties">Properties</h2>
+
+<!-- $state -->
+            <h2 class="section-divider" id="state">$state</h2>
+            <p>Reference to an object's state.</p>
             <h3 id="property">Property</h3>
             <table class="pure-table pure-table-striped">
             <thead>
@@ -1049,8 +1092,10 @@
             </table>
             <h3 id="usage-context">Usage Context</h3>
             <p>ControllerViewModel, ViewModel, Model</p>
-            <h2 id="previousstate">previousState</h2>
-            <p>Holds Domain Data Context previous state.</p>
+            
+<!-- $previousState -->
+            <h2 class="section-divider" id="previousstate">$previousState</h2>
+            <p>Reference to the Application Data Context's previous state.</p>
             <h3 id="property-1">Property</h3>
             <table class="pure-table pure-table-striped">
             <thead>
@@ -1070,8 +1115,10 @@
             </table>
             <h3 id="usage-context-1">Usage Context</h3>
             <p>ControllerViewModel</p>
-            <h2 id="nextstate">nextState</h2>
-            <p>Holds Domain Data Context next state.</p>
+            
+<!-- $nextState -->
+            <h2 class="section-divider" id="nextstate">$nextState</h2>
+            <p>Holds Application Data Context next state.</p>
             <h3 id="property-2">Property</h3>
             <table class="pure-table pure-table-striped">
             <thead>
@@ -1091,7 +1138,9 @@
             </table>
             <h3 id="usage-context-2">Usage Context</h3>
             <p>ControllerViewModel</p>
-            <h2 id="canrevert">canRevert</h2>
+            
+<!-- $canRevert -->
+            <h2 class="section-divider" id="canrevert">$canRevert</h2>
             <p>Indicates whether there is previous state available to transition to.</p>
             <h3 id="property-3">Property</h3>
             <table class="pure-table pure-table-striped">
@@ -1117,7 +1166,9 @@
             </table>
             <h3 id="usage-context-3">Usage Context</h3>
             <p>ControllerViewModel</p>
-            <h2 id="canadvance">canAdvance</h2>
+
+<!-- $canAdvance -->
+            <h2 class="section-divider" id="canadvance">$canAdvance</h2>
             <p>Indicates whether there is next state available to transition to.</p>
             <h3 id="property-4">Property</h3>
             <table class="pure-table pure-table-striped">
@@ -1142,8 +1193,65 @@
             </tbody>
             </table>
             <h3 id="usage-context-4">Usage Context</h3>
+            <p>ControllerViewModel</p>  
+            
+<!-- $pageNotFound -->
+            <h2 class="section-divider" id="pagenotfound">$pageNotFound</h2>
+            <p>Indicates whether a route path is invalid resulting in a 404:page not found error</p>
+            <h3 id="property-1">Property</h3>
+            <table class="pure-table pure-table-striped">
+            <thead>
+            <tr class="header">
+            <th align="left">Value (Read Only)</th>
+            <th align="center">Type</th>
+            <th align="left">Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="odd">
+            <td align="left"><code>true</code></td>
+            <td align="center"><code>Boolean</code></td>
+            <td align="left">path is invalid and the page was not found.</td>
+            </tr>
+            <tr class="even">
+            <td align="left"><code>false</code></td>
+            <td align="center"><code>Boolean</code></td>
+            <td align="left">path is valid.</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="usage-context-1">Usage Context</h3>
             <p>ControllerViewModel</p>
-            <h2 id="path">path</h2>
+            
+<!-- $dataContextWillUpdate -->
+            <h2 class="section-divider" id="datacontextwillupdate">$dataContextWillUpdate</h2>
+            <p>Holds only the data contexts with the state that will be transitioned and is intended to be used within React’s <code>shouldComponentUpdate</code>. See <a href="https://github.com/entrendipity/astarisx/wiki/View#optimizing-the-view">Optimizing the View</a>.</p>
+            <h3 id="property-2">Property</h3>
+            <table class="pure-table pure-table-striped">
+            <thead>
+            <tr class="header">
+            <th align="left">Value (Read Only)</th>
+            <th align="center">Type</th>
+            <th align="left">Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="odd">
+            <td align="left"><code>dataContextWillUpdate</code></td>
+            <td align="center"><code>Object</code></td>
+            <td align="left">Holds only the data contexts with the state that will be transitioned.</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="usage-context-2">Usage Context</h3>
+            <p>ControllerViewModel</p>
+            <p><strong><em>n.b.</em></strong> <em>This property is located in <code>appContext.state</code> and not on the root object</em></p>
+
+<!-- Directives -->
+            <h2 class="content-subhead" id="directives">Directives</h2>
+            <p>Directives are attributes that are passed to the Application Context via the second argument of <code>setState</code>.</p>
+<!-- $path -->
+            <h2 class="section-divider" id="path">$path</h2>
             <p>URL path assigned to the next state.</p>
             <h3 id="property-5">Property</h3>
             <table class="pure-table pure-table-striped">
@@ -1164,7 +1272,9 @@
             </table>
             <h3 id="usage-context-5">Usage Context</h3>
             <p>ControllerViewModel - set from ViewModel</p>
-            <h2 id="pushstate">pushState</h2>
+            
+<!-- $pusState -->
+            <h2 class="section-divider" id="pushstate">$pushState</h2>
             <p>Toggles <code>pushState</code></p>
             <h3 id="property-6">Property</h3>
             <table class="pure-table pure-table-striped">
@@ -1190,11 +1300,15 @@
             </table>
             <h3 id="usage-context-6">Usage Context</h3>
             <p>ControllerViewModel</p>
-            <h2 id="forcereplace">forceReplace</h2>
+            
+<!-- $forceReplace -->
+            <h2 class="section-divider" id="forcereplace">$forceReplace</h2>
             <p>Override default <code>pushState</code> behavior and perform a replace state.</p>
             <h3 id="property-7">Property</h3>
             <p>| Value | Type | Details | | ————- |:————-:|—–| | <code>true</code> | <code>Boolean</code> | force replace state. | <code>false</code> (default) | <code>Boolean</code> | allow for default behavior. It is not necessary to set <code>forceState</code> back to <code>false</code> as it will revert to <code>false</code> once the operation has been performed. ### Usage Context ControllerViewModel</p>
-            <h2 id="enableundo">enableUndo</h2>
+            
+<!-- $enableUndo -->
+            <h2 class="section-divider" id="enableundo">$enableUndo</h2>
             <p>Override default <code>enableUndo</code> behavior and allow for an adhoc <code>enableUndo</code>. This causes a <code>previousState</code> to be created.</p>
             <h3 id="property-8">Property</h3>
             <table class="pure-table pure-table-striped">
@@ -1221,7 +1335,8 @@
             <h3 id="usage-context-7">Usage Context</h3>
             <p>ControllerViewModel</p>
 
-            <h2 id="notify">notify</h2>
+<!-- $notify -->
+            <h2 class="section-divider" id="notify">$notify</h2>
             <p>Specify a <code>viewKey</code> during a <code>setState</code> which is not be notified that there has been a state change. Only the specified Views will be notified.</p>
             <h3 id="property">Property</h3>
             <table class="pure-table pure-table-striped">
@@ -1248,189 +1363,18 @@
             <p><em>N.B. The main UI container is given a default <code>viewKey</code> of <code>*</code>.</em></p>
             <h3 id="usage-context">Usage Context</h3>
             <p>ControllerViewModel</p>
-            <h2 id="pagenotfound">pageNotFound</h2>
-            <p>Indicates whether a route path is invalid resulting in a 404:page not found error</p>
-            <h3 id="property-1">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left"><code>true</code></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">path is invalid and the page was not found.</td>
-            </tr>
-            <tr class="even">
-            <td align="left"><code>false</code></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">path is valid.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-1">Usage Context</h3>
-            <p>ControllerViewModel</p>
-            <h2 id="datacontextwillupdate">dataContextWillUpdate</h2>
-            <p>Holds only the data contexts with the state that will be transitioned and is intended to be used within React’s <code>shouldComponentUpdate</code>. See <a href="https://github.com/entrendipity/astarisx/wiki/View#optimizing-the-view">Optimizing the View</a>.</p>
-            <h3 id="property-2">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left"><code>dataContextWillUpdate</code></td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Holds only the data contexts with the state that will be transitioned.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-2">Usage Context</h3>
-            <p>ControllerViewModel</p>
-            <p><strong><em>n.b.</em></strong> <em>This property is located in <code>appContext.state</code> and not on the root object</em></p>
-            <h2 id="displayname">displayName</h2>
-            <p>The current display name.</p>
-            <h3 id="property-3">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">displayName</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">The current display name.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-3">Usage Context</h3>
-            <p>ControllerViewModel</p>
-            <h2 id="displaygroup">displayGroup</h2>
-            <p>The current displayGroup name.</p>
-            <h3 id="property-4">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">displayGroup</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">The current displayGroup.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-4">Usage Context</h3>
-            <p>ControllerViewModel</p>
-            <h2 id="displaykey">displayKey</h2>
-            <p>The current displayKey name.</p>
-            <h3 id="property-5">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">displayKey</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">The current displayKey.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-5">Usage Context</h3>
-            <p>ControllerViewModel</p>
-            <h2 id="pagename">pageName</h2>
-            <p>The current page name.</p>
-            <h3 id="property-6">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">pageName</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">The current page name.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-6">Usage Context</h3>
-            <p>ControllerViewModel</p>
-            <h2 id="react.rendercomponent">React.renderComponent</h2>
-            <p>Initialize the Application</p>
-            <h3 id="props">Props</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Prop</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">controllerViewModel</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">ControllerViewModel to be used with this component</td>
-            </tr>
-            <tr class="even">
-            <td align="left">enableUndo <strong>(default = <code>false</code>)</strong></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">Specify when to use auto undo/redo functionality. Not required to be specified if you set <code>enableRouting</code> = <code>true</code></td>
-            </tr>
-            <tr class="odd">
-            <td align="left">enableRouting <strong>(default = <code>false</code>)</strong></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">Set to <code>true</code> to use built in pushState Router. This overrides the ’<code>enableUndo</code> setting as routing manages Undo functionality differently.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage">Usage</h3>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>React</span>.<span>renderComponent</span>(&lt;Application
-                controllerViewModel={ControllerViewModel}
-                enableUndo={<span>true</span>}<span>/&gt;,</span>
-            <span>  document.getElementById</span><span>(</span><span>&#39;container&#39;</span><span>))</span><span>;</span></code></pre>
-            <p><strong>OR</strong></p>
-            <pre class="sourceCode javascript"><code class="sourceCode javascript"><span>React</span>.<span>renderComponent</span>(&lt;Application
-                controllerViewModel={ControllerViewModel}
-                enableRouting={<span>true</span>}<span>/&gt;,</span>
-            <span>  document.getElementById</span><span>(</span><span>&#39;container&#39;</span><span>))</span><span>;</span></code></pre>
 
-            <!-- initializeAppContext -->
-            <h2 class="content-subhead" id="initializeappcontext">initializeAppContext</h2>
+<!-- View -->
+            <h2 class="content-subhead" id="view">View</h2>
+
+
+<!-- initializeAppContext -->
+            <h2 class="section-divider" id="initializeappcontext">initializeAppContext</h2>
             <p>Initializes the Application Data Context.</p>
             <h3 class="content-subhead" >Usage</h3>
-            <pre><code>componentWillMount: function(){
-    this.initializeAppContext({
-      controllerViewModel: ControllerViewModel,
-      // enableUndo: true
-      enableRouting: true
-    });
-}</code></pre>
+            <pre><code><div class="code-block">componentWillMount: function(){
+    this.initializeAppContext(appCtxInitObj[, dataCtxInitArg]);
+}</div></code></pre>
             <h3 class="content-subhead" >Arguments</h3>
             <table class="pure-table pure-table-striped">
                 <thead>
@@ -1442,7 +1386,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td align="left">Options</td>
+                        <td align="left">appCtxInitObj</td>
                         <td align="center"><code>Object</code></td>
                         <td align="left">Available Options:
                         <ul>
@@ -1453,16 +1397,17 @@
                         </td>
                     </tr>
                     <tr>
-                        <td align="left">Data Context Init Args</td>
-                        <td align="center"><code>String || Object || Mixed Array</code></td>
-                        <td align="left">Model Descriptor</td>
+                        <td align="left">dataCtxInitArg</td>
+                        <td align="center"><code>Mixed Array</code></td>
+                        <td align="left"><p>Specifies data contexts to be initialized. Can be an array of data context names AND/OR <em>dataCtxInitObjs</em>.</p>
+                        </td>
                     </tr>
                 </tbody>
             </table>
 
 
-            <!-- $viewKey -->
-            <h2 id="viewkey">$viewKey</h2>
+<!-- $viewKey -->
+            <h2 class="section-divider" id="viewkey">$viewKey</h2>
             <p>Used to identify a View if <a href="https://github.com/entrendipity/astarisx/wiki/Instance-properties#notify"><code>notify</code></a> has been passed to setState. Please note that the component must be designated as a View by including the <code>Astarisx.mixin.view</code> mixin.</p>
             <p><em>N.B. The main UI container is given a default <code>viewKey</code> of <code>*</code>.</em></p>
             <h3 id="props">Props</h3>
@@ -1483,8 +1428,10 @@
             </tbody>
             </table>
             <h3 id="usage">Usage</h3>
-            <pre class="sourceCode html"><code class="sourceCode html"><span>&lt;aView</span><span> $viewKey=</span><span class="st">{</span><span class="er">&quot;mainView&quot;}</span><span>/&gt;</span></code></pre>
-            <h2 id="mediakey">.media#[key]</h2>
+            <pre class="sourceCode html"><code class="sourceCode html"><span>&lt;aView</span><span> $viewKey=</span><span class="st">{</span><span class="er">&quot;mainView&quot;}</span><span>/&gt;</span></div></code></pre>
+            
+<!-- mediakey -->
+            <h2 class="section-divider" id="mediakey">.media#[key]</h2>
             <p>Used to identify a media query in a CSS file.</p>
             <h3 id="props-1">Props</h3>
             <table class="pure-table pure-table-striped">
@@ -1506,11 +1453,132 @@
             <h3 id="usage-1">Usage</h3>
             <pre class="sourceCode css"><code class="sourceCode css"><span class="dv">@media</span> <span class="dv">(min-width: </span><span>992px</span><span class="dv">) and (max-width: </span><span>1199px</span><span class="dv">)</span> <span class="dv">{</span>
                 <span>.media#myUniqueKey</span> <span>{</span><span class="co">/**/</span><span>}</span>
-            <span class="dv">}</span></code></pre>
+            <span class="dv">}</span></div></code></pre>
 
+        <div class="header">
+            <h1>AstarisxAnimate API</h1>
+            <h2>v0.?</h2>
+        </div>
+        <h2 class="content-subhead" id="astarisxanimatemethods">Methods</h2>
+<!-- animate -->
+        <h2 class="section-divider" id="astarisxanimateanimate">animate</h2>
+<!-- show -->
+        <h2 class="section-divider" id="astarisxanimateshow">show</h2>
+<!-- display -->
+        <h2 class="section-divider" id="astarisxanimatedisplay">display</h2>
+<!-- page -->
+        <h2 class="section-divider" id="astarisxanimatepage">page</h2>
+<!-- addDisplays -->
+        <h2 class="section-divider" id="astarisxanimateadddisplays">addDisplays</h2>
+<!-- addTransitions -->
+        <h2 class="section-divider" id="astarisxanimateaddtransitions">addTransitions</h2>
+<!-- cueDisplay -->
+        <h2 class="section-divider" id="astarisxanimatecuedisplay">cueDisplay</h2>
+<!-- dropDisplay -->
+        <h2 class="section-divider" id="astarisxanimatedropdisplay">dropDisplay</h2>
+<!-- cuePage -->
+        <h2 class="section-divider" id="astarisxanimatecuepage">cuePage</h2>
+<!-- dropPage -->
+        <h2 class="section-divider" id="astarisxanimatedroppage">dropPage</h2>
+<!-- addListItem -->
+        <h2 class="section-divider" id="astarisxanimateaddlistitem">addListItem</h2>
+<!-- dropListItem -->
+        <h2 class="section-divider" id="astarisxanimatedroplistitem">dropListItem</h2>
+<!-- resetDisplay -->
+        <h2 class="section-divider" id="astarisxanimateresetdisplay">resetDisplay</h2>
 
+        <h2 class="content-subhead" id="astarisxanimateproperties">Properties</h2>
+<!-- $displayKey -->
+            <h2 class="section-divider" id="displaykey">$displayKey</h2>
+            <p>The current displayKey name.</p>
+            <h3 id="property-5">Property</h3>
+            <table class="pure-table pure-table-striped">
+            <thead>
+            <tr class="header">
+            <th align="left">Value (Read Only)</th>
+            <th align="center">Type</th>
+            <th align="left">Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="odd">
+            <td align="left">displayKey</td>
+            <td align="center"><code>String</code></td>
+            <td align="left">The current displayKey.</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="usage-context-5">Usage Context</h3>
+            <p>ControllerViewModel</p>
             
-            
+<!-- $displayName -->
+            <h2 class="section-divider" id="displayname">$displayName</h2>
+            <p>The current display name.</p>
+            <h3 id="property-3">Property</h3>
+            <table class="pure-table pure-table-striped">
+            <thead>
+            <tr class="header">
+            <th align="left">Value (Read Only)</th>
+            <th align="center">Type</th>
+            <th align="left">Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="odd">
+            <td align="left">displayName</td>
+            <td align="center"><code>String</code></td>
+            <td align="left">The current display name.</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="usage-context-3">Usage Context</h3>
+            <p>ControllerViewModel</p>
+
+<!-- $displayGroup -->
+            <h2 id="displaygroup">$displayGroup</h2>
+            <p>The current displayGroup name.</p>
+            <h3 id="property-4">Property</h3>
+            <table class="pure-table pure-table-striped">
+            <thead>
+            <tr class="header">
+            <th align="left">Value (Read Only)</th>
+            <th align="center">Type</th>
+            <th align="left">Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="odd">
+            <td align="left">displayGroup</td>
+            <td align="center"><code>String</code></td>
+            <td align="left">The current displayGroup.</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="usage-context-4">Usage Context</h3>
+            <p>ControllerViewModel</p>
+
+    <!-- $pageName -->
+            <h2 class="section-divider" id="pagename">$pageName</h2>
+            <p>The current page name.</p>
+            <h3 id="property-6">Property</h3>
+            <table class="pure-table pure-table-striped">
+            <thead>
+            <tr class="header">
+            <th align="left">Value (Read Only)</th>
+            <th align="center">Type</th>
+            <th align="left">Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="odd">
+            <td align="left">pageName</td>
+            <td align="center"><code>String</code></td>
+            <td align="left">The current page name.</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3 id="usage-context-6">Usage Context</h3>
+            <p>ControllerViewModel</p>
            
             
         </div>

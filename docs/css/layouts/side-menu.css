@@ -157,6 +157,7 @@ This styles the selected menu item `<li>`.
 #menu .pure-menu-selected,
 #menu .pure-menu-heading {
     /*background: #1f8dd6;*/
+    padding-top: 10px;
     border: none;
 }
 
@@ -179,6 +180,11 @@ This styles the menu heading.
     font-weight: 200;
     font-size: 120%;
 }
+
+#menu .last-menu-group {
+    padding-bottom: 15px;
+}
+
 .fa-arrow-left {
     padding-right: 0.5em;
     color: #1f8dd6;
@@ -267,6 +273,18 @@ blockquote p {
   display: inline;
 }
 
+.font-lg {
+    font-size: 2em;
+}
+.font-normal {
+    font-size: 1em;
+}
+
+.code-block {
+    /*min-width: 600px;*/
+    overflow: auto;
+    display: inline-block;
+}
 /* -- Responsive Styles (Media Queries) ------------------------------------- */
 
 /*
