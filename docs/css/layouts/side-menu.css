@@ -81,6 +81,7 @@ The content `<div>` is where all your content goes.
     margin: 20px 0 20px 0;
     font-weight: 300;
     color: #888;
+    font-size: 0.9em;
 }
 
 
@@ -281,13 +282,15 @@ blockquote p {
 }
 
 .code-block {
-    /*min-width: 600px;*/
     overflow: auto;
     display: inline-block;
+    font-size: 0.8em;
+    white-space: nowrap;
+    margin-top: -10px;
 }
 
 h2 {
-    font-size: medium;
+    font-size: 1em;
 }
 
 /* -- Responsive Styles (Media Queries) ------------------------------------- */
@@ -297,7 +300,13 @@ Hides the menu at `48em`, but modify this based on your app's needs.
 */
 @media (min-width: 48em) {
     h2 {
-        font-size: x-large;
+        font-size: 1.5em;
+    }
+    .content-subhead {
+        font-size: 1.1em;
+    }
+    .code-block {
+        font-size: 1em;
     }
     .header,
     .content {
