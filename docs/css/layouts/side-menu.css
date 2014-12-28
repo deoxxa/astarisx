@@ -285,13 +285,20 @@ blockquote p {
     overflow: auto;
     display: inline-block;
 }
+
+h2 {
+    font-size: medium;
+}
+
 /* -- Responsive Styles (Media Queries) ------------------------------------- */
 
 /*
 Hides the menu at `48em`, but modify this based on your app's needs.
 */
 @media (min-width: 48em) {
-
+    h2 {
+        font-size: x-large;
+    }
     .header,
     .content {
         padding-left: 2em;
