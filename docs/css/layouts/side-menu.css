@@ -86,6 +86,7 @@ The content `<div>` is where all your content goes.
 
 
 
+
 /*
 The `#menu` `<div>` is the parent `<div>` that contains the `.pure-menu` that
 appears on the left side of the page.
@@ -287,15 +288,15 @@ blockquote p {
     font-size: 0.8em;
     white-space: pre; /*nowrap;*/
     margin-top: -10px;
+    margin-bottom: -8px;
 }
 
-h2 {
-    font-size: 1em;
+h2.content-subhead {
+    font-size: 1.2em;
 }
 
 table {
     font-size: 0.7em;
-    /*max-width: 300px;*/
 }
 /* -- Responsive Styles (Media Queries) ------------------------------------- */
 
@@ -303,18 +304,19 @@ table {
 Hides the menu at `48em`, but modify this based on your app's needs.
 */
 @media (min-width: 48em) {
-    h2 {
-        font-size: 1.5em;
-    }
+   
     table {
         font-size: 1em;
     }
-    .content-subhead {
-        font-size: 1.1em;
+
+    h2.content-subhead {
+        font-size: 1.5em;
     }
+
     .code-block {
         font-size: 1em;
     }
+
     .header,
     .content {
         padding-left: 2em;

@@ -7,7 +7,7 @@
 <title>Astarisx Documentation</title>
 <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/paraiso.dark.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/tomorrow-night-bright.min.css">
   
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="css/layouts/side-menu-old-ie.css">
@@ -69,6 +69,7 @@
                 <li class="sub"><a data-scroll href="#viewmodel">viewModel</a></li>
                 <li class="sub"><a data-scroll href="#aliasfor">aliasFor</a></li>
                 <li class="sub"><a data-scroll href="#kind">kind</a></li>
+                <li class="sub"><a data-scroll href="#validate">validate</a></li>
                 
                 <li class="group-header"><a data-scroll href="#properties">Properties</a></li>
                 <li class="sub"><a data-scroll href="#state">$state</a></li>
@@ -78,6 +79,9 @@
                 <li class="sub"><a data-scroll href="#canadvance">$canAdvance</a></li>
                 <li class="sub"><a data-scroll href="#pagenotfound">$pageNotFound</a></li>
                 <li class="sub"><a data-scroll href="#datacontextwillupdate">$dataContextWillUpdate</a></li>
+                <li class="sub"><a data-scroll href="#dirty">$dirty</a></li>
+                <li class="sub"><a data-scroll href="#valid">$[field]Valid</a></li>
+                <li class="sub"><a data-scroll href="#allvalid">$allValid</a></li>
 
                 <li class="group-header"><a data-scroll href="#directives">Directives</a></li>
                 <li class="sub"><a data-scroll href="#path">$path</a></li>
@@ -85,7 +89,8 @@
                 <li class="sub"><a data-scroll href="#forcereplace">$forceReplace</a></li>
                 <li class="sub"><a data-scroll href="#enableundo">$enableUndo</a></li>
                 <li class="sub"><a data-scroll href="#notify">$notify</a></li>
-
+                <li class="sub"><a data-scroll href="#owner">$owner</a></li>
+                <li class="sub"><a data-scroll href="#clientfield">_[field]</a></li>
 
                 <li class="group-header"><a data-scroll href="#view">View</a></li>
                 <li class="sub"><a data-scroll href="#initializeappcontext">initializeAppContext</a></li>
@@ -139,238 +144,88 @@
             
             <!-- Astarisx.createModelClass -->
             <h2 class="section-divider" id="astarisxcreatemodelclass">Astarisx.createModelClass</h2>
-            <p>Defines a Model Class.</p>
             
-            <h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block">Astarisx.createModelClass(descriptor);</div></code></pre>
-            
-            <h3 class="content-subhead" id="arguments">Arguments</h3>
-            <table class="pure-table pure-table-striped">
-                <thead>
-                    <tr class="header">
-                        <th align="left">Param</th>
-                        <th align="center">Type</th>
-                        <th align="left">Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td align="left">descriptor</td>
-                        <td align="center"><code>Object</code></td>
-                        <td align="left">Model Descriptor</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>Object</code> - Reference to Model Class Constructor</p>
+            <pre><code><div class="code-block">function createModelClass(Object descriptor)</div></code></pre>
+            <p>Defines a Model Class given a descriptor.</p>
             
             <!-- Astarisx.createMClass -->
             <h2 class="section-divider" id="astarisxcreatemclass">Astarisx.createMClass</h2>
+            <pre><code><div class="code-block">function createMClass(Object descriptor)</div></code></pre>
             <p>Alias for <a data-scroll href="#astarisxcreatemodelclass">Astarisx.createModelClass</a></p>
             
             <!-- Astarisx.createViewModelClass -->
             <h2 class="section-divider" id="astarisxcreateviewmodelclass">Astarisx.createViewModelClass</h2>
-            <p>Defines a ViewModel Class.</p>
-            
-            <h3>Usage</h3>
-            <pre><code><div class="code-block"><span>Astarisx</span>.<span>createViewModelClass</span>(descriptor)</div></code></pre>
-            
-            <h3>Arguments</h3>
-            <table class="pure-table pure-table-striped">
-                <thead>
-                    <tr class="header">
-                    <th align="left">Param</th>
-                    <th align="center">Type</th>
-                    <th align="left">Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="odd">
-                    <td align="left">descriptor</td>
-                    <td align="center"><code>Object</code></td>
-                    <td align="left">ViewModel Descriptor</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>Object</code> - Reference to ViewModel Class Constructor</p>
-
-            
+            <pre><code><div class="code-block">function createViewModelClass(Object descriptor)</div></code></pre>
+            <p>Defines a ViewModel Class given a descriptor.</p>
+                        
             <!-- Astarisx.createVMClass -->
             <h2 class="section-divider" id="astarisx.createvmclass">Astarisx.createVMClass</h2>
+            <pre><code><div class="code-block">function createVMClass(Object descriptor)</div></code></pre>
             <p>Alias for <a data-scroll href="#astarisxcreateviewmodelclass">Astarisx.createViewModelClass</a></p>
             
             <!-- Astarisx.createControllerViewModelClass -->
             <h2 class="section-divider" id="astarisxcreatecontrollerviewmodelclass">Astarisx.createControllerViewModelClass</h2>
-            <p>Defines a ControllerViewModel Class.</p>
-            <h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block">Astarisx.createControllerViewModelClass(descriptor);</div></code></pre>
-            
-            <h3 class="content-subhead">Arguments</h3>
-            <table class="pure-table pure-table-striped">
-                <thead>
-                    <tr class="header">
-                        <th align="left">Param</th>
-                        <th align="center">Type</th>
-                        <th align="left">Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="odd">
-                        <td align="left">descriptor</td>
-                        <td align="center"><code>Object</code></td>
-                        <td align="left">ControllerViewModel Descriptor</td>
-                    </tr>
-                </tbody>
-            </table>
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>Object</code> - Reference to ControllerViewModel Class Constructor</p>
+            <pre><code><div class="code-block">function createControllerViewModelClass(Object descriptor)</div></code></pre>
+            <p>Defines a ControllerViewModel Class given a descriptor.</p>
 
             <!-- Astarisx.createCVMClass -->
             <h2 class="section-divider">Astarisx.createCVMClass</h2>
+            <pre><code><div class="code-block">function createCVMClass(Object descriptor)</div></code></pre>
             <p>Alias for <a data-scroll href="#astarisxcreatecontrollerviewmodelclass">Astarisx.createControllerViewModelClass</a></p>
             
             <!-- Astarisx.extend -->
             <h2 class="section-divider" id="astarisxextend">Astarisx.extend</h2>
+            <pre><code><div class="code-block">Object function extend(Object sourceObj[, Object mergeObj ...])</div></code></pre>
             <p>Creates and returns a shallow copy of an object and merges the properties of any subsequent objects passed in. Arguments that are null or undefined are ignored.</p>
             <p>Properties of preceding objects will be completely overwritten by a property with the same key in subsequent objects. The values are not merged.</p>
-            <h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block">Astarisx</span>.<span>extend</span>(obj[, objN])</div></code></pre>
-            <h3 class="content-subhead">Arguments</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Param</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">obj</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">An object that provides the initial properties to a shallow copy of the object.</td>
-            </tr>
-            <tr class="even">
-            <td align="left">objN (optional)</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Additional objects containing properties to merge into the target object.</td>
-            </tr>
-            </tbody>
-            </table>
-
-
-
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>Object</code> - Shallow copy of merged object</p>
-            
 
             <!-- Mixins -->
             <h2 class="content-subhead"><a id="mixins">Mixins</a></h2>
 
             <h2 class="section-divider" id="astarisxmixinui">Astarisx.mixin.ui</h2>
-            <p>Registers a component as an Astarisx UI component and registers stateChangeHandler.</p>
-            <h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block"><span>React</span>.<span>createClass</span>({
-  <span>mixins</span>: [<span>Astarisx</span>.<span>mixin</span>.<span>ui</span>],
-  <span>render</span>: <span>function</span>(){...}
-});</div></code></pre>
+            <p>Registers a component as an Astarisx UI component.</p>
 
             <!-- Astarisx.mixin.view -->
             <h2 class="section-divider" id="astarisxmixinview">Astarisx.mixin.view</h2>
-            <p>Registers a component as an Astarisx View and registers a <code>stateChange</code> event listner.</p>
-            <h3 class="content-subhead">Usage</h3>
-                        <pre><code><div class="code-block"><span>React</span>.<span>createClass</span>({
-  <span>mixins</span>: [<span>Astarisx</span>.<span>mixin</span>.<span>view</span>],
-  <span>render</span>: <span>function</span>(){...}
-});</div></code></pre>
+            <p>Registers a component as an Astarisx View.</p>
 
             <!-- Astarisx.mixin.pushState -->
             <h2 class="section-divider" id="astarisxmixinpushstate">Astarisx.mixin.pushState</h2>
             <p>Enables automatic handling of pushState for <code>&lt;a&gt;</code> tags. There is no need to include this mixin in order to use the built-in pushState functionality. This mixin is only required if pushState is enable <strong>and</strong> <code>&lt;a&gt;</code> tags are used in the UI for navigation.</p>
-            <h3 class="content-subhead">Usage</h3>
-
- <pre><code><div class="code-block"><span>React</span>.<span>createClass</span>({
-  <span>mixins</span>: [Astarisx.mixin.ui, Astarisx.mixin.pushState],
-  <span>render</span>: <span>function</span>(){...}
-});</div></code></pre>
             
             <!-- Astarisx.mixin.mediaQuery -->
             <h2 class="section-divider" id="astarisxmixinmediaquery">Astarisx.mixin.mediaQuery</h2>
             <p>Enables media query notifications to be sent to <a data-scroll href="#mediachangehandler"><code>mediaChangeHandler</code></a>.</p>
-            <h3 class="content-subhead">Usage</h3>
-             <pre><code><div class="code-block"><span>React</span>.<span>createClass</span>({
-  <span>mixins</span>: [Astarisx.mixin.ui, Astarisx.mixin.mediaQuery],
-  <span>render</span>: <span>function</span>(){...}
-});</div></code></pre>
-
             
             <!-- Methods -->
             <h2 class="content-subhead" id="methods">Methods</h2>
 
-            <!-- getInitialState -->
+<!-- getInitialState -->
             <h2 class="section-divider" id="getinitialstate">getInitialState</h2>
-            <p>Called during initalization in order to initialize data context state.</p>
-            <h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block">getInitialState: <span>function</span>(){
-  <span>var</span> id = <span>this</span>.<span>id</span> || <span>uuid</span>();
-  <span>return</span> {
-    <span class="st">&#39;id&#39;</span>: id,
-    <span class="st">&#39;age&#39;</span>: <span>calculateAge</span>(<span>this</span>.<span>dob</span>)
-  };
-}</div></code></pre>
-
-            <h3 class="content-subhead">Arguments</h3>
-            <p><code>None</code></p>
-
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>Object</code> - Returns a state object</p>
-
-
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ControllerViewModel</li><li>ViewModel</li><li>Model</li></ul>
-            
-
+            <h3 class="content-subhead">Code</h3>
+            <pre><code><div class="code-block">Object function getInitialState()</div></code></pre>
+            <p>Called during initalization in order to initialize object state.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel, ViewModel, Model</em></p>
             <!-- dataContextWillInitialize -->
             <h2 class="section-divider" id="datacontextwillinitialize">dataContextWillInitialize</h2>
-            <p>Called before data context is intialized and after it has been bootstrapped. This is where ajax calls are made to retrieve data and set up the data context. <code>dataContextWillInitialize</code> will only be called once per data context.</p>
-
-            <h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block">dataContextWillInitialize: <span>function</span>(){
-  <span>$</span>.<span>get</span>(<span class="st">&quot;/api/something&quot;</span>).<span>done</span>(<span>function</span>(data) {
-    ...    
-    <span>this</span>.<span>setState</span>(...);
-  }.<span>bind</span>(<span>this</span>)).<span>fail</span>(<span>function</span>() {
-    <span>alert</span>( <span class="st">&quot;error&quot;</span> );
-  });
-}</div></code></pre>
-            <h3 class="content-subhead">Arguments</h3>
-            <p><code>none</code></p>
-            <p>Although <code>dataContextWillInitialize</code> has no arguments. Custom arguments can be passed in during initialization from <code><a data-scroll href="#initializedatacontext">initializeDataContext</a></code></p>
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>void</code></p>
-
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ControllerViewModel</li><li>ViewModel</li></ul>
+            <pre><code><div class="code-block">void function dataContextWillInitialize()</div></code></pre>
+            <p>Called before the data context is intialized (i.e. before <code>getInitialState</code> is called) and after it has been bootstrapped. This is where ajax calls are made to retrieve data and set up the data context. <code>dataContextWillInitialize</code> will only be called once per data context.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
 <!-- initializeDataContext -->
             <h2 class="section-divider" id="initializedatacontext">initializeDataContext</h2>
-            <p>Initializes the specified data context(s). This method will invoke <code>dataContextWillInitialize</code> for the specified data contexts.</p>
-            <p><em>n.b. <code>initializeDataContext</code> can be invoked multiple times for the same data context, but <code>dataContextWillInitialize</code> will only be invoked the first time per data context.</em></p>
+            <pre><code><div class="code-block">void function initializeDataContext([
+    String dataCtx ... |
+    Object dataCtxInitObj ... |
+    Mixed dataCtxs and dataCtxInitObjs ... |
+    String Array dataCtxs |
+    Object Array dataCtxInitObjs |
+    Mixed Array dataCtxs and dataCtxInitObjs
+])</div></code></pre>
+            <p>Initializes the specified data context(s). This method will invoke <code>dataContextWillInitialize</code> for the specified data contexts. <code>initializeDataContext</code> can be invoked multiple times for the same data context, but <code>dataContextWillInitialize</code> will only be invoked the first time per data context.</em></p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
-<h3 class="content-subhead" >Usage</h3>
-            <em>From ControllerViewModel</em>
-            <pre><code><div class="code-block">this.initializeDataContext([dataCtxInitObjN]);</div></code></pre>
-            <em>From a View Component</em>
-            <pre><code><div class="code-block">this.state.appContext.initializeDataContext([dataCtxInitObjN]);</div></code></pre>
-            <h3 class="content-subhead" >Arguments</h3>
-            <h4 class="content-subhead" >Option 1</h4>
-            <p><code>none</code></p>
-            <p>All data contexts are initialized.</p>
-
-            <h4 class="content-subhead">Option 2</h4>
+           <!-- <h4 class="content-subhead">Option 2</h4>
             <table class="pure-table pure-table-striped">
                 <thead>
                     <tr class="header">
@@ -389,11 +244,11 @@
                         <b>value</b> = arguments to be passed to <code>dataContextWillInitialize</code> for the specified data context.
                         </p>
                         <p>There are 2 special key names that an <em>dataCtxInitObj</em> can have. They are an asterisk ("*") and an underscore followed by an asterisk ("_*"). The value for these keys specify the scope of the arguments. For example the asterisks indicates that all data contexts are to be intialized with the specified arguments. The key with the underscore followed by an asterisk specifies that all the data contexts list in the current initialization are to receive the specified arguments. It's like scoping the passed in args. Below is an example.</p>
-                        <!-- <pre><code><div class="code-block">this.initializeDataContext({
+                         <pre><code><div class="code-block">this.initializeDataContext({
   "*": ["globalArg1", "globalArg2"],
    "_*": ["contextArg1", "contextArg2"],
    "mockVM": ["mockVMArg1", "mockVMArg2"]
-}, "hobbies");</div></code></pre> -->
+}, "hobbies");</div></code></pre> 
 <p>The above example uses the asterisk to initialize all data contexts with the <code>globalArg1</code> and <code>globalArg2</code> arguments. Even the data contexts that are not listed. You will need to take care with this as once a data context has been initialized you are unable to initialize it again.</p>
 <p>It uses the underscore and asterisk to initialize listed data contexts with the <code>contextArg1</code> and <code>contextArg2</code> arguments. mockVM and hobbies for this example.</p>
 <p>mockVM will also receive its own arguments <code>mockVMArg1</code> and <code>mockVMArg2</code>. mockVM and hobbies for this example.</p>
@@ -401,553 +256,377 @@
                         </td>
                     </tr>
                 </tbody>
-            </table>
+            </table>-->
 
 
-
-
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>void</code></p>
-
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ControllerViewModel</li></ul>
-
-
-
-            <!-- getWatchedState -->
+<!-- getWatchedState -->
             <h2 class="section-divider" id="getwatchedstate">getWatchedState</h2>
+            <pre><code><div class="code-block">Object function getWatchedState()</div></code></pre>
             <p>Watch fields and/or data contexts, specifying a stateChange handler, which is invoked if the watched state changes. See <a data-scroll href="#watchedstatechangehandler"><code>watchedStateChangeHandler</code></a>.</p>
-            <h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block">getWatchedState: <span>function</span>() {
-  <span>return</span> {
-    <span class="st">&#39;persons&#39;</span>: {
-      <span>alias</span>: <span class="st">&#39;personsContext&#39;</span>,
-      <span>fields</span>: {
-        <span class="st">&#39;selected&#39;</span>: onSelectionChange
-      }
-    },
-    <span class="st">&#39;busy&#39;</span>: {
-      <span>alias</span>: <span class="st">&#39;busy&#39;</span>
-    }
-  }
-}</div></code></pre>
+            <p><b>Scope:</b> <em>ViewModel</em></p>
 
-            <h3 class="content-subhead">Arguments</h3>
-            <p><code>None</code></p>
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>Object</code> - WatchedState object definition.</p>
-
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ViewModel</li></ul>
-
-            <!-- getRoutes -->
+<!-- getRoutes -->
             <h2 class="section-divider" id="getroutes">getRoutes</h2>
+            <pre><code><div class="code-block">Object function getRoutes()</div></code></pre>
             <p>Provides routing definition and specifies the routeChange handler invoked when the route is navigated to as a result of a <code>popState</code> Event. i.e Browser’s back or forward is clicked.</p>
-            <h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block">getRoutes: <span>function</span>(){
-  <span>return</span> {
-    <span class="st">&#39;displayPerson&#39;</span>: {
-      <span>path</span>: <span class="st">&#39;/person/:id&#39;</span>,
-      <span>handler</span>: personRouteHandler
-    },
-    <span class="st">&#39;list&#39;</span>: {
-      <span>path</span>: <span class="st">&#39;/people&#39;</span>,
-      <span>handler</span>: personRouteHandler
-    }
-  }
-}</div></code></pre>
-            <h3 class="content-subhead">Arguments</h3>
-            <p><code>None</code></p>
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>Object</code> - Route object definition.</p>
-
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ViewModel</li></ul>
+            <p><b>Scope:</b> <em>ViewModel</em></p>
 
 <!-- setState -->
             <h2 class="section-divider" id="setstate">setState</h2>
-            <p>Triggers a state transition.</p>
-
-            <h3 class="content-subhead">Usage</h3>
-<pre><code><div class="code-block"><span>this</span>.<span>setState</span>({ <span>current</span>: <span>void</span>(<span class="dv">0</span>) }, {
-  <span>busy</span>: <span>false</span>,
-  <span>person</span>: { <span>online</span>: <span>true</span> }
-}, <span>function</span>(err, appContext){
-  ...
-  <span class="co">//setState must be called to update View.</span>
-  <span class="co">// It can be called without arguments eg. this.setState();</span>
-  <span>this</span>.<span>setState</span>({ <span>current</span>: aPerson });  
-});</div></code></pre>
-<p><em>OR with delay parameter set</em></p>
-<pre><code><div class="code-block">this.setState({fadeOut: true}, function(){
-    this.setState({currentView: View});
-}, 300); //delay callback by 300 milliseconds. nb. will not batch</div></code></pre>
-
-            <h3 id="arguments">Arguments</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Param</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">nextState (optional)</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Object containing the next state values.</td>
-            </tr>
-            <tr class="even">
-            <td align="left">AppNextState (optional)</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Object containing the next state values for other data contexts. <strong>Only available in ViewModels</strong></td>
-            </tr>
-            <tr class="odd">
-            <td align="left">remember <strong>(default = <code>true</code>)</strong></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left"><code>false</code> = Force the state controller not to retain previous state during this transition. <strong>Only available in the ControllerViewModel and ViewModels</strong></td>
-            </tr>
-            <tr class="even">
-            <td align="left">callback (optional)</td>
-            <td align="center"><code>Function</code></td>
-            <td align="left">Used to do sequential setState calls and is passed an error or the latest Application Data Context state. i.e. function(err, appCtx){…}</td>
-            </tr>
-            <tr class="odd">
-            <td align="left">delay (optional)</td>
-            <td align="center"><code>Number</code></td>
-            <td align="left">The number of milliseconds (thousandths of a second) that the <code>callback</code> function call should be delayed by. A <code>callback</code> <strong>must</strong> be specified. This will not batch updates.</td>
-            </tr>
-            </tbody>
-            </table>
-            <p>If no arguments are passed in, then the latest Application Data Context is returned to the View.</p>
-            <p>If <code>delay</code> is not set, callbacks are batched until <code>setState</code> is called again. Therefore, <code>setState</code> must be called in a callback for the Data Context to transition to the next state. A call to <code>setState</code> with no arguments will suffice.</p>
-
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>void</code></p>
-
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ViewModel</li></ul>
+            <pre><code><div class="code-block">void function setState([
+    Object nextState,
+    [Object nextAppState,]
+    [Boolean remember = true,]
+    [Function callback,]
+    [Number delay]
+])</div></code></pre>
+            <p>Triggers a state transition. If no arguments are passed in, then the latest Application Data Context is returned to the View. If there is a <code>callback</code> and <code>delay</code> is not set, the state transition is batched until <code>setState</code> is called again. A call to <code>setState</code> with no arguments will suffice.</p>
+            <p>n.b. <code>callback</code> recieves two arguments: <code>err, appCtx</code>.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel (<code>nextAppState</code> not supported), ViewModel, Model (<code>remember</code> and <code>delay</code> are not supported)</em></p>
 
 <!-- revert -->
             <h2 class="section-divider" id="revert">revert</h2>
-            <p>Transitions the Data Context to the previous state.
-            <h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block"><span>this</span>.<span>state</span>.<span>appContext</span>.<span>revert</span>([callback(err, appCtx)]);</div></code></pre>
-            
-            <h2 class="content-subhead">Arguments</h2>
-            <table class="pure-table pure-table-striped">
-                <thead>
-                    <tr class="header">
-                        <th align="left">Param</th>
-                        <th align="center">Type</th>
-                        <th align="left">Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td align="left">callback</td>
-                        <td align="center"><code>Function</code></td>
-                        <td align="left">Called after state has changed</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>void</code></p>
+            <pre><code><div class="code-block">void function revert([Function callback])</div></code></pre>
+            <p>Transition Application Data Context to the previous state.</p>
+            <p>n.b. <code>callback</code> recieves two arguments: <code>err, appCtx</code>.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ControllerViewModel</li></ul>
 <!-- advance -->
             <h2 class="section-divider" id="advance">advance</h2>
-            <p>Transitions the Data Context back to the state, prior to <code>revert</code>ing.</p>
-            <h3 id="usage-2">Usage</h3>
-
-
-<h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block"><span>this</span>.<span>state</span>.<span>appContext</span>.<span>advance</span>([callback(err, appCtx)]);</div></code></pre>
+            <pre><code><div class="code-block">void function advance([Function callback])</div></code></pre>
+            <p>Transition the Application Data Context back to the state, prior to <code>revert</code>ing.</p>
+            <p>n.b. <code>callback</code> recieves two arguments: <code>err, appCtx</code>.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
             
-            <h2 class="content-subhead">Arguments</h2>
-            <table class="pure-table pure-table-striped">
-                <thead>
-                    <tr class="header">
-                        <th align="left">Param</th>
-                        <th align="center">Type</th>
-                        <th align="left">Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td align="left">callback</td>
-                        <td align="center"><code>Function</code></td>
-                        <td align="left">Called after state has changed</td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>void</code></p>
-
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ControllerViewModel</li></ul>
-
-
 
 <!-- Handlers -->
             <h2 class="content-subhead" id="handlers">Handlers</h2>
 
 <!-- modelChangeHandler -->
             <h2 class="section-divider" id="modelchangehandler">modelChangeHandler</h2>
-            <p>Invoked when model state changes. i.e. setState is called from within the model.</p>
-            <h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block">personStateChangeHandler: <span>function</span>(nextState, appNextState, callback){
-  <span>var</span> persons = {};
-  <span>persons</span>.<span>collection</span> = <span>this</span>.<span>collection</span>.<span>map</span>(<span>function</span>(person){
-    <span>if</span>(<span>person</span>.<span>id</span> === <span>nextState</span>.<span>id</span>){
-      <span>persons</span>.<span>selected</span> = <span>new</span> <span>Person</span>(nextState, person, <span>true</span>);
-      <span>return</span> <span>persons</span>.<span>selected</span>;
-    }
-    <span>return</span> person;
-  }.<span>bind</span>(<span>this</span>));
-  <span>this</span>.<span>setState</span>(persons);
-},</div></code></pre>
-
-            <h3 id="arguments">Arguments</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Param</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">nextState</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Next state of the Model instance</td>
-            </tr>
-            <tr class="odd">
-            <td align="left">??</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Next state of the Model instance</td>
-            </tr>
-            <tr class="even">
-            <td align="left">callback</td>
-            <td align="center"><code>Function</code></td>
-            <td align="left">callback function passed in from the model</td>
-            </tr>
-            </tbody>
-            </table>
-
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>void</code></p>
-
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ViewModel</li></ul>
+            <pre><code><div class="code-block">void function #modelChangeHandler(
+    Object nextState,
+    Object nextAppState,
+    Function callback
+)</div></code></pre>
+            <p>A model change handler is passed to a Model constructor and can have any name. It is invoked when model state changes. i.e. setState is called from within the model.</p>
+            <p><b>Scope:</b> <em>ViewModel</em></p>
             
 <!-- watchedStateChangeHandler -->
             <h2 class="section-divider" id="watchedstatechangehandler">watchedStateChangeHandler</h2>
-            <p>Invoked when watched state changes.</p>
-            
-            <h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block"><span>var</span> onPersonChangeHandler = <span>function</span>(nextState, prevState, field, context,
-    nextPath, prevPath){
-  <span>if</span>(<span>this</span>.<span>current</span> !== <span>void</span>(<span class="dv">0</span>) &amp;&amp; context === <span class="st">&#39;persons&#39;</span> &amp;&amp;
-(<span>nextState</span>.<span>id</span> !== <span>prevState</span>.<span>id</span> || nextPath !== prevPath)){
-    <span>return</span> { <span>hobbies</span>: { <span>current</span>: <span>void</span>(<span class="dv">0</span>) }, <span>busy</span>: <span>false</span> };
-  }
-};</div></code></pre>
+            <pre><code><div class="code-block">void function #watchedStateChangeHandler(
+    Object fieldNextState,
+    Object fieldPreviousState,
+    String watchedFieldName,
+    Object sourceDataContext,
+    String nextUrlPath,
+    String previousUrlPath
+)</div></code></pre>
+            <p>A watched state change handler is referenced in a <code>getWatchedState</code> object and can have any name. It is invoked when watched state changes.</p>
+            <p><b>Scope:</b> <em>ViewModel</em></p>
 
-            <h3 class="content-subhead">Arguments</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Param</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">nextState</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">next state of watched item</td>
-            </tr>
-            <tr class="even">
-            <td align="left">previousState</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">previous state of watched item</td>
-            </tr>
-            <tr class="odd">
-            <td align="left">field</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">Watched field name</td>
-            </tr>
-            <tr class="even">
-            <td align="left">context</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Watched Data Context name</td>
-            </tr>
-            <tr class="odd">
-            <td align="left">nextPath</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">next url path</td>
-            </tr>
-            <tr class="even">
-            <td align="left">prevPath</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">previous url path</td>
-            </tr>
-            </tbody>
-            </table>
-
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>void</code></p>
-
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ViewModel</li></ul>
-            
 <!-- routeChangeHandler -->
             <h2 class="section-divider" id="routechangehandler">routeChangeHandler</h2>
-            <p>Invoked when watched routes changes in response to the browser firing a <code>popstate</code> event.</p>
-            <h3 class="content-subhead">Usage</h3>
-<pre><code><div class="code-block"><span>var</span> personRouteHandler = <span>function</span>(params, appCtx, path, pathKey, ctx, showFunc??){
-  this.selectPerson(params.id);
-};</div></code></pre>
-            
-            <h3 class="content-subhead">Arguments</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Param</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">params</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Route parameters</td>
-            </tr>
-            <tr class="even">
-            <td align="left">appCtx</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Reference to the Application Data Context</td>
-            </tr>
-            </tr>
-            <tr class="even">
-            <td align="left">path</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">Current path string</td>
-            </tr>
-            <tr class="odd">
-            <td align="left">pathKey</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">Key assigned to route in <code>getRoutes</code></td>
-            </tr>
-            <tr class="even">
-            <td align="left">ctx</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Reference to Page.js context object</td>
-            </tr>
-            </tbody>
-            </table>
-
-            <h3 class="content-subhead">Returns</h3>
-            <p><code>void</code></p>
-
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ViewModel</li></ul>
+            <pre><code><div class="code-block">void function #routeChangeHandler(
+    Object params,
+    Object appCtx,
+    String path,
+    String pathKey,
+    Object ctx
+    , showFunc??
+)</div></code></pre>
+            <p>A route state change handler is referenced in a <code>getRoutes</code> object and can have any name. It is invoked when route paths change in response to the browser firing a <code>popstate</code> event.</p>
+            <p><b>Scope:</b> <em>ViewModel</em></p>
 
 
 <!-- mediaChangeHandler -->
             <h2 class="section-divider" id="mediachangehandler">mediaChangeHandler</h2>
+            <pre><code><div class="code-block">void function mediaChangeHandler(
+    String id,
+    Object mql,
+    Boolean initializing
+)</div></code></pre>
             <p>Triggered for registered media queries, whenever a query notification is raised. To register a media query you must specify an <code>id</code> within the <code>@madia</code> query attribute. The format of the <code>id</code> is <code>.media#[id]</code>, replacing <code>[id]</code> with whatever identifier you would like to reference that query. See <a href="https://github.com/entrendipity/astarisx/wiki/MediaQueryList-Notifications#registering-a-media-query">Registering a media query</a> in the Developers Guide for more information.</p>
-            <h3 class="content-subhead">Usage</h3>
-            <pre><code><div class="code-block">mediaChangeHandler: function(id, mql, initializing){
-    if(mql.matches){
-      if(this.$canRevert){
-        this.setState({mql:mql, media: id, $notify:'NavBarView'});
-      } else {
-        this.setState({mql:mql, media: id, $notify:'NavBarView'}, false);
-      }
-    }
-}</div></code></pre>
-
-            <h3 class="content-subhead">Arguments</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Param</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">id</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">Identifier associated with the calling media query.</td>
-            </tr>
-            <tr class="even">
-            <td align="left">mql</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left"><a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList">MediaQueryList</a> Object.</td>
-            </tr>
-            <tr class="odd">
-            <td align="left">initializing</td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left"><code>true</code> if initializing otherwise <code>undefined</code>.</td>
-            </tr>
-            </tbody>
-            </table>
-
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ControllerViewModel</li></ul>
-
-
-
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
 
 <!-- Attributes -->
             <h2 class="content-subhead" id="attributes">Attributes</h2>
 
+<!-- viewModel -->
             <h2 class="section-divider" id="viewmodel">viewModel</h2>
-            <p>Associates a field with a ViewModel. The field is then exposed to the View as a data context. The View interacts with the ViewModel by invoking methods and accessing properties via the data context.</p>
-            <h3>Attributes</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">ViewModel variable</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Associates a field with a ViewModel. <strong>Only available within the DomainViewModel</strong></td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage">Usage</h3>
-<pre><code><div class="code-block">persons: {
-  <span>viewModel</span>: PersonsViewModel,
-  <span>get</span>: <span>function</span>(){
-    <span>return</span> <span>this</span>.<span>state</span>.<span>persons</span>;
-  }
-}</div></code></pre>
-            <h3 class="content-subhead">Scope</h3>
-            <ul><li>ViewModel</li></ul>
+            <pre><code><div class="code-block">viewModel: Object ViewModel</div></code></pre>
+            <p>Specified as a property within a ControllerViewModel field, it associates a field with a ViewModel. The field is exposed to the View as a data context. The View interacts with the ViewModel by invoking methods and accessing properties via the data context.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
+<!-- aliasFor -->
             <h2 class="section-divider" id="aliasfor">aliasFor</h2>
-            <p>Transforms a key from the original data source to the specified field identifier.</p>
-            <h3 id="attributes-1">Attributes</h3>
+            <pre><code><div class="code-block">aliasFor: String sourceKey</div></code></pre>
+            <p>Specified as a property within a Model field, it transforms a key from the original data source to the specified field name.</p>
+            <p><b>Scope:</b> <em>Model</em></p>
+
+<!-- kind -->
+            <h2 class="section-divider" id="kind">kind</h2>
+            <pre><code><div class="code-block">kind: String type</div></code></pre>
+            <p>Specified as a property within a Model field, it assigns a field type.</p>
+
+            <h3 class="content-subhead">Available Types</h3>
             <table class="pure-table pure-table-striped">
             <thead>
             <tr class="header">
-            <th align="left">Value</th>
-            <th align="center">Type</th>
+            <th align="left">Type</th>
             <th align="left">Details</th>
             </tr>
             </thead>
             <tbody>
             <tr class="odd">
-            <td align="left">key</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">source key to transform. <strong>Only available within a Model</strong></td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-1">Usage</h3>
-            <pre><code><div class="code-block">occupation: {
-              <span>aliasFor</span>: <span class="st">&#39;job&#39;</span>,
-              <span>get</span>: <span>function</span>(){
-                <span>return</span> <span>this</span>.<span>state</span>.<span>occupation</span>;
-              },
-              <span>set</span>: <span>function</span>(newValue){
-                <span>this</span>.<span>setState</span>({<span class="st">&#39;occupation&#39;</span>: newValue });
-              }
-            },</div></code></pre>
-            <h2 id="kind">kind</h2>
-            <p>Assigns a field type.</p>
-            <h3 id="attributes-2">Attributes</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">uid</td>
-            <td align="center"><code>String</code></td>
+            <td align="left">uid <em>(Model scope only)</em></td>
             <td align="left">Identifies the unique identifier for the Model. <strong>Only available within a Model and should only specified once per Model. (Currently not used, but will be used in future versions)</strong></td>
             </tr>
             <tr class="even">
-            <td align="left">instance</td>
-            <td align="center"><code>String</code></td>
+            <td align="left">instance <em>(ViewModel scope only)</em></td>
             <td align="left">Specifies that the getter returns a model instance. This needs to be specified if the View interacts with the returned model object. i.e. The View updates values on the model. <strong>Only available within a ViewModel</strong></td>
             </tr>
             <tr class="odd">
             <td align="left">array</td>
-            <td align="center"><code>String</code></td>
             <td align="left">Specifies that the field holds an array. If the array hasn’t been initialized, it will automatically be initialized with an empty array.</td>
             </tr>
             <tr class="even">
             <td align="left">pseudo</td>
-            <td align="center"><code>String</code></td>
             <td align="left">Specifies that the field does not retain it’s value and will be reset to <code>undefined</code> after each state transition. It’s value is usually derived from other fields.</td>
             </tr>
             <tr class="odd">
-            <td align="left">static</td>
-            <td align="center"><code>String</code></td>
+            <td align="left">static <em>(ControllerViewModel scope only ??)</em></td>
             <td align="left">Specifies that the field should not change and will persist it’s state during state transitions unless <em>explicitly</em> updated.</td>
+            </tr>
+
+            <tr class="odd">
+            <td align="left">object</td>
+            <td align="left"></td>
+            </tr>
+
+            <tr class="odd">
+            <td align="left">object:freeze</td>
+            <td align="left"></td>
+            </tr>
+
+            <tr class="odd">
+            <td align="left">object:deepFreeze</td>
+            <td align="left"></td>
+            </tr>
+
+            <tr class="odd">
+            <td align="left">array:freeze</td>
+            <td align="left"></td>
+            </tr>
+
+            <tr class="odd">
+            <td align="left">array:deepFreeze</td>
+            <td align="left"></td>
+            </tr>
+
+            </tbody>
+            </table>
+            
+<!-- validate -->
+            <h2 class="section-divider" id="validate">validate</h2>
+            <pre><code><div class="code-block">validate: Function</div></code></pre>
+            <p>Specified as a property within a Model field, it is a user defined function that returns a <code>Boolean</code> after validating a fields value.</p>
+            <p><b>Scope:</b> <em>Model</em></p>
+
+
+<!-- Properties -->
+            <h2 class="content-subhead" id="properties">Properties</h2>
+
+<!-- $state -->
+            <h2 class="section-divider" id="state">$state</h2>
+            <p>Reference to an object's state.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+            
+<!-- $previousState -->
+            <h2 class="section-divider" id="previousstate">$previousState</h2>
+            <p>Reference to the Application Data Context's previous state.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+            
+<!-- $nextState -->
+            <h2 class="section-divider" id="nextstate">$nextState</h2>
+            <p>Holds Application Data Context next state.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+            
+<!-- $canRevert -->
+            <h2 class="section-divider" id="canrevert">$canRevert</h2>
+            <p>Indicates whether there is previous state available to transition to.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+            
+<!-- $canAdvance -->
+            <h2 class="section-divider" id="canadvance">$canAdvance</h2>
+            <p>Indicates whether there is next state available to transition to.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+            
+<!-- $pageNotFound -->
+            <h2 class="section-divider" id="pagenotfound">$pageNotFound</h2>
+            <p>Indicates whether a route path is invalid resulting in a <code>404:page not found</code> error</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+            
+<!-- $dataContextWillUpdate -->
+            <h2 class="section-divider" id="datacontextwillupdate">$dataContextWillUpdate</h2>
+            <p>Holds only the data contexts with the state that will be transitioned and is intended to be used within React’s <code>shouldComponentUpdate</code>. See <a href="https://github.com/entrendipity/astarisx/wiki/View#optimizing-the-view">Optimizing the View</a>.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+<!-- $dirty -->
+            <h2 class="section-divider" id="dirty">$dirty</h2>
+            <p><code>true</code> if a Model field has been updated. Otherwise <code>false</code> or <code>undefined</code>.</p>
+            <p><b>Scope:</b> <em>Model</em></p>
+
+<!-- $fieldValid -->
+            <h2 class="section-divider" id="valid">$[field]Valid</h2>
+            <p><code>true</code> if a Model field's <code>validate</code> function returns <code>true</code>. Otherwise <code>false</code> or <code>undefined</code>. The property is dynamically uses the field's name.</p>
+            <p><b>Scope:</b> <em>Model</em></p>
+
+<!-- $allValid -->
+            <h2 class="section-divider" id="allvalid">$allValid</h2>
+            <p><code>true</code> if all Model field's <code>validate</code> functions return <code>true</code>. Otherwise <code>false</code> or <code>undefined</code>.</p>
+            <p><b>Scope:</b> <em>Model</em></p>
+
+<!-- Directives -->
+            <h2 class="content-subhead" id="directives">Directives</h2>
+<!-- $path -->
+            <h2 class="section-divider" id="path">$path</h2>
+            <pre><code><div class="code-block">$path: String</div></code></pre>
+            <p>URL path assigned to the next state.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+<!-- $pushState -->
+            <h2 class="section-divider" id="pushstate">$pushState</h2>
+            <pre><code><div class="code-block">$pushState: Boolean</div></code></pre>
+            <p>Toggles <code>pushState</code>. Only available if pushState routing is enabled. Default = <code>true</code></p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+<!-- $forceReplace -->
+            <h2 class="section-divider" id="forcereplace">$forceReplace</h2>
+            <pre><code><div class="code-block">$forceReplace: Boolean</div></code></pre>
+            <p>Override default <code>pushState</code> behavior and perform a replace state. Only available if pushState routing is enabled. Default = <code>false</code></p>
+            <p>If set to <code>true</code> it is not necessary to reset <code>forceState</code> back to <code>false</code> as it will revert to <code>false</code> once the operation has been performed.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+<!-- $enableUndo -->
+            <h2 class="section-divider" id="enableundo">$enableUndo</h2>
+            <pre><code><div class="code-block">$enableUndo: Boolean</div></code></pre>
+            <p>Override default <code>enableUndo</code> behavior and allow for an adhoc <code>enableUndo</code>. This causes a <code>previousState</code> to be created with the ability to revert to it. If set to <code>true</code> it is not necessary to reset <code>enableUndo</code> back to <code>false</code> as it will revert to <code>false</code> once the operation has been performed. Default = <code>false</code>.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+<!-- $notify -->
+            <h2 class="section-divider" id="notify">$notify</h2>
+            <pre><code><div class="code-block">$notify: String | String Array</div></code></pre>
+            <p>Specify a <code>$viewKey</code> during a <code>setState</code> which is to be notified that there has been a state change. Only the Views with the specified <code>$viewKeys</code> will be notified.</p>
+            <p>n.b.<em> The main UI container is given a default <code>$viewKey</code> of <code>*</code>.</em></p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+
+<!-- $owner -->
+            <h2 class="section-divider" id="owner">$owner</h2>
+            <pre><code><div class="code-block">$owner: String</div></code></pre>
+            <p>Specify a Models owner field.</p>
+            <p><b>Scope:</b> <em>Model</em></p>
+
+<!-- _clientField -->
+            <h2 class="section-divider" id="clientfield">_[field]</h2>
+            <p>When defining Model fields, prefix a field name with an underscore to prevent the field from being sent to the back end. This essentially hides it from the server creating a client or local field.</p>
+            <p><b>Scope:</b> <em>Model</em></p>
+
+<!-- View -->
+            <h2 class="content-subhead" id="view">View</h2>
+
+
+<!-- initializeAppContext -->
+            <h2 class="section-divider" id="initializeappcontext">initializeAppContext</h2>
+            <p>Initializes the Application Data Context.</p>
+            <h3 class="content-subhead" >Usage</h3>
+            <pre><code><div class="code-block">componentWillMount: function(){
+    this.initializeAppContext(appCtxInitObj[, dataCtxInitArg]);
+}</div></code></pre>
+            <h3 class="content-subhead" >Arguments</h3>
+            <table class="pure-table pure-table-striped">
+                <thead>
+                    <tr class="header">
+                        <th align="left">Param</th>
+                        <th align="center">Type</th>
+                        <th align="left">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td align="left">appCtxInitObj</td>
+                        <td align="center"><code>Object</code></td>
+                        <td align="left">Available Options:
+                        <ul>
+                            <li>controllerViewModel - Reference to ControllerViewModel</li>
+                            <li>enableUndo - (Default = <code>false); true: </code>Enable undo\redo functionality.</li>
+                            <li>enableRouting - (Default = <code>false); true: </code>Enable pushState routing and undo\redo functionality.</li>
+                        </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left">dataCtxInitArg</td>
+                        <td align="center"><code>Mixed Array</code></td>
+                        <td align="left"><p>Specifies data contexts to be initialized. Can be an array of data context names AND/OR <em>dataCtxInitObjs</em>.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+<!-- $viewKey -->
+            <h2 class="section-divider" id="viewkey">$viewKey</h2>
+            <p>Used to identify a View if <a href="https://github.com/entrendipity/astarisx/wiki/Instance-properties#notify"><code>notify</code></a> has been passed to setState. Please note that the component must be designated as a View by including the <code>Astarisx.mixin.view</code> mixin.</p>
+            <p><em>N.B. The main UI container is given a default <code>viewKey</code> of <code>*</code>.</em></p>
+            <h3 id="props">Props</h3>
+            <table class="pure-table pure-table-striped">
+            <thead>
+            <tr class="header">
+            <th align="left">Prop</th>
+            <th align="center">Type</th>
+            <th align="left">Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="odd">
+            <td align="left">viewKey</td>
+            <td align="center"><code>String</code></td>
+            <td align="left">prop passed to uniquely identify a View.</td>
             </tr>
             </tbody>
             </table>
-            <h3 id="usage-2">Usage</h3>
-            <pre><code><div class="code-block">id: {
-              <span>kind</span>: <span class="st">&#39;uid&#39;</span>,
-              <span>get</span>: <span>function</span>() { <span>return</span> <span>this</span>.<span>state</span>.<span>id</span>; }
-            }
+            <h3 id="usage">Usage</h3>
+            <pre><code><div class="code-block"><span>&lt;aView</span><span> $viewKey=</span><span class="st">{</span><span class="er">&quot;mainView&quot;}</span><span>/&gt;</span></div></code></pre>
+            
+<!-- mediakey -->
+            <h2 class="section-divider" id="mediakey">.media#[key]</h2>
+            <p>Used to identify a media query in a CSS file.</p>
+            <h3 id="props-1">Props</h3>
+            <table class="pure-table pure-table-striped">
+            <thead>
+            <tr class="header">
+            <th align="left">Prop</th>
+            <th align="center">Type</th>
+            <th align="left">Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="odd">
+            <td align="left">.media#[key]</td>
+            <td align="center"><code>String</code></td>
+            <td align="left">Unique key to identify a media query.</td>
+            </tr>
+            </tbody>
+            </table>
+            <h3>Usage</h3>
+            <pre><code><div class="code-block"><span class="dv">@media</span> <span class="dv">(min-width: </span><span>992px</span><span class="dv">) and (max-width: </span><span>1199px</span><span class="dv">)</span> <span class="dv">{</span>
+                <span>.media#myUniqueKey</span> <span>{</span><span class="co">/**/</span><span>}</span>
+            <span class="dv">}</span></div></code></pre>
 
-            selectedPerson: {
-              <span>kind</span>: <span class="st">&#39;instance&#39;</span>,
-              <span>get</span>: <span>function</span>() { <span>return</span> <span>this</span>.<span>state</span>.<span>selectedPerson</span>; }
-            }
-
-            collection: {
-              <span>kind</span>: <span class="st">&#39;array&#39;</span>,
-              <span>get</span>: <span>function</span>(){ <span>return</span> <span>this</span>.<span>state</span>.<span>collection</span>; },
-            },
-
-            selectedHobby: {
-              <span>kind</span>: <span class="st">&#39;pseudo&#39;</span>,
-              <span>get</span>: <span>function</span>() {
-                <span>return</span> <span>this</span>.<span>state</span>.<span>hobbiesContext</span>.<span>current</span> ?
-                  <span>this</span>.<span>state</span>.<span>hobbiesContext</span>.<span>current</span>.<span>name</span>: <span>void</span>(<span class="dv">0</span>);
-              }
-            }
-            <span class="co">// OR</span>
-            progress: {
-              <span>kind</span>: <span class="st">&#39;pseudo&#39;</span>,
-              <span>get</span>: <span>function</span>() {
-                <span>return</span> <span>this</span>.<span>state</span>.<span>progress</span> ? <span>this</span>.<span>state</span>.<span>progress</span> : <span class="dv">0</span>;
-              }
-            }
-
-            screenOrientation: {
-              <span>kind</span>: <span class="st">&#39;static&#39;</span>,
-              <span>get</span>: <span>function</span>() {
-                <span>return</span> <span>this</span>.<span>state</span>.<span>screenOrientation</span>;
-              }
-            }</div></code></pre>
+        <div class="header">
+            <h1>AstarisxAnimate API</h1>
+            <h2>v0.?</h2>
+        </div>
 
 
 
@@ -1016,7 +695,7 @@
             <p>Cue the next Display and Page to be transitioned in.</p>
             <h3 id="signature-4">Signature</h3>
             <pre><code><div class="code-block"><span>void</span> &lt;= <span>show</span>(displayKey, page);</div></code></pre>
-            <h3 id="usage-4">Usage</h3>
+            <h3>Usage</h3>
             <pre><code><div class="code-block">gotoPage1: <span>function</span>(){
                 <span>this</span>.<span>state</span>.<span>appContext</span>.<span>show</span>(<span class="st">&#39;sites.main&#39;</span>, <span class="st">&#39;page1&#39;</span>);
             }</div></code></pre>
@@ -1067,398 +746,14 @@
             <h3 id="usage-context">Usage Context</h3>
             <p><strong>optional</strong> :: ViewModel, Model</p>
 
-<!-- Properties -->
-            <h2 class="content-subhead" id="properties">Properties</h2>
-
-<!-- $state -->
-            <h2 class="section-divider" id="state">$state</h2>
-            <p>Reference to an object's state.</p>
-            <h3 id="property">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">state</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">object’s current state.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context">Usage Context</h3>
-            <p>ControllerViewModel, ViewModel, Model</p>
-            
-<!-- $previousState -->
-            <h2 class="section-divider" id="previousstate">$previousState</h2>
-            <p>Reference to the Application Data Context's previous state.</p>
-            <h3 id="property-1">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">previousState</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">object’s previous state.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-1">Usage Context</h3>
-            <p>ControllerViewModel</p>
-            
-<!-- $nextState -->
-            <h2 class="section-divider" id="nextstate">$nextState</h2>
-            <p>Holds Application Data Context next state.</p>
-            <h3 id="property-2">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">nextState</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">object’s next state.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-2">Usage Context</h3>
-            <p>ControllerViewModel</p>
-            
-<!-- $canRevert -->
-            <h2 class="section-divider" id="canrevert">$canRevert</h2>
-            <p>Indicates whether there is previous state available to transition to.</p>
-            <h3 id="property-3">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left"><code>true</code></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">can revert to previous state.</td>
-            </tr>
-            <tr class="even">
-            <td align="left"><code>false</code></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">cannot revert to previous state.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-3">Usage Context</h3>
-            <p>ControllerViewModel</p>
-
-<!-- $canAdvance -->
-            <h2 class="section-divider" id="canadvance">$canAdvance</h2>
-            <p>Indicates whether there is next state available to transition to.</p>
-            <h3 id="property-4">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left"><code>true</code></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">can advance to next state.</td>
-            </tr>
-            <tr class="even">
-            <td align="left"><code>false</code></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">cannot advance to next state.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-4">Usage Context</h3>
-            <p>ControllerViewModel</p>  
-            
-<!-- $pageNotFound -->
-            <h2 class="section-divider" id="pagenotfound">$pageNotFound</h2>
-            <p>Indicates whether a route path is invalid resulting in a 404:page not found error</p>
-            <h3 id="property-1">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left"><code>true</code></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">path is invalid and the page was not found.</td>
-            </tr>
-            <tr class="even">
-            <td align="left"><code>false</code></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">path is valid.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-1">Usage Context</h3>
-            <p>ControllerViewModel</p>
-            
-<!-- $dataContextWillUpdate -->
-            <h2 class="section-divider" id="datacontextwillupdate">$dataContextWillUpdate</h2>
-            <p>Holds only the data contexts with the state that will be transitioned and is intended to be used within React’s <code>shouldComponentUpdate</code>. See <a href="https://github.com/entrendipity/astarisx/wiki/View#optimizing-the-view">Optimizing the View</a>.</p>
-            <h3 id="property-2">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left"><code>dataContextWillUpdate</code></td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Holds only the data contexts with the state that will be transitioned.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-2">Usage Context</h3>
-            <p>ControllerViewModel</p>
-            <p><strong><em>n.b.</em></strong> <em>This property is located in <code>appContext.state</code> and not on the root object</em></p>
-
-<!-- Directives -->
-            <h2 class="content-subhead" id="directives">Directives</h2>
-            <p>Directives are attributes that are passed to the Application Context via the second argument of <code>setState</code>.</p>
-<!-- $path -->
-            <h2 class="section-divider" id="path">$path</h2>
-            <p>URL path assigned to the next state.</p>
-            <h3 id="property-5">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">path</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">valid path</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-5">Usage Context</h3>
-            <p>ControllerViewModel - set from ViewModel</p>
-            
-<!-- $pusState -->
-            <h2 class="section-divider" id="pushstate">$pushState</h2>
-            <p>Toggles <code>pushState</code></p>
-            <h3 id="property-6">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left"><code>true</code> (default)</td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">Turn <code>pushState</code> on.</td>
-            </tr>
-            <tr class="even">
-            <td align="left"><code>false</code></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">Turn <code>pushState</code> off. i.e. suspend pushState operations</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-6">Usage Context</h3>
-            <p>ControllerViewModel</p>
-            
-<!-- $forceReplace -->
-            <h2 class="section-divider" id="forcereplace">$forceReplace</h2>
-            <p>Override default <code>pushState</code> behavior and perform a replace state.</p>
-            <h3 id="property-7">Property</h3>
-            <p>| Value | Type | Details | | ————- |:————-:|—–| | <code>true</code> | <code>Boolean</code> | force replace state. | <code>false</code> (default) | <code>Boolean</code> | allow for default behavior. It is not necessary to set <code>forceState</code> back to <code>false</code> as it will revert to <code>false</code> once the operation has been performed. ### Usage Context ControllerViewModel</p>
-            
-<!-- $enableUndo -->
-            <h2 class="section-divider" id="enableundo">$enableUndo</h2>
-            <p>Override default <code>enableUndo</code> behavior and allow for an adhoc <code>enableUndo</code>. This causes a <code>previousState</code> to be created.</p>
-            <h3 id="property-8">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left"><code>true</code></td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">enable an Undo</td>
-            </tr>
-            <tr class="even">
-            <td align="left"><code>false</code> (default)</td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left">disable an Undo. It is not necessary to set <code>enableUndo</code> back to <code>false</code> as it will revert to <code>false</code> once the operation has been performed.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-7">Usage Context</h3>
-            <p>ControllerViewModel</p>
-
-<!-- $notify -->
-            <h2 class="section-divider" id="notify">$notify</h2>
-            <p>Specify a <code>viewKey</code> during a <code>setState</code> which is not be notified that there has been a state change. Only the specified Views will be notified.</p>
-            <h3 id="property">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left"><code>viewKey</code></td>
-            <td align="center"><code>String</code></td>
-            <td align="left">View identifier</td>
-            </tr>
-            <tr class="even">
-            <td align="left"><code>viewKey</code>’s</td>
-            <td align="center"><code>String Array</code></td>
-            <td align="left">list of View identifiers.</td>
-            </tr>
-            </tbody>
-            </table>
-            <p><em>N.B. The main UI container is given a default <code>viewKey</code> of <code>*</code>.</em></p>
-            <h3 id="usage-context">Usage Context</h3>
-            <p>ControllerViewModel</p>
-
-<!-- View -->
-            <h2 class="content-subhead" id="view">View</h2>
 
 
-<!-- initializeAppContext -->
-            <h2 class="section-divider" id="initializeappcontext">initializeAppContext</h2>
-            <p>Initializes the Application Data Context.</p>
-            <h3 class="content-subhead" >Usage</h3>
-            <pre><code><div class="code-block">componentWillMount: function(){
-    this.initializeAppContext(appCtxInitObj[, dataCtxInitArg]);
-}</div></code></pre>
-            <h3 class="content-subhead" >Arguments</h3>
-            <table class="pure-table pure-table-striped">
-                <thead>
-                    <tr class="header">
-                        <th align="left">Param</th>
-                        <th align="center">Type</th>
-                        <th align="left">Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td align="left">appCtxInitObj</td>
-                        <td align="center"><code>Object</code></td>
-                        <td align="left">Available Options:
-                        <ul>
-                            <li>controllerViewModel - Reference to ControllerViewModel</li>
-                            <li>enableUndo - (Default = <code>false); true: </code>Enable undo\redo functionality.</li>
-                            <li>enableRouting - (Default = <code>false); true: </code>Enable pushState routing and undo\redo functionality.</li>
-                        </ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="left">dataCtxInitArg</td>
-                        <td align="center"><code>Mixed Array</code></td>
-                        <td align="left"><p>Specifies data contexts to be initialized. Can be an array of data context names AND/OR <em>dataCtxInitObjs</em>.</p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
 
 
-<!-- $viewKey -->
-            <h2 class="section-divider" id="viewkey">$viewKey</h2>
-            <p>Used to identify a View if <a href="https://github.com/entrendipity/astarisx/wiki/Instance-properties#notify"><code>notify</code></a> has been passed to setState. Please note that the component must be designated as a View by including the <code>Astarisx.mixin.view</code> mixin.</p>
-            <p><em>N.B. The main UI container is given a default <code>viewKey</code> of <code>*</code>.</em></p>
-            <h3 id="props">Props</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Prop</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">viewKey</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">prop passed to uniquely identify a View.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage">Usage</h3>
-            <pre class="sourceCode html"><code class="sourceCode html"><span>&lt;aView</span><span> $viewKey=</span><span class="st">{</span><span class="er">&quot;mainView&quot;}</span><span>/&gt;</span></div></code></pre>
-            
-<!-- mediakey -->
-            <h2 class="section-divider" id="mediakey">.media#[key]</h2>
-            <p>Used to identify a media query in a CSS file.</p>
-            <h3 id="props-1">Props</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Prop</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">.media#[key]</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">Unique key to identify a media query.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-1">Usage</h3>
-            <pre class="sourceCode css"><code class="sourceCode css"><span class="dv">@media</span> <span class="dv">(min-width: </span><span>992px</span><span class="dv">) and (max-width: </span><span>1199px</span><span class="dv">)</span> <span class="dv">{</span>
-                <span>.media#myUniqueKey</span> <span>{</span><span class="co">/**/</span><span>}</span>
-            <span class="dv">}</span></div></code></pre>
 
-        <div class="header">
-            <h1>AstarisxAnimate API</h1>
-            <h2>v0.?</h2>
-        </div>
+
+
+
         <h2 class="content-subhead" id="astarisxanimatemethods">Methods</h2>
 <!-- animate -->
         <h2 class="section-divider" id="astarisxanimateanimate">animate</h2>
