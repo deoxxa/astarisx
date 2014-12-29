@@ -480,7 +480,7 @@
 
 <!-- $fieldValid -->
             <h2 class="section-divider" id="valid">$[field]Valid</h2>
-            <p><code>true</code> if a Model field's <code>validate</code> function returns <code>true</code>. Otherwise <code>false</code> or <code>undefined</code>. The property is dynamically uses the field's name.</p>
+            <p><code>true</code> if a Model field's <code>validate</code> function returns <code>true</code>. Otherwise <code>false</code> or <code>undefined</code>. The property is dynamically set using the field's name.</p>
             <p><b>Scope:</b> <em>Model</em></p>
 
 <!-- $allValid -->
@@ -529,7 +529,7 @@
 
 <!-- _clientField -->
             <h2 class="section-divider" id="clientfield">_[field]</h2>
-            <p>When defining Model fields, prefix a field name with an underscore to prevent the field from being sent to the back end. This essentially hides it from the server creating a client or local field.</p>
+            <p>When defining Model fields, prefix the field name with an underscore to prevent the field from being sent to the back end. This essentially hides it from the server creating a client-side or local field.</p>
             <p><b>Scope:</b> <em>Model</em></p>
 
 <!-- View -->
@@ -631,7 +631,7 @@
 
 
 
-            <h1 id="animation">Animation</h1>
+            <h1 id="animation">AstarisxAnimate API</h1>
             <h2 id="animate">animate</h2>
             <p>Exposes <a href="http://julian.com/research/velocity/">Velocity</a> Accelerated Javascript animation library. Please see <a href="http://julian.com/research/velocity/">Velocity</a> on how to use the jQuery free version of their API. This function includes the Velocity UI Pack transitions and returns a <a href="http://www.html5rocks.com/en/tutorials/es6/promises/">Promise</a>.</p>
             <p>Note: The the first argument can be a either a DOM Node (this.getDOMNode()) or or the component itself.</p>
