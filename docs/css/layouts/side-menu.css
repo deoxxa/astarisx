@@ -291,9 +291,13 @@ blockquote p {
     margin-bottom: -8px;
 }
 
-h2,
-h2.content-subhead {
+h2 {
     font-size: 1em;
+}
+
+h2.content-subhead {
+    font-size: 1.5em;
+    padding-top: 20px;
 }
 
 table {
@@ -310,9 +314,13 @@ Hides the menu at `48em`, but modify this based on your app's needs.
         font-size: 1em;
     }
 
-    h2,
-    h2.content-subhead {
+    h2 {
         font-size: 1.5em;
+    }
+
+    h2.content-subhead {
+        font-size: 2em;
+        padding-top: 40px;
     }
 
     .code-block {
