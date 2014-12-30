@@ -135,9 +135,9 @@ describe('Initialize ControllerViewModel with enableRouting=true', function(){
       app.state.appContext.$previousState.$canRevert.must.be.false();
     });    
     
-    it('"appContext.$state" must have Object $dataContextWillUpdate with $pageNotFound === true', function(){
-      app.state.appContext.$state.$dataContextWillUpdate.must.be.an.object();
-      app.state.appContext.$state.$dataContextWillUpdate.must.have.ownProperty('$pageNotFound', true);
+    it('"appContext.$state" must have Object $dataContextUpdated with $pageNotFound === true', function(){
+      app.state.appContext.$state.$dataContextUpdated.must.be.an.object();
+      app.state.appContext.$state.$dataContextUpdated.must.have.ownProperty('$pageNotFound', true);
     });
     
     it('"$forceReplace" must initialize to false', function(){

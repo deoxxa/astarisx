@@ -114,8 +114,8 @@ var mixin = {
     }
   },
   mediaQuery: {
-    mediaChangeHandler: function(id, mql, initializing){
-      stateMgr.currentState().mediaChangeHandler.call(stateMgr.currentState(), id, mql, initializing);
+    mediaQueryWillUpdate: function(id, mql, initializing){
+      stateMgr.currentState().mediaQueryWillUpdate.call(stateMgr.currentState(), id, mql, initializing);
     },
     componentDidMount: function(){
       
@@ -133,11 +133,11 @@ var mixin = {
               id = rules[j].cssRules[0].selectorText.split("#");
               if(id.length === 2 && id[0] === ".media"){
                 mql = window.matchMedia(rules[j].media.mediaText);
-                mql.addListener(this.mediaChangeHandler.bind(this, id[1]));
+                mql.addListener(this.mediaQueryWillUpdate.bind(this, id[1]));
                 if(initializing){
-                  this.mediaChangeHandler(id[1], mql, initializing);
+                  this.mediaQueryWillUpdate(id[1], mql, initializing);
                 } else {
-                  this.mediaChangeHandler(mql);
+                  this.mediaQueryWillUpdate(mql);
                 }
               }
             }

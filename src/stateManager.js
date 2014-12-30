@@ -471,11 +471,11 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 		pushStateChanged = nextState.$path !== stateMgr.appState.$path;
 
 		try {
-			//Add dataContextWillUpdate
+			//Add dataContextUpdated
       if(willUndo){
-        nextState = extend(nextState, {$dataContextWillUpdate: newState.$state.$dataContextWillUpdate});
+        nextState = extend(nextState, {$dataContextUpdated: newState.$state.$dataContextUpdated});
       } else {
-        nextState = extend(nextState, {$dataContextWillUpdate: processedState});
+        nextState = extend(nextState, {$dataContextUpdated: processedState});
       }
 
 			stateMgr.appState = new ApplicationDataContext(nextState, prevState, redoState,
