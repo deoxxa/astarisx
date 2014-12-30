@@ -6,7 +6,7 @@ Highly Composable Application Architecture for building [React](http://facebook.
 [![Build Status]](https://travis-ci.org/entrendipity/astarisx)
 [![License]](https://github.com/entrendipity/astarisx/blob/master/LICENSE)
 
-#####Documentation: https://entrendipity.github.io/astarisx/
+#####Documentation: http://entrendipity.github.io/astarisx/
 
 ## Usage
 Astarisx can be loaded as:
