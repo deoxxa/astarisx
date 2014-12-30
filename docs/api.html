@@ -52,8 +52,10 @@
                 <li class="sub"><a data-scroll href="#astarisxmixinview">mixin.view</a></li>
                 <li class="sub"><a data-scroll href="#astarisxmixinpushstate">mixin.pushState</a></li>
                 <li class="sub"><a data-scroll href="#astarisxmixinmediaquery">mixin.mediaQuery</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimatemixin">AstarisxAnimate</a></li>
 
                 <li class="group-header"><a data-scroll href="#methods">Methods</a></li>
+                <li class="sub"><a data-scroll href="#mixinsmethod">mixins</a></li>
                 <li class="sub"><a data-scroll href="#getinitialstate">getInitialState</a></li>
                 <li class="sub"><a data-scroll href="#datacontextwillinitialize">dataContextWillInitialize</a></li>
                 <li class="sub"><a data-scroll href="#initializedatacontext">initializeDataContext</a></li>
@@ -195,21 +197,36 @@
 
             <h2 class="section-divider" id="astarisxmixinui">Astarisx.mixin.ui</h2>
             <p>Registers a component as an Astarisx UI component.</p>
-
-            <!-- Astarisx.mixin.view -->
+            <p><b>Scope:</b> <em>UI</em></p>
+            
+<!-- Astarisx.mixin.view -->
             <h2 class="section-divider" id="astarisxmixinview">Astarisx.mixin.view</h2>
             <p>Registers a component as an Astarisx View.</p>
+            <p><b>Scope:</b> <em>View</em></p>
 
-            <!-- Astarisx.mixin.pushState -->
+<!-- Astarisx.mixin.pushState -->
             <h2 class="section-divider" id="astarisxmixinpushstate">Astarisx.mixin.pushState</h2>
             <p>Enables automatic handling of pushState for <code>&lt;a&gt;</code> tags. There is no need to include this mixin in order to use the built-in pushState functionality. This mixin is only required if pushState is enable <strong>and</strong> <code>&lt;a&gt;</code> tags are used in the UI for navigation.</p>
-            
-            <!-- Astarisx.mixin.mediaQuery -->
+            <p><b>Scope:</b> <em>UI</em></p>
+
+<!-- Astarisx.mixin.mediaQuery -->
             <h2 class="section-divider" id="astarisxmixinmediaquery">Astarisx.mixin.mediaQuery</h2>
             <p>Enables media query notifications to be sent to <a data-scroll href="#mediachangehandler"><code>mediaChangeHandler</code></a>.</p>
-            
-            <!-- Methods -->
+            <p><b>Scope:</b> <em>UI</em></p>
+
+<!-- AstarisxAnimate -->
+            <h2 class="section-divider" id="astarisxanimatemixin">AstarisxAnimate</h2>
+            <p>Enables animation via <a href="https://github.com/entrendipity/astarisx-animate">Astarisx Animate</a> mixin.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+<!-- Methods -->
             <h2 class="content-subhead" id="methods">Methods</h2>
+
+<!-- mixins -->
+            <h2 class="section-divider" id="mixinsmethod">mixins</h2>
+            <pre><code><div class="code-block">void function mixins(Array mixins)</div></code></pre>
+            <p>???</p>
+            <p><b>Scope:</b> <em>ControllerViewModel, ViewModel, Model</em></p>
 
 <!-- getInitialState -->
             <h2 class="section-divider" id="getinitialstate">getInitialState</h2>
