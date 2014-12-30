@@ -1,4 +1,4 @@
-## 0.10.0-beta
+## 0.10.0
 
 - added auto-binding for setState callbacks.
 - Enable mixins for ViewModels
@@ -76,6 +76,7 @@ secondaryContact: {
 - rename mediaChangeHandler to mediaQueryWillUpdate
 - rename $dataContextWillUpdate to $dataContextUpdated
 - `WatchedStateChangeHandler` has new parameters-> (nextState, previousState, field, context, appCtx, nextPath, prevPath)
+- removed last param from `routeChangeHandler` -> reference to animate show function. Should reference from second param `appCtx`;
 
 ## 0.9.6-beta
 

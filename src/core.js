@@ -44,11 +44,6 @@ var AstarisxClass = {
 
     ConvenienceConstructor.originalSpec = spec;
 
-    // Expose the convience constructor on the prototype so that it can be
-    // easily accessed on descriptors. E.g. <Foo />.type === Foo.type and for
-    // static methods like <Foo />.type.staticMethod();
-    // This should not be named constructor since this may not be the function
-    // that created the descriptor, and it may not even be a constructor.
     ConvenienceConstructor.type = Constructor;
     Constructor.prototype.type = Constructor;
 

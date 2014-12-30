@@ -1057,11 +1057,6 @@ var AstarisxClass = {
 
     ConvenienceConstructor.originalSpec = spec;
 
-    // Expose the convience constructor on the prototype so that it can be
-    // easily accessed on descriptors. E.g. <Foo />.type === Foo.type and for
-    // static methods like <Foo />.type.staticMethod();
-    // This should not be named constructor since this may not be the function
-    // that created the descriptor, and it may not even be a constructor.
     ConvenienceConstructor.type = Constructor;
     Constructor.prototype.type = Constructor;
 
@@ -2249,7 +2244,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 							if(!internal) {
 								routeMapping[route].call(stateMgr.appState[dataContextName], ctx.params,
                 stateMgr.appState,
-								ctx.path, pathKey, ctx, ('show' in stateMgr.appState) ? stateMgr.appState.show.bind(stateMgr.appState): void(0));
+								ctx.path, pathKey, ctx/*, ('show' in stateMgr.appState) ? stateMgr.appState.show.bind(stateMgr.appState): void(0)*/);
 							}
 							internal = false;
 						}.bind(this, viewModel, routeHash[routePath].path, routePath));

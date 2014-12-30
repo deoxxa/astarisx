@@ -633,7 +633,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 							if(!internal) {
 								routeMapping[route].call(stateMgr.appState[dataContextName], ctx.params,
                 stateMgr.appState,
-								ctx.path, pathKey, ctx, ('show' in stateMgr.appState) ? stateMgr.appState.show.bind(stateMgr.appState): void(0));
+								ctx.path, pathKey, ctx/*, ('show' in stateMgr.appState) ? stateMgr.appState.show.bind(stateMgr.appState): void(0)*/);
 							}
 							internal = false;
 						}.bind(this, viewModel, routeHash[routePath].path, routePath));
