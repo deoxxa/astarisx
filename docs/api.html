@@ -331,51 +331,51 @@
             </tr>
             </thead>
             <tbody>
-            <tr class="odd">
-            <td align="left">uid <em>(Model scope only)</em></td>
-            <td align="left">Identifies the unique identifier for the Model. <strong>Only available within a Model and should only specified once per Model. (Currently not used, but will be used in future versions)</strong></td>
+            <tr>
+            <td align="left">uid</td>
+            <td align="left">Identifies the unique identifier for the Model. <strong>Model scope only and should only specified once per Model. (Currently not used, but will be used in future versions)</strong></td>
             </tr>
-            <tr class="even">
-            <td align="left">instance <em>(ViewModel scope only)</em></td>
-            <td align="left">Specifies that the getter returns a model instance. This needs to be specified if the View interacts with the returned model object. i.e. The View updates values on the model. <strong>Only available within a ViewModel</strong></td>
+            <tr>
+            <td align="left">instance</td>
+            <td align="left">Specifies that the getter returns a model instance. This needs to be specified if the View interacts with the returned model object. i.e. The View updates values on the model. <strong>ViewModel scope only.</strong></td>
             </tr>
-            <tr class="odd">
+            <tr>
             <td align="left">array</td>
-            <td align="left">Specifies that the field holds an array. If the array hasn’t been initialized, it will automatically be initialized with an empty array.</td>
+            <td align="left">Specifies that the field holds an array. If the array hasn’t been initialized, it will automatically be initialized with an empty array. The array is immutable, however it's content are mutable.</td>
             </tr>
-            <tr class="even">
+            <tr>
+            <td align="left">array:freeze</td>
+            <td align="left">Specifies that the field holds an array. If the array hasn’t been initialized, it will automatically be initialized with an empty array. The array is immutable and the root items within the array are also immutable. (shallow immutability).</td>
+            </tr>
+
+            <tr>
+            <td align="left">array:deepFreeze</td>
+            <td align="left">Specifies that the field holds an array. If the array hasn’t been initialized, it will automatically be initialized with an empty array. The array is immutable and the items within the array are also immutable. (deep immutability).<em>Please be aware recursive objects are not supportted.</em></td>
+            </tr>
+            <tr>
             <td align="left">pseudo</td>
             <td align="left">Specifies that the field does not retain it’s value and will be reset to <code>undefined</code> after each state transition. It’s value is usually derived from other fields.</td>
             </tr>
-            <tr class="odd">
-            <td align="left">static <em>(ControllerViewModel scope only ??)</em></td>
-            <td align="left">Specifies that the field should not change and will persist it’s state during state transitions unless <em>explicitly</em> updated.</td>
+            <tr>
+            <td align="left">static</em></td>
+            <td align="left">Specifies that the field should not change and will persist it’s state during state transitions unless <em>explicitly</em> updated. What this means is that a <code>static</code> field will not be affected by <code>revert</code> or <code>advance</code>. <strong>ControllerViewModel scope only.</strong> </td>
             </tr>
 
-            <tr class="odd">
+            <tr>
             <td align="left">object</td>
-            <td align="left"></td>
+            <td align="left">Specifies that the field holds an simple JavaScript Object. The Object will be immutable but embedded Objects and Arrays are mutable.</td>
             </tr>
 
-            <tr class="odd">
+            <tr>
             <td align="left">object:freeze</td>
-            <td align="left"></td>
+            <td align="left">Specifies that the field holds an simple JavaScript Object. The Object will be immutable and the <em>first level</em> of embedded Objects and Arrays are immutable. (shallow immutability).</td>
             </tr>
 
-            <tr class="odd">
+            <tr>
             <td align="left">object:deepFreeze</td>
-            <td align="left"></td>
+            <td align="left">Specifies that the field holds an simple JavaScript Object. The Object will be immutable and all embedded Objects and Arrays are also immutable. (deep immutability). <em>Please be aware recursive objects are not supportted.</em></td>
             </tr>
 
-            <tr class="odd">
-            <td align="left">array:freeze</td>
-            <td align="left"></td>
-            </tr>
-
-            <tr class="odd">
-            <td align="left">array:deepFreeze</td>
-            <td align="left"></td>
-            </tr>
 
             </tbody>
             </table>
