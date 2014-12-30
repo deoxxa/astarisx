@@ -37,6 +37,12 @@ require(['./astarisx.min.js'], function (Astarisx) {
 });
 ```
 
+## TODO
+- Keep updating Documentation
+- Developer's Guide
+- Tutorials
+- Tips
+- More Tests!
 
 ## Author
 Frank Panetta  - [Follow @fattenap](https://twitter.com/intent/follow?screen_name=fattenap)
