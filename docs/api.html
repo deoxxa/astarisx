@@ -43,10 +43,6 @@
                 <li class="sub"><a data-scroll href="#astarisxcreatecvmclass">createCVMClass</a></li>
                 <li class="sub"><a data-scroll href="#astarisxextend">extend</a></li>
                 
-                <li class="group-header"><a data-scroll href="#modelinstantiation">Model Instantiation</a></li>
-                <li class="sub"><a data-scroll href="#modelconstructor">Model Constructor</a></li>
-                <li class="sub"><a data-scroll href="#modelclass">Model Class</a></li>
-
                 <li class="group-header"><a data-scroll href="#mixins">Mixins</a></li>
                 <li class="sub"><a data-scroll href="#astarisxmixinui">mixin.ui</a></li>
                 <li class="sub"><a data-scroll href="#astarisxmixinview">mixin.view</a></li>
@@ -54,22 +50,15 @@
                 <li class="sub"><a data-scroll href="#astarisxmixinmediaquery">mixin.mediaQuery</a></li>
                 <li class="sub"><a data-scroll href="#astarisxanimatemixin">AstarisxAnimate</a></li>
 
-                <li class="group-header"><a data-scroll href="#methods">Methods</a></li>
-                <li class="sub"><a data-scroll href="#mixinsmethod">mixins</a></li>
+                <li class="group-header"><a data-scroll href="#specs">Descriptor Specs</a></li>
+                <li class="sub"><a data-scroll href="#mixinsspec">mixins</a></li>
                 <li class="sub"><a data-scroll href="#getinitialstate">getInitialState</a></li>
                 <li class="sub"><a data-scroll href="#datacontextwillinitialize">dataContextWillInitialize</a></li>
                 <li class="sub"><a data-scroll href="#initializedatacontext">initializeDataContext</a></li>
                 <li class="sub"><a data-scroll href="#getwatchedstate">getWatchedState</a></li>
                 <li class="sub"><a data-scroll href="#getroutes">getRoutes</a></li>
-                <li class="sub"><a data-scroll href="#setstate">setState</a></li>
-                <li class="sub"><a data-scroll href="#revert">revert</a></li>
-                <li class="sub"><a data-scroll href="#advance">advance</a></li>
-
-                <li class="group-header"><a data-scroll href="#handlers">Handlers</a></li>
-                <li class="sub"><a data-scroll href="#modelchangehandler">modelChangeHandler</a></li>
-                <li class="sub"><a data-scroll href="#watchedstatechangehandler">watchedStateChangeHandler</a></li>
-                <li class="sub"><a data-scroll href="#routechangehandler">routeChangeHandler</a></li>
-                <li class="sub"><a data-scroll href="#mediachangehandler">mediaChangeHandler</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateaddtransitions">addTransitions</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateadddisplays">addDisplays</a></li>
                 
                 <li class="group-header"><a data-scroll href="#attributes">Attributes</a></li>
                 <li class="sub"><a data-scroll href="#viewmodel">viewModel</a></li>
@@ -77,6 +66,27 @@
                 <li class="sub"><a data-scroll href="#kind">kind</a></li>
                 <li class="sub"><a data-scroll href="#validate">validate</a></li>
                 
+                <li class="group-header"><a data-scroll href="#handlers">Handlers</a></li>
+                <li class="sub"><a data-scroll href="#modelchangehandler">modelChangeHandler</a></li>
+                <li class="sub"><a data-scroll href="#watchedstatechangehandler">watchedStateChangeHandler</a></li>
+                <li class="sub"><a data-scroll href="#routechangehandler">routeChangeHandler</a></li>
+                <li class="sub"><a data-scroll href="#mediachangehandler">mediaChangeHandler</a></li>
+                
+                <li class="group-header"><a data-scroll href="#modelinstantiation">Model Instantiation</a></li>
+                <li class="sub"><a data-scroll href="#modelconstructor">Model Constructor</a></li>
+                <li class="sub"><a data-scroll href="#modelclass">Model Class</a></li>
+
+                <li class="group-header"><a data-scroll href="#methods">Methods</a></li>
+                <li class="sub"><a data-scroll href="#setstate">setState</a></li>
+                <li class="sub"><a data-scroll href="#revert">revert</a></li>
+                <li class="sub"><a data-scroll href="#advance">advance</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateanimate">animate</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateshow">show</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimatedisplay">display</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimatepage">page</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateaddlistitem">addListItem</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimatedroplistitem">dropListItem</a></li>
+
                 <li class="group-header"><a data-scroll href="#properties">Properties</a></li>
                 <li class="sub"><a data-scroll href="#state">$state</a></li>
                 <li class="sub"><a data-scroll href="#previousstate">$previousState</a></li>
@@ -88,6 +98,10 @@
                 <li class="sub"><a data-scroll href="#dirty">$dirty</a></li>
                 <li class="sub"><a data-scroll href="#valid">$[field]Valid</a></li>
                 <li class="sub"><a data-scroll href="#allvalid">$allValid</a></li>
+                <li class="sub"><a data-scroll href="#displaykey">$displayKey</a></li>
+                <li class="sub"><a data-scroll href="#displayname">$displayName</a></li>
+                <li class="sub"><a data-scroll href="#displaygroup">$displayGroup</a></li>
+                <li class="sub"><a data-scroll href="#pagename">$pageName</a></li>
 
                 <li class="group-header"><a data-scroll href="#directives">Directives</a></li>
                 <li class="sub"><a data-scroll href="#path">$path</a></li>
@@ -106,23 +120,9 @@
             </ul>
 
             <ul class="last-menu-group">
-                <a class="pure-menu-heading" 
-                href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate
-                </a>
+                <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>
                 <li class="group-header"><a data-scroll href="#astarisxanimatemethods">Methods</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimateanimate">animate</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimateaddtransitions">addTransitions</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimateadddisplays">addDisplays</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimateshow">show</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimatedisplay">display</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimatepage">page</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimateaddlistitem">addListItem</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimatedroplistitem">dropListItem</a></li>
                 <li class="group-header"><a data-scroll href="#astarisxanimateproperties">Properties</a></li>
-                <li class="sub"><a data-scroll href="#displaykey">$displayKey</a></li>
-                <li class="sub"><a data-scroll href="#displayname">$displayName</a></li>
-                <li class="sub"><a data-scroll href="#displaygroup">$displayGroup</a></li>
-                <li class="sub"><a data-scroll href="#pagename">$pageName</a></li>
             </ul>
             <!-- <li class="group-header menu-item-divided">
                 <a href="guide.html">Guide</a>
@@ -180,18 +180,6 @@
             <p>Creates and returns a shallow copy of an object and merges the properties of any subsequent objects passed in. Arguments that are null or undefined are ignored.</p>
             <p>Properties of preceding objects will be completely overwritten by a property with the same key in subsequent objects. The values are not merged.</p>
 
-<!-- Model Instantiation -->
-            <h2 class="content-subhead"><a id="modelinstantiation">Model Instantiation</a></h2>
-            <p>When you define a Model, you're actually defining an object that returns a Model Constructor. The Model Constructor returns a Model Class, which is used to instantiate Model instances. See the Guide on usage.</p>
-<!-- Model Constructor -->
-            <h2 class="section-divider" id="modelconstructor">Model Constructor</h2>
-            <pre><code><div class="code-block"><span class="code-object">Model Class</span> function modelCtor([Function modelChangeHandler])</div></code></pre>
-            <p>Constructs a Model Class to be instantiated.</p>
-
-<!-- Model class -->
-            <h2 class="section-divider" id="modelclass">Model Class</h2>
-            <pre><code><div class="code-block"><span class="code-object">Model Instance</span> function modelClass([Object nextModelState][, Object extendModelState])</div></code></pre>
-            <p>Instantiates a Model instance.</p>
 <!-- Mixins -->
             <h2 class="content-subhead"><a id="mixins">Mixins</a></h2>
 
@@ -219,13 +207,13 @@
             <p>Enables animation via <a href="https://github.com/entrendipity/astarisx-animate">Astarisx Animate</a> mixin.</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
-<!-- Methods -->
-            <h2 class="content-subhead" id="methods">Methods</h2>
+<!-- Descriptor Specs -->
+            <h2 class="content-subhead" id="specs">Descriptor Specs</h2>
 
 <!-- mixins -->
-            <h2 class="section-divider" id="mixinsmethod">mixins</h2>
-            <pre><code><div class="code-block">void function mixins(Array mixins)</div></code></pre>
-            <p>???</p>
+            <h2 class="section-divider" id="mixinsspec">mixins</h2>
+            <pre><code><div class="code-block">Array mixins</div></code></pre>
+            <p>The mixins array allows you to use mixins to extend and share behavior of Models, ViewModels and the ControllerViewModel.</p>
             <p><b>Scope:</b> <em>ControllerViewModel, ViewModel, Model</em></p>
 
 <!-- getInitialState -->
@@ -298,84 +286,16 @@
             <p>Provides routing definition and specifies the routeChange handler invoked when the route is navigated to as a result of a <code>popState</code> Event. i.e Browser’s back or forward is clicked.</p>
             <p><b>Scope:</b> <em>ViewModel</em></p>
 
-<!-- setState -->
-            <h2 class="section-divider" id="setstate">setState</h2>
-            <pre><code><div class="code-block">void function setState([
-    Object nextState,
-    [Object nextAppState,]
-    [Boolean remember = true,]
-    [Function callback,]
-    [Number delay]
-])</div></code></pre>
-            <p>Triggers a state transition. If no arguments are passed in, then the latest Application Data Context is returned to the View. If there is a <code>callback</code> and <code>delay</code> is not set, the state transition is batched until <code>setState</code> is called again. A call to <code>setState</code> with no arguments will suffice.</p>
-            <p>n.b. <code>callback</code> recieves two arguments: <code>err, appCtx</code>.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel (<code>nextAppState</code> not supported), ViewModel, Model (<code>remember</code> and <code>delay</code> are not supported)</em></p>
-
-<!-- revert -->
-            <h2 class="section-divider" id="revert">revert</h2>
-            <pre><code><div class="code-block">void function revert([Function callback])</div></code></pre>
-            <p>Transition Application Data Context to the previous state.</p>
-            <p>n.b. <code>callback</code> recieves two arguments: <code>err, appCtx</code>.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-
-<!-- advance -->
-            <h2 class="section-divider" id="advance">advance</h2>
-            <pre><code><div class="code-block">void function advance([Function callback])</div></code></pre>
-            <p>Transition the Application Data Context back to the state, prior to <code>revert</code>ing.</p>
-            <p>n.b. <code>callback</code> recieves two arguments: <code>err, appCtx</code>.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-            
-
-<!-- Handlers -->
-            <h2 class="content-subhead" id="handlers">Handlers</h2>
-
-<!-- modelChangeHandler -->
-            <h2 class="section-divider" id="modelchangehandler">modelChangeHandler</h2>
-            <pre><code><div class="code-block">void function #modelChangeHandler(
-    Object nextState,
-    Object nextAppState,
-    Function callback
-)</div></code></pre>
-            <p>A model change handler is passed to a Model constructor and can have any name. It is invoked when model state changes. i.e. setState is called from within the model.</p>
-            <p><b>Scope:</b> <em>ViewModel</em></p>
-            
-<!-- watchedStateChangeHandler -->
-            <h2 class="section-divider" id="watchedstatechangehandler">watchedStateChangeHandler</h2>
-            <pre><code><div class="code-block">void function #watchedStateChangeHandler(
-    Object fieldNextState,
-    Object fieldPreviousState,
-    String watchedFieldName,
-    Object sourceDataContext,
-    String nextUrlPath,
-    String previousUrlPath
-)</div></code></pre>
-            <p>A watched state change handler is referenced in a <code>getWatchedState</code> object and can have any name. It is invoked when watched state changes.</p>
-            <p><b>Scope:</b> <em>ViewModel</em></p>
-
-<!-- routeChangeHandler -->
-            <h2 class="section-divider" id="routechangehandler">routeChangeHandler</h2>
-            <pre><code><div class="code-block">void function #routeChangeHandler(
-    Object params,
-    Object appCtx,
-    String path,
-    String pathKey,
-    Object ctx
-    , showFunc??
-)</div></code></pre>
-            <p>A route state change handler is referenced in a <code>getRoutes</code> object and can have any name. It is invoked when route paths change in response to the browser firing a <code>popstate</code> event.</p>
-            <p><b>Scope:</b> <em>ViewModel</em></p>
-
-
-<!-- mediaChangeHandler -->
-            <h2 class="section-divider" id="mediachangehandler">mediaChangeHandler</h2>
-            <pre><code><div class="code-block">void function mediaChangeHandler(
-    String id,
-    Object mql,
-    Boolean initializing
-)</div></code></pre>
-            <p>Triggered for registered media queries, whenever a query notification is raised. To register a media query you must specify an <code>id</code> within the <code>@madia</code> query attribute. The format of the <code>id</code> is <code>.media#[id]</code>, replacing <code>[id]</code> with whatever identifier you would like to reference that query. See <a href="https://github.com/entrendipity/astarisx/wiki/MediaQueryList-Notifications#registering-a-media-query">Registering a media query</a> in the Developers Guide for more information.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-
+<!-- addTransitions -->
+        <h2 class="section-divider" id="astarisxanimateaddtransitions">addTransitions (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+            <pre><code><div class="code-block">Object function addTransitions()</div></code></pre>
+            <p>Returns an Object that defines default Application Transition behaviors.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+<!-- addDisplays -->
+        <h2 class="section-divider" id="astarisxanimateadddisplays">addDisplays (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+            <pre><code><div class="code-block">Object function addDisplays()</div></code></pre>
+            <p>Returns an Object that defines default Display, Page and Transition behaviors.</p>
+        <p><b>Scope:</b> <em>ViewModel</em></p>
 
 <!-- Attributes -->
             <h2 class="content-subhead" id="attributes">Attributes</h2>
@@ -461,6 +381,132 @@
             <p>Specified as a property within a Model field, it is a user defined function that returns a <code>Boolean</code> after validating a fields value.</p>
             <p><b>Scope:</b> <em>Model</em></p>
 
+<!-- Handlers -->
+            <h2 class="content-subhead" id="handlers">Handlers</h2>
+
+<!-- modelChangeHandler -->
+            <h2 class="section-divider" id="modelchangehandler">modelChangeHandler</h2>
+            <pre><code><div class="code-block">void function #modelChangeHandler(
+    Object nextState,
+    Object nextAppState,
+    Function callback
+)</div></code></pre>
+            <p>A model change handler is passed to a Model constructor and can have any name. It is invoked when model state changes. i.e. setState is called from within the model.</p>
+            <p><b>Scope:</b> <em>ViewModel</em></p>
+            
+<!-- watchedStateChangeHandler -->
+            <h2 class="section-divider" id="watchedstatechangehandler">watchedStateChangeHandler</h2>
+            <pre><code><div class="code-block">void function #watchedStateChangeHandler(
+    Object fieldNextState,
+    Object fieldPreviousState,
+    String watchedFieldName,
+    Object sourceDataContext,
+    String nextUrlPath,
+    String previousUrlPath
+)</div></code></pre>
+            <p>A watched state change handler is referenced in a <code>getWatchedState</code> object and can have any name. It is invoked when watched state changes.</p>
+            <p><b>Scope:</b> <em>ViewModel</em></p>
+
+<!-- routeChangeHandler -->
+            <h2 class="section-divider" id="routechangehandler">routeChangeHandler</h2>
+            <pre><code><div class="code-block">void function #routeChangeHandler(
+    Object params,
+    Object appCtx,
+    String path,
+    String pathKey,
+    Object ctx
+    , showFunc??
+)</div></code></pre>
+            <p>A route state change handler is referenced in a <code>getRoutes</code> object and can have any name. It is invoked when route paths change in response to the browser firing a <code>popstate</code> event.</p>
+            <p><b>Scope:</b> <em>ViewModel</em></p>
+
+
+<!-- mediaChangeHandler -->
+            <h2 class="section-divider" id="mediachangehandler">mediaChangeHandler</h2>
+            <pre><code><div class="code-block">void function mediaChangeHandler(
+    String id,
+    Object mql,
+    Boolean initializing
+)</div></code></pre>
+            <p>Triggered for registered media queries, whenever a query notification is raised. To register a media query you must specify an <code>id</code> within the <code>@madia</code> query attribute. The format of the <code>id</code> is <code>.media#[id]</code>, replacing <code>[id]</code> with whatever identifier you would like to reference that query. See <a href="https://github.com/entrendipity/astarisx/wiki/MediaQueryList-Notifications#registering-a-media-query">Registering a media query</a> in the Developers Guide for more information.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+<!-- Model Instantiation -->
+            <h2 class="content-subhead"><a id="modelinstantiation">Model Instantiation</a></h2>
+            <p>When you define a Model, you're actually defining an object that returns a Model Constructor. The Model Constructor returns a Model Class, which is used to instantiate Model instances. See the Guide on usage.</p>
+<!-- Model Constructor -->
+            <h2 class="section-divider" id="modelconstructor">Model Constructor</h2>
+            <pre><code><div class="code-block"><span class="code-object">Model Class</span> function modelCtor([Function modelChangeHandler])</div></code></pre>
+            <p>Constructs a Model Class to be instantiated.</p>
+
+<!-- Model class -->
+            <h2 class="section-divider" id="modelclass">Model Class</h2>
+            <pre><code><div class="code-block"><span class="code-object">Model Instance</span> function modelClass([Object nextModelState][, Object extendModelState])</div></code></pre>
+            <p>Instantiates a Model instance.</p>
+
+
+<!-- Methods -->
+            <h2 class="content-subhead" id="methods">Methods</h2>
+<!-- setState -->
+            <h2 class="section-divider" id="setstate">setState</h2>
+            <pre><code><div class="code-block">void function setState([
+    Object nextState,
+    [Object nextAppState,]
+    [Boolean remember = true,]
+    [Function callback,]
+    [Number delay]
+])</div></code></pre>
+            <p>Triggers a state transition. If no arguments are passed in, then the latest Application Data Context is returned to the View. If there is a <code>callback</code> and <code>delay</code> is not set, the state transition is batched until <code>setState</code> is called again. A call to <code>setState</code> with no arguments will suffice.</p>
+            <p>n.b. <code>callback</code> recieves two arguments: <code>err, appCtx</code>.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel (<code>nextAppState</code> not supported), ViewModel, Model (<code>remember</code> and <code>delay</code> are not supported)</em></p>
+
+<!-- revert -->
+            <h2 class="section-divider" id="revert">revert</h2>
+            <pre><code><div class="code-block">void function revert([Function callback])</div></code></pre>
+            <p>Transition Application Data Context to the previous state.</p>
+            <p>n.b. <code>callback</code> recieves two arguments: <code>err, appCtx</code>.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+<!-- advance -->
+            <h2 class="section-divider" id="advance">advance</h2>
+            <pre><code><div class="code-block">void function advance([Function callback])</div></code></pre>
+            <p>Transition the Application Data Context back to the state, prior to <code>revert</code>ing.</p>
+            <p>n.b. <code>callback</code> recieves two arguments: <code>err, appCtx</code>.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+<!-- animate -->
+        <h2 class="section-divider" id="astarisxanimateanimate">animate (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+        <pre><code><div class="code-block"><span class="code-object">Promise</span> function animate([Velocity arguments])</div></code></pre>
+        <p>Exposes <a href="http://julian.com/research/velocity/">Velocity</a> Accelerated Javascript animation library. Please see <a href="http://julian.com/research/velocity/">Velocity</a> on how to use the jQuery free version of their API. This function includes the Velocity UI Pack transitions and returns a <a href="http://www.html5rocks.com/en/tutorials/es6/promises/">Promise</a>.</p>
+        <p>Note: The the first argument can be a either a DOM Node (this.getDOMNode()) or a component.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+<!-- show -->
+        <h2 class="section-divider" id="astarisxanimateshow">show (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+        <pre><code><div class="code-block">void function show(String displayKey[, String pageName][, Function callback]);</div></code></pre>
+        <p>Cue the next Display and/or Page to be transitioned in.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+<!-- display -->
+        <h2 class="section-divider" id="astarisxanimatedisplay">display (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+        <pre><code><div class="code-block"><span class="code-object">Component</span> function display()</div></code></pre>
+        <p>Returns an Astarisx component which is the next Display to be transitioned in.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+<!-- page -->
+        <h2 class="section-divider" id="astarisxanimatepage">page (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+        <pre><code><div class="code-block"><span class="code-object">Component</span> function page()</div></code></pre>
+        <p>Returns an Astarisx component which is the next Page to be transitioned in.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+<!-- addListItem -->
+        <h2 class="section-divider" id="astarisxanimateaddlistitem">addListItem</h2>
+        <pre><code><div class="code-block"><span class="code-object">Promise</span> function addListItem(Object this, [String listItemKey,][Velocity arguments])</div></code></pre>
+        <p>Transitions in a list item.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+<!-- dropListItem -->
+        <h2 class="section-divider" id="astarisxanimatedroplistitem">dropListItem (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+        <pre><code><div class="code-block"><span class="code-object">Promise</span> function dropListItem(Object this, [String listItemKey,][Velocity arguments])</div></code></pre>
+        <p>Transitions out a list item.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+            
 
 <!-- Properties -->
             <h2 class="content-subhead" id="properties">Properties</h2>
@@ -514,6 +560,26 @@
             <h2 class="section-divider" id="allvalid">$allValid</h2>
             <p><code>true</code> if all Model field's <code>validate</code> functions return <code>true</code>. Otherwise <code>false</code> or <code>undefined</code>.</p>
             <p><b>Scope:</b> <em>Model</em></p>
+<!-- $displayKey -->
+            <h2 class="section-divider" id="displaykey">$displayKey (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+            <p>The current displayKey name.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+<!-- $displayName -->
+            <h2 class="section-divider" id="displayname">$displayName (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+            <p>The current display name.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+
+<!-- $displayGroup -->
+            <h2 class="section-divider" id="displaygroup">$displayGroup (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+            <p>The current displayGroup name.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+    <!-- $pageName -->
+            <h2 class="section-divider" id="pagename">$pageName (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+            <p>The current page name.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>       
 
 <!-- Directives -->
             <h2 class="content-subhead" id="directives">Directives</h2>
@@ -613,78 +679,7 @@
 <!-- mediakey -->
             <h2 class="section-divider" id="mediakey">.media#[key]</h2>
             <p>Unique key to identify a media query in a CSS file. The <code>key</code> is passed to <code>mediaChangeHandler</code> as the first parameter.</p>
-            
-
-        <!-- <div class="header"> -->
-            <h1>AstarisxAnimate Mixin</h1>
-            <h2>v0.2.0-beta</h2>
-        <!-- </div> -->
-
-        <h2 class="content-subhead" id="astarisxanimatemethods">Methods</h2>
-<!-- animate -->
-        <h2 class="section-divider" id="astarisxanimateanimate">animate</h2>
-        <pre><code><div class="code-block"><span class="code-object">Promise</span> function animate([Velocity arguments])</div></code></pre>
-        <p>Exposes <a href="http://julian.com/research/velocity/">Velocity</a> Accelerated Javascript animation library. Please see <a href="http://julian.com/research/velocity/">Velocity</a> on how to use the jQuery free version of their API. This function includes the Velocity UI Pack transitions and returns a <a href="http://www.html5rocks.com/en/tutorials/es6/promises/">Promise</a>.</p>
-        <p>Note: The the first argument can be a either a DOM Node (this.getDOMNode()) or a component.</p>
-        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-<!-- addTransitions -->
-        <h2 class="section-divider" id="astarisxanimateaddtransitions">addTransitions</h2>
-            <pre><code><div class="code-block">Object function addTransitions()</div></code></pre>
-            <p>Returns an Object that defines default Application Transition behaviors.</p>
-        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-<!-- addDisplays -->
-        <h2 class="section-divider" id="astarisxanimateadddisplays">addDisplays</h2>
-            <pre><code><div class="code-block">Object function addDisplays()</div></code></pre>
-            <p>Returns an Object that defines default Display, Page and Transition behaviors.</p>
-        <p><b>Scope:</b> <em>ViewModel</em></p>
-<!-- show -->
-        <h2 class="section-divider" id="astarisxanimateshow">show</h2>
-        <pre><code><div class="code-block">void function show(String displayKey[, String pageName][, Function callback]);</div></code></pre>
-        <p>Cue the next Display and/or Page to be transitioned in.</p>
-        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-<!-- display -->
-        <h2 class="section-divider" id="astarisxanimatedisplay">display</h2>
-        <pre><code><div class="code-block"><span class="code-object">Component</span> function display()</div></code></pre>
-        <p>Returns an Astarisx component which is the next Display to be transitioned in.</p>
-        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-<!-- page -->
-        <h2 class="section-divider" id="astarisxanimatepage">page</h2>
-        <pre><code><div class="code-block"><span class="code-object">Component</span> function page()</div></code></pre>
-        <p>Returns an Astarisx component which is the next Page to be transitioned in.</p>
-        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-<!-- addListItem -->
-        <h2 class="section-divider" id="astarisxanimateaddlistitem">addListItem</h2>
-        <pre><code><div class="code-block"><span class="code-object">Promise</span> function addListItem(Object this, [String listItemKey,][Velocity arguments])</div></code></pre>
-        <p>Transitions in a list item.</p>
-        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-<!-- dropListItem -->
-        <h2 class="section-divider" id="astarisxanimatedroplistitem">dropListItem</h2>
-        <pre><code><div class="code-block"><span class="code-object">Promise</span> function dropListItem(Object this, [String listItemKey,][Velocity arguments])</div></code></pre>
-        <p>Transitions out a list item.</p>
-        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-
-        <h2 class="content-subhead" id="astarisxanimateproperties">Properties</h2>
-<!-- $displayKey -->
-            <h2 class="section-divider" id="displaykey">$displayKey</h2>
-            <p>The current displayKey name.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-
-<!-- $displayName -->
-            <h2 class="section-divider" id="displayname">$displayName</h2>
-            <p>The current display name.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-
-
-<!-- $displayGroup -->
-            <h2 class="section-divider" id="displaygroup">$displayGroup</h2>
-            <p>The current displayGroup name.</p>
-        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-
-    <!-- $pageName -->
-            <h2 class="section-divider" id="pagename">$pageName</h2>
-            <p>The current page name.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>       
-            
+                        
         </div>
     </div>
 </div>
