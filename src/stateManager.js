@@ -392,7 +392,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 											subscribers[subscriber].call(stateMgr.appState[subscriber],
 											nextState[transientStateKeys[keyIdx]][watchedField],
 											stateMgr.appState[transientStateKeys[keyIdx]][watchedField],
-											watchedField, transientStateKeys[keyIdx],
+											watchedField, transientStateKeys[keyIdx], stateMgr.appState,
 											nextState.$path, stateMgr.appState.$path));
 									}
 								}
