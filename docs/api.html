@@ -43,6 +43,10 @@
                 <li class="sub"><a data-scroll href="#astarisxcreatecvmclass">createCVMClass</a></li>
                 <li class="sub"><a data-scroll href="#astarisxextend">extend</a></li>
                 
+                <li class="group-header"><a data-scroll href="#modelinstantiation">Model Instantiation</a></li>
+                <li class="sub"><a data-scroll href="#modelconstructor">Model Constructor</a></li>
+                <li class="sub"><a data-scroll href="#modelclass">Model Class</a></li>
+
                 <li class="group-header"><a data-scroll href="#mixins">Mixins</a></li>
                 <li class="sub"><a data-scroll href="#astarisxmixinui">mixin.ui</a></li>
                 <li class="sub"><a data-scroll href="#astarisxmixinview">mixin.view</a></li>
@@ -96,26 +100,22 @@
                 <li class="sub"><a data-scroll href="#initializeappcontext">initializeAppContext</a></li>
                 <li class="sub"><a data-scroll href="#viewkey">$viewKey</a></li>
                 <li class="sub"><a data-scroll href="#mediakey">.media#[key]</a></li>
+
             </ul>
 
-            <a class="pure-menu-heading" 
-            href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate
-            </a>
             <ul class="last-menu-group">
+                <a class="pure-menu-heading" 
+                href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate
+                </a>
                 <li class="group-header"><a data-scroll href="#astarisxanimatemethods">Methods</a></li>
                 <li class="sub"><a data-scroll href="#astarisxanimateanimate">animate</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateaddtransitions">addTransitions</a></li>
+                <li class="sub"><a data-scroll href="#astarisxanimateadddisplays">addDisplays</a></li>
                 <li class="sub"><a data-scroll href="#astarisxanimateshow">show</a></li>
                 <li class="sub"><a data-scroll href="#astarisxanimatedisplay">display</a></li>
                 <li class="sub"><a data-scroll href="#astarisxanimatepage">page</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimateadddisplays">addDisplays</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimateaddtransitions">addTransitions</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimatecuedisplay">cueDisplay</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimatedropdisplay">dropDisplay</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimatecuepage">cuePage</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimatedroppage">dropPage</a></li>
                 <li class="sub"><a data-scroll href="#astarisxanimateaddlistitem">addListItem</a></li>
                 <li class="sub"><a data-scroll href="#astarisxanimatedroplistitem">dropListItem</a></li>
-                <li class="sub"><a data-scroll href="#astarisxanimateresetdisplay">resetDisplay</a></li>
                 <li class="group-header"><a data-scroll href="#astarisxanimateproperties">Properties</a></li>
                 <li class="sub"><a data-scroll href="#displaykey">$displayKey</a></li>
                 <li class="sub"><a data-scroll href="#displayname">$displayName</a></li>
@@ -144,33 +144,32 @@
             
             <!-- Astarisx.createModelClass -->
             <h2 class="section-divider" id="astarisxcreatemodelclass">Astarisx.createModelClass</h2>
-            
-            <pre><code><div class="code-block">function createModelClass(Object descriptor)</div></code></pre>
-            <p>Defines a Model Class given a descriptor.</p>
+            <pre><code><div class="code-block"><span class="code-object">Model Constructor</span> function createModelClass(Object descriptor)</div></code></pre>
+            <p>Defines a Model Class given a descriptor. <code>createModelClass</code> actually returns a Model constructor. Please see Guide for an explaination on how to use the constructor.</p>
             
             <!-- Astarisx.createMClass -->
             <h2 class="section-divider" id="astarisxcreatemclass">Astarisx.createMClass</h2>
-            <pre><code><div class="code-block">function createMClass(Object descriptor)</div></code></pre>
+            <pre><code><div class="code-block"><span class="code-object">Model Constructor</span> function createMClass(Object descriptor)</div></code></pre>
             <p>Alias for <a data-scroll href="#astarisxcreatemodelclass">Astarisx.createModelClass</a></p>
             
             <!-- Astarisx.createViewModelClass -->
             <h2 class="section-divider" id="astarisxcreateviewmodelclass">Astarisx.createViewModelClass</h2>
-            <pre><code><div class="code-block">function createViewModelClass(Object descriptor)</div></code></pre>
-            <p>Defines a ViewModel Class given a descriptor.</p>
+            <pre><code><div class="code-block"><code class="code-object">ViewModel Constructor</code> function createViewModelClass(Object descriptor)</div></code></pre>
+            <p>Defines a ViewModel Class given a descriptor. Astarisx uses the returned constructor to create ViewModels.</p>
                         
             <!-- Astarisx.createVMClass -->
             <h2 class="section-divider" id="astarisx.createvmclass">Astarisx.createVMClass</h2>
-            <pre><code><div class="code-block">function createVMClass(Object descriptor)</div></code></pre>
+            <pre><code><div class="code-block"><code class="code-object">ViewModel Constructor</code> function createVMClass(Object descriptor)</div></code></pre>
             <p>Alias for <a data-scroll href="#astarisxcreateviewmodelclass">Astarisx.createViewModelClass</a></p>
             
             <!-- Astarisx.createControllerViewModelClass -->
             <h2 class="section-divider" id="astarisxcreatecontrollerviewmodelclass">Astarisx.createControllerViewModelClass</h2>
-            <pre><code><div class="code-block">function createControllerViewModelClass(Object descriptor)</div></code></pre>
-            <p>Defines a ControllerViewModel Class given a descriptor.</p>
+            <pre><code><div class="code-block"><code class="code-object">ControllerViewModel Constructor</code> function createControllerViewModelClass(Object descriptor)</div></code></pre>
+            <p>Defines a ControllerViewModel Class given a descriptor. Astarisx uses the returned constructor to create the ControllerViewModel.</p>
 
             <!-- Astarisx.createCVMClass -->
             <h2 class="section-divider">Astarisx.createCVMClass</h2>
-            <pre><code><div class="code-block">function createCVMClass(Object descriptor)</div></code></pre>
+            <pre><code><div class="code-block"><code class="code-object">ControllerViewModel Constructor</code> function createCVMClass(Object descriptor)</div></code></pre>
             <p>Alias for <a data-scroll href="#astarisxcreatecontrollerviewmodelclass">Astarisx.createControllerViewModelClass</a></p>
             
             <!-- Astarisx.extend -->
@@ -179,7 +178,19 @@
             <p>Creates and returns a shallow copy of an object and merges the properties of any subsequent objects passed in. Arguments that are null or undefined are ignored.</p>
             <p>Properties of preceding objects will be completely overwritten by a property with the same key in subsequent objects. The values are not merged.</p>
 
-            <!-- Mixins -->
+<!-- Model Instantiation -->
+            <h2 class="content-subhead"><a id="modelinstantiation">Model Instantiation</a></h2>
+            <p>When you define a Model, you're actually defining an object that returns a Model Constructor. The Model Constructor returns a Model Class, which is used to instantiate Model instances. See the Guide on usage.</p>
+<!-- Model Constructor -->
+            <h2 class="section-divider" id="modelconstructor">Model Constructor</h2>
+            <pre><code><div class="code-block"><span class="code-object">Model Class</span> function modelCtor([Function modelChangeHandler])</div></code></pre>
+            <p>Constructs a Model Class to be instantiated.</p>
+
+<!-- Model class -->
+            <h2 class="section-divider" id="modelclass">Model Class</h2>
+            <pre><code><div class="code-block"><span class="code-object">Model Instance</span> function modelClass([Object nextModelState][, Object extendModelState])</div></code></pre>
+            <p>Instantiates a Model instance.</p>
+<!-- Mixins -->
             <h2 class="content-subhead"><a id="mixins">Mixins</a></h2>
 
             <h2 class="section-divider" id="astarisxmixinui">Astarisx.mixin.ui</h2>
@@ -202,11 +213,10 @@
 
 <!-- getInitialState -->
             <h2 class="section-divider" id="getinitialstate">getInitialState</h2>
-            <h3 class="content-subhead">Code</h3>
             <pre><code><div class="code-block">Object function getInitialState()</div></code></pre>
             <p>Called during initalization in order to initialize object state.</p>
             <p><b>Scope:</b> <em>ControllerViewModel, ViewModel, Model</em></p>
-            <!-- dataContextWillInitialize -->
+<!-- dataContextWillInitialize -->
             <h2 class="section-divider" id="datacontextwillinitialize">dataContextWillInitialize</h2>
             <pre><code><div class="code-block">void function dataContextWillInitialize()</div></code></pre>
             <p>Called before the data context is intialized (i.e. before <code>getInitialState</code> is called) and after it has been bootstrapped. This is where ajax calls are made to retrieve data and set up the data context. <code>dataContextWillInitialize</code> will only be called once per data context.</p>
@@ -538,24 +548,26 @@
 
 <!-- initializeAppContext -->
             <h2 class="section-divider" id="initializeappcontext">initializeAppContext</h2>
+            
+
+            <pre><code><div class="code-block">void function initializeAppContext(
+    Object appCtxInitObj
+    [, Array dataCtxInitArg]
+)</div></code></pre>
             <p>Initializes the Application Data Context.</p>
-            <h3 class="content-subhead" >Usage</h3>
-            <pre><code><div class="code-block">componentWillMount: function(){
-    this.initializeAppContext(appCtxInitObj[, dataCtxInitArg]);
-}</div></code></pre>
-            <h3 class="content-subhead" >Arguments</h3>
+            <p><b>Scope:</b> <em>UI</em></p>
+
+
             <table class="pure-table pure-table-striped">
                 <thead>
                     <tr class="header">
                         <th align="left">Param</th>
-                        <th align="center">Type</th>
                         <th align="left">Details</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td align="left">appCtxInitObj</td>
-                        <td align="center"><code>Object</code></td>
                         <td align="left">Available Options:
                         <ul>
                             <li>controllerViewModel - Reference to ControllerViewModel</li>
@@ -566,7 +578,6 @@
                     </tr>
                     <tr>
                         <td align="left">dataCtxInitArg</td>
-                        <td align="center"><code>Mixed Array</code></td>
                         <td align="left"><p>Specifies data contexts to be initialized. Can be an array of data context names AND/OR <em>dataCtxInitObjs</em>.</p>
                         </td>
                     </tr>
@@ -576,305 +587,86 @@
 
 <!-- $viewKey -->
             <h2 class="section-divider" id="viewkey">$viewKey</h2>
-            <p>Used to identify a View if <a href="https://github.com/entrendipity/astarisx/wiki/Instance-properties#notify"><code>notify</code></a> has been passed to setState. Please note that the component must be designated as a View by including the <code>Astarisx.mixin.view</code> mixin.</p>
-            <p><em>N.B. The main UI container is given a default <code>viewKey</code> of <code>*</code>.</em></p>
-            <h3 id="props">Props</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Prop</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">viewKey</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">prop passed to uniquely identify a View.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage">Usage</h3>
-            <pre><code><div class="code-block"><span>&lt;aView</span><span> $viewKey=</span><span class="st">{</span><span class="er">&quot;mainView&quot;}</span><span>/&gt;</span></div></code></pre>
+            <pre><code><div class="code-block">$viewKey: String</div></code></pre>
+            <p>Passed to an Astarisx component. Used to identify a View if <a href="https://github.com/entrendipity/astarisx/wiki/Instance-properties#notify"><code>notify</code></a> has been passed to setState. Please note that the component must be designated as a View by including the <code>Astarisx.mixin.view</code> mixin.</p>
+            <p><em>n.b. The UI container's <code>viewKey</code> is "<code>*</code>" (asterisk).</em></p>
+            <p><b>Scope:</b> <em>UI, View</em></p>
+            
             
 <!-- mediakey -->
             <h2 class="section-divider" id="mediakey">.media#[key]</h2>
-            <p>Used to identify a media query in a CSS file.</p>
-            <h3 id="props-1">Props</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Prop</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">.media#[key]</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">Unique key to identify a media query.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3>Usage</h3>
-            <pre><code><div class="code-block"><span class="dv">@media</span> <span class="dv">(min-width: </span><span>992px</span><span class="dv">) and (max-width: </span><span>1199px</span><span class="dv">)</span> <span class="dv">{</span>
-                <span>.media#myUniqueKey</span> <span>{</span><span class="co">/**/</span><span>}</span>
-            <span class="dv">}</span></div></code></pre>
+            <p>Unique key to identify a media query in a CSS file. The <code>key</code> is passed to <code>mediaChangeHandler</code> as the first parameter.</p>
+            
 
-        <div class="header">
-            <h1>AstarisxAnimate API</h1>
-            <h2>v0.?</h2>
-        </div>
-
-
-
-
-            <h1 id="animation">AstarisxAnimate API</h1>
-            <h2 id="animate">animate</h2>
-            <p>Exposes <a href="http://julian.com/research/velocity/">Velocity</a> Accelerated Javascript animation library. Please see <a href="http://julian.com/research/velocity/">Velocity</a> on how to use the jQuery free version of their API. This function includes the Velocity UI Pack transitions and returns a <a href="http://www.html5rocks.com/en/tutorials/es6/promises/">Promise</a>.</p>
-            <p>Note: The the first argument can be a either a DOM Node (this.getDOMNode()) or or the component itself.</p>
-            <h3 id="signature-3">Signature</h3>
-            <pre><code><div class="code-block">Promise &lt;= <span>advance</span>([Velocity arguments])</div></code></pre>
-            <h3 id="usage-3">Usage</h3>
-            <pre><code><div class="code-block"><span>this</span>.<span>state</span>.<span>appContext</span>.<span>animate</span>(<span>this</span>, { <span>opacity</span>: <span>0.5</span> }, { <span>duration</span>: <span class="dv">1000</span> });</div></code></pre>
-            <h2 id="display">display</h2>
-            <p>Returns a Astarisx component which is the next Display to be transitioned in.</p>
-            <h3 id="signature">Signature</h3>
-            <pre><code><div class="code-block">Component &lt;= <span>display</span>()</div></code></pre>
-            <h3 id="usage">Usage</h3>
-            <pre><code><div class="code-block">render: <span>function</span>(){
-                <span>var</span> display = <span>this</span>.<span>state</span>.<span>appContext</span>.<span>display</span>();
-                <span>return</span> (
-                    &lt;div&gt;
-                      {display}
-                    &lt;<span>/div&gt;</span>
-            <span>    </span><span>)</span><span>;</span>
-            <span>}</span></div></code></pre>
-            <h2 id="cuedisplay">cueDisplay</h2>
-            <p>Cues the next Display. This is automatically called by the mixins <code>Astarisx.mixin.display</code> and <code>Astarisx.mixin.view.display</code></p>
-            <h2 id="dropdisplay">dropDisplay</h2>
-            <p>Transitions out the current Display. This is automatically handled by <code>AstarisxAnimate</code> mixin.</p>
-            <h2 id="page">page</h2>
-            <p>Returns a Astarisx component which is the next Page to be transitioned in.</p>
-            <h3 id="signature-1">Signature</h3>
-            <pre><code><div class="code-block">Component &lt;= <span>page</span>()</div></code></pre>
-            <h3 id="usage-1">Usage</h3>
-            <pre><code><div class="code-block">render: <span>function</span>(){
-                <span>var</span> page = <span>this</span>.<span>state</span>.<span>appContext</span>.<span>page</span>();
-                <span>return</span> (
-                    &lt;div&gt;
-                      {page}
-                    &lt;<span>/div&gt;</span>
-            <span>    </span><span>)</span><span>;</span>
-            <span>}</span></div></code></pre>
-            <h2 id="cuepage">cuePage</h2>
-            <p>Cues the next Page. This is automatically called by the mixins <code>Astarisx.mixin.page</code> and <code>Astarisx.mixin.view.page</code></p>
-            <h2 id="droppage">dropPage</h2>
-            <p>Transitions out the current Page. This is automatically handled by <code>AstarisxAnimate</code> mixin.</p>
-            <h2 id="addlistitem">addListItem</h2>
-            <p>Transitions in a list item.</p>
-            <h3 id="signature-2">Signature</h3>
-            <pre><code><div class="code-block">Promise &lt;= <span>addListItem</span>(<span>this</span>, [listItemKey, Velocity Arguments])</div></code></pre>
-            <h3 id="usage-2">Usage</h3>
-            <pre><code><div class="code-block">componentDidMount: <span>function</span>(){
-                <span>this</span>.<span>state</span>.<span>appContext</span>.<span>addListItem</span>(<span>this</span>, <span class="st">&quot;personList&quot;</span>);
-            }</div></code></pre>
-            <h2 id="droplistitem">dropListItem</h2>
-            <p>Transitions out a list item.</p>
-            <h3 id="signature-3">Signature</h3>
-            <pre><code><div class="code-block">Promise &lt;= <span>dropListItem</span>(<span>this</span>, [listItemKey, Velocity Arguments])</div></code></pre>
-            <h3 id="usage-3">Usage</h3>
-            <pre><code><div class="code-block">remove: <span>function</span>(){
-                <span>this</span>.<span>state</span>.<span>appContext</span>.<span>dropListItem</span>(<span>this</span>, <span class="st">&quot;personList&quot;</span>).<span>then</span>(<span>function</span>(elements){
-                  <span>this</span>.<span>state</span>.<span>appContext</span>.<span>sites</span>.<span>remove</span>(id);
-                }.<span>bind</span>(<span>this</span>));
-              }</div></code></pre>
-            <h2 id="show">show</h2>
-            <p>Cue the next Display and Page to be transitioned in.</p>
-            <h3 id="signature-4">Signature</h3>
-            <pre><code><div class="code-block"><span>void</span> &lt;= <span>show</span>(displayKey, page);</div></code></pre>
-            <h3>Usage</h3>
-            <pre><code><div class="code-block">gotoPage1: <span>function</span>(){
-                <span>this</span>.<span>state</span>.<span>appContext</span>.<span>show</span>(<span class="st">&#39;sites.main&#39;</span>, <span class="st">&#39;page1&#39;</span>);
-            }</div></code></pre>
-
-
-<!-- !!!!!!!!!!!!!!! -->
-            <h2 id="instantiation">Instantiation</h2>
-            <p>A user defined function is used to create model instances.</p>
-            <p><em>Please refer to <a href="https://github.com/entrendipity/astarisx/wiki/Models#instantiating-a-model-instance">Instantiating a Model instance</a> for an explaination on why and how to structure your code to instantiate model instances.</em></p>
-            <h3 id="signature">Signature</h3>
-            <pre><code><div class="code-block">ModelInstance &lt;= #<span>ModelConstructorClass</span>([modelChangeHandler])([nextState, extendState, initialize])</div></code></pre>
-            <h3 id="arguments">Arguments</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Param</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">modelChangeHandler (optional)</td>
-            <td align="center"><code>Function</code></td>
-            <td align="left">Invoked whenever a model’s property changes. i.e. setState is called in the model. <strong><em>Only pass in modelChangeHandlers in ViewModels. You instantiate a Model within Models but you do not pass in a modelChangeHandler.</em></strong></td>
-            </tr>
-            <tr class="even">
-            <td align="left">nextState (optional)</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Object containing the next state values. This must contain all the fields of the target model unless you are instantiating a new model. Then you only pass in the required fields.</td>
-            </tr>
-            <tr class="odd">
-            <td align="left">extendState (optional)</td>
-            <td align="center"><code>Object</code></td>
-            <td align="left">Object containing more next state values to be merged with <code>nextState</code> argument.</td>
-            </tr>
-            <tr class="even">
-            <td align="left">initialize (optional)</td>
-            <td align="center"><code>Boolean</code></td>
-            <td align="left"><code>true</code> = Indicates that this is a new Model instance and that <code>getInitialState</code> should be called. <strong>(default = <code>false</code> unless no arguments are passed in the assumed to be initialising ie. initialize = <code>true</code>)</strong></td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage">Usage</h3>
-            <pre><code><div class="code-block"><span>var</span> Person: <span>function</span>(){
-              <span>return</span> <span>new</span> <span>PersonCtr</span>(personStateChangeHandler).<span>apply</span>(<span>this</span>, arguments);
-            },</div></code></pre>
-            <h3 id="usage-context">Usage Context</h3>
-            <p><strong>optional</strong> :: ViewModel, Model</p>
-
-
-
-
-
-
-
-
+        <!-- <div class="header"> -->
+            <h1>AstarisxAnimate Mixin</h1>
+            <h2>v0.2.0-beta</h2>
+        <!-- </div> -->
 
         <h2 class="content-subhead" id="astarisxanimatemethods">Methods</h2>
 <!-- animate -->
         <h2 class="section-divider" id="astarisxanimateanimate">animate</h2>
-<!-- show -->
-        <h2 class="section-divider" id="astarisxanimateshow">show</h2>
-<!-- display -->
-        <h2 class="section-divider" id="astarisxanimatedisplay">display</h2>
-<!-- page -->
-        <h2 class="section-divider" id="astarisxanimatepage">page</h2>
-<!-- addDisplays -->
-        <h2 class="section-divider" id="astarisxanimateadddisplays">addDisplays</h2>
+        <pre><code><div class="code-block"><span class="code-object">Promise</span> function animate([Velocity arguments])</div></code></pre>
+        <p>Exposes <a href="http://julian.com/research/velocity/">Velocity</a> Accelerated Javascript animation library. Please see <a href="http://julian.com/research/velocity/">Velocity</a> on how to use the jQuery free version of their API. This function includes the Velocity UI Pack transitions and returns a <a href="http://www.html5rocks.com/en/tutorials/es6/promises/">Promise</a>.</p>
+        <p>Note: The the first argument can be a either a DOM Node (this.getDOMNode()) or a component.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 <!-- addTransitions -->
         <h2 class="section-divider" id="astarisxanimateaddtransitions">addTransitions</h2>
-<!-- cueDisplay -->
-        <h2 class="section-divider" id="astarisxanimatecuedisplay">cueDisplay</h2>
-<!-- dropDisplay -->
-        <h2 class="section-divider" id="astarisxanimatedropdisplay">dropDisplay</h2>
-<!-- cuePage -->
-        <h2 class="section-divider" id="astarisxanimatecuepage">cuePage</h2>
-<!-- dropPage -->
-        <h2 class="section-divider" id="astarisxanimatedroppage">dropPage</h2>
+            <pre><code><div class="code-block">Object function addTransitions()</div></code></pre>
+            <p>Returns an Object that defines default Application Transition behaviors.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+<!-- addDisplays -->
+        <h2 class="section-divider" id="astarisxanimateadddisplays">addDisplays</h2>
+            <pre><code><div class="code-block">Object function addDisplays()</div></code></pre>
+            <p>Returns an Object that defines default Display, Page and Transition behaviors.</p>
+        <p><b>Scope:</b> <em>ViewModel</em></p>
+<!-- show -->
+        <h2 class="section-divider" id="astarisxanimateshow">show</h2>
+        <pre><code><div class="code-block">void function show(String displayKey[, String pageName][, Function callback]);</div></code></pre>
+        <p>Cue the next Display and/or Page to be transitioned in.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+<!-- display -->
+        <h2 class="section-divider" id="astarisxanimatedisplay">display</h2>
+        <pre><code><div class="code-block"><span class="code-object">Component</span> function display()</div></code></pre>
+        <p>Returns an Astarisx component which is the next Display to be transitioned in.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+<!-- page -->
+        <h2 class="section-divider" id="astarisxanimatepage">page</h2>
+        <pre><code><div class="code-block"><span class="code-object">Component</span> function page()</div></code></pre>
+        <p>Returns an Astarisx component which is the next Page to be transitioned in.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 <!-- addListItem -->
         <h2 class="section-divider" id="astarisxanimateaddlistitem">addListItem</h2>
+        <pre><code><div class="code-block"><span class="code-object">Promise</span> function addListItem(Object this, [String listItemKey,][Velocity arguments])</div></code></pre>
+        <p>Transitions in a list item.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 <!-- dropListItem -->
         <h2 class="section-divider" id="astarisxanimatedroplistitem">dropListItem</h2>
-<!-- resetDisplay -->
-        <h2 class="section-divider" id="astarisxanimateresetdisplay">resetDisplay</h2>
+        <pre><code><div class="code-block"><span class="code-object">Promise</span> function dropListItem(Object this, [String listItemKey,][Velocity arguments])</div></code></pre>
+        <p>Transitions out a list item.</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
         <h2 class="content-subhead" id="astarisxanimateproperties">Properties</h2>
 <!-- $displayKey -->
             <h2 class="section-divider" id="displaykey">$displayKey</h2>
             <p>The current displayKey name.</p>
-            <h3 id="property-5">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">displayKey</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">The current displayKey.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-5">Usage Context</h3>
-            <p>ControllerViewModel</p>
-            
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
 <!-- $displayName -->
             <h2 class="section-divider" id="displayname">$displayName</h2>
             <p>The current display name.</p>
-            <h3 id="property-3">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">displayName</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">The current display name.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-3">Usage Context</h3>
-            <p>ControllerViewModel</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
 
 <!-- $displayGroup -->
-            <h2 id="displaygroup">$displayGroup</h2>
+            <h2 class="section-divider" id="displaygroup">$displayGroup</h2>
             <p>The current displayGroup name.</p>
-            <h3 id="property-4">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">displayGroup</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">The current displayGroup.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-4">Usage Context</h3>
-            <p>ControllerViewModel</p>
+        <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
     <!-- $pageName -->
             <h2 class="section-divider" id="pagename">$pageName</h2>
             <p>The current page name.</p>
-            <h3 id="property-6">Property</h3>
-            <table class="pure-table pure-table-striped">
-            <thead>
-            <tr class="header">
-            <th align="left">Value (Read Only)</th>
-            <th align="center">Type</th>
-            <th align="left">Details</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="odd">
-            <td align="left">pageName</td>
-            <td align="center"><code>String</code></td>
-            <td align="left">The current page name.</td>
-            </tr>
-            </tbody>
-            </table>
-            <h3 id="usage-context-6">Usage Context</h3>
-            <p>ControllerViewModel</p>
-           
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>       
             
         </div>
     </div>

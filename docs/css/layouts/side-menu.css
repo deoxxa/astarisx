@@ -299,9 +299,11 @@ h2.content-subhead {
     font-size: 1.5em;
     padding-top: 20px;
 }
-
 table {
     font-size: 0.7em;
+}
+.code-object {
+    color: #E78C26;
 }
 /* -- Responsive Styles (Media Queries) ------------------------------------- */
 
