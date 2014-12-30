@@ -57,6 +57,7 @@
                 <li class="sub"><a data-scroll href="#initializedatacontext">initializeDataContext</a></li>
                 <li class="sub"><a data-scroll href="#getwatchedstate">getWatchedState</a></li>
                 <li class="sub"><a data-scroll href="#getroutes">getRoutes</a></li>
+                <li class="sub"><a data-scroll href="#mediaquerywillupdate">mediaQueryWillUpdate</a></li>
                 <li class="sub"><a data-scroll href="#astarisxanimateaddtransitions">addTransitions</a></li>
                 <li class="sub"><a data-scroll href="#astarisxanimateadddisplays">addDisplays</a></li>
                 
@@ -70,7 +71,6 @@
                 <li class="sub"><a data-scroll href="#modelchangehandler">modelChangeHandler</a></li>
                 <li class="sub"><a data-scroll href="#watchedstatechangehandler">watchedStateChangeHandler</a></li>
                 <li class="sub"><a data-scroll href="#routechangehandler">routeChangeHandler</a></li>
-                <li class="sub"><a data-scroll href="#mediachangehandler">mediaChangeHandler</a></li>
                 
                 <li class="group-header"><a data-scroll href="#modelinstantiation">Model Instantiation</a></li>
                 <li class="sub"><a data-scroll href="#modelconstructor">Model Constructor</a></li>
@@ -94,7 +94,7 @@
                 <li class="sub"><a data-scroll href="#canrevert">$canRevert</a></li>
                 <li class="sub"><a data-scroll href="#canadvance">$canAdvance</a></li>
                 <li class="sub"><a data-scroll href="#pagenotfound">$pageNotFound</a></li>
-                <li class="sub"><a data-scroll href="#datacontextwillupdate">$dataContextWillUpdate</a></li>
+                <li class="sub"><a data-scroll href="#datacontextupdated">$dataContextUpdated</a></li>
                 <li class="sub"><a data-scroll href="#dirty">$dirty</a></li>
                 <li class="sub"><a data-scroll href="#valid">$[field]Valid</a></li>
                 <li class="sub"><a data-scroll href="#allvalid">$allValid</a></li>
@@ -199,7 +199,7 @@
 
 <!-- Astarisx.mixin.mediaQuery -->
             <h2 class="section-divider" id="astarisxmixinmediaquery">Astarisx.mixin.mediaQuery</h2>
-            <p>Enables media query notifications to be sent to <a data-scroll href="#mediachangehandler"><code>mediaChangeHandler</code></a>.</p>
+            <p>Enables media query notifications to be sent to <a data-scroll href="#mediaquerywillupdate"><code>mediaQueryWillUpdate</code></a>.</p>
             <p><b>Scope:</b> <em>UI</em></p>
 
 <!-- AstarisxAnimate -->
@@ -285,6 +285,16 @@
             <pre><code><div class="code-block">Object function getRoutes()</div></code></pre>
             <p>Provides routing definition and specifies the routeChange handler invoked when the route is navigated to as a result of a <code>popState</code> Event. i.e Browser’s back or forward is clicked.</p>
             <p><b>Scope:</b> <em>ViewModel</em></p>
+
+<!-- mediaQueryWillUpdate -->
+            <h2 class="section-divider" id="mediaquerywillupdate">mediaQueryWillUpdate</h2>
+            <pre><code><div class="code-block">void function mediaQueryWillUpdate(
+    String id,
+    Object mql,
+    Boolean initializing
+)</div></code></pre>
+            <p>Triggered for registered media queries, whenever a query notification is raised. To register a media query you must specify an <code>id</code> within the <code>@madia</code> query attribute. The format of the <code>id</code> is <code>.media#[id]</code>, replacing <code>[id]</code> with whatever identifier you would like to reference that query. See <a href="https://github.com/entrendipity/astarisx/wiki/MediaQueryList-Notifications#registering-a-media-query">Registering a media query</a> in the Developers Guide for more information.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
 <!-- addTransitions -->
         <h2 class="section-divider" id="astarisxanimateaddtransitions">addTransitions (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
@@ -420,17 +430,6 @@
             <p>A route state change handler is referenced in a <code>getRoutes</code> object and can have any name. It is invoked when route paths change in response to the browser firing a <code>popstate</code> event.</p>
             <p><b>Scope:</b> <em>ViewModel</em></p>
 
-
-<!-- mediaChangeHandler -->
-            <h2 class="section-divider" id="mediachangehandler">mediaChangeHandler</h2>
-            <pre><code><div class="code-block">void function mediaChangeHandler(
-    String id,
-    Object mql,
-    Boolean initializing
-)</div></code></pre>
-            <p>Triggered for registered media queries, whenever a query notification is raised. To register a media query you must specify an <code>id</code> within the <code>@madia</code> query attribute. The format of the <code>id</code> is <code>.media#[id]</code>, replacing <code>[id]</code> with whatever identifier you would like to reference that query. See <a href="https://github.com/entrendipity/astarisx/wiki/MediaQueryList-Notifications#registering-a-media-query">Registering a media query</a> in the Developers Guide for more information.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-
 <!-- Model Instantiation -->
             <h2 class="content-subhead"><a id="modelinstantiation">Model Instantiation</a></h2>
             <p>When you define a Model, you're actually defining an object that returns a Model Constructor. The Model Constructor returns a Model Class, which is used to instantiate Model instances. See the Guide on usage.</p>
@@ -541,8 +540,8 @@
             <p>Indicates whether a route path is invalid resulting in a <code>404:page not found</code> error</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
             
-<!-- $dataContextWillUpdate -->
-            <h2 class="section-divider" id="datacontextwillupdate">$dataContextWillUpdate</h2>
+<!-- $dataContextUpdated -->
+            <h2 class="section-divider" id="datacontextupdated">$dataContextUpdated</h2>
             <p>Holds only the data contexts with the state that will be transitioned and is intended to be used within React’s <code>shouldComponentUpdate</code>. See <a href="https://github.com/entrendipity/astarisx/wiki/View#optimizing-the-view">Optimizing the View</a>.</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
@@ -678,7 +677,7 @@
             
 <!-- mediakey -->
             <h2 class="section-divider" id="mediakey">.media#[key]</h2>
-            <p>Unique key to identify a media query in a CSS file. The <code>key</code> is passed to <code>mediaChangeHandler</code> as the first parameter.</p>
+            <p>Unique key to identify a media query in a CSS file. The <code>key</code> is passed to <code>mediaQueryWillUpdate</code> as the first parameter.</p>
                         
         </div>
     </div>
