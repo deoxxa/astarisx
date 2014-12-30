@@ -115,7 +115,7 @@
                 <li class="group-header"><a data-scroll href="#view">View</a></li>
                 <li class="sub"><a data-scroll href="#initializeappcontext">initializeAppContext</a></li>
                 <li class="sub"><a data-scroll href="#viewkey">$viewKey</a></li>
-                <li class="sub"><a data-scroll href="#mediakey">.media#[key]</a></li>
+                <li class="sub last-menu-group"><a data-scroll href="#mediakey">.media#[key]</a></li>
 
             </ul>
 
@@ -155,7 +155,7 @@
             <p>Defines a ViewModel Class given a descriptor. Astarisx uses the returned constructor to create ViewModels.</p>
                         
             <!-- Astarisx.createVMClass -->
-            <h2 class="section-divider" id="astarisx.createvmclass">Astarisx.createVMClass</h2>
+            <h2 class="section-divider" id="astarisxcreatevmclass">Astarisx.createVMClass</h2>
             <pre><code><div class="code-block"><code class="code-object">ViewModel Constructor</code> function createVMClass(Object descriptor)</div></code></pre>
             <p>Alias for <a data-scroll href="#astarisxcreateviewmodelclass">Astarisx.createViewModelClass</a></p>
             
@@ -165,7 +165,7 @@
             <p>Defines a ControllerViewModel Class given a descriptor. Astarisx uses the returned constructor to create the ControllerViewModel.</p>
 
             <!-- Astarisx.createCVMClass -->
-            <h2 class="section-divider">Astarisx.createCVMClass</h2>
+            <h2 class="section-divider" id="astarisxcreatecvmclass">Astarisx.createCVMClass</h2>
             <pre><code><div class="code-block"><code class="code-object">ControllerViewModel Constructor</code> function createCVMClass(Object descriptor)</div></code></pre>
             <p>Alias for <a data-scroll href="#astarisxcreatecontrollerviewmodelclass">Astarisx.createControllerViewModelClass</a></p>
             
@@ -420,7 +420,6 @@
     String path,
     String pathKey,
     Object ctx
-    , showFunc??
 )</div></code></pre>
             <p>A route state change handler is referenced in a <code>getRoutes</code> object and can have any name. It is invoked when route paths change in response to the browser firing a <code>popstate</code> event.</p>
             <p><b>Scope:</b> <em>ViewModel</em></p>
