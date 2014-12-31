@@ -7,7 +7,7 @@
 <title>Astarisx Documentation</title>
 <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
-<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/default.min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/tomorrow-night-bright.min.css">
   
     <!--[if lte IE 8]>
         <link rel="stylesheet" href="css/layouts/side-menu-old-ie.css">
@@ -32,19 +32,23 @@
             <a class="pure-menu-heading" href="../index.html"><span class="fa fa-arrow-left"></span>Astarisx</a>
 
             <ul>
-                <li><a href="#concepts">Concepts</a></li>
-                <li class="sub"><a href="#mvvm">MVVM Pattern</a></li>
-                <li class="sub"><a href="#anatomy">Application Anatomy</a></li>
-                <li class="sub"><a href="#dataflow">Unidirectional Data Flow</a></li>
+                <li><a data-scroll href="#concepts">Concepts</a></li>
+                <li class="sub"><a data-scroll href="#mvvm">MVVM Pattern</a></li>
+                <li class="sub"><a data-scroll href="#anatomy">Application Anatomy</a></li>
+                <li class="sub"><a data-scroll href="#dataflow">Unidirectional Data Flow</a></li>
 
+                <li><a data-scroll href="#guides">Guides</a></li>
+                <li class="sub"><a data-scroll href="#descriptors">Descriptors</a></li>
+                <li class="sub"><a data-scroll href="#workingwithstate">Working with $state</a></li>
+                <li class="sub"><a data-scroll href="#dataflow">Unidirectional Data Flow</a></li>
                 <!-- <li class="menu-item-divided pure-menu-selected">
                     <a href="#">Services</a>
                 </li> -->
                 <li>
-                    <a href="#browser">Browser Support</a>
+                    <a data-scroll href="#browser">Browser Support</a>
                 </li>
                 <li>
-                    <a href="#support">Support</a>
+                    <a data-scroll href="#support">Support</a>
                 </li>
                 <li class="menu-item-divided">
                     <a href="tutorials.html">Tutorials</a>
@@ -63,8 +67,8 @@
 
         <div class="content">
             
-            <h2 class="content-subhead"><a name="concepts">Concepts</a></h2>
-             <h3 class="content-subhead"><a name="mvvm">MVVM Pattern</a></h3>
+            <h2 class="content-subhead" id="concepts"><a>Concepts</a></h2>
+             <h3 class="content-subhead" id="mvvm"><a>MVVM Pattern</a></h3>
             <p>
                 Astarisx helps implement the Model-View-ViewModel pattern, which is a specialization of the <a href="http://martinfowler.com/eaaDev/PresentationModel.html">Presentation Model</a> developed by Microsoft in 2005 to leverage WPF and Silverlight technologies. John Gossman, one of the Architects of WPF and Silverlight at Microsoft during that time, coined the term. <a href="http://msdn.microsoft.com/en-us/magazine/dd419663.aspx">WPF Apps With The Model-View-ViewModel Design Pattern</a> by Josh Smith, explains the pattern and its history if you're interested. Another article I would recommend is Addy Osmani's <a href="http://addyosmani.com/blog/understanding-mvvm-a-guide-for-javascript-developers/">Understanding MVVM – A Guide For JavaScript Developers</a>. He does a great job at explaining MVVM for the JavaScript developer.
 
@@ -94,7 +98,7 @@
 
                     Astarisx also includes a specialized ViewModel, referred to as the ControllerViewModel. The ControllerViewModel determines which ViewModels are exposed to the View.
                 </p>
-            <h3 class="content-subhead"><a name="anatomy">Application Anatomy</a></h3>
+            <h3 class="content-subhead" id="anatomy"><a>Application Anatomy</a></h3>
             <div class="pure-g">
                 <div class="pure-u-1">
                     <img class="pure-img-responsive" src="../img/common/Astarisx.png" alt="Anatomy">
@@ -108,7 +112,7 @@
 
                 Astarisx Models are immutable. Meaning they can't be changed after they've been created. This ensures that the View, or any part of the application, doesn't go and change (mutate) an object they weren't supposed to potentially breaking your application and causing bugs.
 
-                That's not to say that you can't change your data, you can. Astarisx makes it easy. You won't even know you're using immutable objects. Essentially, a Model's fields are exposed to the View and to update a Model you simply assign the new value to the field. For example to update a Person's name you would write something like <code>this.state.appContext.people.currPerson.name = "Fred"</code>. This triggers the Application State to transition to a new state which includes your updated Model.
+                That's not to say that you can't change your data, you can. Astarisx makes it easy. You won't even know you're using immutable objects. Essentially, a Model's fields are exposed to the View and to update a Model you simply assign the new value to the field. For example to update a Person's name you would write something like <code class="wrap">this.state.appContext.people.currPerson.name = "Fred"</code>. This triggers the Application State to transition to a new state which includes your updated Model.
 
                 A Model has no knowledge of the View or ViewModels. Whenever a Model changes state, a ViewModel is notified. It receives the model's new state and handles transitioning the model to the next state.
             </p>
@@ -148,7 +152,7 @@
                 <!-- See Views -->
             </p>
            
-            <h3 class="content-subhead"><a name="dataflow">Unidirectional Data Flow</a></h3>
+            <h3 class="content-subhead" id="dataflow"><a>Unidirectional Data Flow</a></h3>
 
             <div class="pure-g">
                 <div class="pure-u-1">
@@ -157,13 +161,13 @@
             </div>
             <p>Astarisx application data flows are unidirectional. A View will invoke an Action, usually via User interactions on the UI, which gets handled by a Data Context. Data, or state, then flows out to the State Manager. The State Manager merges this state with the current Application State, effectively transitioning the Application Data Context to the next state. It then notifies all Views that state has changed and sends them the new Application Data Context. The Views propagate any changes down through to its components.</p>
 
-            <h2 class="content-subhead"><a name="browser">Browser Support</a></h2>
+            <h2 class="content-subhead" id="browser"><a>Browser Support</a></h2>
             <p>Most ECMAScript 5 compliant browsers.</p>
 
             <p><b>IE8 and below is not supported.</b></p>
 
             <p><b>IE9 and below is not supported if the pushState option is enabled.</b></p>
-            <h2 class="content-subhead"><a name="support">Support</a></h2>
+            <h2 class="content-subhead" id="support"><a>Support</a></h2>
             
         </div>
     </div>
@@ -171,9 +175,20 @@
 
 
 
-<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/highlight.min.js"></script>
+<script src="../lib/highlight.pack.js"></script>
 <script>hljs.initHighlightingOnLoad();</script>
 <script src="js/ui.js"></script>
+<script src="../lib/smooth-scroll.js"></script>
+<script>
+    smoothScroll.init({
+      speed: 1000, // Integer. How fast to complete the scroll in milliseconds
+    easing: 'easeInOutCubic', // Easing pattern to use
+    // updateURL: false, // Boolean. Whether or not to update the URL with the anchor hash on scroll
+    // offset: 80, // Integer. How far to offset the scrolling anchor location in pixels
+    // callbackBefore: function ( toggle, anchor ) {}, // Function to run before scrolling
+    // callbackAfter: function ( toggle, anchor ) {} // Function to run after scrolling
+    });
+</script>
 
 
 </body>
