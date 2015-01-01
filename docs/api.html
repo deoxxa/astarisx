@@ -49,15 +49,18 @@
                 <li class="sub"><a data-scroll href="#astarisxmixinpushstate">mixin.pushState</a></li>
                 <li class="sub"><a data-scroll href="#astarisxmixinmediaquery">mixin.mediaQuery</a></li>
                 <li class="sub"><a data-scroll href="#astarisxanimatemixin">AstarisxAnimate</a></li>
+                
+                <li class="group-header"><a data-scroll href="#datacontextinitialization">Data Context Initialization</a></li>
+                <li class="sub"><a data-scroll href="#initializeappcontext">initializeAppContext</a></li>
+                <li class="sub"><a data-scroll href="#initializedatacontext">initializeDataContext</a></li>
 
                 <li class="group-header"><a data-scroll href="#specs">Descriptor Specs</a></li>
                 <li class="sub"><a data-scroll href="#mixinsspec">mixins</a></li>
                 <li class="sub"><a data-scroll href="#getinitialstate">getInitialState</a></li>
                 <li class="sub"><a data-scroll href="#datacontextwillinitialize">dataContextWillInitialize</a></li>
-                <li class="sub"><a data-scroll href="#initializedatacontext">initializeDataContext</a></li>
+                <li class="sub"><a data-scroll href="#mediaquerywillupdate">mediaQueryWillUpdate</a></li>
                 <li class="sub"><a data-scroll href="#getwatchedstate">getWatchedState</a></li>
                 <li class="sub"><a data-scroll href="#getroutes">getRoutes</a></li>
-                <li class="sub"><a data-scroll href="#mediaquerywillupdate">mediaQueryWillUpdate</a></li>
                 <li class="sub"><a data-scroll href="#astarisxanimategettransitions">getTransitions</a></li>
                 <li class="sub"><a data-scroll href="#astarisxanimategetdisplays">getDisplays</a></li>
                 
@@ -113,7 +116,6 @@
                 <li class="sub"><a data-scroll href="#clientfield">_[field]</a></li>
 
                 <li class="group-header"><a data-scroll href="#view">View</a></li>
-                <li class="sub"><a data-scroll href="#initializeappcontext">initializeAppContext</a></li>
                 <li class="sub"><a data-scroll href="#viewkey">$viewKey</a></li>
                 <li class="sub last-menu-group"><a data-scroll href="#mediakey">.media#[key]</a></li>
 
@@ -202,25 +204,45 @@
             <p>Enables animation via <a href="https://github.com/entrendipity/astarisx-animate">Astarisx Animate</a> mixin.</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
-<!-- Descriptor Specs -->
-            <h2 class="content-subhead" id="specs">Descriptor Specs</h2>
+<!-- Data Context Initialization -->
+            <h2 class="content-subhead" id="datacontextinitialization">Data Context Initialization</h2>
 
-<!-- mixins -->
-            <h2 class="section-divider" id="mixinsspec">mixins</h2>
-            <pre><code><div class="code-block">Array mixins</div></code></pre>
-            <p>The mixins array allows you to use mixins to extend and share behavior of Models, ViewModels and the ControllerViewModel.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel, ViewModel, Model</em></p>
+<!-- initializeAppContext -->
+            <h2 class="section-divider" id="initializeappcontext">initializeAppContext</h2>
+            
+            <pre><code><div class="code-block">void function initializeAppContext(
+    Object appCtxInitObj
+    [, Array dataCtxInitArg]
+)</div></code></pre>
+            <p>Initializes the Application Data Context.</p>
+            <p><b>Scope:</b> <em>UI</em></p>
 
-<!-- getInitialState -->
-            <h2 class="section-divider" id="getinitialstate">getInitialState</h2>
-            <pre><code><div class="code-block">Object function getInitialState()</div></code></pre>
-            <p>Called during initalization in order to initialize object state.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel, ViewModel, Model</em></p>
-<!-- dataContextWillInitialize -->
-            <h2 class="section-divider" id="datacontextwillinitialize">dataContextWillInitialize</h2>
-            <pre><code><div class="code-block">void function dataContextWillInitialize()</div></code></pre>
-            <p>Called before the data context is intialized (i.e. before <code>getInitialState</code> is called) and after it has been bootstrapped. This is where ajax calls are made to retrieve data and set up the data context. <code>dataContextWillInitialize</code> will only be called once per data context.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+            <table class="pure-table pure-table-striped">
+                <thead>
+                    <tr class="header">
+                        <th align="left">Param</th>
+                        <th align="left">Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td align="left">appCtxInitObj</td>
+                        <td align="left">Available Options:
+                        <ul>
+                            <li>controllerViewModel - Reference to ControllerViewModel</li>
+                            <li>enableUndo - (Default = <code>false); true: </code>Enable undo\redo functionality.</li>
+                            <li>enableRouting - (Default = <code>false); true: </code>Enable pushState routing and undo\redo functionality.</li>
+                        </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="left">dataCtxInitArg</td>
+                        <td align="left"><p>Specifies data contexts to be initialized. Can be an array of data context names AND/OR <em>dataCtxInitObjs</em>.</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
 
 <!-- initializeDataContext -->
             <h2 class="section-divider" id="initializedatacontext">initializeDataContext</h2>
@@ -269,6 +291,36 @@
             </table>-->
 
 
+<!-- Descriptor Specs -->
+            <h2 class="content-subhead" id="specs">Descriptor Specs</h2>
+
+<!-- mixins -->
+            <h2 class="section-divider" id="mixinsspec">mixins</h2>
+            <pre><code><div class="code-block">Array mixins</div></code></pre>
+            <p>The mixins array allows you to use mixins to extend and share behavior of Models, ViewModels and the ControllerViewModel.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel, ViewModel, Model</em></p>
+
+<!-- getInitialState -->
+            <h2 class="section-divider" id="getinitialstate">getInitialState</h2>
+            <pre><code><div class="code-block">Object function getInitialState()</div></code></pre>
+            <p>Called during initalization in order to initialize object state.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel, ViewModel, Model</em></p>
+<!-- dataContextWillInitialize -->
+            <h2 class="section-divider" id="datacontextwillinitialize">dataContextWillInitialize</h2>
+            <pre><code><div class="code-block">void function dataContextWillInitialize()</div></code></pre>
+            <p>Called before the data context is intialized (i.e. before <code>getInitialState</code> is called) and after it has been bootstrapped. This is where ajax calls are made to retrieve data and set up the data context. <code>dataContextWillInitialize</code> will only be called once per data context.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+<!-- mediaQueryWillUpdate -->
+            <h2 class="section-divider" id="mediaquerywillupdate">mediaQueryWillUpdate</h2>
+            <pre><code><div class="code-block">void function mediaQueryWillUpdate(
+    String id,
+    Object mql,
+    Boolean initializing
+)</div></code></pre>
+            <p>Triggered for registered media queries, whenever a query notification is raised. To register a media query you must specify an <code>id</code> within the <code>@madia</code> query attribute. The format of the <code>id</code> is <code>.media#[id]</code>, replacing <code>[id]</code> with whatever identifier you would like to reference that query. See <a href="https://github.com/entrendipity/astarisx/wiki/MediaQueryList-Notifications#registering-a-media-query">Registering a media query</a> in the Developers Guide for more information.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
 <!-- getWatchedState -->
             <h2 class="section-divider" id="getwatchedstate">getWatchedState</h2>
             <pre><code><div class="code-block">Object function getWatchedState()</div></code></pre>
@@ -280,16 +332,6 @@
             <pre><code><div class="code-block">Object function getRoutes()</div></code></pre>
             <p>Provides routing definition and specifies the routeChange handler invoked when the route is navigated to as a result of a <code>popState</code> Event. i.e Browser’s back or forward is clicked.</p>
             <p><b>Scope:</b> <em>ViewModel</em></p>
-
-<!-- mediaQueryWillUpdate -->
-            <h2 class="section-divider" id="mediaquerywillupdate">mediaQueryWillUpdate</h2>
-            <pre><code><div class="code-block">void function mediaQueryWillUpdate(
-    String id,
-    Object mql,
-    Boolean initializing
-)</div></code></pre>
-            <p>Triggered for registered media queries, whenever a query notification is raised. To register a media query you must specify an <code>id</code> within the <code>@madia</code> query attribute. The format of the <code>id</code> is <code>.media#[id]</code>, replacing <code>[id]</code> with whatever identifier you would like to reference that query. See <a href="https://github.com/entrendipity/astarisx/wiki/MediaQueryList-Notifications#registering-a-media-query">Registering a media query</a> in the Developers Guide for more information.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
 <!-- getTransitions -->
         <h2 class="section-divider" id="astarisxanimategettransitions">getTransitions (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
@@ -620,46 +662,6 @@
 
 <!-- View -->
             <h2 class="content-subhead" id="view">View</h2>
-
-
-<!-- initializeAppContext -->
-            <h2 class="section-divider" id="initializeappcontext">initializeAppContext</h2>
-            
-
-            <pre><code><div class="code-block">void function initializeAppContext(
-    Object appCtxInitObj
-    [, Array dataCtxInitArg]
-)</div></code></pre>
-            <p>Initializes the Application Data Context.</p>
-            <p><b>Scope:</b> <em>UI</em></p>
-
-
-            <table class="pure-table pure-table-striped">
-                <thead>
-                    <tr class="header">
-                        <th align="left">Param</th>
-                        <th align="left">Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td align="left">appCtxInitObj</td>
-                        <td align="left">Available Options:
-                        <ul>
-                            <li>controllerViewModel - Reference to ControllerViewModel</li>
-                            <li>enableUndo - (Default = <code>false); true: </code>Enable undo\redo functionality.</li>
-                            <li>enableRouting - (Default = <code>false); true: </code>Enable pushState routing and undo\redo functionality.</li>
-                        </ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td align="left">dataCtxInitArg</td>
-                        <td align="left"><p>Specifies data contexts to be initialized. Can be an array of data context names AND/OR <em>dataCtxInitObjs</em>.</p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
 
 <!-- $viewKey -->
             <h2 class="section-divider" id="viewkey">$viewKey</h2>
