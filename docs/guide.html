@@ -38,13 +38,31 @@
                 <li class="sub"><a data-scroll href="#dataflow">Unidirectional Data Flow</a></li>
 
                 <li><a data-scroll href="#guides">Guides</a></li>
+                <li class="sub"><a data-scroll href="#gettingstarted">Getting Started</a></li>
                 <li class="sub"><a data-scroll href="#descriptors">Descriptors</a></li>
                 <!-- specs | fields -kind -aliasFor -validate -viewModel | methods -->
-                <li class="sub"><a data-scroll href="#workingwithstate">Working with $state</a></li>
-                <li class="sub"><a data-scroll href="#immutability">Immutability</a></li>
-                <li class="sub"><a data-scroll href="#datacontexts">Data Contexts</a></li>
-                <li class="sub"><a data-scroll href="#directives">Directives</a></li>
+                <li class="sub"><a data-scroll href="#datacontextsandstate">Data Contexts and $state</a></li>
+                
+                <li class="sub"><a data-scroll href="#setState">setState and Transtioning State</a></li>
+                <!-- Directives need to be part of this -->
+                <li class="sub"><a data-scroll href="#models">Models</a></li>
+                <li class="sub"><a data-scroll href="#viewmodels">ViewModels</a></li>
+                <li class="sub"><a class="wrap" data-scroll href="#controllerviewmodel">The ControllerViewModel</a></li>
 
+                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Initialising Data Contexts</a></li>
+                <li class="sub"><a data-scroll href="#initialisingdatacontexts">The UI and Views</a></li>
+                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Watched State</a></li>
+                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Working With The Router</a></li>
+                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Media Query Notifications</a></li>
+                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Optimizing the View</a></li>
+                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Animation</a></li>
+                
+                <li><a data-scroll href="#tips">Tips</a></li>
+                <li class="sub"><a data-scroll href="#deleting">Deleting</a></li>
+                <li class="sub"><a data-scroll href="#undoredo">undo redo</a></li>
+                <!-- <li class="sub"><a data-scroll href="#directives">Directives</a></li> -->
+
+<!--                 <li class="sub"><a data-scroll href="#immutability">Immutability</a></li> -->
                 <!-- The Application Data Context and how it works -> Properties etc.
                     Working with Models
                     Working with Arrays
@@ -53,6 +71,7 @@
                     watchedState Object
                     router object
                     MediaQuery
+                    Animation
                  -->
 
                 <!-- <li class="menu-item-divided pure-menu-selected">
@@ -60,15 +79,6 @@
                 </li> -->
                 <li>
                     <a data-scroll href="#browser">Browser Support</a>
-                </li>
-                <li>
-                    <a data-scroll href="#support">Support</a>
-                </li>
-                <li class="menu-item-divided">
-                    <a href="tutorials.html">Tutorials</a>
-                </li>
-                <li>
-                    <a href="api.html">API</a>
                 </li>
             </ul>
         </div>
@@ -175,14 +185,36 @@
             </div>
             <p>Astarisx application data flows are unidirectional. A View will invoke an Action, usually via User interactions on the UI, which gets handled by a Data Context. Data, or state, then flows out to the State Manager. The State Manager merges this state with the current Application State, effectively transitioning the Application Data Context to the next state. It then notifies all Views that state has changed and sends them the new Application Data Context. The Views propagate any changes down through to its components.</p>
 
-            <h2 class="content-subhead" id="guides"><a>Guides</a></h2>            
+            <h2 class="content-subhead" id="guides"><a>Guides</a></h2>
+            <h3 class="content-subhead" id="gettingstarted">Getting Started</h3>
+
+            <h4 class="content-subhead">Stand-alone </h4>
+            <p>
+            "Astarisx" is exposed as a global variable.
+            <a href="https://github.com/entrendipity/astarisx/archive/master.zip">Download it.</a>
+            </p>
+            <pre><code><div class="code-block">&lt;script src="astarisx.min.js"&gt;&lt;/script&gt;</div></code></pre>
+
+
+            <h4 class="content-subhead">Bower</h4>
+            <pre><code><div class="code-block">$ <b>bower</b> install astarisx</div></code></pre>
+
+            <h4 class="content-subhead">CommonJS</h4>
+              <pre><code><div class="code-block">$ npm install astarisx</div></code></pre>
+
+            <h4 class="content-subhead">AMD</h4>
+<pre><code><div class="code-block">require(['./astarisx.min.js'], function(Astarisx){
+  // Do something with Astarisx
+});</div></code></pre>
+
+
             <h3 class="content-subhead" id="descriptors"><a>Descriptors</a></h3>
             <p>Descriptors are used to define Model, ViewModel or ControllerViewModel behavior. Behaviors are able to be defined using specification functions or mixins, fields and methods.</p>
-            <h4 class="content-subhead"><a>Specification Mixins</a></h4>
+            <h4 class="content-subhead"><a>Mixins</a></h4>
             <p>Mixins enable sharing and extending behavior and are used much the same as you use them in React. </p>
             <p>An exmple of sharing behavior is</p>
             <p>Extending behavior is</p>
-            <h4 class="content-subhead"><a>Specification Functions</a></h4>
+            <h4 class="content-subhead"><a>Functions</a></h4>
             <p>Specification functions are predefined functions used to perform specific functions or provide configuration information for your application. These functions are invoked by Astarisx during the life cycle of an object.</p>
             <h4 class="content-subhead"><a>Fields</a></h4>
             <h4 class="content-subhead"><a>Methods</a></h4>
@@ -193,7 +225,6 @@
             <p><b>IE8 and below is not supported.</b></p>
 
             <p><b>IE9 and below is not supported if the pushState option is enabled.</b></p>
-            <h2 class="content-subhead" id="support"><a>Support</a></h2>
             
         </div>
     </div>

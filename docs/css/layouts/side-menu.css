@@ -303,6 +303,15 @@ h2.content-subhead {
     font-size: 1.5em;
     padding-top: 20px;
 }
+
+h3.content-subhead {
+    font-weight: bold;
+}
+
+h4.content-subhead {
+    font-style: italic;
+}
+
 table {
     font-size: 0.7em;
 }
