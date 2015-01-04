@@ -162,7 +162,7 @@ Easily incorporate super smooth page transitions into your application with <a h
                 </ul>
                 <div class="tabcontents">
                     <div id="model">
-<pre><code>/* Model */
+<pre><code><div class="code-block">/* Model */
 var Todo = Astarisx.createModelClass({
   description: {
     get: function(){
@@ -170,10 +170,10 @@ var Todo = Astarisx.createModelClass({
     }
   }
 });        
-</code></pre>
+</div></code></pre>
                     </div>
                     <div id="viewModel">
-<pre><code>/* ViewModel */
+<pre><code><div class="code-block">/* ViewModel */
 var TodoClass = require("../models/todo");
 
 // Model Constructor
@@ -191,12 +191,12 @@ var TodosViewModel = Astarisx.createViewModelClass({
 
   addTodo: function(){
     var newTodo = new Todo({
-        description: this.currentDescription
+      description: this.currentDescription
     });
     var next = this.$state.todosList.concat(newTodo);
     this.setState({
-        todosList: next,
-        currentDescription: ""
+      todosList: next,
+      currentDescription: ""
     });
   },
 
@@ -210,27 +210,26 @@ var TodosViewModel = Astarisx.createViewModelClass({
       });
     }
   }
-});</code></pre>
+});</div></code></pre>
                     </div>       
 
                     <div id="cvm">
-<pre><code>/* ControllerViewModel */
+<pre><code><div class="code-block">/* ControllerViewModel */
 var ControllerViewModel = Astarisx.createCVMClass({
-    //Specify a ViewModel's dataContext
-    todos: {
-        viewModel: require('./todos'),
-        get: function(){
-            return this.$state.todos;
-        }
+  //Specify a ViewModel's dataContext
+  todos: {
+    viewModel: require('./todos'),
+    get: function(){
+      return this.$state.todos;
     }
-});</code></pre>
+  }
+});</div></code></pre>
                     </div>
                     <div id="ui">
-<pre><code>/* UI */
+<pre><code><div class="code-block">/* UI */
 var TodoList = React.createClass({
   //Make component an Astarisx view
   mixins: [Astarisx.mixin.view],
-
   render: function(){
     /*
       No props are passed in.
@@ -248,7 +247,6 @@ var TodoList = React.createClass({
 var UI = React.createClass({
   //Make component an Astarisx UI
   mixins: [Astarisx.mixin.ui],
-  
   componentWillMount: function(){
     /*
       Reference the ControllerViewModel
@@ -258,13 +256,11 @@ var UI = React.createClass({
       controllerViewModel: CVM
     });
   },
-  
   addTodo: function(e){
     e.preventDefault();
     //Invoke action on dataContext
     this.state.appContext.todos.addTodo();
   },
-  
   updateDescription: function(e){
     /*
       Assign value to currentDescription
@@ -276,7 +272,6 @@ var UI = React.createClass({
     var todos = this.state.appContext.todos;
     todos.currentDescription = e.target.value;
   },
-  
   render: function(){
     //reference the todos dataContext
     var todos = this.state.appContext.todos;
@@ -299,7 +294,7 @@ var UI = React.createClass({
       &lt;List /&gt;
     &lt;/form&gt;);
   }
-});</code></pre>
+});</div></code></pre>
                     </div>
                 </div>
             </div>
