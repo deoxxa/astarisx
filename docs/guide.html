@@ -44,19 +44,19 @@
                 <li class="sub"><a data-scroll href="#fieldattributes">Field Attributes</a></li>
                 <li class="sub"><a data-scroll href="#datacontextsandstate">Data Contexts and $state</a></li>
                 
-                <li class="sub"><a data-scroll href="#setState">setState and Transitioning State</a></li>
+                <li class="sub"><a data-scroll href="#setstate">setState and Transitioning State</a></li>
                 <!-- Directives need to be part of this -->
                 <li class="sub"><a data-scroll href="#models">Models</a></li>
                 <li class="sub"><a data-scroll href="#viewmodels">ViewModels</a></li>
                 <li class="sub"><a class="wrap" data-scroll href="#controllerviewmodel">The ControllerViewModel</a></li>
 
                 <li class="sub"><a data-scroll href="#initialisingdatacontexts">Initialising Data Contexts</a></li>
-                <li class="sub"><a data-scroll href="#initialisingdatacontexts">The UI and Views</a></li>
-                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Watched State</a></li>
-                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Working With The Router</a></li>
-                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Media Query Notifications</a></li>
-                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Optimizing the View</a></li>
-                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Animation</a></li>
+                <li class="sub"><a data-scroll href="#views">The UI and Views</a></li>
+                <li class="sub"><a data-scroll href="#watchedstate">Watched State</a></li>
+                <li class="sub"><a data-scroll href="#router">Working With The Router</a></li>
+                <li class="sub"><a data-scroll href="#mediaquery">Media Query Notifications</a></li>
+                <li class="sub"><a data-scroll href="#optimizingtheview">Optimizing the View</a></li>
+                <li class="sub"><a data-scroll href="#animation">Animation</a></li>
                 
                 <li class="group-header"><a data-scroll href="#tips">Tips</a></li>
                 <li class="sub"><a data-scroll href="#deleting">Deleting</a></li>
@@ -375,16 +375,27 @@ this.setState({didUpdate: true});</code></pre>
     <p>Indicates that the field holds a plain old javascript object. The object and it's content will be immutable. (deep immutability). <em>Caution must be exercised when using this attribute value as this can be quite an expensive operation and cyclical references are not supported.</em></p>
 
     <h3 class="content-subhead" id="datacontextsandstate">Data Contexts and $state</h3>
-    <h3 class="content-subhead">Initializing Data Contexts</h3>
+    <h3 class="content-subhead" id="setstate">setState and Transitioning State</h3>
+    <h3 class="content-subhead" id="models">Models</h3>
+    <h3 class="content-subhead" id="viewmodels">ViewModels</h3>
+    <h3 class="content-subhead" id="controllerviewmodel">The ControllerViewModel</h3>
+    <h3 class="content-subhead" id="initialisingdatacontexts">Initializing Data Contexts</h3>
+        <h4 class="content-subhead">getInitialState</h4>
+        <p>This is called whenever the Object is created and enables the setting of inital state for the object. <code>getInitialState</code> works a little differently in Models then it does in ViewModels or the ControllerViewModel. See <a href="">Models</a> and <a href="">ViewModel</a> for an explaination on how it differs. Do not place ajax calls or process intensive code within this function, as it is called every time the object is created, which can be quite frequent.</p>
 
-    <h5>getInitialState</h5>
-            <p>This is called whenever the Object is created and enables the setting of inital state for the object. <code>getInitialState</code> works a little differently in Models then it does in ViewModels or the ControllerViewModel. See <a href="">Models</a> and <a href="">ViewModel</a> for an explaination on how it differs. Do not place ajax calls or process intensive code within this function, as it is called every time the object is created, which can be quite frequent.</p>
+        <h4 class="content-subhead">dataContextWillInitialize</h4>
+        <p>This is invoked after <code>getInitialState</code> in response to a call to <code><a href="./api.html#initializeappcontext">intializeAppContext</a></code> or <code><a href="./api.html#initializedatacontext">intializeDataContext</a></code>. <code>dataContextWillInitialize</code> is only called once during the life of your application. From within this function you have access to the initialized state and the opportunity to invoke ajax calls to get data from external sources.</p>
+        <p>The reason you should not include ajax calls in <code>getInitialState</code> is that it is called every time the object is created, which can be quite frequent.</p>
+        <p>To use <code>dataContextWillInitialize</code> define what it needs to do within your ViewModel. Then call <code>intializeAppContext</code> or <code>intializeDataContext</code> from within your application, which will invoke <code>dataContextWillInitialize</code>.</p>
+        
+    <h3 class="content-subhead" id="views">The UI and Views</h3>
+    <h3 class="content-subhead" id="watchedstate">Watched State</h3>
+    <h3 class="content-subhead" id="router">Working with the Router</h3>
+    <h3 class="content-subhead" id="mediaquery">Media Query Notifications</h3>
+    <h3 class="content-subhead" id="optimizingtheview">Optimizing the View</h3>
+    <h3 class="content-subhead" id="animation">Animation</h3>
 
-            <h5>dataContextWillInitialize</h5>
-            <p>This is invoked after <code>getInitialState</code> in response to a call to <code><a href="./api.html#initializeappcontext">intializeAppContext</a></code> or <code><a href="./api.html#initializedatacontext">intializeDataContext</a></code>. <code>dataContextWillInitialize</code> is only called once during the life of your application. From within this function you have access to the initialized state and the opportunity to invoke ajax calls to get data from external sources.</p>
-            <p>The reason you should not include ajax calls in <code>getInitialState</code> is that it is called every time the object is created, which can be quite frequent.</p>
-            <p>To use <code>dataContextWillInitialize</code> define what it needs to do within your ViewModel. Then call <code>intializeAppContext</code> or <code>intializeDataContext</code> from within your application, which will invoke <code>dataContextWillInitialize</code>. See <a href="">Initializing Data Contexts</a> for more details.</p>
-            
+
 
             <h2 class="content-subhead" id="browser"><a>Browser Support</a></h2>
             <p>Most ECMAScript 5 compliant browsers.</p>
