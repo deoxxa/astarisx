@@ -311,7 +311,7 @@ h3.content-subhead {
 
 h4.content-subhead, h5 {
     line-height: 1em;
-    margin: 2em 0 1em 0;
+    margin-top: 2em;
 }
 
 table {
