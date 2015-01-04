@@ -308,10 +308,10 @@ h3.content-subhead {
     font-weight: bold;
 }
 
-h4.content-subhead {
-    /*font-style: italic;*/
-    font-size: 1em;
-}
+    h5 {
+        line-height: 1em;
+        margin: 2em 0 1em 0;
+    }
 
 table {
     font-size: 0.7em;
@@ -338,6 +338,14 @@ Hides the menu at `48em`, but modify this based on your app's needs.
     h2.content-subhead {
         font-size: 2em;
         padding-top: 40px;
+    }
+
+    h4.content-subhead {
+        font-size: 1.2em;
+    }
+
+    h5 {
+        font-size: 1em;
     }
 
     .content-subhead {

@@ -424,8 +424,8 @@
             
 <!-- validate -->
             <h2 class="section-divider" id="validate">validate</h2>
-            <pre><code><div class="code-block">validate: Function</div></code></pre>
-            <p>Specified as a property within a Model field, it is a user defined function that returns a <code>Boolean</code> after validating a fields value.</p>
+            <pre><code><div class="code-block">validate: Getter</div></code></pre>
+            <p>Specified as an attribute of a Model field descriptor, it accepts a <code>get</code> descriptor function, that is used to validate the field. The getter must return a <code>Boolean</code>.</p>
             <p><b>Scope:</b> <em>Model</em></p>
 
 <!-- Handlers -->
