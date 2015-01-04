@@ -308,10 +308,11 @@ h3.content-subhead {
     font-weight: bold;
 }
 
-    h5 {
-        line-height: 1em;
-        margin: 2em 0 1em 0;
-    }
+
+h4.content-subhead, h5 {
+    line-height: 1em;
+    margin: 2em 0 1em 0;
+}
 
 table {
     font-size: 0.7em;
