@@ -328,9 +328,8 @@ a.pure-button-primary {
     overflow: auto;
     display: inline-block;
     font-size: 0.8em;
-    white-space: pre; /*nowrap;*/
-    margin-top: -10px;
-    margin-bottom: -8px;
+    white-space: pre;
+    line-height: 1.2em;
 }
 
 /*
