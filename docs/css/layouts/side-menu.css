@@ -309,12 +309,14 @@ h3.content-subhead {
 }
 
 h4.content-subhead {
-    font-style: italic;
+    /*font-style: italic;*/
+    font-size: 1em;
 }
 
 table {
     font-size: 0.7em;
 }
+
 .code-object {
     color: #E78C26;
 }

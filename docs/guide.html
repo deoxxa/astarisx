@@ -59,7 +59,7 @@
                 
                 <li class="group-header"><a data-scroll href="#tips">Tips</a></li>
                 <li class="sub"><a data-scroll href="#deleting">Deleting</a></li>
-                <li class="sub"><a data-scroll href="#undoredo">undo redo</a></li>
+                <li class="sub"><a data-scroll href="#undoredo">Undo\Redo</a></li>
                 <!-- <li class="sub"><a data-scroll href="#directives">Directives</a></li> -->
 
 <!--                 <li class="sub"><a data-scroll href="#immutability">Immutability</a></li> -->
@@ -77,7 +77,7 @@
                 <!-- <li class="menu-item-divided pure-menu-selected">
                     <a href="#">Services</a>
                 </li> -->
-                <li>
+                <li class="group-header">
                     <a data-scroll href="#browser">Browser Support</a>
                 </li>
             </ul>
@@ -91,8 +91,8 @@
 
         <div class="content">
             
-            <h2 class="content-subhead" id="concepts"><a>Concepts</a></h2>
-             <h3 class="content-subhead" id="mvvm"><a>MVVM Pattern</a></h3>
+            <h2 class="content-subhead" id="concepts">Concepts</h2>
+             <h3 class="content-subhead" id="mvvm">MVVM Pattern</h3>
             <p>
                 Astarisx helps implement the Model-View-ViewModel pattern, which is a specialization of the <a href="http://martinfowler.com/eaaDev/PresentationModel.html">Presentation Model</a> developed by Microsoft in 2005 to leverage WPF and Silverlight technologies. John Gossman, one of the Architects of WPF and Silverlight at Microsoft during that time, coined the term. <a href="http://msdn.microsoft.com/en-us/magazine/dd419663.aspx">WPF Apps With The Model-View-ViewModel Design Pattern</a> by Josh Smith, explains the pattern and its history if you're interested. Another article I would recommend is Addy Osmani's <a href="http://addyosmani.com/blog/understanding-mvvm-a-guide-for-javascript-developers/">Understanding MVVM – A Guide For JavaScript Developers</a>. He does a great job at explaining MVVM for the JavaScript developer.
 
@@ -122,7 +122,7 @@
 
                     Astarisx also includes a specialized ViewModel, referred to as the ControllerViewModel. The ControllerViewModel determines which ViewModels are exposed to the View.
                 </p>
-            <h3 class="content-subhead" id="anatomy"><a>Application Anatomy</a></h3>
+            <h3 class="content-subhead" id="anatomy">Application Anatomy</h3>
             <div class="pure-g">
                 <div class="pure-u-1">
                     <img class="pure-img-responsive" src="../img/common/Astarisx.png" alt="Anatomy">
@@ -176,7 +176,7 @@
                 <!-- See Views -->
             </p>
            
-            <h3 class="content-subhead" id="dataflow"><a>Unidirectional Data Flow</a></h3>
+            <h3 class="content-subhead" id="dataflow">Unidirectional Data Flow</h3>
 
             <div class="pure-g">
                 <div class="pure-u-1">
@@ -185,7 +185,7 @@
             </div>
             <p>Astarisx application data flows are unidirectional. A View will invoke an Action, usually via User interactions on the UI, which gets handled by a Data Context. Data, or state, then flows out to the State Manager. The State Manager merges this state with the current Application State, effectively transitioning the Application Data Context to the next state. It then notifies all Views that state has changed and sends them the new Application Data Context. The Views propagate any changes down through to its components.</p>
 
-            <h2 class="content-subhead" id="guides"><a>Guides</a></h2>
+            <h2 class="content-subhead" id="guides">Guides</h2>
             <h3 class="content-subhead" id="gettingstarted">Getting Started</h3>
 
             <h4 class="content-subhead">Stand-alone </h4>
@@ -197,7 +197,7 @@
 
 
             <h4 class="content-subhead">Bower</h4>
-            <pre><code><div class="code-block">$ <b>bower</b> install astarisx</div></code></pre>
+            <pre><code><div class="code-block">$ bower install astarisx</div></code></pre>
 
             <h4 class="content-subhead">CommonJS</h4>
               <pre><code><div class="code-block">$ npm install astarisx</div></code></pre>
@@ -207,15 +207,95 @@
   // Do something with Astarisx
 });</div></code></pre>
 
+<!-- Descriptors -->
+            <h3 class="content-subhead" id="descriptors">Descriptors</h3>
+            <p>Descriptors are used to define Model, ViewModel or ControllerViewModel behavior. Behaviors are able to be defined using descriptor functions or mixins, fields and methods.</p>
+            
+            <h4 class="content-subhead">Descriptor Functions</h4>
+            <p><a href="./api.html#specs">Descriptor functions</a> are predefined Astarisx functions used to perform specific tasks or provide configuration information for your application. These functions are invoked by Astarisx during the life-cycle of an object. Each of the descriptor functions are explained in more detail in the relevant sections below.</p>
+            
+            <h4 class="content-subhead">Mixins</h4>
+            <p>Mixins enable sharing and extending behavior amongst objects and are used much the same as you use them in React. </p>
+            <p>An example of this is when multiple models use the same field (property). For example, the mixin below enables Models to have a <code>status</code> field.</p>
 
-            <h3 class="content-subhead" id="descriptors"><a>Descriptors</a></h3>
-            <p>Descriptors are used to define Model, ViewModel or ControllerViewModel behavior. Behaviors are able to be defined using specification functions or mixins, fields and methods.</p>
-            <h4 class="content-subhead"><a>Mixins</a></h4>
-            <p>Mixins enable sharing and extending behavior and are used much the same as you use them in React. </p>
-            <p>An exmple of sharing behavior is</p>
-            <p>Extending behavior is</p>
-            <h4 class="content-subhead"><a>Functions</a></h4>
-            <p>Specification functions are predefined functions used to perform specific functions or provide configuration information for your application. These functions are invoked by Astarisx during the life cycle of an object.</p>
+            <pre><code><div class="code-block">var modelMixin = {
+  getInitialState: function(){
+    return {
+      status: this.status || ""
+    };
+  },
+  status: {
+    get: function(){
+      return this.$state.status;
+    }   
+  }
+}</div></code></pre>
+    
+            <p>To include the <code>status</code> field in a model, you simply "mixin" the code.</p>
+<pre><code><div class="code-block">var Order = Astarisx.createModelClass({
+  mixins: [modelMixin],
+  getInitialState: function(){
+    return {
+      id: this.id|| uuid()
+    };
+  },
+
+  id: {
+    get: function(){
+      return this.$state.id;
+    }
+  },
+  ...
+});
+</div></code></pre>
+            <p>As you can see this is quite straight forward, and you are still able to define a <code>getInitialState</code> in the target model. The two <code>getInitialState</code> functions will be called sequentially.</p>
+
+    <h4 class="content-subhead">Fields</h4>
+    <p>Fields are accessor descriptor are objects, similar to what you would find in the <code><a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">Object.defineProperty</a></code> method. They differ slightly. Firstly, all fields are enumerable by default as objects with getter and setter properties. To define a field you specify a key, which is the field name and then define a getter and/or setter.</p>
+    <pre><code><div class="code-block">var Order = Astarisx.createModelClass({
+    fldName: {
+        get: function(){
+            this.$state.fldName;
+        },
+        set: function(newValue){
+            this.setState({fldName: newValue});
+        }
+    },
+    ...
+});</div></code></pre>
+    <p>To update a field value you simply assign a value to it. There is no need to call <code>set</code>. This will invoke setState and transition trigger a state transition.</p>
+    <p>The same is true when accessing a field. There is no need to call <code>get</code>, you simply reference the field name. This is just plain old javascript, no magic here.</p>
+    <p>The default behavior is that it is not enumerable. You are however able to specify attributes. You can specify the standard attributes, apart from value, you can specify enumerable</p>
+    <p>However, there are some Astarisx specific attribute that modify the behavior of field.</p>
+
+    <pre><code><div class="code-block">var Order = Astarisx.createModelClass({
+    fldName: {
+        get: function(){
+            this.$state.fldName;
+        },
+        set: function(newValue){
+            this.setState({fldName: newValue});
+        }
+    },
+    ...
+});</div></code></pre>
+
+
+
+    <h4 class="content-subhead">Methods</h4>
+    <p>A method is a function that performs a particular job.</p>
+    <h3 class="content-subhead" id="datacontextsandstate">Data Contexts and $state</h3>
+    <h3 class="content-subhead">Initializing Data Contexts</h3>
+
+    <h5>getInitialState</h5>
+            <p>This is called whenever the Object is created and enables the setting of inital state for the object. <code>getInitialState</code> works a little differently in Models then it does in ViewModels or the ControllerViewModel. See <a href="">Models</a> and <a href="">ViewModel</a> for an explaination on how it differs. Do not place ajax calls or process intensive code within this function, as it is called every time the object is created, which can be quite frequent.</p>
+
+            <h5>dataContextWillInitialize</h5>
+            <p>This is invoked after <code>getInitialState</code> in response to a call to <code><a href="./api.html#initializeappcontext">intializeAppContext</a></code> or <code><a href="./api.html#initializedatacontext">intializeDataContext</a></code>. <code>dataContextWillInitialize</code> is only called once during the life of your application. From within this function you have access to the initialized state and the opportunity to invoke ajax calls to get data from external sources.</p>
+            <p>The reason you should not include ajax calls in <code>getInitialState</code> is that it is called every time the object is created, which can be quite frequent.</p>
+            <p>To use <code>dataContextWillInitialize</code> define what it needs to do within your ViewModel. Then call <code>intializeAppContext</code> or <code>intializeDataContext</code> from within your application, which will invoke <code>dataContextWillInitialize</code>. See <a href="">Initializing Data Contexts</a> for more details.</p>
+            
+
             <h4 class="content-subhead"><a>Fields</a></h4>
             <h4 class="content-subhead"><a>Methods</a></h4>
 
