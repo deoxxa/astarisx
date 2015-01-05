@@ -154,6 +154,9 @@ Change color of the anchor links on hover/focus.
     color: #AECFE5;
 }
 
+/*#menu .pure-menu li a {
+    border: none;
+}*/
 /*
 This styles the selected menu item `<li>`.
 */
@@ -161,17 +164,16 @@ This styles the selected menu item `<li>`.
 #menu .pure-menu-heading {
     /*background: #1f8dd6;*/
     padding-top: 10px;
-    border: none;
+    /*border: none;*/
 }
 
 /*
 This styles a link within a selected menu item `<li>`.
 */
-#menu .pure-menu-selected a {
-    /*color: #fff;*/
+/*#menu .pure-menu-selected a {
     border: none;
 }
-
+*/
 /*
 This styles the menu heading.
 */

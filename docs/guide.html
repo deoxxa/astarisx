@@ -42,16 +42,16 @@
                 <li class="sub"><a data-scroll href="#descriptors">Descriptors</a></li>
                 <!-- specs | fields -kind -aliasFor -validate -viewModel | methods -->
                 <li class="sub"><a data-scroll href="#fieldattributes">Field Attributes</a></li>
-                <li class="sub"><a data-scroll href="#datacontextsandstate">Data Contexts and $state</a></li>
+                <li class="sub"><a data-scroll href="#datacontext">Data Context</a></li>
                 
-                <li class="sub"><a data-scroll href="#setstate">setState and Transitioning State</a></li>
+                <li class="sub"><a data-scroll href="#transitioningstate">Transitioning State</a></li>
                 <!-- Directives need to be part of this -->
                 <li class="sub"><a data-scroll href="#models">Models</a></li>
                 <li class="sub"><a data-scroll href="#viewmodels">ViewModels</a></li>
                 <li class="sub"><a class="wrap" data-scroll href="#controllerviewmodel">The ControllerViewModel</a></li>
-
-                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Initialising Data Contexts</a></li>
                 <li class="sub"><a data-scroll href="#views">The UI and Views</a></li>
+                <li class="sub"><a data-scroll href="#initialisingdatacontexts">Initialising Data Contexts</a></li>
+                <li class="sub"><a data-scroll href="#undo">Built in Undo</a></li>
                 <li class="sub"><a data-scroll href="#watchedstate">Watched State</a></li>
                 <li class="sub"><a data-scroll href="#router">Working With The Router</a></li>
                 <li class="sub"><a data-scroll href="#mediaquery">Media Query Notifications</a></li>
@@ -213,13 +213,14 @@
             <p>Descriptors are used to define Model, ViewModel or ControllerViewModel behavior. Behaviors are able to be defined using descriptor functions or mixins, fields and methods.</p>
             
             <h4 class="content-subhead">Descriptor Functions</h4>
-            <p><a href="./api.html#specs">Descriptor functions</a> are predefined Astarisx functions used to perform specific tasks or provide configuration information for your application. These functions are invoked by Astarisx during the life-cycle of an object. Each of the descriptor functions are explained in more detail in the relevant sections below.</p>
+            <p><a href="./api.html#specs">Descriptor functions</a> are predefined Astarisx functions used to perform specific tasks or provide configuration information for your application. These functions are invoked by Astarisx during the life-cycle of an object. Each of the descriptor functions are explained in more detail in the relevant sections of this Guide.</p>
             
             <h4 class="content-subhead">Mixins</h4>
             <p>Mixins enable sharing and extending behavior amongst objects and are used much the same as you use them in React. </p>
-            <p>An example of this is when multiple models use the same field (property). For example, the mixin below enables Models to have a <code>status</code> field.</p>
+            <p>An example of when you would use a mixin is when multiple models have the same field (property). For example, the mixin below enables Models to have a <code>status</code> field.</p>
 
-            <pre><code><div class="code-block">var modelMixin = {
+            <pre><code><div class="code-block">/* mixin */
+var modelMixin = {
   getInitialState: function(){
     return {
       status: this.status || ""
@@ -252,9 +253,9 @@
             <p>As you can see this is quite straight forward, and you are still able to define a <code>getInitialState</code> in the target model. The two <code>getInitialState</code> functions will be called sequentially.</p>
 
     <h4 class="content-subhead">Fields</h4>
-    <p>Fields are accessor descriptor objects, similar to that found in the <code><a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">Object.defineProperty</a></code> method. They differ slightly in that the <code>enumerable</code> attribute is set to <code>true</code> by default, as opposed to <code>false</code>. <code>configurable</code> is <code>false</code> by default but cannot be overridden. The <code>enumerable</code> attribute however can be overridden, but it is not recommended as Astarisx relies on the ability to enumerate properties in order to transition state.</p>
+    <p>Fields are accessor descriptor objects, similar to that found in the <code><a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">Object.defineProperty</a></code> method. They differ slightly in that the <code>enumerable</code> attribute is set to <code>true</code> by default, as opposed to <code>false</code>. <code>configurable</code> is <code>false</code> by default and cannot be overridden. The <code>enumerable</code> attribute however can be overridden, but it is not recommended as Astarisx relies on the ability to enumerate properties in order to transition state.</p>
 
-    <p>To define a field you specify a key, which is the field name and then define a getter and/or setter.</p>
+    <p>To define a field you specify a key, which is the field name, then define a getter and/or setter.</p>
     <pre><code><div class="code-block">var Order = Astarisx.createModelClass({
     fldName: {
         get: function(){
@@ -266,11 +267,11 @@
     },
     ...
 });</div></code></pre>
-    <p>The <code>set</code> function takes one argument. To update a field value, you simply assign a value to it. There is no need to call <code>set</code> as the argument is automatically passed in. The value is then passed to the <code>setState</code> function which triggers a state transition. Once <code>setState</code> returns the object will have transitioned to the next state and <code>this.$state</code> will now hold the object's new state. <b>Fields are immutable. Never set a value of a field directly, as it will not persist, you must always use the <code>setState</code> function. This is particularly true within the Object that the field was defined in.</b></p>
-    <p>When accessing a field there is no need to call <code>get</code>, you simply reference the field name. Although there are situations in which you may need to access a field value directly. In those situations you reference the field directly from the <code>$state</code> object. </p>
+    <p>The <code>set</code> function takes one argument. To update a field value, you simply assign a value to it. There is no need to call <code>set</code> as the argument is automatically passed in. The value is then passed to the <code>setState</code> function which triggers a state transition. Once <code>setState</code> returns, the object will have transitioned to the next state and <code>this.$state</code> will now hold the object's new state. <b>Fields are immutable. Never set a value of a field directly, as it will not persist, you must always use the <code>setState</code> function. This is particularly true within the Object that the field was defined.</b></p>
+    <p>When accessing a field's value there is no need to call <code>get</code>, you simply reference the field's name. Although there are situations in which you may need to access a field's value directly. In those situations you can reference the field directly from the <code>$state</code> object. </p>
     <p>You can restrict access to a field by not defining a getter or setter, which would prevent the ability to access a field or set it's value respectively. This is just plain old javascript, no magic here.</p>
     
-    <p>Fields defined as above are enumerable, which means that when persisting to a back end store, it will be visible to it and sent as part of the payload to the server. Sometimes you need a field that is only visible on the client. For instance, you may want to record whether a Model is in error with a field called <code>inError</code>. There is no need to send this to the server as it is purely for client side functionality. In these situations you can prefix the field name with an underscore. So <code>inError</code> would become <code>_inError</code>. This indicates to Astarisx that the field is a client-side field only, and is not to be sent to the server. You still update and access the field like a regular field but it will not persist to the server.</p>
+    <p>When persisting a model to a backend data store, all defined fields are sent as part of the payload to the server. Sometimes, however, you may want a field that is only visible on the client. For instance, you may want to record whether a Model is in error using a field called <code>inError</code>. There is no need to send this information to the server, as it is purely for client side functionality. In these situations you can prefix the field name with an underscore. So <code>inError</code> would become <code>_inError</code>. This indicates to Astarisx that the field is a client-side field only, and is not to be sent to the server. You still update and access the field like a regular field but it will not persist to the server.</p>
 
     <p>Astarisx also includes some additional attributes. They are <code>viewModel</code>, <code>aliasFor</code>, <code>kind</code> and <code>validate</code>. These attributes modify how the field functions or extends it's funcitonality. More on field attributes can be found <a data-scroll href="#fieldattributes">here</a>.</p>
     <p><em>*See <a data-scroll href="#datacontextsandstate">Data Contexts and $state</a> for an explaination on the <code>$state</code> object.</em></p>
@@ -335,12 +336,16 @@
 
     <h5>uid</h5>
     <p>Stores a Model’s unique identifier. <strong>This is only available in Models and should only be specified once per Model definition.</strong></p>
+    
     <h5>instance</h5>
     <p>This value indicates that the Object held within the specified field is a <code>Model</code> instance. This attribute needs to be specified when a <code>View</code> is going to interact with it. Fields with this attribute register <code>modelChangeHandler</code>s against the relevant ViewModel, so that the correct data context is updated. This is only available within ViewModels and Models.</p>
+    
     <h5>array</h5>
     <p>Assign <code>kind:'array'</code> to all fields that hold arrays. This does a few things. It ensures that the array is initialized, it ensures that a setter has not been specified and that the array is immutable. Immutability does not extend to it's contents.</p>
+    
     <h5>array:freeze</h5>
     <p><code>kind: 'array:freeze'</code> has the same affect as <code>kind:'array'</code> but the immutability extends to it's contents. However, immutability does not extend down any Object's hierarchy and is referred to as shallow immutability.</p>
+    
     <h5>array:deepFreeze</h5>
     <p><code>kind: 'array:deepFreeze'</code> has the same affect as <code>kind:'array'</code> but the immutability extends to it's contents and down through any Object's hierarchy and is referred to as deep immutability. <em>Caution must be exercised when using this attribute value as this can be quite an expensive operation and cyclical references are not supported.</em></p>
     
@@ -365,20 +370,83 @@ this.setState({didUpdate: true});</code></pre>
       <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">hobbiesContext</span>.<span class="ot">current</span>.<span class="fu">name</span>: <span class="kw">void</span>(<span class="dv">0</span>);
   }
 }</code></pre>
+    <p>n.b. Fields with a kind of <code>pseudo</code> will not persist to the server.</p>
+    
     <h5>static</h5>
     <p>Signifies that a field shouldn’t change state when <code>revert()</code> or <code>advance()</code> is called and will persist it’s state through state transitions unless <em>explicitly</em> updated. A good example would be a field that shows online status. If the online status changes, then you do not want undo functionality to reset it to the previous state, as this does not make sense. Another example is responding to Media Query Notifications. If screen orientation changes, then you do not care about the previous screen orientation and if <code>revert()</code> is called you want all the <code>state</code> to revert except the screen orientation. So if you had a field called <code>orientation</code> then you would set it’s <code>kind</code> to <code>static</code>. <strong>This is only available in the ControllerViewModel.</strong></p>
+    
     <h5>object</h5>
     <p>Indicates that the field holds a plain old javascript object. The object will be immutable, but it's objects and/or arrays it may hold are not.</p>
+    
     <h5>object:freeze</h5>
     <p>Indicates that the field holds a plain old javascript object. The object and the first level in the object hierarchy will be immutable, but objects and/or arrays lower in the chain are not. (shallow immutability)</p>
+    
     <h5>object:deepFreeze</h5>
     <p>Indicates that the field holds a plain old javascript object. The object and it's content will be immutable. (deep immutability). <em>Caution must be exercised when using this attribute value as this can be quite an expensive operation and cyclical references are not supported.</em></p>
 
-    <h3 class="content-subhead" id="datacontextsandstate">Data Contexts and $state</h3>
-    <h3 class="content-subhead" id="setstate">setState and Transitioning State</h3>
+    <h3 class="content-subhead" id="datacontext">Data Context</h3>
+    <p>A Data Context is the interface to the View. It stores the View's state and is the logical represtation of data and operations that can be performed on a UI. The entire collection of an application's data contexts is considered the Application Data Context. All Views have access to the Application Data Context and it serves as the Single Source of Truth for your application's data model. The View interacts with data contexts via a special object on the View's state, created by Astarisx, called <code>appContext</code>. So, from within a view you reference the Application Data Context using <code class="wrap">this.state.appContext</code>. The <code>appContext</code> holds references to all data contexts defined in the ControllerViewModel descriptor.</p>
+    <p>The Application Data Context always holds the current state of the application. Whenever there is a change in state, the entire Application Data Context is recreated (transitioned to a new state) and all View's are notified and receive the latest version.</p>
+
+    <h3 class="content-subhead" id="transitioningstate">Transitioning State</h3>
+    <p>Astarisx objects are immutable. In order to update objects we must transition them to a new state. Astarisx creates an entirely new object, with the new state, whenever there is a state transition. This transition process is controlled by the <code>setState</code> function. The <code>setState</code> function triggers a state transition and subsequent notification to the View that there has been a state change enabling the View to update the UI with the latest state.</p>
+    <p>You call <code>setState</code> from within a Model, ViewModel or the ControllerViewModel and <b>not</b> from the View. Below are different scenarios to help explain how to use <code>setState</code>. The <code>setState</code> function signature is provided for reference.</p>
+                <pre><code><div class="code-block">void function setState([
+    Object nextState,
+    [Object nextAppState,]
+    [Boolean remember = true,]
+    [Function callback,]
+    [Number delay]
+])</div></code></pre>
+    
+    <h4 class="content-subhead">Arguments</h4>
+    <h5>nextState</h5>
+    <p> This represents the next state or target state of the data context. The keys of the nextState object are the defined fields of the current object.</p>
+    <h5>nextAppState</h5>
+    <p> This represents the next state or target state of a application data context. The keys of the nextState object are the defined fields of the target object. You can also update other data contexts.</p>
+    <h5>remember</h5>
+    <h5>callback</h5>
+    <h5>delay</h5>
+    <h4 class="content-subhead">Scenarios</h4>
+    <h5>Update Model Field</h5>
+    <p><code>setState</code> takes, as its first two arguments, state objects.</p>
+
+    <p>To demonstrate, lets create a Person model with the following descriptor:
+<p> A call to <code>setState</code> with no arguments simply returns the current state to the View. This can be useful when using callbacks, in order to finalize a state transition. More on this later.</p>
+<pre><code><div class="code-block">var Person = Astarisx.createModelClass({
+    firstName: {
+        get: function(){
+            this.$state.firstName;
+        }
+    },
+    secondName: {
+        get: function(){
+            this.$state.secondName;
+        }
+    },
+    updateName: function(fname, sname) {
+        this.setState({firstName: fname, secondName: sname });
+    }
+    ...
+});</div></code></pre>
+
+The descriptor defines two fields, <code>firstName</code> and <code>secondName</code> and a method called <code>updateName</code> that takes two arguments, fname and sname, which will be used to update the model. The View will invoke <code>updateName</code>, passing in the new state, which will then call <code>setState</code>. The nextState object passed to <code>setState</code> has the field names we wish to update as keys, with the passed in values assigned to them.
+
+    </p>
+    <p><code>setState</code> behaves a little differently in each of its usage contexts. </p>
+
     <h3 class="content-subhead" id="models">Models</h3>
+    
+
+
     <h3 class="content-subhead" id="viewmodels">ViewModels</h3>
+    <p>The ViewModel can be considered a specialized Controller that acts as a data converter. It changes Model information into View information, passing commands from the View to the Model. The ViewModel can be considered a specialized Controller that acts as a data converter. It changes Model information into View information, passing commands from the View to the Model.</p>
+
     <h3 class="content-subhead" id="controllerviewmodel">The ControllerViewModel</h3>
+    
+
+    <h3 class="content-subhead" id="views">The UI and Views</h3>
+
     <h3 class="content-subhead" id="initialisingdatacontexts">Initializing Data Contexts</h3>
         <h4 class="content-subhead">getInitialState</h4>
         <p>This is called whenever the Object is created and enables the setting of inital state for the object. <code>getInitialState</code> works a little differently in Models then it does in ViewModels or the ControllerViewModel. See <a href="">Models</a> and <a href="">ViewModel</a> for an explaination on how it differs. Do not place ajax calls or process intensive code within this function, as it is called every time the object is created, which can be quite frequent.</p>
@@ -388,7 +456,8 @@ this.setState({didUpdate: true});</code></pre>
         <p>The reason you should not include ajax calls in <code>getInitialState</code> is that it is called every time the object is created, which can be quite frequent.</p>
         <p>To use <code>dataContextWillInitialize</code> define what it needs to do within your ViewModel. Then call <code>intializeAppContext</code> or <code>intializeDataContext</code> from within your application, which will invoke <code>dataContextWillInitialize</code>.</p>
         
-    <h3 class="content-subhead" id="views">The UI and Views</h3>
+    <h3 class="content-subhead" id="undo">Built in Undo</h3>
+    
     <h3 class="content-subhead" id="watchedstate">Watched State</h3>
     <h3 class="content-subhead" id="router">Working with the Router</h3>
     <h3 class="content-subhead" id="mediaquery">Media Query Notifications</h3>
