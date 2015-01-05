@@ -485,14 +485,15 @@
 <!-- setState -->
             <h2 class="section-divider" id="setstate">setState</h2>
             <pre><code><div class="code-block">void function setState([
-    Object nextState,
-    [Object nextAppState,]
+    [Object nextState,
+    [Object nextAppState,]]
     [Boolean remember = true,]
     [Function callback,]
     [Number delay]
 ])</div></code></pre>
             <p>Triggers a state transition. If no arguments are passed in, then the latest Application Data Context is returned to the View. If there is a <code>callback</code> and <code>delay</code> is not set, the state transition is batched until <code>setState</code> is called again. A call to <code>setState</code> with no arguments will suffice.</p>
-            <p>n.b. <code>callback</code> recieves two arguments: <code>err, appCtx</code>.</p>
+
+            <p>n.b. <code>nextState</code> is optional unless you are passing in <code>nextAppState</code>, then it is required. And <code>callback</code> recieves two arguments: <code>err, appCtx</code>.</p>
             <p><b>Scope:</b> <em>ControllerViewModel (<code>nextAppState</code> not supported), ViewModel, Model (<code>remember</code> and <code>delay</code> are not supported)</em></p>
 
 <!-- revert -->

@@ -392,8 +392,8 @@ this.setState({didUpdate: true});</code></pre>
     <p>Astarisx objects are immutable. In order to update objects we must transition them to a new state. Astarisx creates an entirely new object, with the new state, whenever there is a state transition. This transition process is controlled by the <code>setState</code> function. The <code>setState</code> function triggers a state transition and subsequent notification to the View that there has been a state change enabling the View to update the UI with the latest state.</p>
     <p>You call <code>setState</code> from within a Model, ViewModel or the ControllerViewModel and <b>not</b> from the View. Below are different scenarios to help explain how to use <code>setState</code>. The <code>setState</code> function signature is provided for reference.</p>
                 <pre><code><div class="code-block">void function setState([
-    Object nextState,
-    [Object nextAppState,]
+    [Object nextState,
+    [Object nextAppState,]]
     [Boolean remember = true,]
     [Function callback,]
     [Number delay]
