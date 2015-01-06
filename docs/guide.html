@@ -44,7 +44,8 @@
                 <li class="sub"><a data-scroll href="#fieldattributes">Field Attributes</a></li>
                 <li class="sub"><a data-scroll href="#datacontext">Data Context</a></li>
                 
-                <li class="sub"><a data-scroll href="#transitioningstate">Transitioning State</a></li>
+                <li class="sub"><a data-scroll href="#transitioningstate">Transitioning State with setState</a></li>
+                <li class="sub"><a data-scroll href="#directives">Using Directives</a></li>
                 <!-- Directives need to be part of this -->
                 <li class="sub"><a data-scroll href="#models">Models</a></li>
                 <li class="sub"><a data-scroll href="#viewmodels">ViewModels</a></li>
@@ -385,28 +386,23 @@ this.setState({didUpdate: true});</code></pre>
     <p>Indicates that the field holds a plain old javascript object. The object and it's content will be immutable. (deep immutability). <em>Caution must be exercised when using this attribute value as this can be quite an expensive operation and cyclical references are not supported.</em></p>
 
     <h3 class="content-subhead" id="datacontext">Data Context</h3>
-    <p>A Data Context is the interface to the View. It stores the View's state and is the logical represtation of data and operations that can be performed on a UI. The entire collection of an application's data contexts is considered the Application Data Context. All Views have access to the Application Data Context and it serves as the Single Source of Truth for your application's data model. The View interacts with data contexts via a special object on the View's state, created by Astarisx, called <code>appContext</code>. So, from within a view you reference the Application Data Context using <code class="wrap">this.state.appContext</code>. The <code>appContext</code> holds references to all data contexts defined in the ControllerViewModel descriptor.</p>
-    <p>The Application Data Context always holds the current state of the application. Whenever there is a change in state, the entire Application Data Context is recreated (transitioned to a new state) and all View's are notified and receive the latest version.</p>
+    <p>A Data Context is the interface to the View. It stores the View's state and is the logical representation of data and operations that can be performed on a UI. The entire collection of an application's data contexts is considered the Application Data Context. All Views have access to the Application Data Context and it serves as the Single Source of Truth for your application's data model. The View interacts with data contexts via a special object on the View's state called <code>appContext</code>. So, from within a view you reference the Application Data Context using <code class="wrap">this.state.appContext</code>.</p>
 
-    <h3 class="content-subhead" id="transitioningstate">Transitioning State</h3>
-    <p>Astarisx objects are immutable. In order to update objects we must transition them to a new state. Astarisx creates an entirely new object, with the new state, whenever there is a state transition. This transition process is controlled by the <code>setState</code> function. The <code>setState</code> function triggers a state transition and subsequent notification to the View that there has been a state change enabling the View to update the UI with the latest state.</p>
-    <p>You call <code>setState</code> from within a Model, ViewModel or the ControllerViewModel and <b>not</b> from the View. Below are different scenarios to help explain how to use <code>setState</code>. The <code>setState</code> function signature is provided for reference.</p>
+    <p>The <code>appContext</code> holds references to all data contexts defined in the ControllerViewModel descriptor (These are the fields that were defined with the <code>viewModel</code> attribute. See <a data-scroll href="#fieldattributes">Field Attributes</a>). It also holds references to any fields or methods defined in the ControllerViewModel and a number of Astarisx properties and functions, such as the <code>$state</code> and <code>$previousState</code> properties and the <code>setState</code> function.</p>
+    <p>The Application Data Context always holds the current state of the application. Whenever there is a change in state, the entire Application Data Context is recreated (transitioned to a new state) and all View's are notified.</p>
+
+    <h3 class="content-subhead" id="transitioningstate">Transitioning State with setState</h3>
+    <p>Astarisx objects are immutable. In order to update objects we must transition them to a new state. Astarisx creates an entirely new object, with the new state, whenever there is a state transition. This transition process is controlled by the <a href="/docs/api.html#setstate"><code>setState</code></a> function. The <code>setState</code> function triggers a state transition and subsequent notification to the View that there has been a state change enabling the View to update the UI with the latest state.</p>
+    <p>You call <code>setState</code> from within a Model, ViewModel or the ControllerViewModel but <b>not</b> from the View. See <a href="/docs/api.html#setstate"><code>setState</code></a> API for an explaination of the arguments. Below are some scenarios to help explain how to use <code>setState</code>. The <code>setState</code> function signature is provided for reference.</p>
                 <pre><code><div class="code-block">void function setState([
     [Object nextState,
     [Object nextAppState,]]
     [Boolean remember = true,]
-    [Function callback,]
-    [Number delay]
+    [[Function callback,]
+    [Number delay]]
 ])</div></code></pre>
     
-    <h4 class="content-subhead">Arguments</h4>
-    <h5>nextState</h5>
-    <p> This represents the next state or target state of the data context. The keys of the nextState object are the defined fields of the current object.</p>
-    <h5>nextAppState</h5>
-    <p> This represents the next state or target state of a application data context. The keys of the nextState object are the defined fields of the target object. You can also update other data contexts.</p>
-    <h5>remember</h5>
-    <h5>callback</h5>
-    <h5>delay</h5>
+
     <h4 class="content-subhead">Scenarios</h4>
     <h5>Update Model Field</h5>
     <p><code>setState</code> takes, as its first two arguments, state objects.</p>
@@ -434,6 +430,10 @@ The descriptor defines two fields, <code>firstName</code> and <code>secondName</
 
     </p>
     <p><code>setState</code> behaves a little differently in each of its usage contexts. </p>
+
+
+
+    <h3 class="content-subhead" id="directives">Using Directives</h3>
 
     <h3 class="content-subhead" id="models">Models</h3>
     

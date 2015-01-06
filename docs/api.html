@@ -57,6 +57,7 @@
                 <li class="group-header"><a data-scroll href="#specs">Descriptor Specs</a></li>
                 <li class="sub"><a data-scroll href="#getinitialstate">getInitialState</a></li>
                 <li class="sub"><a data-scroll href="#datacontextwillinitialize">dataContextWillInitialize</a></li>
+                <li class="sub"><a data-scroll href="#clientfield">_[field]</a></li>
                 <li class="sub"><a data-scroll href="#mediaquerywillupdate">mediaQueryWillUpdate</a></li>
                 <li class="sub"><a data-scroll href="#getwatchedstate">getWatchedState</a></li>
                 <li class="sub"><a data-scroll href="#getroutes">getRoutes</a></li>
@@ -107,13 +108,12 @@
                 <li class="sub"><a data-scroll href="#pagename">$pageName</a></li>
 
                 <li class="group-header"><a data-scroll href="#directives">Directives</a></li>
-                <li class="sub"><a data-scroll href="#path">$path</a></li>
-                <li class="sub"><a data-scroll href="#pushstate">$pushState</a></li>
-                <li class="sub"><a data-scroll href="#forcereplace">$forceReplace</a></li>
                 <li class="sub"><a data-scroll href="#enableundo">$enableUndo</a></li>
                 <li class="sub"><a data-scroll href="#notify">$notify</a></li>
                 <li class="sub"><a data-scroll href="#owner">$owner</a></li>
-                <li class="sub"><a data-scroll href="#clientfield">_[field]</a></li>
+                <li class="sub"><a data-scroll href="#path">$path</a></li>
+                <li class="sub"><a data-scroll href="#pushstate">$pushState</a></li>
+                <li class="sub"><a data-scroll href="#forcereplace">$forceReplace</a></li>
 
                 <li class="group-header"><a data-scroll href="#view">View</a></li>
                 <li class="sub"><a data-scroll href="#viewkey">$viewKey</a></li>
@@ -305,6 +305,11 @@
             <p>Called before the data context is intialized (i.e. before <code>getInitialState</code> is called) and after it has been bootstrapped. This is where ajax calls are made to retrieve data and set up the data context. <code>dataContextWillInitialize</code> will only be called once per data context.</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
+<!-- _clientField -->
+            <h2 class="section-divider" id="clientfield">_[field]</h2>
+            <p>When defining Model fields, prefix the field name with an underscore to prevent the field from being sent to the back end. This essentially hides it from the server creating a client-side or local field.</p>
+            <p><b>Scope:</b> <em>Model</em></p>
+
 <!-- mediaQueryWillUpdate -->
             <h2 class="section-divider" id="mediaquerywillupdate">mediaQueryWillUpdate</h2>
             <pre><code><div class="code-block">void function mediaQueryWillUpdate(
@@ -488,12 +493,33 @@
     [Object nextState,
     [Object nextAppState,]]
     [Boolean remember = true,]
-    [Function callback,]
-    [Number delay]
+    [[Function callback,]
+    [Number delay]]
 ])</div></code></pre>
-            <p>Triggers a state transition. If no arguments are passed in, then the latest Application Data Context is returned to the View. If there is a <code>callback</code> and <code>delay</code> is not set, the state transition is batched until <code>setState</code> is called again. A call to <code>setState</code> with no arguments will suffice.</p>
+            <p>Triggers a state transition and subsequent notification to the View that there has been a state change.</p>
 
-            <p>n.b. <code>nextState</code> is optional unless you are passing in <code>nextAppState</code>, then it is required. And <code>callback</code> recieves two arguments: <code>err, appCtx</code>.</p>
+            
+    <h4 class="content-subhead">Arguments</h4>
+    
+    <h5>nextState</h5>
+    <p>This represents the next state or target state of the current context, be it a Model, ViewModel or the ControllerViewModel. The keys of the nextState object are the field names of the properties to be updated. <code>nextState</code> is optional unless <code>nextAppState</code> is passed in.</p>
+    
+    <h5>nextAppState</h5>
+    <p><code>nextAppState</code> represents the next state or target state of the application data context. Using this argument you are able to update any of the other data contexts within the application data context. The keys of the nextAppState object are either the field names defined in the ControllerViewModel, this includes data context names or may also include one or more <a data-scroll href="#directives">Directives</a>. <b>This argument is not available from the ControllerViewModel.</b></p>
+    
+    <h5>remember</h5>
+    <p>If undo functionality is enabled, Astarisx will hold a reference to the previous state, so that the application can revert back to it if necessary. By default <code>remember</code> is set to <code>true</code> which indicates that a reference to the previous state should be maintained. If, for any particular reason, you want to prevent the user from rolling back to the previous state, set <code>remember</code> to <code>false</code> and Astarisx will drop the reference to the previous state. This argument is optional and seldom used. <b>This argument is not available from models.</b></p>
+
+    <h5>callback</h5>
+    <p><code>callback</code> is called once a state transition has completed. It receives two arguments, <code>err</code> and <code>appContext</code>. If the state transition succeeds, <code>err</code> will be <code>undefined</code> and the latest version of the Application Data Context (<code>appContext</code>) is passed back to the callback. If there was an error, <code>err</code> will have some value and <code>appContext</code> will be undefined. A callback can be used to 1) be notified when a state transition has completed, 2) batch state changes before informing the view and 3) obtain a reference to the Application Data Context, <code>appContext</code>.</p>
+
+<p>Passing a callback to <code>setState</code> batches state changes. The callback is called once the state transition has completed, but does not notify the View. This provides the opportunity to completely update your state and do whatever necessary to your state/data context before notifying the View of any state change. To affect a state transition and notify the View, it is necessary to invoke <code>setState</code> without a <code>callback</code> somewhere within the function callback chain. Calling <code>setState</code> with no arguments will suffice and can be called multiple times during the batch to "flush" the state to the UI, or you could call <code>setState</code> with any final state changes i.e. passing <code>nextState</code> or <code>nextAppState</code>.</p>
+
+<p>Sometimes it is handy to have a reference to the Application Data Context from within your data context. Calling <code>setState</code> with only a <code>callback</code> will allow for the latest <code>appContext</code> to be passed back, granting you access to the latest <code>appContext</code>. You are now able to reference any functions or properties on the Application Data Context.</p>
+    <h5>delay</h5>
+    <p><code>delay</code> is how long you would like to postpone a callback, in millisecond. It is only available if a <code>callback</code> is passed in and will not batch the state transition. <b>This argument is not available from Models.</b></p>
+
+<p>See <a href="/docs/guide.html#transitioningstate">Transitioning State with setState</a> for examples on how to use this function.</p>
             <p><b>Scope:</b> <em>ControllerViewModel (<code>nextAppState</code> not supported), ViewModel, Model (<code>remember</code> and <code>delay</code> are not supported)</em></p>
 
 <!-- revert -->
@@ -619,23 +645,6 @@
 
 <!-- Directives -->
             <h2 class="content-subhead" id="directives">Directives</h2>
-<!-- $path -->
-            <h2 class="section-divider" id="path">$path</h2>
-            <pre><code><div class="code-block">$path: String</div></code></pre>
-            <p>URL path assigned to the next state.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-<!-- $pushState -->
-            <h2 class="section-divider" id="pushstate">$pushState</h2>
-            <pre><code><div class="code-block">$pushState: Boolean</div></code></pre>
-            <p>Toggles <code>pushState</code>. Only available if pushState routing is enabled. Default = <code>true</code></p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-
-<!-- $forceReplace -->
-            <h2 class="section-divider" id="forcereplace">$forceReplace</h2>
-            <pre><code><div class="code-block">$forceReplace: Boolean</div></code></pre>
-            <p>Override default <code>pushState</code> behavior and perform a replace state. Only available if pushState routing is enabled. Default = <code>false</code></p>
-            <p>If set to <code>true</code> it is not necessary to reset <code>forceState</code> back to <code>false</code> as it will revert to <code>false</code> once the operation has been performed.</p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
 <!-- $enableUndo -->
             <h2 class="section-divider" id="enableundo">$enableUndo</h2>
@@ -649,17 +658,31 @@
             <p>n.b.<em> The main UI container is given a default <code>$viewKey</code> of <code>*</code>.</em></p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
-
 <!-- $owner -->
             <h2 class="section-divider" id="owner">$owner</h2>
             <pre><code><div class="code-block">$owner: String</div></code></pre>
             <p>Specify a Model's owner field.</p>
             <p><b>Scope:</b> <em>Model</em></p>
 
-<!-- _clientField -->
-            <h2 class="section-divider" id="clientfield">_[field]</h2>
-            <p>When defining Model fields, prefix the field name with an underscore to prevent the field from being sent to the back end. This essentially hides it from the server creating a client-side or local field.</p>
-            <p><b>Scope:</b> <em>Model</em></p>
+<!-- $path -->
+            <h2 class="section-divider" id="path">$path</h2>
+            <pre><code><div class="code-block">$path: String</div></code></pre>
+            <p>URL path assigned to the next state. Only available if pushState routing is enabled. </p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+<!-- $pushState -->
+            <h2 class="section-divider" id="pushstate">$pushState</h2>
+            <pre><code><div class="code-block">$pushState: Boolean</div></code></pre>
+            <p>Toggles <code>pushState</code>. Only available if pushState routing is enabled. Default = <code>true</code></p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+
+
+<!-- $forceReplace -->
+            <h2 class="section-divider" id="forcereplace">$forceReplace</h2>
+            <pre><code><div class="code-block">$forceReplace: Boolean</div></code></pre>
+            <p>Override default <code>pushState</code> behavior and perform a replace state. Only available if pushState routing is enabled. Default = <code>false</code></p>
+            <p>If set to <code>true</code> it is not necessary to reset <code>forceState</code> back to <code>false</code> as it will revert to <code>false</code> once the operation has been performed.</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
 <!-- View -->
             <h2 class="content-subhead" id="view">View</h2>
