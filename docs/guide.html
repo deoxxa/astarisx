@@ -914,7 +914,7 @@ persons: {
 <!-- Undo -->
     <h3 class="content-subhead" id="undo">Built in Undo</h3>
     <p>Astarisx has built in undo and redo capability. In order to turn on undo and redo functionality set <code>enableUndo</code> option to <code>true</code> within <code>initializeAppContext</code>.</p>
-<pre><code><div class="code-block">var myCVM = Astarisx.createCVMClass({/* descriptor */});
+<pre><code><div class="code-block">var myCVM = Astarisx.createCVMClass({...});
 
 var MyApp = React.createClass({
   mixins: [Astarisx.mixin.ui],
@@ -966,25 +966,26 @@ this.setState(void(0), {$enableUndo: true});</div></code></pre>
 <li>prevState =&gt; This references the previous state of the specified data context, <code>persons</code> in this case.</li>
 <li>field =&gt; The field that changed, <code>selectedPerson</code> in this case.</li>
 <li>context =&gt; The data context name, <code>persons</code> in this case.</li>
+<li>appContext =&gt; The appContext. This appContext stores the pre-transition state.</li>
 <li>nextPath =&gt; If Astarisx pushState Routing is enabled, this specifies the next path.</li>
 <li>prevPath =&gt; If Astarisx pushState Routing is enabled, this specifies the previous path.</li>
 </ul>
 <p>An example of what the onPersonChangeHandler may look like is below.</p>
 <pre><code><div class="code-block"><span class="co">//Use this if state change is triggered by others action</span>
 <span class="kw">var</span> onPersonChangeHandler = <span class="kw">function</span>(nextState, prevState, field, context,
-    nextPath, prevPath){
+    appContext, nextPath, prevPath){
   <span class="kw">if</span>(<span class="kw">this</span>.<span class="fu">current</span> !== <span class="kw">void</span>(<span class="dv">0</span>) &amp;&amp; context === <span class="st">&#39;persons&#39;</span> &amp;&amp;
         <span class="ot">nextState</span>.<span class="fu">id</span> !== <span class="ot">prevState</span>.<span class="fu">id</span>){
     <span class="kw">return</span> { <span class="dt">hobbies</span>: { <span class="dt">current</span>: <span class="kw">void</span>(<span class="dv">0</span>) }, <span class="dt">busy</span>: <span class="kw">false</span> };
   }
 };</div></code></pre>
-<p>You will notice that an object with the target state is returned and <code>setState</code> is not called. The returned object needs to be the same format as the object passed to the second argument of <code>setState</code> discussed above. However, you need to also specify the calling data context’s name in the return object if a state change is to occur for the caller. The reason we do not call <code>setState</code> is that the handler does not initiate a state change, but rather intercepts the current state change transition and injects the next state into that transition, which is merged with the current state transition and reflected in the final state.</p>
-<p>You are also able to include a reference to another ViewModel, which you can use to display information from that data context, such as a record count or the currently selected Persons name.</p>
-<p>To do this you would specify an <code>alias</code> in the returned object of <code>getWatchedState</code>. The value of the alias is then include in the state object of the data context.</p>
+<p>You do not call <code>setState</code> from within the <code>watchedStateChangeHandler</code> but rather you return an object with the target state. The returned object needs to be in a format recognised by <code>setState</code>'s' <b>second</b> argument, as it is passed to the second argument of <code>setState</code>. Therefore, you need to specify the calling data context’s name in the return object, if a state change is to occur for the caller. </p>
+<p>The reason we do not call <code>setState</code> is that the handler does not initiate a state change, but rather intercepts the current state change transition and injects the next state into that transition, which is merged with the current state transition and reflected in the final state.</p>
+<p>You are also able to include a reference to another ViewModel, which you can use to display information from that data context, such as a record count or the currently selected Persons name. To do this you would create an <code>alias</code> in the <code>getWatchedState</code> returned object. The value of the alias is then includes as a property in the <code>$state</code> object of the current data context.</p>
 <pre><code><div class="code-block">getWatchedState: <span class="kw">function</span>() {
   <span class="kw">return</span> {
     <span class="st">&#39;persons&#39;</span>: {
-      <span class="co">//optional - will be added to state</span>
+      <span class="co">//optional - will be added to $state</span>
       <span class="dt">alias</span>: <span class="st">&#39;personsContext&#39;</span>
     },
     <span class="st">&#39;busy&#39;</span>: {
@@ -993,8 +994,8 @@ this.setState(void(0), {$enableUndo: true});</div></code></pre>
   };
 }</div></code></pre>
 
-<p>To reference this data context you would simply access the state object like so, <code class="wrap">this.state.personsContext</code>.</p>
-<p>You will also notice that we have referenced a ControllerViewModel context <code>field</code> called <code>busy</code>. You would access this value with <code class="wrap">this.state.busy</code>. You are only able to <code>alias</code> ControllerViewModel <code>fields</code> and not define handlers for state changes.</p>
+<p>To reference this data context you would simply access the state object like so, <code class="wrap">this.$state.personsContext</code>.</p>
+<p>You will also notice that we have referenced a ControllerViewModel context <code>field</code> called <code>busy</code>. You would access this value with <code class="wrap">this.$state.busy</code>. You are not able to define state change handlers for ControllerViewModel fields, only an <code>alias</code>.</p>
 
 <!-- Router -->
     <h3 class="content-subhead" id="router">Working with the Router</h3>

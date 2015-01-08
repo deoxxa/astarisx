@@ -427,10 +427,12 @@
     Object fieldPreviousState,
     String watchedFieldName,
     Object sourceDataContext,
+    Object appContext,
     String nextUrlPath,
     String previousUrlPath
 )</div></code></pre>
             <p>A watched state change handler is referenced in a <code>getWatchedState</code> object and can have any name. It is invoked when watched state changes.</p>
+            <p>n.b. The <code>appContext</code> argument is pre-transition state and the <code>nextUrlPath</code> and <code>previousUrlPath</code> are only available if routing is enabled.</p>
             <p><b>Scope:</b> <em>ViewModel</em></p>
 
 <!-- routeChangeHandler -->
