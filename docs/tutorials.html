@@ -56,7 +56,46 @@
         <div class="content">
             
 
-            
+            <p>Below is a more detailed example which might help your understanding of the <code>$state</code> object.</p>
+<pre><code><div class="code-block">firstName: {
+  get: function(){ return this.$state.firstName; },
+  set: function(newValue){
+    var nextState = {};
+    nextState.firstName = newValue.length === 0 ? void(0) : newValue;
+    this.setState(nextState);
+  }
+},
+
+lastName: {
+  get: function(){ return this.$state.lastName; },
+  set: function(newValue){
+    var nextState = {};
+    nextState.lastName = newValue.length === 0 ? void(0) : newValue;
+    this.setState(nextState);
+  }
+},
+
+fullName: {
+  kind: 'pseudo',
+  get: function(){
+    if(this.lastName === void(0)){
+      return this.firstName;
+    }
+    return this.firstName + ' ' + this.lastName;
+  },
+  set: function(newValue){
+    var nextState = {};
+    var nameArr = newValue.split(' ');
+    var isSpace = newValue.slice(-1)[0] === ' ';
+    var firstname = nameArr[0];
+    var lastname = nameArr.slice(1).join(' ');
+
+    nextState.firstName = firstname.length === 0 ? void(0) : firstname;
+    nextState.lastName = lastname.length === 0 && !isSpace ? void(0) : lastname;
+
+    this.setState(nextState);
+  }
+}</div></code></pre>
             
            
             
