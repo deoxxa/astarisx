@@ -1249,7 +1249,7 @@ selectPerson: <span class="kw">function</span>(id, next){
 <p>then when <code>setState</code> is called we include the <code>$notify</code> directive.</p>
 <pre><code><div class="code-block">this.setState(nextState, {$notify: &quot;navigation&quot;});</div></code></pre>
 <p>Or for multiple Views</p>
-<pre><code><div class="code-block">this.setState(persons, {$notify: [&quot;form&quot;, &quot;hobby&quot;]});</div></code></pre>
+<pre><code><div class="code-block">this.setState(nextState, {$notify: [&quot;form&quot;, &quot;hobby&quot;]});</div></code></pre>
 <p>Now only the specified Views will be notified when these <code>setState</code> are called.</p>
 <p><b><em>n.b. The main UI container is given a default <code>$viewKey</code> of <code>*</code>.</em></b></p>
 
