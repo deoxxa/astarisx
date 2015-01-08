@@ -966,7 +966,6 @@ this.setState(void(0), {$enableUndo: true});</div></code></pre>
 <li>prevState =&gt; This references the previous state of the specified data context, <code>persons</code> in this case.</li>
 <li>field =&gt; The field that changed, <code>selectedPerson</code> in this case.</li>
 <li>context =&gt; The data context name, <code>persons</code> in this case.</li>
-<li>appContext =&gt; The appContext. This appContext stores the pre-transition state.</li>
 <li>nextPath =&gt; If Astarisx pushState Routing is enabled, this specifies the next path.</li>
 <li>prevPath =&gt; If Astarisx pushState Routing is enabled, this specifies the previous path.</li>
 </ul>
@@ -1042,7 +1041,6 @@ var MyApp = React.createClass({
 <p>A route changed handler is passed the following arguments:</p>
 <ul>
 <li><code>params</code> =&gt; object that holds any parameters passed to the url</li>
-<li><code>appContext</code> =&gt; reference to pre-transitioned appContext state</li>
 <li><code>path</code> =&gt; the path that is currently being navigated to</li>
 <li><code>pathId</code> =&gt; the path identifier (ie <code>displayPerson</code>)</li>
 <li><code>ctx</code> =&gt; Page.js context object containing more path information (see <a href="http://visionmedia.github.io/page.js/">Page.js documentation</a> on the Context object)</li>
