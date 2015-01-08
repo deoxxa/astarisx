@@ -1152,10 +1152,11 @@ selectPerson: <span class="kw">function</span>(id, next){
 
 
 <!-- MediaQuery -->
-    <h3 class="content-subhead" id="mediaquery">Media Query Notifications</h3>
-<p>Astarisx It integrates with existing CSS and makes use of the <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList">MediaQueryList</a> object to notify when a media query changes. These notifications are handled by <code>mediaChangeHandler</code>, which is defined in the ControllerViewModel Descriptor i.e. within the createControllerViewModelClass function. The designers still write CSS as per usual with one minor addition, which is discussed below.</p>
+<h3 class="content-subhead" id="mediaquery">Media Query Notifications</h3>
+<p>Astarisx integrates with existing CSS and makes use of the <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList">MediaQueryList</a> object to notify when a media query changes. These notifications are handled by <code>mediaChangeHandler</code>, which must be defined in the ControllerViewModel Descriptor. The designers still write CSS as per usual with one minor addition, which is discussed below.</p>
 <p>Although CSS does a great job in responding and applying styles for different presentation media, the ability to respond to media query notifications within JavaScript enables you to do things that CSS can’t. For instance, you can make different Ajax calls based on screen size. You could, of course, do all you’re responsive design in the View rather than in CSS if you so desired.</p>
-<h3 id="registering-a-media-query">Registering a media query</h3>
+
+<h4 class="content-subhead">Registering a media query</h4>
 <p>In order to use the <code>mediaChangeHandler</code> there are 3 things that need to be done.</p>
 <ul>
 <li>Include Astarisx.mixin.mediaQuery</li>
@@ -1209,46 +1210,48 @@ selectPerson: <span class="kw">function</span>(id, next){
 <!-- Optimizing the View -->
     <h3 class="content-subhead" id="optimizingtheview">Optimizing the View</h3>
     <p>As your application grows you may experience a degradation in UI performance. Below are a few techniques that will help get your UI back up to speed.</p>
-<h3 id="react-approach">React Approach</h3>
+
+
+<h4 class="content-subhead">React Approach</h4>
 <p>React includes a method called <a href="http://facebook.github.io/react/docs/component-specs.html"><code>shouldComponentUpdate</code></a> that can be used to increase performance in any bottlenecks by only allowing the component to update if <code>shouldComponentUpdate</code> returns true.</p>
-<p>Astarisx provides a convienience property called <code>dataContextWillUpdate</code> in order to assist in assessing whether a component should update. <code>dataContextWillUpdate</code> is located in <code class="wrap">appContext.state</code> and only holds the state that has changed. So you are quickly able to see what properties were modified.</p>
-<h3 id="example">example</h3>
+<p>Astarisx provides a convienience property called <code>$dataContextUpdated</code> in order to assist in assessing whether a component should update. <code>$dataContextUpdated</code> is located in the <code class="wrap">appContext.$state</code> object and only holds the state that has changed. So you are quickly able to see what properties were modified.</p>
+<h5 class="content-subhead">example</h5>
 <pre><code><div class="code-block">shouldComponentUpdate: <span class="kw">function</span>(nextProps, nextState){
-    <span class="kw">if</span>(<span class="st">&quot;persons&quot;</span> <span class="kw">in</span> <span class="ot">nextProps</span>.<span class="ot">appContext</span>.<span class="ot">state</span>.<span class="fu">dataContextWillUpdate</span>){
-        <span class="kw">var</span> nextPerson = <span class="ot">nextProps</span>.<span class="ot">appContext</span>.<span class="ot">state</span>.<span class="ot">dataContextWillUpdate</span>.<span class="ot">persons</span>.<span class="fu">selectedPerson</span>;
+    <span class="kw">if</span>(<span class="st">&quot;persons&quot;</span> <span class="kw">in</span> <span class="ot">nextProps</span>.<span class="ot">appContext</span>.<span class="ot">$state</span>.<span class="fu">$dataContextUpdated</span>){
+        <span class="kw">var</span> nextPerson = <span class="ot">nextProps</span>.<span class="ot">appContext</span>.<span class="ot">$state</span>.<span class="ot">$dataContextUpdated</span>.<span class="ot">persons</span>.<span class="fu">selectedPerson</span>;
         <span class="kw">return</span> <span class="ot">nextPerson</span>.<span class="fu">id</span> != <span class="kw">this</span>.<span class="ot">props</span>.<span class="ot">appContext</span>.<span class="ot">persons</span>.<span class="ot">selectedPerson</span>.<span class="fu">id</span>;
     }
 }</div></code></pre>
-<p>The example above passes in the <code>appContext</code> to the component as a <code>prop</code> called <code>appContext</code>. <code>dataContextWillUpdate</code> can then be access from the <code>nextProps</code> object using <code class="wrap">nextProps.appContext.state.dataContextWillUpdate</code>.</p>
-<p>Another technique is to use reference equality. Because Astarisx objects are immutable, a new Object is created whenever state changes. This means that we can evaluate whether an object is the same, by simply checking whether it references the same memory location. So <code>shouldComponentUpdate</code> could look like this.</p>
+<p>The example above passes in the <code>appContext</code> to the component as a <code>prop</code> called <code>appContext</code>. <code>$dataContextUpdated</code> can then be access from the <code>nextProps</code> object using <code class="wrap">nextProps.appContext.$state.$dataContextUpdated</code>.</p>
+<p>Another technique is to use reference equality. Because Astarisx objects are immutable, a new Object is created whenever state changes. This means that we can evaluate whether an object is the same by simply checking whether it references the same memory location. So <code>shouldComponentUpdate</code> could look like this.</p>
 <pre><code><div class="code-block">shouldComponentUpdate: <span class="kw">function</span>(nextProps, nextState){
-    <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="ot">persons</span>.<span class="fu">selectedPerson</span> !==
+    <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">$state</span>.<span class="ot">appContext</span>.<span class="ot">persons</span>.<span class="fu">selectedPerson</span> !==
             <span class="ot">nextState</span>.<span class="ot">appContext</span>.<span class="ot">persons</span>.<span class="fu">selectedPerson</span>;
 }</div></code></pre>
-<p>If the <code>selectedPerson</code> doesn’t change, <code>shouldComponentUpdate</code> will return <code>false</code>. But, if you change the selected person’s age from 21 to 22 like this <code class="wrap">this.state.appContext.persons.selectedPerson.age = 22;</code>. Then <code>shouldComponentUpdate</code> would return <code>true</code>, because even though selectedPerson is the same person, it’s state changed therefore a new Object was created and that new Object references a different memory location. If you would like to use this technique, you must ensure that new Objects are created only when their state changes, however Astarisx make this easy.</p>
+<p>If the <code>selectedPerson</code> doesn’t change, <code>shouldComponentUpdate</code> will return <code>false</code>. But, if you change the selected person’s age from 21 to 22 like this <code class="wrap">this.state.appContext.persons.selectedPerson.age = 22;</code>. Then <code>shouldComponentUpdate</code> would return <code>true</code>, because even though selectedPerson is the same person, it’s state changed therefore a new Object was created and that new Object references a different memory location. If you would like to use this technique, you must ensure that new Objects are created only when their state changes, however Astarisx makes this easy.</p>
 
-<h3 id="astarisx-approach">Astarisx Approach</h3>
+<h4 class="content-subhead">Astarisx Approach</h4>
 <p>Astarisx is capable of displaying multiple Views in the UI at any one time. These Views are also capable and most likely to contain any number of Views themselves. Given that Astarisx Views all receive their own copy of the Application Data Context, and that the View is notified and receives a new copy of the Application Data Context every time there is a state change, it could be perceived as inefficient.</p>
-<p>Let me say first up, React does a very good job at efficiently updating the UI or more appropriately the DOM. A discussion about the techniques used is beyond the scope of this document, but I urge you to check out how React is able to update the DOM and whilst maintaining a highly responsive UI.</p>
+<p>Let me say first up, React does a very good job at efficiently updating the UI or more appropriately the DOM. A discussion about the techniques used is beyond the scope of this document, but I urge you to check out how React is able to update the DOM whilst maintaining a highly responsive UI.</p>
 <p>However, Astarisx uses a couple of techniques to ensure the UI’s performance remains responsive. Firstly, Astarisx, or more appropriately the State Manager, only notifies mounted Views. Secondly, Astarisx allows you to notify specific Views during a state transition resulting from a <code>setState</code> call.</p>
-<p>An Astarisx View can be assigned a <code>viewKey</code>. This <code>viewkey</code> can be used to specify to the State Manager that the particular View or Views are the only Views to be notified that there has been a state change. To accomplish this all that is required is to pass a <code>$notify</code> attribute to the ControllerViewModel when calling <code>setState</code>.</p>
-<p>Assign a <code>viewKey</code>.</p>
+<p>An Astarisx View can be assigned a <code>$viewKey</code> prop. This <code>$viewKey</code> can be used to specify to the State Manager that the particular View or Views are the only Views to be notified when there has been a state change. To accomplish this all that is required is to pass a <code>$notify</code> directive to <code>setState</code>.</p>
+<p>Assign a <code>$viewKey</code>.</p>
 <pre><code><div class="code-block"><span class="kw">var</span> App = <span class="ot">React</span>.<span class="fu">createClass</span>({
     <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">ui</span>],
     <span class="dt">render</span>: <span class="kw">function</span>() {
         <span class="kw">return</span> (&lt;div&gt;
-            &lt;Nav  viewKey={<span class="st">&quot;NavView&quot;</span>}<span class="ot">/&gt;</span>
-<span class="ot">            &lt;FormView viewKey={&quot;FormView&quot;} /</span>&gt;
-            &lt;HobbyListView viewKey={<span class="st">&quot;HobbyListView&quot;</span>} <span class="ot">/&gt;</span>
+            &lt;Nav $viewKey={<span class="st">&quot;navigation&quot;</span>}<span class="ot">/&gt;</span>
+<span class="ot">            &lt;FormView $viewKey={&quot;form&quot;} /</span>&gt;
+            &lt;HobbyListView $viewKey={<span class="st">&quot;hobby&quot;</span>} <span class="ot">/&gt;</span>
 <span class="ot">        &lt;/div</span>&gt;);
     }
 });</div></code></pre>
-<p>then when set state is called from within a function, just add a <code>$notify</code> attribute for the ControllerViewModel.</p>
-<p><code class="wrap">this.setState(nextState, {$notify: &quot;NavView&quot;});</code></p>
+<p>then when <code>setState</code> is called we include the <code>$notify</code> directive.</p>
+<pre><code><div class="code-block">this.setState(nextState, {$notify: &quot;navigation&quot;});</div></code></pre>
 <p>Or for multiple Views</p>
-<p><code class="wrap">this.setState(persons, {$notify: [&quot;FormView&quot;, &quot;HobbyListView&quot;]});</code></p>
+<pre><code><div class="code-block">this.setState(persons, {$notify: [&quot;form&quot;, &quot;hobby&quot;]});</div></code></pre>
 <p>Now only the specified Views will be notified when these <code>setState</code> are called.</p>
-<p><em>N.B. The main UI container is given a default <code>viewKey</code> of <code>*</code>.</em></p>
+<p><b><em>n.b. The main UI container is given a default <code>$viewKey</code> of <code>*</code>.</em></b></p>
 
 <!-- Animation -->
     <h3 class="content-subhead" id="animation">Animation</h3>
