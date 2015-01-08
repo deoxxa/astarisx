@@ -1249,13 +1249,21 @@ selectPerson: <span class="kw">function</span>(id, next){
 <p>then when <code>setState</code> is called we include the <code>$notify</code> directive.</p>
 <pre><code><div class="code-block">this.setState(nextState, {$notify: &quot;navigation&quot;});</div></code></pre>
 <p>Or for multiple Views</p>
-<pre><code><div class="code-block">this.setState(nextState, {$notify: [&quot;form&quot;, &quot;hobby&quot;]});</div></code></pre>
+<pre><code><div class="code-block">this.setState(nextState, {$notify: [&quot;*&quot;, &quot;form&quot;, &quot;hobby&quot;]});</div></code></pre>
+<p><em>n.b. The main UI container is given a default <code>$viewKey</code> of <code>*</code>.</em></p>
 <p>Now only the specified Views will be notified when these <code>setState</code> are called.</p>
-<p><b><em>n.b. The main UI container is given a default <code>$viewKey</code> of <code>*</code>.</em></b></p>
 
 <!-- Animation -->
     <h3 class="content-subhead" id="animation">Animation</h3>
-
+<p>In order to harness the power of <a href="http://julian.com/research/velocity/">Velocity.js</a>, Accelerated JavaScript animation, you must mixin the <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> into the ControllerViewModel.</p>
+<pre><code><div class="code-block">var cvm = Astarisx.createCVMClass({
+    mixins: [AstarisxAnimate],
+    ...
+});</div></code></pre>
+<p>Once AstarisxAnimate is mixed in the <code>$displayKey</code>, <code>$displayName</code>, <code>$displayGroup</code>, <code>$pageName</code> properties are made available on <code>appContext</code> object. Also the <code>animate</code>, <code>show</code>, <code>display</code>, <code>page</code>, <code>addListItem</code> and <code>dropListItem</code> functions become available.</p>
+<h4 class="content-subhead">Setting up default Transitions</h4>
+<h4 class="content-subhead">Displays and Pages</h4>
+<h4 class="content-subhead">Invoking Transitions</h4>
 
 
             <h2 class="content-subhead" id="browser"><a>Browser Support</a></h2>
