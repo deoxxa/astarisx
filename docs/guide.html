@@ -328,7 +328,7 @@ var modelMixin = {
             <p>As you can see this is quite straight forward, and you are still able to define a <code>getInitialState</code> in the target model. The two <code>getInitialState</code> functions will be called sequentially.</p>
 
     <h4 class="content-subhead">Fields</h4>
-    <p>Fields are accessor descriptor objects, similar to that found in the <code><a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">Object.defineProperty</a></code> method. They differ slightly in that the <code>enumerable</code> attribute is set to <code>true</code> by default, as opposed to <code>false</code>. <code>configurable</code> is <code>false</code> by default and cannot be overridden. The <code>enumerable</code> attribute however can be overridden, but it is not recommended as Astarisx relies on the ability to enumerate properties in order to transition state.</p>
+    <p>Fields are accessor descriptor objects, similar to that found in the <code class="wrap"><a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty">Object.defineProperty</a></code> method. They differ slightly in that the <code>enumerable</code> attribute is set to <code>true</code> by default, as opposed to <code>false</code>. <code>configurable</code> is <code>false</code> by default and cannot be overridden. The <code>enumerable</code> attribute however can be overridden, but it is not recommended as Astarisx relies on the ability to enumerate properties in order to transition state.</p>
 
     <p>To define a field you specify a key, which is the field name, then define a getter and/or setter.</p>
     <pre><code><div class="code-block">var Order = Astarisx.createModelClass({
@@ -342,7 +342,7 @@ var modelMixin = {
     },
     ...
 });</div></code></pre>
-    <p>The <code>set</code> function takes one argument. To update a field value, you simply assign a value to it. There is no need to call <code>set</code> as the argument is automatically passed in. The value is then passed to the <code>setState</code> function which triggers a state transition. Once <code>setState</code> returns, the object will have transitioned to the next state and <code>this.$state</code> will now hold the object's new state. <b>Fields are immutable. Never set a value of a field directly, as it will not persist, you must always use the <code>setState</code> function. This is particularly true within the Object that the field was defined.</b></p>
+    <p>The <code>set</code> function takes one argument. To update a field value, you simply assign a value to it. There is no need to call <code>set</code> as the argument is automatically passed in. The value is then passed to the <code>setState</code> function which triggers a state transition. Once <code>setState</code> returns, the object will have transitioned to the next state and <code class="wrap">this.$state</code> will now hold the object's new state. <b>Fields are immutable. Never set a value of a field directly, as it will not persist, you must always use the <code>setState</code> function. This is particularly true within the Object that the field was defined.</b></p>
     <p>When accessing a field's value there is no need to call <code>get</code>, you simply reference the field's name. Although there are situations in which you may need to access a field's value directly. In those situations you can reference the field directly from the <code>$state</code> object. </p>
     <p>You can restrict access to a field by not defining a getter or setter, which would prevent the ability to access a field or set it's value respectively. This is just plain old javascript, no magic here.</p>
     
@@ -370,7 +370,7 @@ var modelMixin = {
 });</div></code></pre>
     <p><code>personCtx</code> will be exposed to the View as "personCtx". Notice that we do not define a setter. Defining a setter has no effect, as the setter will be removed to avoid accidentally overriding the dataContext.</p>
     <h4 class="content-subhead">aliasFor</h4>
-    <p>Sometimes the source data doesn't have the property names you would like to use in your application. <code>aliasFor</code> allows you to specify a field as the alias for a particular source property key. This attribute is only available in Models. If you wish to persist this field back to the source with the original name, you must convert it back manually, as Astarisx has no visability of this.<code></code></p>
+    <p>Sometimes the source data doesn't have the property names you would like to use in your application. <code>aliasFor</code> allows you to specify a field as the alias for a particular source property key. This attribute is only available in Models. If you wish to persist this field back to the source with the original name, you must convert it back manually, as Astarisx has no visability of this.</p>
     <pre><code><div class="code-block">var aModel = Astarisx.createModelClass({
     occupation: {
         aliaFor: 'job', //'job' is the key from the source
@@ -416,35 +416,35 @@ var modelMixin = {
     <p>This value indicates that the Object held within the specified field is a <code>Model</code> instance. This attribute needs to be specified when a <code>View</code> is going to interact with it. Fields with this attribute register <code>modelChangeHandler</code>s against the relevant ViewModel, so that the correct data context is updated. This is only available within ViewModels and Models.</p>
     
     <h5>array</h5>
-    <p>Assign <code>kind:'array'</code> to all fields that hold arrays. This does a few things. It ensures that the array is initialized, it ensures that a setter has not been specified and that the array is immutable. Immutability does not extend to it's contents.</p>
+    <p>Assign <code class="wrap">kind:'array'</code> to all fields that hold arrays. This does a few things. It ensures that the array is initialized, it ensures that a setter has not been specified and that the array is immutable. Immutability does not extend to it's contents.</p>
     
     <h5>array:freeze</h5>
-    <p><code>kind: 'array:freeze'</code> has the same affect as <code>kind:'array'</code> but the immutability extends to it's contents. However, immutability does not extend down any Object's hierarchy and is referred to as shallow immutability.</p>
+    <p><code class="wrap">kind: 'array:freeze'</code> has the same affect as <code class="wrap">kind:'array'</code> but the immutability extends to it's contents. However, immutability does not extend down any Object's hierarchy and is referred to as shallow immutability.</p>
     
     <h5>array:deepFreeze</h5>
-    <p><code>kind: 'array:deepFreeze'</code> has the same affect as <code>kind:'array'</code> but the immutability extends to it's contents and down through any Object's hierarchy and is referred to as deep immutability. <em>Caution must be exercised when using this attribute value as this can be quite an expensive operation and cyclical references are not supported.</em></p>
+    <p><code class="wrap">kind: 'array:deepFreeze'</code> has the same affect as <code class="wrap">kind:'array'</code> but the immutability extends to it's contents and down through any Object's hierarchy and is referred to as deep immutability. <em>Caution must be exercised when using this attribute value as this can be quite an expensive operation and cyclical references are not supported.</em></p>
     
 
     <h5>pseudo</h5>
-    <p>A <code>kind: &quot;pseudo&quot;</code> field, does not hold its own value and will always reset its value to <code>undefined</code> during the next state transition. Use <code>kind: &quot;pseudo&quot;</code> when you need the field to reset itself to a default value or if the <code>field</code> gets it’s value from another property. The two examples below may help clarify its usage:</p>
+    <p>A <code class="wrap">kind: &quot;pseudo&quot;</code> field, does not hold its own value and will always reset its value to <code>undefined</code> during the next state transition. Use <code class="wrap">kind: &quot;pseudo&quot;</code> when you need the field to reset itself to a default value or if the <code>field</code> gets it’s value from another property. The two examples below may help clarify its usage:</p>
     <p><em>example 1: Reset value to a default</em></p>
-<pre><code>didUpdate: {
+<pre><code><div class="code-block">didUpdate: {
   <span class="dt">kind</span>: <span class="st">&#39;pseudo&#39;</span>,
   <span class="dt">get</span>: <span class="kw">function</span>(){
     <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="fu">didUpdate</span> ? <span class="kw">this</span>.<span class="ot">state</span>.<span class="fu">didUpdate</span> : <span class="kw">false</span>;
   }
-}</code></pre>
+}</div></code></pre>
 <p>When you set <code>didUpdate</code> to <code>true</code>, within a <code>setState</code> call, there is no need to set it back to <code>false</code>, as it will automatically be reset to <code>undefined</code> and re-evaluated in the <code>get</code>.</p>
-<pre class="javscript"><code>//No need to set didUpdate back to false
-this.setState({didUpdate: true});</code></pre>
+<pre class="javscript"><code><div class="code-block">//No need to set didUpdate back to false
+this.setState({didUpdate: true});</div></code></pre>
 <p><em>example 2: Value set by another property</em></p>
-<pre><code>selectedHobby: {
+<pre><code><div class="code-block">selectedHobby: {
   <span class="dt">kind</span>: <span class="st">&#39;pseudo&#39;</span>,
   <span class="dt">get</span>: <span class="kw">function</span>() {
     <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">hobbiesContext</span>.<span class="fu">current</span> ?
       <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">hobbiesContext</span>.<span class="ot">current</span>.<span class="fu">name</span>: <span class="kw">void</span>(<span class="dv">0</span>);
   }
-}</code></pre>
+}</div></code></pre>
     <p>n.b. Fields with a kind of <code>pseudo</code> will not persist to the server.</p>
     
     <h5>static</h5>
@@ -527,7 +527,7 @@ this.setState({didUpdate: true});</code></pre>
 
 <!-- the $state Object -->
     <h3 class="content-subhead" id="thestateobject">The $state Object</h3>
-    <p>You may have notices references to <code>this.$state</code> scattered throughout the code examples. All Models, ViewModels and the ControllerViewModel have this property. The <code>$state</code> object is the object that gets updated as a result of calling <code>setState</code> and holds the object's current state. When you define a field, in a model for example, you expose the object's current <code>$state</code> via a getter. Take particular note of the code comments which might help with understanding what's going on.
+    <p>You may have notices references to <code class="wrap">this.$state</code> scattered throughout the code examples. All Models, ViewModels and the ControllerViewModel have this property. The <code>$state</code> object is the object that gets updated as a result of calling <code>setState</code> and holds the object's current state. When you define a field, in a model for example, you expose the object's current <code>$state</code> via a getter. Take particular note of the code comments which might help with understanding what's going on.
     <pre><code><div class="code-block">firstName: {
   get: function(){
     /*
@@ -555,9 +555,9 @@ You can access state directly with <code class="wrap">this.$state.[property]</co
     <p>A Model represents domain-specific data. It is not concerned with behaviours, business logic or formatting data for the UI.</p>
 <p>Models are exposed to the View through ViewModels. The View performs actions on the Model and the Model notifies the ViewModel of any state changes, which then transitions the Model to the next state.</p>
 <h4 class="content-subhead" id="defining-a-model">Defining a Model</h4>
-<p>To create a Model you use <code>Astarisx.createModelClass()</code>. <code>Astarisx.createModelClass()</code> takes one argument referred to as a ‘descriptor’. A descriptor is an object that specifies the Model definition and is made up of properties (<code>fields</code>) and functions (<code>methods</code>).</p>
+<p>To create a Model you use <code class="wrap">Astarisx.createModelClass()</code>. <code class="wrap">Astarisx.createModelClass()</code> takes one argument referred to as a ‘descriptor’. A descriptor is an object that specifies the Model definition and is made up of properties (<code>fields</code>) and functions (<code>methods</code>).</p>
 <pre><code><span class="kw">var</span> PersonCtor = <span class="ot">Astarisx</span>.<span class="fu">createModelClass</span>({<span class="co">/* descriptor */</span>});</code></pre>
-<p>It is important to note that <code>Astarisx.createModelClass</code> does not return a model instance, nor does it return a Model Class but rather it returns a Model Constructor. When the Model Constructor is instantiated it returns a Model Class, which is what needs to be instantiated when creating Model instances.</p>
+<p>It is important to note that <code class="wrap">Astarisx.createModelClass</code> does not return a model instance, nor does it return a Model Class but rather it returns a Model Constructor. When the Model Constructor is instantiated it returns a Model Class, which is what needs to be instantiated when creating Model instances.</p>
 <p>The reason for this, is that the Model Class requires extra information not available at compile time. The extra information required is a <code><a href="/docs/api.html#modelchangehandler">modelChangeHanlder</a></code>. So at runtime, when the Model Constructor is instantiated, we pass in the <code>modelChangeHandler</code> which sets up the Model Class, associating it with the current ViewModel, ready to be instantiated and return Model instances.</p>
 <h4 class="content-subhead" id="instantiating-a-model-instance">Instantiating a Model instance</h4>
 <p>When you define a Model, you’re actually defining an object that returns a Model Constructor. The Model Constructor returns a Model Class, which is used to instantiate Model instances. The example below shows how to structure your code to make it easier to use the Model Class.</p>
@@ -603,10 +603,10 @@ You can access state directly with <code class="wrap">this.$state.[property]</co
   <span class="kw">return</span> personViewModel;
 })();</div></code></pre>
 
-<p>Firstly, we create a variable called <code>PersonCtor</code> which references the Model Constructor. We then create a function, <code>Person</code>, which is a proxy <code>Person</code> Class, that returns a Model Class when <code>PersonCtor</code> is instantiated. Calling <code>new Person(/*args*/)</code> returns a new Model instance.</p>
+<p>Firstly, we create a variable called <code>PersonCtor</code> which references the Model Constructor. We then create a function, <code>Person</code>, which is a proxy <code>Person</code> Class, that returns a Model Class when <code>PersonCtor</code> is instantiated. Calling <code class="wrap">new Person(/*args*/)</code> returns a new Model instance.</p>
 <p>Notice that we do not define the <code>modelChangeHandler</code> or the <code>Person</code> function within the <code>createViewModel</code> descriptor. If we were to define the functions within the descriptor then they would be visible to the View, which is not desirable.</p>
 <h4 class="content-subhead" id="initializing-state">Initializing State</h4>
-<p>When an Model is created for the first time, you may want to initialize some state by setting defaults or calculate values for <code>fields</code>. You do this by defining a function called <code>getInitialState</code>. <code>getInitialState</code> is called whenever the Model is instantiated (eg. <code>new Person()</code>).</p>
+<p>When an Model is created for the first time, you may want to initialize some state by setting defaults or calculate values for <code>fields</code>. You do this by defining a function called <code>getInitialState</code>. <code>getInitialState</code> is called whenever the Model is instantiated (eg. <code class="wrap">new Person()</code>).</p>
 <p>During initialization, Model objects are able to reference the Model’s <code>fields</code> from <code>this</code>.<em> This is not the case for ViewModels or the ControllerViewModel.</em> </p><p>Defining <code>getInitialState</code> is optional.</p>
 <p><strong>example of getInitialState definition</strong></p>
 <pre><code><div class="code-block">getInitialState: <span class="kw">function</span>(){
@@ -623,21 +623,21 @@ You can access state directly with <code class="wrap">this.$state.[property]</co
 <pre><code><div class="code-block">var emptyPerson = new Person()</div></code></pre>
 <p>I get an empty model. <code>getInitialState</code> will be invoke if one is defined. If I instantiate a model with some state, I get a person with that state.</p>
 <pre><code><div class="code-block">var person = new Person({firstName: 'Frank', secondName: 'Smith'})</div></code></pre>
-<p>So <code>person.firstName</code> == 'Frank' and <code>person.secondName</code> == 'Smith'.</p>
+<p>So <code class="wrap">person.firstName</code> == 'Frank' and <code class="wrap">person.secondName</code> == 'Smith'.</p>
 
-<p>If I wanted to update <code>person.secondName</code> to 'Jones', I could do it one of two ways. I could pass in the entire state with the update.</p>
+<p>If I wanted to update <code class="wrap">person.secondName</code> to 'Jones', I could do it one of two ways. I could pass in the entire state with the update.</p>
 
 <pre><code><div class="code-block">var person = new Person({firstName: 'Frank', secondName: 'Jones'})</div></code></pre>
 <p>Or I could pass in the update as the second argument, to be merged with the current state.</p>
 <pre><code><div class="code-block">var person = new Person({firstName: 'Frank', secondName: 'Smith'}, {secondName: 'Jones'})</div></code></pre>
-<p>So now <code>person.firstName</code> == 'Frank' and <code>person.secondName</code> == 'Jones'.</p>
+<p>So now <code class="wrap">person.firstName</code> == 'Frank' and <code class="wrap">person.secondName</code> == 'Jones'.</p>
 
 
 <!-- ViewModels -->
     <h3 class="content-subhead" id="viewmodels">ViewModels in Detail</h3>
     <p>As the name suggests, a ViewModel is the View's Model. It stores and transforms Model information into a format that the View is able to consume. It has no knowledge of the View. Business logic is defined in the ViewModel, along with any presentation logic that the View might require in order to render the UI. An example of presentation logic might be an isEditing flag. The ViewModel responds to actions performed on it by the View and notifies the State Manager of any state changes.</p>
 
-<p>To create a ViewModel you use <code>Astarisx.createViewModelClass()</code>. <code>Astarisx.createViewModelClass()</code> takes one argument referred to as a ‘descriptor’. A descriptor is an object that specifies the ViewModel definition and is made up of properties (<code>fields</code>) and functions (<code>methods</code>).</p>
+<p>To create a ViewModel you use <code class="wrap">Astarisx.createViewModelClass()</code>. <code class="wrap">Astarisx.createViewModelClass()</code> takes one argument referred to as a ‘descriptor’. A descriptor is an object that specifies the ViewModel definition and is made up of properties (<code>fields</code>) and functions (<code>methods</code>).</p>
 <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> PersonsViewModel = <span class="ot">Astarisx</span>.<span class="fu">createViewModelClass</span>({<span class="co">/* descriptor */</span>});</code></pre>
 <p>Once the ViewModel is defined, it can be referenced in the <a data-scroll href="#controllerviewmodel">ControllerViewModel</a> and exposed to the View as a Data Context. ViewModels specified in the ControllerViewModel descriptor are automatically instantiated by Astarisx.</p>
 
@@ -660,7 +660,7 @@ You can access state directly with <code class="wrap">this.$state.[property]</co
   });
 }</code></pre>
 
-<p>In order to invoke <code>dataContextWillInitialize</code> you must call <code>initializeDataContext</code> (i.e. <code>this.state.appContext.initializeDataContext()</code>). This enables you to control when the initial data load is to occur for the ViewModel/dataContext. See <a href="#initializingdatacontexts">Initializing Data Contexts</a> for more information.</p>
+<p>In order to invoke <code>dataContextWillInitialize</code> you must call <code>initializeDataContext</code> (i.e. <code class="wrap">this.state.appContext.initializeDataContext()</code>). This enables you to control when the initial data load is to occur for the ViewModel/dataContext. See <a href="#initializingdatacontexts">Initializing Data Contexts</a> for more information.</p>
 
 
 
@@ -735,7 +735,7 @@ You can access state directly with <code class="wrap">this.$state.[property]</co
 
 <p>The ControllerViewModel is a specialized ViewModel and is specific to Astarisx. Every application will have exactly one ControllerViewModel. It’s role is to define Application level <code>fields</code>, <code>methods</code> and ViewModels, that are exposed to the View as Data Contexts, and is known as the Application Data Context. If it is not defined in the ControllerViewModel, it will not be visible to the View.</p>
 
-<p>To create a ControllerViewModel you use the <code>Astarisx.createControllerViewModelClass</code> function. <code>Astarisx.createControllerViewModelClass()</code> takes one argument referred to as a ‘descriptor’. A descriptor is an object that specifies the ControllerViewModel definition and is made up of properties (<code>fields</code>) and functions (<code>methods</code>).</p>
+<p>To create a ControllerViewModel you use the <code class="wrap">Astarisx.createControllerViewModelClass</code> function. <code class="wrap">Astarisx.createControllerViewModelClass()</code> takes one argument referred to as a ‘descriptor’. A descriptor is an object that specifies the ControllerViewModel definition and is made up of properties (<code>fields</code>) and functions (<code>methods</code>).</p>
 <pre><code><span class="kw">var</span> controllerViewModel = <span class="ot">Astarisx</span>.<span class="fu">createControllerViewModelClass</span>({<span class="co">/* descriptor */</span>});</code></pre>
 
 <p>You instantiate a ControllerViewModel using <code>intializeAppContext</code>. See <a href="#initializingdatacontexts">Initializing Data Contexts</a> for more information.</p>
@@ -750,27 +750,27 @@ You can access state directly with <code class="wrap">this.$state.[property]</co
 }</code></pre>
 <p>In order to retrieve data from a server, you would define this within <code>dataContextWillInitialize</code>. Once you retrieve the data and do what you need to do, you then call <code>setState</code> to update the View. <code>dataContextWillInitialize</code> is optional and if available will be called once, before the UI Container has mounted.</p>
 <p><em>example</em></p>
-<pre><code>dataContextWillInitialize: <span class="kw">function</span>(){
+<pre><code><div class="code-block">dataContextWillInitialize: <span class="kw">function</span>(){
   <span class="ot">$</span>.<span class="fu">get</span>(<span class="st">&quot;/api/something&quot;</span>).<span class="fu">done</span>(<span class="kw">function</span>(data) {
     ...    
     <span class="kw">this</span>.<span class="fu">setState</span>(...);
   }.<span class="fu">bind</span>(<span class="kw">this</span>)).<span class="fu">fail</span>(<span class="kw">function</span>() {
     <span class="fu">alert</span>( <span class="st">&quot;error&quot;</span> );
   });
-}</code></pre>
+}</div></code></pre>
 
 <h4 class="content-subhead" id="exposing-viewmodels">Exposing ViewModels to the View As Data Contexts</h4>
 <p>To expose ViewModels to the View, you define a <code>field</code> with an attribute of <code>viewModel</code>. The value must be the variable that you assigned the ViewModel to when you defined the ViewModel. The <code>field</code> name then acts as the data context name that the View will use to access this ViewModel’s data context.</p>
 <p>In the example code below, the PersonsViewModel will be exposed to the View as <code>persons</code> data context.</p>
-<pre><code><span class="co">//dataContext keys define the dataContext names that will appear in</span>
+<pre><code><div class="code-block"><span class="co">//dataContext keys define the dataContext names that will appear in</span>
 <span class="co">//the View and associates a ViewModel.</span>
 persons: {
   <span class="dt">viewModel</span>: PersonsViewModel,
   <span class="dt">get</span>: <span class="kw">function</span>(){
     <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="fu">persons</span>;
   }
-}</code></pre>
-<p>The ControllerViewModel is also exposed to the View. It’s <code>fields</code> and <code>methods</code> are the top level or root object, which is exposed to the View as <code>appContext</code>. So in the View you reference the ControllerViewModel’s data context, known as the Application Data Context with <code>this.state.appContext</code>.</p>
+}</div></code></pre>
+<p>The ControllerViewModel is also exposed to the View. It’s <code>fields</code> and <code>methods</code> are the top level or root object, which is exposed to the View as <code>appContext</code>. So in the View you reference the ControllerViewModel’s data context, known as the Application Data Context with <code class="wrap">this.state.appContext</code>.</p>
 
 <!-- The Views -->
     <h3 class="content-subhead" id="views">The UI and Views</h3>
@@ -778,12 +778,11 @@ persons: {
 <p>React uses a single component to host all of the application’s components. Astarisx refers to this component as the UI Container. The UI Container can hold regular React components and/or Astarisx Views. An Astarisx View is a self contained React component. They differ from regular React components in that they are stateless and completely decoupled from their Owner, as they do not require any props to be passed in to function.</p>
 
 <h4 class="content-subhead" id="initializing-the-ui-container">The UI Container</h4>
-<p>As mentioned above the component at the apex of the component hierarchy is the UI Container. In order for the UI Container to understand that this is an Astarisx application we must include the <code>Astarisx.mixins.ui</code> mixin. What this does is establish a connection between React and Astarisx and adds the <code>appContext</code> to the components state object. Whenever the Application Data Context state changes the UI will be notified.</p>
-<pre><code><span class="kw">var</span> App = <span class="ot">React</span>.<span class="fu">createClass</span>({
+<p>As mentioned above the component at the apex of the component hierarchy is the UI Container. In order for the UI Container to understand that this is an Astarisx application we must include the <code class="wrap">Astarisx.mixins.ui</code> mixin. What this does is establish a connection between React and Astarisx and adds the <code>appContext</code> to the components state object. Whenever the Application Data Context state changes the UI will be notified.</p>
+<pre><code><div class="code-block"><span class="kw">var</span> App = <span class="ot">React</span>.<span class="fu">createClass</span>({
   <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">ui</span>],
   ...
-});
-</code></pre>
+});</div></code></pre>
 <h4 class="content-subhead" id="the-appcontext">The appContext</h4>
 <p>Astarisx takes on the responsibility of storing and managing the Application’s State. Models, ViewModels and the ControllerViewModel store and manager their own state. The State Manager merges their state and transtions the application to the next state, the output being the Application Data Context. The State Manager will then notify the Views of the state change and pass them the latest Application Data Context. It is the Single Source of Truth for the entire application.</p>
 <p>This Application Data Context is attached to the React state object, i.e. this.state, as <code>appContext</code>. The <code>appContext</code> holds the entire applications state, which consists of all the other Data Contexts defined by the ViewModels.</p>
@@ -793,11 +792,11 @@ persons: {
 
 
 <h4 class="content-subhead">Specifying a component as an Astarisx View</h4>
-<p>In order to specify a componet as an Astarisx View, you include the <code>Astarisx.mixins.view</code> mixin in the component's descriptor. This registers an event listner and stateChange handler with the State Manager. Whenever state changes the View will receive the latest Application Data Context. A View can contain regular React Components and/or other Astarisx Views.</p>
-<pre><code><span class="kw">var</span> DetailsView = <span class="ot">React</span>.<span class="fu">createClass</span>({
+<p>In order to specify a componet as an Astarisx View, you include the <code class="wrap">Astarisx.mixins.view</code> mixin in the component's descriptor. This registers an event listner and stateChange handler with the State Manager. Whenever state changes the View will receive the latest Application Data Context. A View can contain regular React Components and/or other Astarisx Views.</p>
+<pre><code><div class="code-block"><span class="kw">var</span> DetailsView = <span class="ot">React</span>.<span class="fu">createClass</span>({
     <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">view</span>],
     ...
-});</code></pre>
+});</div></code></pre>
 <p>Once a component is specified as an Astarisx View, there is no need to pass in props to update the UI. The View receives its own copy of the most current Application Data Context whenever state changes. So your UI components go from this</p>
 <pre><code><div class="code-block"><span class="kw">var</span> App = <span class="ot">React</span>.<span class="fu">createClass</span>({
     <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">ui</span>],
@@ -816,7 +815,7 @@ persons: {
 <span class="ot">    }</span>
 <span class="ot">}</span><span class="fl">)</span><span class="ot">;</span></div></code></pre>
 <p>to this</p>
-<pre><code><span class="kw">var</span> App = <span class="ot">React</span>.<span class="fu">createClass</span>({
+<pre><code><div class="code-block"><span class="kw">var</span> App = <span class="ot">React</span>.<span class="fu">createClass</span>({
     <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">ui</span>],
     <span class="dt">render</span>: <span class="kw">function</span>() {
         <span class="kw">return</span> (&lt;div&gt;
@@ -825,17 +824,17 @@ persons: {
             &lt;HobbyListView /&gt;
         &lt;<span class="ot">/div&gt;</span><span class="fl">)</span><span class="ot">;</span>
 <span class="ot">    }</span>
-<span class="ot">}</span><span class="fl">)</span><span class="ot">;</span></code></pre>
+<span class="ot">}</span><span class="fl">)</span><span class="ot">;</span></div></code></pre>
 <p>Now your Views can move freely within you application without breaking anything.</p>
 <p><em>Just a note on using Views. Theoretically, every component could be a View, but the intention of Views is to create self contained modules and not prevent having to pass in props. This aligns with the UI being highly composable. So, for example, if you have a List, each list item could be it’s own View, but that would be inappropriate and inefficient. You would specify the List as the View and not the List Items. That way if you were to move the List around or place it in another application, the list items would move with it. So the List View is a self contained component.</em></p>
 
 <h4 class="content-subhead" id="updating-state">Updating State</h4>
 <p>The <code>appContext</code> exposes <code>methods</code> that the View is able to call and <code>fields</code> that the View can read values and if a <code>set</code>ter is defined, update values.</p>
-<p>To access fields you simply reference them. For example, to read the <code>name</code> of a <code>selectedPerson</code> on the <code>persons</code> data context, you would use <code>this.state.appContext.persons.selectedPerson.name</code>.</p>
+<p>To access fields you simply reference them. For example, to read the <code>name</code> of a <code>selectedPerson</code> on the <code>persons</code> data context, you would use <code class="wrap">this.state.appContext.persons.selectedPerson.name</code>.</p>
 
-<p>To update the <code>selectedPerson</code>’s name you just assign a value, like so <code>this.state.appContext.persons.selectedPerson.name = &quot;Fred&quot;</code>.</p>
+<p>To update the <code>selectedPerson</code>’s name you just assign a value, like so <code class="wrap">this.state.appContext.persons.selectedPerson.name = &quot;Fred&quot;</code>.</p>
 <p>The code below shows a React component that has been passed the <code>appContext</code> as ‘appContext’ prop. You can see that to update the <code>selectedPerson</code> name we simply assign the value. This updates the Model which ultimately gets reflected in the UI.</p>
-<pre><code><span class="kw">var</span> FormView = <span class="ot">React</span>.<span class="fu">createClass</span>({
+<pre><code><div class="code-block"><span class="kw">var</span> FormView = <span class="ot">React</span>.<span class="fu">createClass</span>({
     <span class="dt">updateName</span>: <span class="kw">function</span>(e){
         //simply assign the value and the UI will be updated
         <span class="kw">this</span>.<span class="ot">props</span>.<span class="ot">appContext</span>.<span class="ot">persons</span>.<span class="ot">selectedPerson</span>.<span class="fu">name</span> = <span class="ot">e</span>.<span class="ot">target</span>.<span class="fu">value</span>;
@@ -857,7 +856,7 @@ persons: {
 <span class="ot">            &lt;/div</span>&gt;
         );
     }
-});</code></pre>
+});</div></code></pre>
 <!-- Initializing your Application -->
     <h3 class="content-subhead" id="initializingyourapplication">Initializing your Application</h3>
     <p>This is the point where you have written enough code so that you're ready to start it up. So in order to start your application you need to call <code><a href="/docs/api.html#initializeappcontext">initalizeAppContext</a></code>. <code>initalizeAppContext</code> takes two arguments, the first is an object that allows you to set a couple of options, <code>enableUndo</code> (See <a data-scroll href="#undo">Built in Undo</a>) and <code>enableRouting</code>  (See <a data-scroll href="#router">Working With The Router</a>) but more on them later, more importantly it enables you to reference your ControllerViewModel which is the entry point to your application. So from within the component that you specified as the UI (i.e. mixed in Astarisx.mixins.ui) you would place the following code in <code>componentWillMount</code>.</p>
@@ -909,21 +908,21 @@ persons: {
 }</div></code></pre>
 <p>Just before the component is mounted this will be called. If the component is unmounted and the gets mounted again, <code>intializeDataContext</code> has no effect as <code>dataContextWillInitialize</code> will not be called again.</p>
 
-<p>Some other things to note. Calling <code>intializeDataContext</code> with no arguments intializes all data contexts by default. You can also pass an asterisk as a string to intialize all data contexts with no arguments passed to <code>dataContextWillInitialize</code>. (eg. <code>this.intializeDataContext('*')</code>)</p>
+<p>Some other things to note. Calling <code>intializeDataContext</code> with no arguments intializes all data contexts by default. You can also pass an asterisk as a string to intialize all data contexts with no arguments passed to <code>dataContextWillInitialize</code>. (eg. <code class="wrap">this.intializeDataContext('*')</code>)</p>
 
 
 <!-- Undo -->
     <h3 class="content-subhead" id="undo">Built in Undo</h3>
-    <p>Astarisx has built in undo and redo capability. In order to use this functionality you specify a <code>prop</code> called <code>enableUndo</code> on the component you pass into <code>React.renderComponent</code>. The default value is <code>false</code>, assigning <code>true</code> turns on undo and redo functionality.</p>
-<pre><code><span class="kw">var</span> controllerViewModel = <span class="ot">Astarisx</span>.<span class="fu">createControllerViewModelClass</span>({<span class="co">/* descriptor */</span>});
+    <p>Astarisx has built in undo and redo capability. In order to use this functionality you specify a <code>prop</code> called <code>enableUndo</code> on the component you pass into <code class="wrap">React.renderComponent</code>. The default value is <code>false</code>, assigning <code>true</code> turns on undo and redo functionality.</p>
+<pre><code><div class="code-block"><span class="kw">var</span> controllerViewModel = <span class="ot">Astarisx</span>.<span class="fu">createControllerViewModelClass</span>({<span class="co">/* descriptor */</span>});
 
 <span class="ot">React</span>.<span class="fu">renderComponent</span>(&lt;Application
   controllerViewModel={controllerViewModel}
   enableUndo={<span class="kw">true</span>}<span class="ot">/&gt;,</span>
-<span class="ot">  document.getElementById</span><span class="fl">(</span><span class="ot">&#39;container&#39;</span><span class="fl">))</span><span class="ot">;</span></code></pre>
+<span class="ot">  document.getElementById</span><span class="fl">(</span><span class="ot">&#39;container&#39;</span><span class="fl">))</span><span class="ot">;</span></div></code></pre>
 <p>Once set, the <code>fields</code> <code>canRevert</code>, <code>canAdvance</code>, <code>previousState</code> and <code>nextState</code> and methods <code>revert</code> and <code>advance</code> are available. Every state change is captured and able to be reverted to.</p>
 <p>The code snippet below shows calls to <code>revert</code> and <code>advance</code> within a React component that has the <code>appContext</code> assigned to <code>appContext</code> <code>prop</code>.</p>
-<pre><code>undo: <span class="kw">function</span>(e){
+<pre><code><div class="code-block">undo: <span class="kw">function</span>(e){
     <span class="ot">e</span>.<span class="fu">preventDefault</span>();
     <span class="ot">e</span>.<span class="fu">stopPropagation</span>();
     <span class="kw">this</span>.<span class="ot">props</span>.<span class="ot">appContext</span>.<span class="fu">revert</span>();
@@ -932,13 +931,13 @@ redo: <span class="kw">function</span>(e){
     <span class="ot">e</span>.<span class="fu">preventDefault</span>();
     <span class="ot">e</span>.<span class="fu">stopPropagation</span>();
     <span class="kw">this</span>.<span class="ot">props</span>.<span class="ot">appContext</span>.<span class="fu">advance</span>();
-}</code></pre>
+}</div></code></pre>
 <p>If <code>pushState</code> routing is enabled, it is not required to be set <code>enableUndo</code>, as undo capability is enable by default.</p>
 
 <!-- Watched State -->
     <h3 class="content-subhead" id="watchedstate">Watched State</h3>
 <p>There are instances in which a ViewModel may be interested in state changes that occur in another ViewModel. To achieve this you define a <code>getWatchedState</code> function. <code>getWatchedState</code> returns an object that specifies <code>field</code>(s) in another ViewModel that it is interested in and assigns a handler to these <code>field</code>s which is invoked whenever any changes in the <code>field</code> occurs.</p>
-<pre><code>getWatchedState: <span class="kw">function</span>() {
+<pre><code><div class="code-block">getWatchedState: <span class="kw">function</span>() {
   <span class="kw">return</span> {
     <span class="st">&#39;persons&#39;</span>: {
       <span class="dt">fields</span>: {
@@ -946,7 +945,7 @@ redo: <span class="kw">function</span>(e){
       }
     }
   };
-}</code></pre>
+}</div></code></pre>
 <p>Whenever, <code>selectedPerson</code> changes in the <code>persons</code> data context, the <code>onPersonChangeHandler</code> will be invoked.</p>
 <p>The <code>onPersonChangeHandler</code> will be passed the following arguments.</p>
 <ul>
@@ -958,18 +957,18 @@ redo: <span class="kw">function</span>(e){
 <li>prevPath =&gt; If Astarisx pushState Routing is enabled, this specifies the previous path.</li>
 </ul>
 <p>An example of what the onPersonChangeHandler may look like is below.</p>
-<pre><code><span class="co">//Use this if state change is triggered by others action</span>
+<pre><code><div class="code-block"><span class="co">//Use this if state change is triggered by others action</span>
 <span class="kw">var</span> onPersonChangeHandler = <span class="kw">function</span>(nextState, prevState, field, context,
     nextPath, prevPath){
   <span class="kw">if</span>(<span class="kw">this</span>.<span class="fu">current</span> !== <span class="kw">void</span>(<span class="dv">0</span>) &amp;&amp; context === <span class="st">&#39;persons&#39;</span> &amp;&amp;
         <span class="ot">nextState</span>.<span class="fu">id</span> !== <span class="ot">prevState</span>.<span class="fu">id</span>){
     <span class="kw">return</span> { <span class="dt">hobbies</span>: { <span class="dt">current</span>: <span class="kw">void</span>(<span class="dv">0</span>) }, <span class="dt">busy</span>: <span class="kw">false</span> };
   }
-};</code></pre>
+};</div></code></pre>
 <p>You will notice that an object with the target state is returned and <code>setState</code> is not called. The returned object needs to be the same format as the object passed to the second argument of <code>setState</code> discussed above. However, you need to also specify the calling data context’s name in the return object if a state change is to occur for the caller. The reason we do not call <code>setState</code> is that the handler does not initiate a state change, but rather intercepts the current state change transition and injects the next state into that transition, which is merged with the current state transition and reflected in the final state.</p>
 <p>You are also able to include a reference to another ViewModel, which you can use to display information from that data context, such as a record count or the currently selected Persons name.</p>
 <p>To do this you would specify an <code>alias</code> in the returned object of <code>getWatchedState</code>. The value of the alias is then include in the state object of the data context.</p>
-<pre><code>getWatchedState: <span class="kw">function</span>() {
+<pre><code><div class="code-block">getWatchedState: <span class="kw">function</span>() {
   <span class="kw">return</span> {
     <span class="st">&#39;persons&#39;</span>: {
       <span class="co">//optional - will be added to state</span>
@@ -979,10 +978,10 @@ redo: <span class="kw">function</span>(e){
       <span class="dt">alias</span>: <span class="st">&#39;busy&#39;</span>
     }
   };
-}</code></pre>
+}</div></code></pre>
 
-<p>To reference this data context you would simply access the state object like so, <code>this.state.personsContext</code>.</p>
-<p>You will also notice that we have referenced a ControllerViewModel context <code>field</code> called <code>busy</code>. You would access this value with <code>this.state.busy</code>. You are only able to <code>alias</code> ControllerViewModel <code>fields</code> and not define handlers for state changes.</p>
+<p>To reference this data context you would simply access the state object like so, <code class="wrap">this.state.personsContext</code>.</p>
+<p>You will also notice that we have referenced a ControllerViewModel context <code>field</code> called <code>busy</code>. You would access this value with <code class="wrap">this.state.busy</code>. You are only able to <code>alias</code> ControllerViewModel <code>fields</code> and not define handlers for state changes.</p>
 
 <!-- Router -->
     <h3 class="content-subhead" id="router">Working with the Router</h3>
@@ -991,7 +990,7 @@ redo: <span class="kw">function</span>(e){
 <p>In order to enable routing, all you need to do is define a <code>getRoutes</code> function from within a ViewModel. By simply defining <code>getRoutes</code> in any one of the ViewModels enables pushState routing.</p>
 <p><code>getRoutes</code> returns an object that holds routing information. This routing object is made up of path objects that define path information such as an identifier for the route, the associated path and handler. The syntax to define a <code>path</code> follows the format outlined in the <a href="http://visionmedia.github.io/page.js">Page.js documentation</a>.</p>
 <p>Below is an example of a routing object.</p>
-<pre><code>getRoutes: <span class="kw">function</span>(){
+<pre><code><div class="code-block">getRoutes: <span class="kw">function</span>(){
   <span class="kw">return</span> {
     <span class="dt">displayPerson</span>: {
       <span class="dt">path</span>: <span class="st">&#39;/person/:id&#39;</span>,
@@ -1002,13 +1001,13 @@ redo: <span class="kw">function</span>(e){
       <span class="dt">handler</span>: personRouteHandler
     }
   }
-}</code></pre>
+}</div></code></pre>
 <p>In the example above, two routes are defined, <code>displayPerson</code> and <code>list</code>. <code>displayPerson</code> and <code>list</code> are simply identifiers and can be anything that you like. Each of the objects has a path property and a handler property. Whenever a defined path is navigated to, using the browsers back or forward buttons, the handler is triggered. This is in response to a <code>popstate</code> event occurring. In all other circumstances you simply update the <code>path</code> property within your functions and Astarisx will either pushState or replaceState for you.</p>
 
 <p>A route handler may look something like this:</p>
-<pre><code><span class="kw">var</span> personRouteHandler = <span class="kw">function</span>(params, path, pathId, ctx){
+<pre><code><div class="code-block"><span class="kw">var</span> personRouteHandler = <span class="kw">function</span>(params, path, pathId, ctx){
   <span class="kw">this</span>.<span class="fu">selectPerson</span>(<span class="ot">params</span>.<span class="fu">id</span>);
-}</code></pre>
+}</div></code></pre>
 <p>A route changed handler is passed the following arguments:</p>
 <ul>
 <li><code>params</code> =&gt; object that holds any parameters passed to the url</li>
@@ -1031,8 +1030,8 @@ redo: <span class="kw">function</span>(e){
 }</code></pre>
 <p>The <code>selectPerson</code> method performs it’s usual tasks and calls <code>setState</code> to transition to the next state with the newly selected Person. It also passes in a second argument to <code>setState</code> that sets the <code>path</code> <code>field</code> in the ControllerViewModel context. Passing a <code>path</code> value causes <code>pushState()</code> and the url to be updated.</p>
 <h2 id="multiple-paths-and-params">Multiple paths and params</h2>
-<p>So how do we deal with a path that looks like this <code>'/person/:id/hobby/:hobbyId'</code>. So for this example we have two ViewModels. A person ViewModel and a hobby ViewModel. Within the hobby ViewModel the <code>getRoutes</code> function defines the path <code>'/person/:id/hobby/:hobbyId'</code>.</p>
-<pre><code><span class="co">//hobby ViewModel</span>
+<p>So how do we deal with a path that looks like this <code class="wrap">'/person/:id/hobby/:hobbyId'</code>. So for this example we have two ViewModels. A person ViewModel and a hobby ViewModel. Within the hobby ViewModel the <code>getRoutes</code> function defines the path <code class="wrap">'/person/:id/hobby/:hobbyId'</code>.</p>
+<pre><code><div class="code-block"><span class="co">//hobby ViewModel</span>
 getRoutes: <span class="kw">function</span>(){
   <span class="kw">return</span> {
     <span class="dt">selectHobby </span>: {
@@ -1040,18 +1039,18 @@ getRoutes: <span class="kw">function</span>(){
       <span class="dt">handler</span>: hobbyRouteHandler
     }
   }
-}</code></pre>
-<p>Because the route includes an <code>id</code> parameter that relates to the person ViewModel, we must get a reference to the person ViewModel. We do this by defining a <code>getWatchedState</code> function and specifying an alias for the <code>persons</code> data context. Now we can call methods in the person ViewModel using <code>this.state.personsContext.selectPerson(...)</code>.</p>
-<pre><code>getWatchedState: <span class="kw">function</span>() {
+}</div></code></pre>
+<p>Because the route includes an <code>id</code> parameter that relates to the person ViewModel, we must get a reference to the person ViewModel. We do this by defining a <code>getWatchedState</code> function and specifying an alias for the <code>persons</code> data context. Now we can call methods in the person ViewModel using <code class="wrap">this.state.personsContext.selectPerson(...)</code>.</p>
+<pre><code><div class="code-block">getWatchedState: <span class="kw">function</span>() {
   <span class="kw">return</span> {
     <span class="st">&#39;persons&#39;</span>: {
       <span class="dt">alias</span>: <span class="st">&#39;personsContext&#39;</span>
     }
   };
-}</code></pre>
+}</div></code></pre>
 <p>In the person ViewModel the <code>selectPerson</code> method needs to be modified to allow for a callback. The callback is then passed as the last argument to <code>setState</code> and will be called once the state transition has occurred. However, because a callback has been passed into the <code>setState</code> this creates a transient state, and will not update the View until all <code>setState</code>s within the callback are called.</p>
 
-<pre><code><span class="co">//person ViewModel</span>
+<pre><code><div class="code-block"><span class="co">//person ViewModel</span>
 selectPerson: <span class="kw">function</span>(id, next){
   <span class="kw">var</span> selectedPerson;
 
@@ -1067,9 +1066,9 @@ selectPerson: <span class="kw">function</span>(id, next){
     <span class="kw">this</span>.<span class="fu">setState</span>({<span class="dt">selectedPerson</span>: selectedPerson },
       {<span class="dt">pageNotFound</span>: <span class="kw">true</span> }, next);
   }
-}</code></pre>
-<p>The ‘hobbyRouteHandler’ when invoked will first call the <code>selectPerson</code> function on the person ViewModel passing in the <code>id</code> and a callback. Once the callback returns it then calls the <code>selectHobby</code> method and passes in the <code>hobbyId</code>. The <code>selectHobby</code> method then performs it normal tasks and call <code>setState</code> setting the selected hobby and updating the <code>path</code> to the next state. (ie <code>path: '/person/'+ this.state.personsContext.selectedPerson.id + '/hobby/'+this.hobbies[i].id</code>)</p>
-<pre><code><span class="co">//hobby ViewModel</span>
+}</div></code></pre>
+<p>The ‘hobbyRouteHandler’ when invoked will first call the <code>selectPerson</code> function on the person ViewModel passing in the <code>id</code> and a callback. Once the callback returns it then calls the <code>selectHobby</code> method and passes in the <code>hobbyId</code>. The <code>selectHobby</code> method then performs it normal tasks and call <code>setState</code> setting the selected hobby and updating the <code>path</code> to the next state. (ie <code class="wrap">path: '/person/'+ this.state.personsContext.selectedPerson.id + '/hobby/'+this.hobbies[i].id</code>)</p>
+<pre><code><div class="code-block"><span class="co">//hobby ViewModel</span>
 <span class="kw">var</span> hobbyRouteHandler = <span class="kw">function</span>(params, path, pathId, ctx){
   <span class="kw">if</span>(<span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">personsContext</span>.<span class="ot">selectedPerson</span>.<span class="fu">id</span> != <span class="ot">params</span>.<span class="fu">id</span>){
     <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">personsContext</span>.<span class="fu">selectPerson</span>(<span class="ot">params</span>.<span class="fu">id</span>, <span class="kw">function</span>(){
@@ -1078,8 +1077,8 @@ selectPerson: <span class="kw">function</span>(id, next){
   } <span class="kw">else</span> {
     <span class="kw">this</span>.<span class="fu">selectHobby</span>(<span class="ot">params</span>.<span class="fu">hobbyId</span>);
   }
-};</code></pre>
-<pre><code>selectHobby: <span class="kw">function</span>(id){
+};</div></code></pre>
+<pre><code><div class="code-block">selectHobby: <span class="kw">function</span>(id){
   <span class="kw">for</span> (<span class="kw">var</span> i = <span class="kw">this</span>.<span class="ot">hobbies</span>.<span class="fu">length</span> - <span class="dv">1</span>; i &gt;= <span class="dv">0</span>; i--) {
     <span class="kw">if</span> ((<span class="kw">this</span>.<span class="fu">current</span> === <span class="kw">void</span>(<span class="dv">0</span>) || <span class="kw">this</span>.<span class="ot">current</span>.<span class="fu">id</span> !== id) &amp;&amp;
       <span class="kw">this</span>.<span class="fu">hobbies</span>[i].<span class="fu">id</span> === id){
@@ -1093,7 +1092,7 @@ selectPerson: <span class="kw">function</span>(id, next){
       <span class="kw">break</span>;
     }
   }
-}</code></pre>
+}</div></code></pre>
 <h2 id="undo-and-redo">Undo and Redo</h2>
 <p>When you enable routing, undo functionality is automatically turned on. However, it operates differently to the way it is used when the <a href="https://github.com/entrendipity/astarisx/wiki/View#undo-and-redo"><code>enableUndo</code></a> <code>prop</code> is explicitly turned on in the initial Component. In fact, it becomes redundant, as the routing overrides it and therefore it is not necessary to specify it when routing is enabled.</p>
 <p>The way undo works it this. If state changes but the url stays the same, then you are able to revert to the previousState and subsequently advance to the next state. Once the url changes undo is reset and you will not be able to revert to the previous state.</p>
@@ -1103,26 +1102,26 @@ selectPerson: <span class="kw">function</span>(id, next){
 <p>When a path is not found, usually the UI provide some sort of feedback to the user. Astarisx will update the <code>pageNotFound</code> field to <code>true</code>, so that the View has an opportunity to display a “404:Page Not Found” page.</p>
 <p>If <code>pageNotFound</code> is <code>true</code> the user may hit the browser’s back button to return to the previous page. Astarisx provides a special function called <code>rollbackRequest</code> on the <code>ctx</code> object passed in to the route handler. This function makes it easy to revert back to the previous state so that the user gets back to what she expects to see.</p>
 <p><strong>Example usage of <code>rollbackRequest</code></strong></p>
-<pre><code><span class="kw">var</span> personRouteHandler = <span class="kw">function</span>(params, path, pathId, ctx){
+<pre><code><div class="code-block"><span class="kw">var</span> personRouteHandler = <span class="kw">function</span>(params, path, pathId, ctx){
   <span class="kw">if</span>(<span class="ot">ctx</span>.<span class="fu">rollbackRequest</span>){
     <span class="ot">ctx</span>.<span class="fu">revert</span>();
     <span class="kw">return</span>;
   }
   <span class="kw">this</span>.<span class="fu">selectPerson</span>(<span class="ot">params</span>.<span class="fu">id</span>);
-};</code></pre>
+};</div></code></pre>
 <h2 id="working-with-links-in-the-view">Working with links in the View</h2>
 <p>So far we have spoken about how ViewModels interact and update pushState, but of course the View will use hyperlinks to navigate to different parts of your application. Well Astarisx makes it super easy.</p>
-<p>All you do is include the <code>Astarisx.mixin.pushState</code> mixin, which will automatically configure any links to use <code>pushState</code>.</p>
-<pre><code><span class="kw">var</span> Application = <span class="ot">React</span>.<span class="fu">createClass</span>({
+<p>All you do is include the <code class="wrap">Astarisx.mixin.pushState</code> mixin, which will automatically configure any links to use <code>pushState</code>.</p>
+<pre><code><div class="code-block"><span class="kw">var</span> Application = <span class="ot">React</span>.<span class="fu">createClass</span>({
   <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">ui</span>, <span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">pushState</span>],
   <span class="dt">render</span>: <span class="kw">function</span>(){...}
-}</code></pre>
+}</div></code></pre>
 <p>There’s no need to handle click events or use hashes, you just use <code>&lt;a&gt;</code> tags the way they were intended to be used.</p>
 <p>Below is a code snippet that shows a couple of <code>&lt;a&gt;</code> tags with the <code>href</code> set to a path.</p>
-<pre><code>&lt;ul&gt;
+<pre><code><div class="code-block">&lt;ul&gt;
   &lt;li&gt;&lt;a href=&quot;/home&quot;&gt;Home&lt;/a&gt;&lt;/li&gt;
   &lt;li&gt;&lt;a href=&quot;/person/3&quot;&gt;John Citizen&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;</code></pre>
+&lt;/ul&gt;</div></code></pre>
 <p>That’s it, pushState will be used whenever a user clicks the links.</p>
 <p>Your front-end developers are going to love it.</p>
 
@@ -1148,9 +1147,9 @@ selectPerson: <span class="kw">function</span>(id, next){
   }
 });</code></pre>
 <ul>
-<li>Within your css specify an <code>id</code> for the media query. To do this you place a class property <strong>at the top</strong> of the <code>@media</code> attribute in the following format: <code>.media#[id] {}</code>. It must be the first value in the list. The <code>id</code> property will be passed in as the first argument to <code>mediaChangeHandler</code>.</li>
+<li>Within your css specify an <code>id</code> for the media query. To do this you place a class property <strong>at the top</strong> of the <code>@media</code> attribute in the following format: <code class="wrap">.media#[id] {}</code>. It must be the first value in the list. The <code>id</code> property will be passed in as the first argument to <code>mediaChangeHandler</code>.</li>
 </ul>
-<p><em>n.b. You may need to place comments inside the brackets as some minifiers ignore empty selectors i.e. <code>.media#myId {/**/}</code></em></p>
+<p><em>n.b. You may need to place comments inside the brackets as some minifiers ignore empty selectors i.e. <code class="wrap">.media#myId {/**/}</code></em></p>
 <p><em>example</em></p>
 <pre class="sourceCode css"><code class="sourceCode css"><span class="dv">@media</span> <span class="dv">(max-width: </span><span class="dt">480px</span><span class="dv">)</span> <span class="dv">{</span>
     <span class="co">/* Defines the value &quot;tinyScreen&quot; as the `id` */</span>
@@ -1169,7 +1168,7 @@ selectPerson: <span class="kw">function</span>(id, next){
 <ul>
 <li>Define the <code>mediaChangeHandler</code> within the <code>createControllerViewModelClass</code> Descriptor.</li>
 </ul>
-<pre><code><span class="kw">var</span> controllerViewModel = <span class="ot">Astarisx</span>.<span class="fu">createControllerViewModelClass</span>({
+<pre><code><div class="code-block"><span class="kw">var</span> controllerViewModel = <span class="ot">Astarisx</span>.<span class="fu">createControllerViewModelClass</span>({
     <span class="co">/* Required if mediaQuery Astarisx.mixin.mediaQuery is used and */</span>
     <span class="co">/* must be accessible to the View. i.e. defined within */</span>
     <span class="co">/* `createControllerViewModelClass` Descriptor object */</span>
@@ -1180,7 +1179,7 @@ selectPerson: <span class="kw">function</span>(id, next){
         <span class="kw">this</span>.<span class="fu">setState</span>({<span class="dt">mql</span>:mql});
       }
     }
-});</code></pre>
+});</div></code></pre>
 <p>As you can see this is pretty straight forward. You can either hook into existing CSS media queries or define your own. There is no need to change the way you use you’re CSS (apart from adding <code>.media#[id]</code>). Everything works as expected with media query change notifications sent to the ControllerViewModel.</p>
 
 <!-- Optimizing the View -->
@@ -1188,21 +1187,21 @@ selectPerson: <span class="kw">function</span>(id, next){
     <p>As your application grows you may experience a degradation in UI performance. Below are a few techniques that will help get your UI back up to speed.</p>
 <h3 id="react-approach">React Approach</h3>
 <p>React includes a method called <a href="http://facebook.github.io/react/docs/component-specs.html"><code>shouldComponentUpdate</code></a> that can be used to increase performance in any bottlenecks by only allowing the component to update if <code>shouldComponentUpdate</code> returns true.</p>
-<p>Astarisx provides a convienience property called <code>dataContextWillUpdate</code> in order to assist in assessing whether a component should update. <code>dataContextWillUpdate</code> is located in <code>appContext.state</code> and only holds the state that has changed. So you are quickly able to see what properties were modified.</p>
+<p>Astarisx provides a convienience property called <code>dataContextWillUpdate</code> in order to assist in assessing whether a component should update. <code>dataContextWillUpdate</code> is located in <code class="wrap">appContext.state</code> and only holds the state that has changed. So you are quickly able to see what properties were modified.</p>
 <h3 id="example">example</h3>
-<pre><code>shouldComponentUpdate: <span class="kw">function</span>(nextProps, nextState){
+<pre><code><div class="code-block">shouldComponentUpdate: <span class="kw">function</span>(nextProps, nextState){
     <span class="kw">if</span>(<span class="st">&quot;persons&quot;</span> <span class="kw">in</span> <span class="ot">nextProps</span>.<span class="ot">appContext</span>.<span class="ot">state</span>.<span class="fu">dataContextWillUpdate</span>){
         <span class="kw">var</span> nextPerson = <span class="ot">nextProps</span>.<span class="ot">appContext</span>.<span class="ot">state</span>.<span class="ot">dataContextWillUpdate</span>.<span class="ot">persons</span>.<span class="fu">selectedPerson</span>;
         <span class="kw">return</span> <span class="ot">nextPerson</span>.<span class="fu">id</span> != <span class="kw">this</span>.<span class="ot">props</span>.<span class="ot">appContext</span>.<span class="ot">persons</span>.<span class="ot">selectedPerson</span>.<span class="fu">id</span>;
     }
-}</code></pre>
-<p>The example above passes in the <code>appContext</code> to the component as a <code>prop</code> called <code>appContext</code>. <code>dataContextWillUpdate</code> can then be access from the <code>nextProps</code> object using <code>nextProps.appContext.state.dataContextWillUpdate</code>.</p>
+}</div></code></pre>
+<p>The example above passes in the <code>appContext</code> to the component as a <code>prop</code> called <code>appContext</code>. <code>dataContextWillUpdate</code> can then be access from the <code>nextProps</code> object using <code class="wrap">nextProps.appContext.state.dataContextWillUpdate</code>.</p>
 <p>Another technique is to use reference equality. Because Astarisx objects are immutable, a new Object is created whenever state changes. This means that we can evaluate whether an object is the same, by simply checking whether it references the same memory location. So <code>shouldComponentUpdate</code> could look like this.</p>
-<pre><code>shouldComponentUpdate: <span class="kw">function</span>(nextProps, nextState){
+<pre><code><div class="code-block">shouldComponentUpdate: <span class="kw">function</span>(nextProps, nextState){
     <span class="kw">return</span> <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="ot">persons</span>.<span class="fu">selectedPerson</span> !==
             <span class="ot">nextState</span>.<span class="ot">appContext</span>.<span class="ot">persons</span>.<span class="fu">selectedPerson</span>;
-}</code></pre>
-<p>If the <code>selectedPerson</code> doesn’t change, <code>shouldComponentUpdate</code> will return <code>false</code>. But, if you change the selected person’s age from 21 to 22 like this <code>this.state.appContext.persons.selectedPerson.age = 22;</code>. Then <code>shouldComponentUpdate</code> would return <code>true</code>, because even though selectedPerson is the same person, it’s state changed therefore a new Object was created and that new Object references a different memory location. If you would like to use this technique, you must ensure that new Objects are created only when their state changes, however Astarisx make this easy.</p>
+}</div></code></pre>
+<p>If the <code>selectedPerson</code> doesn’t change, <code>shouldComponentUpdate</code> will return <code>false</code>. But, if you change the selected person’s age from 21 to 22 like this <code class="wrap">this.state.appContext.persons.selectedPerson.age = 22;</code>. Then <code>shouldComponentUpdate</code> would return <code>true</code>, because even though selectedPerson is the same person, it’s state changed therefore a new Object was created and that new Object references a different memory location. If you would like to use this technique, you must ensure that new Objects are created only when their state changes, however Astarisx make this easy.</p>
 
 <h3 id="astarisx-approach">Astarisx Approach</h3>
 <p>Astarisx is capable of displaying multiple Views in the UI at any one time. These Views are also capable and most likely to contain any number of Views themselves. Given that Astarisx Views all receive their own copy of the Application Data Context, and that the View is notified and receives a new copy of the Application Data Context every time there is a state change, it could be perceived as inefficient.</p>
@@ -1210,7 +1209,7 @@ selectPerson: <span class="kw">function</span>(id, next){
 <p>However, Astarisx uses a couple of techniques to ensure the UI’s performance remains responsive. Firstly, Astarisx, or more appropriately the State Manager, only notifies mounted Views. Secondly, Astarisx allows you to notify specific Views during a state transition resulting from a <code>setState</code> call.</p>
 <p>An Astarisx View can be assigned a <code>viewKey</code>. This <code>viewkey</code> can be used to specify to the State Manager that the particular View or Views are the only Views to be notified that there has been a state change. To accomplish this all that is required is to pass a <code>$notify</code> attribute to the ControllerViewModel when calling <code>setState</code>.</p>
 <p>Assign a <code>viewKey</code>.</p>
-<pre><code><span class="kw">var</span> App = <span class="ot">React</span>.<span class="fu">createClass</span>({
+<pre><code><div class="code-block"><span class="kw">var</span> App = <span class="ot">React</span>.<span class="fu">createClass</span>({
     <span class="dt">mixins</span>: [<span class="ot">Astarisx</span>.<span class="ot">mixin</span>.<span class="fu">ui</span>],
     <span class="dt">render</span>: <span class="kw">function</span>() {
         <span class="kw">return</span> (&lt;div&gt;
@@ -1219,11 +1218,11 @@ selectPerson: <span class="kw">function</span>(id, next){
             &lt;HobbyListView viewKey={<span class="st">&quot;HobbyListView&quot;</span>} <span class="ot">/&gt;</span>
 <span class="ot">        &lt;/div</span>&gt;);
     }
-});</code></pre>
+});</div></code></pre>
 <p>then when set state is called from within a function, just add a <code>$notify</code> attribute for the ControllerViewModel.</p>
-<p><code>this.setState(nextState, {$notify: &quot;NavView&quot;});</code></p>
+<p><code class="wrap">this.setState(nextState, {$notify: &quot;NavView&quot;});</code></p>
 <p>Or for multiple Views</p>
-<p><code>this.setState(persons, {$notify: [&quot;FormView&quot;, &quot;HobbyListView&quot;]});</code></p>
+<p><code class="wrap">this.setState(persons, {$notify: [&quot;FormView&quot;, &quot;HobbyListView&quot;]});</code></p>
 <p>Now only the specified Views will be notified when these <code>setState</code> are called.</p>
 <p><em>N.B. The main UI container is given a default <code>viewKey</code> of <code>*</code>.</em></p>
 
