@@ -998,7 +998,7 @@ this.setState(void(0), {$enableUndo: true});</div></code></pre>
 
 <!-- Router -->
     <h3 class="content-subhead" id="router">Working with the Router</h3>
-<p>Astarisx makes client side routing easy. It uses the micro client-side router called <a href="http://visionmedia.github.io/page.js">Page.js</a> to provide built in pushState routing, no hashes here. Astarisx approaches routing a little differently than most other frameworks. Astarisx takes routing out of the View and makes it the responsibility of the ViewModel, where it belongs. Your front-end developers will love it!</p>
+<p>Astarisx makes client side routing easy. It uses the micro client-side router called <a href="http://visionmedia.github.io/page.js">Page.js</a> to provide built in pushState routing, no hashes here. Astarisx approaches routing a little differently than most other frameworks. Astarisx takes routing out of the View and makes it the responsibility of the ViewModel, where it belongs.</p>
 
 <p>To enable pushState routing set the <code>enableRouting</code> option to <code>true</code> within <code>initializeAppContext</code>.</p>
 <pre><code><div class="code-block">var myCVM = Astarisx.createCVMClass({...});
@@ -1016,8 +1016,8 @@ var MyApp = React.createClass({
 
 <p>Once set, <code>$path</code>, <code>$pageNotFound</code>, <code>$pushState</code> and <code>$forceReplace</code> directives become available. You use these directives to control the router.</p>
 
-<h2 id="defining-routes">Defining Routes</h2>
-<p>In order to enable routing, all you need to do is define a <code>getRoutes</code> function from within a ViewModel. By simply defining <code>getRoutes</code> in any one of the ViewModels enables pushState routing.</p>
+<h4 class="content-subhead">Defining Routes</h4>
+<p>To configure routing for a particular ViewModel define a <code>getRoutes</code> function in the descriptor.</p>
 <p><code>getRoutes</code> returns an object that holds routing information. This routing object is made up of path objects that define path information such as an identifier for the route, the associated path and handler. The syntax to define a <code>path</code> follows the format outlined in the <a href="http://visionmedia.github.io/page.js">Page.js documentation</a>.</p>
 <p>Below is an example of a routing object.</p>
 <pre><code><div class="code-block">getRoutes: <span class="kw">function</span>(){
@@ -1035,7 +1035,7 @@ var MyApp = React.createClass({
 <p>In the example above, two routes are defined, <code>displayPerson</code> and <code>list</code>. <code>displayPerson</code> and <code>list</code> are simply identifiers and can be anything that you like. Each of the objects has a path property and a handler property. Whenever a defined path is navigated to, using the browsers back or forward buttons, the handler is triggered. This is in response to a <code>popstate</code> event occurring. In all other circumstances you simply update the <code>path</code> property within your functions and Astarisx will either pushState or replaceState for you.</p>
 
 <p>A route handler may look something like this:</p>
-<pre><code><div class="code-block"><span class="kw">var</span> personRouteHandler = <span class="kw">function</span>(params, appContext, path, pathId, ctx){
+<pre><code><div class="code-block"><span class="kw">var</span> personRouteHandler = <span class="kw">function</span>(params, path, pathId, ctx){
   <span class="kw">this</span>.<span class="fu">selectPerson</span>(<span class="ot">params</span>.<span class="fu">id</span>);
 }</div></code></pre>
 <p>A route changed handler is passed the following arguments:</p>
@@ -1058,8 +1058,9 @@ var MyApp = React.createClass({
     }
   }
 }</code></pre>
-<p>The <code>selectPerson</code> method performs it’s usual tasks and calls <code>setState</code> to transition to the next state with the newly selected Person. It also passes in a second argument to <code>setState</code> that sets the <code>path</code> <code>field</code> in the ControllerViewModel context. Passing a <code>path</code> value causes <code>pushState()</code> and the url to be updated.</p>
-<h2 id="multiple-paths-and-params">Multiple paths and params</h2>
+<p>The <code>selectPerson</code> method performs it’s usual tasks and calls <code>setState</code> to transition to the next state with the newly selected Person. It also passes into the second argument to <code>setState</code> a <code>$path</code> directive that sets the url path. Passing a <code>$path</code> directive triggers a pushState event and the url to be updated.</p>
+
+<h4 class="content-subhead">Multiple paths and params</h4>
 <p>So how do we deal with a path that looks like this <code class="wrap">'/person/:id/hobby/:hobbyId'</code>. So for this example we have two ViewModels. A person ViewModel and a hobby ViewModel. Within the hobby ViewModel the <code>getRoutes</code> function defines the path <code class="wrap">'/person/:id/hobby/:hobbyId'</code>.</p>
 <pre><code><div class="code-block"><span class="co">//hobby ViewModel</span>
 getRoutes: <span class="kw">function</span>(){
@@ -1097,11 +1098,11 @@ selectPerson: <span class="kw">function</span>(id, next){
       {<span class="dt">pageNotFound</span>: <span class="kw">true</span> }, next);
   }
 }</div></code></pre>
-<p>The ‘hobbyRouteHandler’ when invoked will first call the <code>selectPerson</code> function on the person ViewModel passing in the <code>id</code> and a callback. Once the callback returns it then calls the <code>selectHobby</code> method and passes in the <code>hobbyId</code>. The <code>selectHobby</code> method then performs it normal tasks and call <code>setState</code> setting the selected hobby and updating the <code>path</code> to the next state. (ie <code class="wrap">path: '/person/'+ this.state.personsContext.selectedPerson.id + '/hobby/'+this.hobbies[i].id</code>)</p>
+<p>The <code>hobbyRouteHandler</code> when invoked will first call the <code>selectPerson</code> function on the person ViewModel passing in the <code>id</code> and a callback. Once the callback returns it then calls the <code>selectHobby</code> method and passes in the <code>hobbyId</code>. The <code>selectHobby</code> method then performs it normal tasks and calls <code>setState</code> setting the selected hobby and updating the <code>path</code> to the next state. (ie <code class="wrap">path: '/person/'+ this.$state.personsContext.selectedPerson.id + '/hobby/'+this.hobbies[i].id</code>)</p>
 <pre><code><div class="code-block"><span class="co">//hobby ViewModel</span>
 <span class="kw">var</span> hobbyRouteHandler = <span class="kw">function</span>(params, path, pathId, ctx){
-  <span class="kw">if</span>(<span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">personsContext</span>.<span class="ot">selectedPerson</span>.<span class="fu">id</span> != <span class="ot">params</span>.<span class="fu">id</span>){
-    <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">personsContext</span>.<span class="fu">selectPerson</span>(<span class="ot">params</span>.<span class="fu">id</span>, <span class="kw">function</span>(){
+  <span class="kw">if</span>(<span class="kw">this</span>.<span class="ot">$state</span>.<span class="ot">personsContext</span>.<span class="ot">selectedPerson</span>.<span class="fu">id</span> != <span class="ot">params</span>.<span class="fu">id</span>){
+    <span class="kw">this</span>.<span class="ot">$state</span>.<span class="ot">personsContext</span>.<span class="fu">selectPerson</span>(<span class="ot">params</span>.<span class="fu">id</span>, <span class="kw">function</span>(){
       <span class="kw">this</span>.<span class="fu">selectHobby</span>(<span class="ot">params</span>.<span class="fu">hobbyId</span>);
     }.<span class="fu">bind</span>(<span class="kw">this</span>));
   } <span class="kw">else</span> {
@@ -1116,30 +1117,23 @@ selectPerson: <span class="kw">function</span>(id, next){
         <span class="dt">current</span>: <span class="kw">new</span> <span class="fu">Hobby</span>(<span class="kw">this</span>.<span class="fu">hobbies</span>[i])
       },
       {
-        <span class="dt">path</span>: <span class="st">&#39;/person/&#39;</span>+ <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">personsContext</span>.<span class="ot">selectedPerson</span>.<span class="fu">id</span> +
+        <span class="dt">path</span>: <span class="st">&#39;/person/&#39;</span>+ <span class="kw">this</span>.<span class="ot">$state</span>.<span class="ot">personsContext</span>.<span class="ot">selectedPerson</span>.<span class="fu">id</span> +
         <span class="st">&#39;/hobby/&#39;</span>+<span class="kw">this</span>.<span class="fu">hobbies</span>[i].<span class="fu">id</span>
       });
       <span class="kw">break</span>;
     }
   }
 }</div></code></pre>
-<h2 id="undo-and-redo">Undo and Redo</h2>
-<p>When you enable routing, undo functionality is automatically turned on. However, it operates differently to the way it is used when the <a href="https://github.com/entrendipity/astarisx/wiki/View#undo-and-redo"><code>enableUndo</code></a> <code>prop</code> is explicitly turned on in the initial Component. In fact, it becomes redundant, as the routing overrides it and therefore it is not necessary to specify it when routing is enabled.</p>
-<p>The way undo works it this. If state changes but the url stays the same, then you are able to revert to the previousState and subsequently advance to the next state. Once the url changes undo is reset and you will not be able to revert to the previous state.</p>
-<p>A good example might be updating a contact list. If you select a person then the url might change to <code>person/1</code>. If you make changes to the person’s details the url does not change, so you are able to undo any changes. If you go to another person, the url might change to <code>person/2</code> and undo is no longer available. Any previous state from person 1 is lost, even if you hit the browser’s back button and return to <code>person/1</code>.</p>
 
-<h2 id="pagenotfound---404-error">pageNotFound - 404 error</h2>
-<p>When a path is not found, usually the UI provide some sort of feedback to the user. Astarisx will update the <code>pageNotFound</code> field to <code>true</code>, so that the View has an opportunity to display a “404:Page Not Found” page.</p>
-<p>If <code>pageNotFound</code> is <code>true</code> the user may hit the browser’s back button to return to the previous page. Astarisx provides a special function called <code>rollbackRequest</code> on the <code>ctx</code> object passed in to the route handler. This function makes it easy to revert back to the previous state so that the user gets back to what she expects to see.</p>
-<p><strong>Example usage of <code>rollbackRequest</code></strong></p>
-<pre><code><div class="code-block"><span class="kw">var</span> personRouteHandler = <span class="kw">function</span>(params, path, pathId, ctx){
-  <span class="kw">if</span>(<span class="ot">ctx</span>.<span class="fu">rollbackRequest</span>){
-    <span class="ot">ctx</span>.<span class="fu">revert</span>();
-    <span class="kw">return</span>;
-  }
-  <span class="kw">this</span>.<span class="fu">selectPerson</span>(<span class="ot">params</span>.<span class="fu">id</span>);
-};</div></code></pre>
-<h2 id="working-with-links-in-the-view">Working with links in the View</h2>
+<h4 class="content-subhead">Undo and Redo</h4>
+<p>When you enable routing, undo functionality is automatically turned on. It operates differently to the way it is used when the <code>enableUndo</code> is set to <code>true</code> <a data-scroll href="#undo">(See Built in Undo)</a>. In fact, it becomes redundant, as the routing overrides it and therefore it is not necessary to specify it when routing is enabled.</p>
+<p>The way undo works is that if state changes but the url stays the same, then a reference is created to <code>$previousState</code> and you are able to revert to it and subsequently advance. Once the url changes <code>$previousState</code> is reset and you are not be able to revert to that previous state.</p>
+<p>A good example might be when updating a contact list. If you select a person then the url might change to <code>person/1</code>. If you make changes to the person’s details the url does not change, so you are able to undo any changes. However, if you go to another person, the url might change to <code>person/2</code> at that point undo for the previous contact is no longer available. Any previous state from person 1 is lost, even if you hit the browser’s back button and return to <code>person/1</code>.</p>
+
+<h4 class="content-subhead">$pageNotFound - 404 error</h4>
+<p>When a path is not found, usually the UI provide some sort of feedback to the user. Astarisx will update the <code>$pageNotFound</code> directive to <code>true</code>, so that the View has an opportunity to display a “404:Page Not Found” page. You are also able to manually pass in the <code>$pageNotFound</code> directive, this is usefull in situations where the error is due to a record not being available as opposed to the url not being valid.</p>
+
+<h4 class="content-subhead">Working with hyperlinks in the View</h4>
 <p>So far we have spoken about how ViewModels interact and update pushState, but of course the View will use hyperlinks to navigate to different parts of your application. Well Astarisx makes it super easy.</p>
 <p>All you do is include the <code class="wrap">Astarisx.mixin.pushState</code> mixin, which will automatically configure any links to use <code>pushState</code>.</p>
 <pre><code><div class="code-block"><span class="kw">var</span> Application = <span class="ot">React</span>.<span class="fu">createClass</span>({
@@ -1153,7 +1147,7 @@ selectPerson: <span class="kw">function</span>(id, next){
   &lt;li&gt;&lt;a href=&quot;/person/3&quot;&gt;John Citizen&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</div></code></pre>
 <p>That’s it, pushState will be used whenever a user clicks the links.</p>
-<p>Your front-end developers are going to love it.</p>
+<p>Your front-end developers are going to love it!</p>
 
 
 
