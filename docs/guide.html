@@ -833,14 +833,14 @@ persons: {
 <p>To access fields you simply reference them. For example, to read the <code>name</code> of a <code>selectedPerson</code> on the <code>persons</code> data context, you would use <code class="wrap">this.state.appContext.persons.selectedPerson.name</code>.</p>
 
 <p>To update the <code>selectedPerson</code>’s name you just assign a value, like so <code class="wrap">this.state.appContext.persons.selectedPerson.name = &quot;Fred&quot;</code>.</p>
-<p>The code below shows a React component that has been passed the <code>appContext</code> as ‘appContext’ prop. You can see that to update the <code>selectedPerson</code> name we simply assign the value. This updates the Model which ultimately gets reflected in the UI.</p>
+<p>The code below shows a an update from an Astarisx View. You can see that to update the <code>selectedPerson</code> name we simply assign the value. This updates the Model which ultimately gets reflected in the UI.</p>
 <pre><code><div class="code-block"><span class="kw">var</span> FormView = <span class="ot">React</span>.<span class="fu">createClass</span>({
     <span class="dt">updateName</span>: <span class="kw">function</span>(e){
         //simply assign the value and the UI will be updated
-        <span class="kw">this</span>.<span class="ot">props</span>.<span class="ot">appContext</span>.<span class="ot">persons</span>.<span class="ot">selectedPerson</span>.<span class="fu">name</span> = <span class="ot">e</span>.<span class="ot">target</span>.<span class="fu">value</span>;
+        <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="ot">persons</span>.<span class="ot">selectedPerson</span>.<span class="fu">name</span> = <span class="ot">e</span>.<span class="ot">target</span>.<span class="fu">value</span>;
     },
     <span class="dt">render</span>: <span class="kw">function</span>() {
-        <span class="kw">var</span> current = <span class="kw">this</span>.<span class="ot">props</span>.<span class="ot">appContext</span>.<span class="ot">persons</span>.<span class="fu">selectedPerson</span>;
+        <span class="kw">var</span> current = <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="ot">persons</span>.<span class="fu">selectedPerson</span>;
 
         <span class="kw">return</span> (
             &lt;div key={<span class="ot">current</span>.<span class="fu">id</span>}&gt;
@@ -913,27 +913,40 @@ persons: {
 
 <!-- Undo -->
     <h3 class="content-subhead" id="undo">Built in Undo</h3>
-    <p>Astarisx has built in undo and redo capability. In order to use this functionality you specify a <code>prop</code> called <code>enableUndo</code> on the component you pass into <code class="wrap">React.renderComponent</code>. The default value is <code>false</code>, assigning <code>true</code> turns on undo and redo functionality.</p>
-<pre><code><div class="code-block"><span class="kw">var</span> controllerViewModel = <span class="ot">Astarisx</span>.<span class="fu">createControllerViewModelClass</span>({<span class="co">/* descriptor */</span>});
+    <p>Astarisx has built in undo and redo capability. In order to turn on undo and redo functionality set <code>enableUndo</code> option to <code>true</code> within <code>initializeAppContext</code>.</p>
+<pre><code><div class="code-block">var myCVM = Astarisx.createCVMClass({/* descriptor */});
 
-<span class="ot">React</span>.<span class="fu">renderComponent</span>(&lt;Application
-  controllerViewModel={controllerViewModel}
-  enableUndo={<span class="kw">true</span>}<span class="ot">/&gt;,</span>
-<span class="ot">  document.getElementById</span><span class="fl">(</span><span class="ot">&#39;container&#39;</span><span class="fl">))</span><span class="ot">;</span></div></code></pre>
-<p>Once set, the <code>fields</code> <code>canRevert</code>, <code>canAdvance</code>, <code>previousState</code> and <code>nextState</code> and methods <code>revert</code> and <code>advance</code> are available. Every state change is captured and able to be reverted to.</p>
-<p>The code snippet below shows calls to <code>revert</code> and <code>advance</code> within a React component that has the <code>appContext</code> assigned to <code>appContext</code> <code>prop</code>.</p>
+var MyApp = React.createClass({
+  mixins: [Astarisx.mixin.ui],
+  componentWillMount: function(){
+    this.initializeAppContext({
+      controllerViewModel: myCVM,
+      //set enableUndo option to true
+      enableUndo: true
+    });
+  }, ...
+});</div></code></pre>
+
+<p>Once set, every state transition will be captured in a property called $previousState. The properties <code>$canRevert</code>, <code>$canAdvance</code> and <code>$nextState</code> also become available. To revert to a previous state you would call <code>revert()</code>. To go back to the state prior to reverting, you call <code>advance()</code>.</p>
+<p>The code snippet below shows calls to <code>revert</code> and <code>advance</code> within an Astarisx View component.</p>
 <pre><code><div class="code-block">undo: <span class="kw">function</span>(e){
     <span class="ot">e</span>.<span class="fu">preventDefault</span>();
     <span class="ot">e</span>.<span class="fu">stopPropagation</span>();
-    <span class="kw">this</span>.<span class="ot">props</span>.<span class="ot">appContext</span>.<span class="fu">revert</span>();
+    if(this.state.appContext.$canRevert){
+        <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="fu">revert</span>();
+    }
 },
 redo: <span class="kw">function</span>(e){
     <span class="ot">e</span>.<span class="fu">preventDefault</span>();
     <span class="ot">e</span>.<span class="fu">stopPropagation</span>();
-    <span class="kw">this</span>.<span class="ot">props</span>.<span class="ot">appContext</span>.<span class="fu">advance</span>();
+    if(this.state.appContext.$canAdvance){
+        <span class="kw">this</span>.<span class="ot">state</span>.<span class="ot">appContext</span>.<span class="fu">advance</span>();
+    }
 }</div></code></pre>
-<p>If <code>pushState</code> routing is enabled, it is not required to be set <code>enableUndo</code>, as undo capability is enable by default.</p>
-
+<h4 class="content-subhead">Adhoc Undo</h4>
+<p>If you haven't set the <code>enableUndo</code> option to <code>true</code>, you are still able to enable undo functionality by passing in the <code>$enableUndo</code> directive to the App Context. This will store the last state in <code>$previousState</code> and make it available to revert to. This is handy for things like confirming deletes. <code>$previousState</code> will be cleared during the next state transition and will no longer be available.</p>
+<pre><code><div class="code-block">//store the previous state for this transition
+this.setState(void(0), {$enableUndo: true});</div></code></pre>
 <!-- Watched State -->
     <h3 class="content-subhead" id="watchedstate">Watched State</h3>
 <p>There are instances in which a ViewModel may be interested in state changes that occur in another ViewModel. To achieve this you define a <code>getWatchedState</code> function. <code>getWatchedState</code> returns an object that specifies <code>field</code>(s) in another ViewModel that it is interested in and assigns a handler to these <code>field</code>s which is invoked whenever any changes in the <code>field</code> occurs.</p>
