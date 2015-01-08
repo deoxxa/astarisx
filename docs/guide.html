@@ -999,7 +999,24 @@ this.setState(void(0), {$enableUndo: true});</div></code></pre>
 
 <!-- Router -->
     <h3 class="content-subhead" id="router">Working with the Router</h3>
-<p>Astarisx makes client side routing easy. It uses the micro client-side router called <a href="http://visionmedia.github.io/page.js">Page.js</a> to provide built in pushState routing, no hashes here. Astarisx approaches routing a little differently than most other frameworks. Routing is about presentation logic so Astarisx takes routing out of the View and makes it the responsibility of the ViewModel, where it belongs. Your front-end developers will love it!</p>
+<p>Astarisx makes client side routing easy. It uses the micro client-side router called <a href="http://visionmedia.github.io/page.js">Page.js</a> to provide built in pushState routing, no hashes here. Astarisx approaches routing a little differently than most other frameworks. Astarisx takes routing out of the View and makes it the responsibility of the ViewModel, where it belongs. Your front-end developers will love it!</p>
+
+<p>To enable pushState routing set the <code>enableRouting</code> option to <code>true</code> within <code>initializeAppContext</code>.</p>
+<pre><code><div class="code-block">var myCVM = Astarisx.createCVMClass({...});
+
+var MyApp = React.createClass({
+  mixins: [Astarisx.mixin.ui],
+  componentWillMount: function(){
+    this.initializeAppContext({
+      controllerViewModel: myCVM,
+      //turn on pushState routing
+      enableRouting: true
+    });
+  }, ...
+});</div></code></pre>
+
+<p>Once set, <code>$path</code>, <code>$pageNotFound</code>, <code>$pushState</code> and <code>$forceReplace</code> directives become available. You use these directives to control the router.</p>
+
 <h2 id="defining-routes">Defining Routes</h2>
 <p>In order to enable routing, all you need to do is define a <code>getRoutes</code> function from within a ViewModel. By simply defining <code>getRoutes</code> in any one of the ViewModels enables pushState routing.</p>
 <p><code>getRoutes</code> returns an object that holds routing information. This routing object is made up of path objects that define path information such as an identifier for the route, the associated path and handler. The syntax to define a <code>path</code> follows the format outlined in the <a href="http://visionmedia.github.io/page.js">Page.js documentation</a>.</p>
@@ -1019,12 +1036,13 @@ this.setState(void(0), {$enableUndo: true});</div></code></pre>
 <p>In the example above, two routes are defined, <code>displayPerson</code> and <code>list</code>. <code>displayPerson</code> and <code>list</code> are simply identifiers and can be anything that you like. Each of the objects has a path property and a handler property. Whenever a defined path is navigated to, using the browsers back or forward buttons, the handler is triggered. This is in response to a <code>popstate</code> event occurring. In all other circumstances you simply update the <code>path</code> property within your functions and Astarisx will either pushState or replaceState for you.</p>
 
 <p>A route handler may look something like this:</p>
-<pre><code><div class="code-block"><span class="kw">var</span> personRouteHandler = <span class="kw">function</span>(params, path, pathId, ctx){
+<pre><code><div class="code-block"><span class="kw">var</span> personRouteHandler = <span class="kw">function</span>(params, appContext, path, pathId, ctx){
   <span class="kw">this</span>.<span class="fu">selectPerson</span>(<span class="ot">params</span>.<span class="fu">id</span>);
 }</div></code></pre>
 <p>A route changed handler is passed the following arguments:</p>
 <ul>
 <li><code>params</code> =&gt; object that holds any parameters passed to the url</li>
+<li><code>appContext</code> =&gt; reference to pre-transitioned appContext state</li>
 <li><code>path</code> =&gt; the path that is currently being navigated to</li>
 <li><code>pathId</code> =&gt; the path identifier (ie <code>displayPerson</code>)</li>
 <li><code>ctx</code> =&gt; Page.js context object containing more path information (see <a href="http://visionmedia.github.io/page.js/">Page.js documentation</a> on the Context object)</li>

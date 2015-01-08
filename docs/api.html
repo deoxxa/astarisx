@@ -98,7 +98,6 @@
                 <li class="sub"><a data-scroll href="#dataContext">$dataContext</a></li>
                 <li class="sub"><a data-scroll href="#canrevert">$canRevert</a></li>
                 <li class="sub"><a data-scroll href="#canadvance">$canAdvance</a></li>
-                <li class="sub"><a data-scroll href="#pagenotfound">$pageNotFound</a></li>
                 <li class="sub"><a data-scroll href="#datacontextupdated">$dataContextUpdated</a></li>
                 <li class="sub"><a data-scroll href="#dirty">$dirty</a></li>
                 <li class="sub"><a data-scroll href="#valid">$[field]Valid</a></li>
@@ -113,6 +112,7 @@
                 <li class="sub"><a data-scroll href="#notify">$notify</a></li>
                 <li class="sub"><a data-scroll href="#owner">$owner</a></li>
                 <li class="sub"><a data-scroll href="#path">$path</a></li>
+                <li class="sub"><a data-scroll href="#pagenotfound">$pageNotFound</a></li>
                 <li class="sub"><a data-scroll href="#pushstate">$pushState</a></li>
                 <li class="sub"><a data-scroll href="#forcereplace">$forceReplace</a></li>
 
@@ -135,7 +135,7 @@
     <div id="main">
         <div class="header">
             <h1>Astarisx API</h1>
-            <h2>v0.10.0</h2>
+            <h2>v0.11.0</h2>
         </div>
 
         <div class="content">
@@ -427,24 +427,24 @@
     Object fieldPreviousState,
     String watchedFieldName,
     Object sourceDataContext,
-    Object appContext,
     String nextUrlPath,
     String previousUrlPath
 )</div></code></pre>
             <p>A watched state change handler is referenced in a <code>getWatchedState</code> object and can have any name. It is invoked when watched state changes.</p>
-            <p>n.b. The <code>appContext</code> argument is pre-transition state and the <code>nextUrlPath</code> and <code>previousUrlPath</code> are only available if routing is enabled.</p>
+            <p>n.b. The <code>nextUrlPath</code> and <code>previousUrlPath</code> are only available if routing is enabled.</p>
             <p><b>Scope:</b> <em>ViewModel</em></p>
 
 <!-- routeChangeHandler -->
             <h2 class="section-divider" id="routechangehandler">routeChangeHandler</h2>
             <pre><code><div class="code-block">void function #routeChangeHandler(
     Object params,
-    Object appCtx,
     String path,
     String pathKey,
-    Object ctx
+    Object ctx,
+    Function show
 )</div></code></pre>
             <p>A route state change handler is referenced in a <code>getRoutes</code> object and can have any name. It is invoked when route paths change in response to the browser firing a <code>popstate</code> event.</p>
+            <p>n.b. <code>show</code> function argument is only available is <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> is mixed in.</p>
             <p><b>Scope:</b> <em>ViewModel</em></p>
 
 <!-- Model Instantiation -->
@@ -579,11 +579,6 @@
             <p>Indicates whether there is next state available to transition to.</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
             
-<!-- $pageNotFound -->
-            <h2 class="section-divider" id="pagenotfound">$pageNotFound</h2>
-            <p>Indicates whether a route path is invalid resulting in a <code>404:page not found</code> error</p>
-            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
-            
 <!-- $dataContextUpdated -->
             <h2 class="section-divider" id="datacontextupdated">$dataContextUpdated</h2>
             <p>Holds only the data contexts with the state that will be transitioned and is intended to be used within React’s <code>shouldComponentUpdate</code>. See <a href="https://github.com/entrendipity/astarisx/wiki/View#optimizing-the-view">Optimizing the View</a>.</p>
@@ -651,6 +646,11 @@
             <p>URL path assigned to the next state. Only available if pushState routing is enabled. </p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
+<!-- $pageNotFound -->
+            <h2 class="section-divider" id="pagenotfound">$pageNotFound</h2>
+            <p>Used to notify when a route path is invalid resulting in a <code>404:page not found</code> error</p>
+            <p><b>Scope:</b> <em>ControllerViewModel</em></p>
+            
 <!-- $pushState -->
             <h2 class="section-divider" id="pushstate">$pushState</h2>
             <pre><code><div class="code-block">$pushState: Boolean</div></code></pre>
