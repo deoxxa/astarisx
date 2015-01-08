@@ -1,3 +1,7 @@
+## 0.11.0
+### Breaking
+- remove passing in `appContext` into `watchedStateChangeHandler` and `routeChangeHandler`
+
 ## 0.10.0
 
 - added auto-binding for setState callbacks.

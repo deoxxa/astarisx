@@ -133,7 +133,7 @@ var AstarisxClass = {
       for(key in this.originalSpec){
         if(this.originalSpec.hasOwnProperty(key)){
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
-            //assume it is a descriptor and clone
+            //assume it is a accessor descriptor and clone
             tempDesc[key] = extend(this.originalSpec[key]);
             if(!('enumerable' in tempDesc[key])){
               if(proto.constructor.classType === "Model" && key[0] === "_"){

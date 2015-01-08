@@ -1,17 +1,17 @@
 {
   "name": "astarisx",
-  "description": "Highly Composable Application Architecture for building React Applications",
-  "version": "0.10.0",
+  "description": "Highly Composable Application Architecture for React",
+  "version": "0.11.0",
   "keywords": [
     "react",
     "mvc",
     "mvvm",
-    "react router",
-    "react pushState",
+    "router",
+    "pushState",
     "mediaQuery",
     "astarisx"
   ],
-  "homepage": "https://github.com/entrendipity/astarisx",
+  "homepage": "http://entrendipity.github.io/astarisx/",
   "author": {
     "name": "Frank Panetta",
     "email": "frank.panetta@entrendipity.com.au"

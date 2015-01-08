@@ -1146,7 +1146,7 @@ var AstarisxClass = {
       for(key in this.originalSpec){
         if(this.originalSpec.hasOwnProperty(key)){
           if('get' in this.originalSpec[key] || 'set' in this.originalSpec[key]){
-            //assume it is a descriptor and clone
+            //assume it is a accessor descriptor and clone
             tempDesc[key] = extend(this.originalSpec[key]);
             if(!('enumerable' in tempDesc[key])){
               if(proto.constructor.classType === "Model" && key[0] === "_"){
@@ -2003,7 +2003,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 											subscribers[subscriber].call(stateMgr.appState[subscriber],
 											nextState[transientStateKeys[keyIdx]][watchedField],
 											stateMgr.appState[transientStateKeys[keyIdx]][watchedField],
-											watchedField, transientStateKeys[keyIdx], stateMgr.appState,
+											watchedField, transientStateKeys[keyIdx],
 											nextState.$path, stateMgr.appState.$path));
 									}
 								}
@@ -2243,8 +2243,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 							external = true;
 							if(!internal) {
 								routeMapping[route].call(stateMgr.appState[dataContextName], ctx.params,
-                stateMgr.appState,
-								ctx.path, pathKey, ctx/*, ('show' in stateMgr.appState) ? stateMgr.appState.show.bind(stateMgr.appState): void(0)*/);
+								ctx.path, pathKey, ctx, ('show' in stateMgr.appState) ? stateMgr.appState.show.bind(stateMgr.appState): void(0));
 							}
 							internal = false;
 						}.bind(this, viewModel, routeHash[routePath].path, routePath));

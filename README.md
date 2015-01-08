@@ -6,8 +6,6 @@ Highly Composable Application Architecture for building [React](http://facebook.
 [![Build Status]](https://travis-ci.org/entrendipity/astarisx)
 [![License]](https://github.com/entrendipity/astarisx/blob/master/LICENSE)
 
-#####Documentation: http://entrendipity.github.io/astarisx/
-
 ## Usage
 Astarisx can be loaded as:
 
@@ -36,13 +34,6 @@ require(['./astarisx.min.js'], function (Astarisx) {
     // Do something with Astarisx
 });
 ```
-
-## TODO
-- Keep updating Documentation
-- Developer's Guide
-- Tutorials
-- Tips
-- More Tests!
 
 ## Author
 Frank Panetta  - [Follow @fattenap](https://twitter.com/intent/follow?screen_name=fattenap)
