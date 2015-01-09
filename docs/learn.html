@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Astarisx Documentation</title>
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.5.0/pure-min.css">
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.4/styles/tomorrow-night-bright.min.css">
+  
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="css/layouts/side-menu-old-ie.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+        <link rel="stylesheet" href="css/layouts/side-menu.css">
+    <!--<![endif]-->
+
+</head>
+<body>
+
+<div id="layout">
+    <!-- Menu toggle -->
+    <a href="#menu" id="menuLink" class="menu-link">
+        <!-- Hamburger icon -->
+        <span></span>
+    </a>
+
+    <div id="menu">
+        <div class="pure-menu pure-menu-open">
+            
+            <a class="pure-menu-heading" href="../index.html"><span class="fa fa-arrow-left"></span>Astarisx</a>
+
+            <ul>
+                <li class="group-header"><a data-scroll href="#tutorial">Tutorial</a></li>
+                <li class="sub"><a data-scroll href="#projectsetup">Project Setup</a></li>
+                <li class="sub"><a data-scroll href="#applicationstructure">Application Structure</a></li>
+                <li class="sub"><a data-scroll href="#createmodels">Create Models</a></li>
+                <li class="sub"><a data-scroll href="#createviewmodels">Create ViewModels</a></li>
+                <li class="sub"><a data-scroll href="#exposedatacontexts">Expose Data Contexts</a></li>
+                <li class="sub"><a data-scroll href="#buildtheui">Build the UI</a></li>
+                <li class="sub"><a data-scroll href="#buildtheui">Enable Undo</a></li>
+                <li class="sub"><a data-scroll href="#buildtheui">MediaQuery Notifications</a></li>
+                <li class="sub"><a data-scroll href="#buildtheui">From React to Astarisx Views</a></li>
+                <li class="sub"><a data-scroll href="#buildtheui">pushState Routing</a></li>
+                <li class="sub"><a data-scroll href="#buildtheui">Adding Transitions</a></li>
+                <!-- <li class="group-header"><a data-scroll href="#tips">Tips</a></li>
+                <li class="group-header"><a data-scroll href="#videos">Videos</a></li>
+                <li class="group-header"><a data-scroll href="#resources">Resources</a></li> -->
+            </ul>
+        </div>
+    </div>
+
+    <div id="main">
+        <div class="header">
+            <h1>Learn Astarisx</h1>
+            <h2>Work in progress</h2>
+        </div>
+
+        <div class="content">
+            <h2 class="content-subhead" id="tutorial">Tutorial</h2>
+            <p>We are going to be build a simple CRM application. The application is a little contrived but will serve to demonstrate most of the concepts within Astarisx. We"ll start by building a basic version of the application and slowly build upon that version, adding functionality as we go, until we have a fully functioning CRM. It is assumed that you are familar with React.</p>
+            <p>You will need <a href="http://nodejs.org/">Node.js</a> and <a href="http://gulpjs.com/">gulp</a> installed if you would like to follow along with this tutorial. The completed application should look like this.</p>
+            <img class="pure-img" src="../img/ScreenShot_Example.png">
+            <p>The completed source code for this tutorial can be found on <a href="">GitHub (To be set)</a></p>
+
+            <h3 class="content-subhead" id="projectsetup">Project Setup</h3>
+            <p>After ensuring you have Node and gulp installed, run the following command in a terminal.</p>
+            <pre><code><div class="code-block">git clone https://github.com/entrendipity/astarisx-starterkit.git</div></code></pre>
+            <p>This will create a directory called <code>astarisx-starterkit</code> which will give us a basic project structure to work with. <em>If you don"t have <a href="http://git-scm.com/">git</a> installed, you can <a href="https://github.com/entrendipity/astarisx-starterkit/archive/master.zip">download the starter kit from here</a> and extract it into a directory.</em></p>
+
+            <p>Before we go any further we should take a look at what the starter kit has given us.</p>
+            <p>The starter kit gives us a basic project structure and some tools to develop our app. In the root directory we have a <code>gulpfile.js</code> used to configure gulp tasks, a package.json and README.md files, nothing that you need to worry about for what we are doing, and an <code>index.html</code>, main.js and app directory. The last the things are what we care about. Let"s take a look.</p>
+            <p>The <code>index.html</code> file, although relevant, is nothing special. If you"ve written a React application you will now that the <code>index.html</code> file is just the container that holds your application. So let"s move onto to <code>main.js</code></p>
+            <pre><code><div class="code-block">/* main.js */
+var React = require("react"),
+  App = require("./app/view/ui");
+
+module.exports = React.render(&lt;App /&gt;, document.body);</div></code></pre>
+<p>Again nothing really to see here, we are simply initializing the application as per normal.</p>
+<p>The <code>app</code> directory is a little more interesting. It is made up of three directories, <code>models</code>, <code>view</code> and <code>viewModels</code>. This is where the code for our application will be stored. The <code>models</code> directory has a <code>models.txt</code> file in it, acting as a place holder and it can be deleted. We"ll put our models in here later. The <code>viewModels</code> directory has a file called <code>cvm.js</code> this is the most basic ControllerViewModel that you can create. We need a reference to the ControllerViewModel from the View. So in the <code>view</code> directory we have a file called <code>ui.js</code>, this is the file that was referenced in <code>main.js</code> and is what Astarisx refers to as the UI Container, as it will hold all the other components. Let"s crack it open.</p>
+<pre><code><div class="code-block">/* ui.js */
+var React = require("react");
+var Astarisx = require("astarisx");
+var cvm = require("../viewModels/cvm");
+
+var UI = React.createClass({
+  mixins: [Astarisx.mixin.ui],
+  componentWillMount: function(){
+    this.initializeAppContext({ 
+      controllerViewModel: cvm
+    });
+  },
+
+  render: function(){
+    return (&lt;h1&gt;All OK!&lt;/h1&gt;);
+  }
+});
+module.exports = UI;</div></code></pre>
+
+    <p>This is where we are reference the ControllerViewModel (i.e. <code class="wrap">var cvm = require("../viewModels/cvm")</code>. It is passed into the <code>initializeAppContext</code>, within the <code>componentWillMount</code>, and will initialize the Application Data Context. An important thing to note, is that we mixin <code class="wrap">Astarisx.mixin.ui</code>. This turns the React component into an Astarisx UI Container. It will attach a special property called <code>appContext</code> to the component"s state object. We will be referencing <code>appContext</code> alot.</p>
+
+            <p>OK, let"s continue.</p>
+
+            <p>Rename the <code>astarisx-starterkit</code> directory to <code>astarisx-tutorial</code>. Navigate into the <code>astarisx-tutorial</code> and run <code>npm install</code>.</p>
+            <pre><code><div class="code-block">npm install</div></code></pre>
+            <p>This will download and install the required components to build your app. You will notice that a <code>node_modules</code> directory was created. This is where our modules live. Once that is done, run the following command.</p>
+            <pre><code><div class="code-block">gulp serve</div></code></pre>
+            <p>This will start a local http server and (hopefully) open a web browser displaying the application. It should have also created two new root directories called <code>build</code> and <code>assets</code>. This is where our compiled files land for our application. Keep the terminal window open and the browser should automatically update as we make changes.</p>
+
+            <h3 class="content-subhead" id="applicationstructure">Application Structure</h3>
+            <p>Our application is going to have the following Astarisx object:
+                <ul>
+                    <li>Person Model</li>
+                    <li>Hobby Model</li>
+                    <li>Persons ViewModel</li>
+                    <li>Hobbies ViewModel</li>
+                    <li>persons Data Context</li>
+                    <li>hobbies Data Context</li>
+                </ul>
+                With the following demo data.
+                <pre><code><div class="code-block">/* Persons */
+{
+    id: "1",
+    firstName: "Frank",
+    lastName: "Smith",
+    gender: "male",
+    dob: "1980-03-03",
+    job: "Dentist"
+},{
+    id:"2",
+    firstName: "Lisa",
+    lastName: "Jones",
+    gender: "female",
+    dob: "1985-02-22",
+    job: "Accountant"
+},{
+    id: "3",
+    firstName: "John",
+    lastName: "Citizen",
+    gender: "male",
+    dob: "1975-12-11",
+    job: "Unemployed"
+}</div></code></pre>
+                <pre><code><div class="code-block">/* Hobbies */
+{
+    id: "1",
+    hobbies: [
+        {id: "1", hobby: "reading"},
+        {id: "2", hobby: "golfing"},
+        {id: "3", hobby: "cutting code"}
+    ]
+},{
+    id: "2",
+    hobbies: [
+        {id: "1", hobby: "reading"}
+    ]
+},{
+    id: "3",
+    hobbies: [
+        {id: "1", hobby: "watching YouTube"}
+    ]
+}</div></code></pre>
+
+            </p>
+            
+            <h3 class="content-subhead" id="createmodels">Create Models</h3>
+            <p>In the <code>models</code> directory create a file called <code>person.js</code> and add the following code.
+            <pre><code><div class="code-block">/* models/person.js */
+var Astarisx = require('astarisx');
+
+var person = Astarisx.createModelClass({
+
+  id: {
+    get: function(){
+      return this.$state.id;
+    }
+  },
+  
+  firstName: {
+    get: function(){ 
+      return this.$state.firstName; 
+    },
+    set: function(newValue){
+      this.setState({firstname: newValue});
+    }
+  },
+
+  lastName: {
+    get: function(){ 
+      return this.$state.lastName; 
+    },
+    set: function(newValue){
+      this.setState({lastName: newValue});
+    }
+  },
+
+  job: {
+    get: function(){
+      return this.$state.job;
+    },
+    set: function(newValue){
+      this.setState({'job': newValue});
+    }
+  },
+
+  dob: {
+    get: function(){
+      return this.$state.dob;
+    },
+    set: function(newValue){
+      this.setState({'dob': newValue});
+    }
+  },
+
+  gender: {
+    get: function(){ 
+      return this.$state.gender; 
+    },
+    set: function(newValue){
+      this.setState({'gender': newValue});
+    }
+  }
+
+});
+
+module.exports = person;</div></code></pre>
+            We create a field with the same name for each of the fields in the source object. If there were fields that we didn't care about we don't need to create a field for them. They will not be lost, they will simply form part of the object's state (i.e. <code>this.$state</code>) but will not be directly accessible or visible outside of the Model. Notice that <code>id</code> only has a getter. This is because we want to prevent anything from changing it.
+            </p>
+            
+            <h3 class="content-subhead" id="createviewmodels">Create ViewModels</h3>
+            
+            <h3 class="content-subhead" id="exposedatacontexts">Expose Data Contexts</h3>
+            
+            <h3 class="content-subhead" id="buildtheui">Build the UI</h3>
+            <!-- <h2 class="content-subhead" id="#tips">Tips</h2>
+            <h2 class="content-subhead" id="#videos">Videos</h2>
+            <h2 class="content-subhead" id="#resources">Resources</h2> -->
+
+            
+        </div>
+    </div>
+</div>
+
+
+
+<script src="../lib/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script src="js/ui.js"></script>
+<script src="../lib/smooth-scroll.js"></script>
+<script>
+    smoothScroll.init({
+      speed: 1000, // Integer. How fast to complete the scroll in milliseconds
+    easing: "easeInOutCubic", // Easing pattern to use
+    // updateURL: false, // Boolean. Whether or not to update the URL with the anchor hash on scroll
+    // offset: 80, // Integer. How far to offset the scrolling anchor location in pixels
+    // callbackBefore: function ( toggle, anchor ) {}, // Function to run before scrolling
+    // callbackAfter: function ( toggle, anchor ) {} // Function to run after scrolling
+    });
+</script>
+
+
+</body>
+</html>
