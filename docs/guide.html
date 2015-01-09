@@ -1255,14 +1255,14 @@ selectPerson: <span class="kw">function</span>(id, next){
 
 <!-- Animation -->
     <h3 class="content-subhead" id="animation">Animation (work in progress)</h3>
-<p>In order to harness the power of <a href="http://julian.com/research/velocity/">Velocity.js</a>, Accelerated JavaScript animation, you must mixin the <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> into the ControllerViewModel.</p>
+<p>In order to harness the power of <a href="http://julian.com/research/velocity/">Velocity</a>, Accelerated JavaScript animation, you must mixin the <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> into the ControllerViewModel. Astarisx uses the UI packs, pre registered transitions to animate elements. You are also able to use standard Velocity via the <code class="wrap">appContext.animate</code> function. <em>Please refer to the Velocity documentation on what arguments can be passed, paying particular attention to thr UI pack docs.</em></p>
 <pre><code><div class="code-block">var cvm = Astarisx.createCVMClass({
     mixins: [AstarisxAnimate],
     ...
 });</div></code></pre>
-<p>Once AstarisxAnimate is mixed in the <code>$displayKey</code>, <code>$displayName</code>, <code>$displayGroup</code>, <code>$pageName</code> properties are made available on <code>appContext</code> object. Also the <code>animate</code>, <code>show</code>, <code>display</code>, <code>page</code>, <code>addListItem</code> and <code>dropListItem</code> functions become available.</p>
+<p>Once AstarisxAnimate is mixed in the <code>$displayKey</code>, <code>$displayGroup</code>, <code>$displayName</code> and <code>$pageName</code> properties are made available on <code>appContext</code> object. Also made the available are the <code>animate</code>, <code>show</code>, <code>display</code>, <code>page</code>, <code>addListItem</code> and <code>dropListItem</code> functions.</p>
 
-<p>To set up transitions there are two descriptor functions that need to be present. The first is the <code>getTransitions</code> function, which is part of the ControllerViewModel descriptor. <code>getTransitions</code> returns an object and provides the default transition if an element does not have one specified. The second descriptor function is <code>getDisplays</code>. This function is defined in ViewModels and/or the ControllerViewModel, and provides the transition configuration for elements associated with its data context. The configurations help identify the elements to be animated, so that the appropriate handling of the animation can be applied.</p>
+<p>To set up transitions there are two descriptor functions that need to be defined. The first is the <code>getTransitions</code> function, which is part of the ControllerViewModel descriptor. <code>getTransitions</code> returns an object to provide default transition for an element that does not have one specified. The second descriptor function is <code>getDisplays</code>. This function is defined in ViewModels and/or the ControllerViewModel, it associates components to elements, so that the appropriate handling of the animation can be applied and can provides transition configuration for those elements.</p>
 
 <h4 class="content-subhead">Animation Elements</h4>
 <h5 class="content-subhead">display</h5>
@@ -1278,28 +1278,29 @@ selectPerson: <span class="kw">function</span>(id, next){
 
 <h4 class="content-subhead">Defining Transitions</h4>
 <h5 class="content-subhead">getTransitions</h5>
-<p><code>getTransitions</code> is defined as part of the ControllerViewModel's descriptor. It defines default transition animations if none have been assigned to an element.</p>
-<p><code>getTransitions</code> returns an object. The object has a two of keys, <code>display</code> and <code>page</code>. <code>display</code> and <code>page</code> are objects. They have keys <code>transIn</code> and <code>transOut</code>. <code>transIn</code> and <code>transOut</code> take an array as its value. The array holds the arguments needed by Velocity to perform animations. These arguments are passed directly to Velocity.</p>
-<p>Both <code>display</code> and <code>page</code> also have keys <code>collections</code>, <code>elements</code> and <code>listItem</code> all of which are objects and all of which have <code>transIn</code> and <code>transOut</code> keys that take animation arguments. Below is an example of a <code>getTransitions</code> function.</p>
+<p><code>getTransitions</code> is defined as part of the ControllerViewModel's descriptor. It defines default transition animations. These animations are applied if the target element does not have any configured.</p>
+<p><code>getTransitions</code> returns an object. The object has two keys, <code>display</code> and <code>page</code>. <code>display</code> and <code>page</code> are objects. They have keys <code>transIn</code> and <code>transOut</code>. <code>transIn</code> and <code>transOut</code> take an array as its value. The array holds arguments needed by Velocity to perform animations. These arguments are passed directly to Velocity.</p>
+<p>Both <code>display</code> and <code>page</code> also have keys <code>collections</code>, <code>elements</code> and <code>listItem</code> all of which are objects and all of which have <code>transIn</code> and <code>transOut</code> keys that take animation arguments. All keys are required. If you do not want a default animation for a particular element, simply pass an empty array. Below is an example of a <code>getTransitions</code> function.</p>
 <pre><code><div class="code-block">getTransitions: function(){
   return {
     // sets default transitions if display transitions are not set
-    display: { // This is what happens during transition
+    display: { // This is what happens during display transition
       transIn: ["transition.slideUpIn", {delay: 100, stagger: 275, drag: true}],
       transOut: ["transition.slideUpOut"],
       collections: {
          transIn: ["transition.slideLeftIn"]
        },
        elements: {
-         transIn: [], transOut: [] //pass empty array if you don't want any transition
+         //pass empty array if you don't want any transition
+         transIn: [], transOut: []
        },
+       //pass empty array if you don't want any page transition
        listItem:{ transIn: [], transOut: [] }
     },
     // sets default transitions if page transitions are not set
     page: { // This is what happens during transition
       transIn: ["transition.slideUpIn", {delay: 100, stagger: 275, drag: true}],
       transOut: ["transition.slideUpOut"],
-      transIn: [],
       collections: {
          transIn: ["transition.slideLeftIn"], transOut: []
       },
@@ -1313,9 +1314,9 @@ selectPerson: <span class="kw">function</span>(id, next){
     }
   };
 }</div></code></pre>
-
+<p>Both the <code>display</code> and <code>page</code> objects have defined how transitions will animate in each of their contexts.</p>
 <h5 class="content-subhead">getDisplays</h5>
-<p>Once <code>getTransitions</code> is set, we need to associate components to elements. This is where <code>getDisplays</code> comes in. You define <code>getDisplays</code> as part of a ViewModels descriptor and/or the ControllerViewModels descriptor. It returns an configuration object similar to that of <code>getTransitions</code> but it also associates the different components within your application to an element type. You are also able to define a specific transition for the component, if you would like something different than the default transition defined in <code>getTransitions</code>. Lets take a look at a simple example.</p>
+<p>Once <code>getTransitions</code> is set, we then need to associate components to elements. This is where <code>getDisplays</code> comes in. You define <code>getDisplays</code> as part of a ViewModel's descriptor and/or the ControllerViewModel's descriptor. It returns a configuration object similar to that of <code>getTransitions</code> but its primary purpose is to associate components within your application to animation elements. You can however also define transitions for the component here if you would like something different to the default transition defined in <code>getTransitions</code>. But first lets take a look at a simple example.</p>
 <pre><code><div class="code-block">var Sites = Astarisx.createViewModelClass({
     getDisplays: function(){
       return {
@@ -1325,99 +1326,113 @@ selectPerson: <span class="kw">function</span>(id, next){
       };
     }
 });</div></code></pre>
-<p>The above code snippet returns an object with the root key of "main", it can be whatever you like. This key helps identify the display component, <code>aDisplayComponent</code>. "main" is used to form part of the display id. The other part of the key is the data context name that the ViewModel was associated with in the ControllerViewModel. So for instance, if the Sites ViewModels data context was associated with "sites", the the identifier for <code>aDisplayComponent</code> would be "sites.main". So the display key is a combination of data context and the key. This value is stored in the <code>$displayKey</code> property. If you would like to have a different prefix for your key, you can override the data context name by adding a displayGroup key to the "main" object. Whatever String you assign to <code>displayGroup</code> will be prefixed to the display key rather than the data context name. If <code>getDisplays</code> was defined in the ControllerViewModel, the identifier would receive the default "*". So it would be "*.main".</p>
-<p>Lets look at a more complex example.</p>
+<p>The above code snippet returns an object with the root key of "main", it can be whatever you like. This key helps identify the display component, <code>aDisplayComponent</code>. "main" is used to form part of the display key, which will be used to identify this display. The other part of the key is the data context name that the ViewModel was assigned in the ControllerViewModel. For example, if the Sites ViewModel above, was assigned "sites" as the data context, then the display key for <code>aDisplayComponent</code> would be "sites.main". This value is stored in the <code>$displayKey</code> property. However, if you would like to have a different prefix for your key, you can override the data context name by adding a <code>displayGroup</code> key to the "main" object. Whatever you assign to <code>displayGroup</code> will be prefixed to the display key rather than the data context name. This is useful if you wanted to group types of displays. If this property is used you must ensure the the keys specified in the return object are unique, as the combination of the <code>displayGroup</code> and the key form the unique identifier for the display. If <code>getDisplays</code> was defined in the ControllerViewModel, and no <code>displayGroup</code> was added, the identifier would receive the default "*". So the ControllerViewModel's display key would be "*.main".</p>
+
+<p><code>aDisplayComponent</code> is a reference to an Astarisx display component. To specify a component as a display you would create your component as per normal and then use the Astarisx mixin <code class="wrap">Astarisx.mixin.display</code> or <code class="wrap">Astarisx.mixin.view.display</code> to convert the component into a animatable display. More on this later.</p>
+<p>Here's a more complex example of a <code>getDisplays</code> configuration.</p>
 <pre><code><div class="code-block">getDisplays: function(){
-    return {
-      main: { // actual component. Can be a View
-        //displayGroup is optional an will rename the display context (mainDisplay.main) usefull if you want to group displays
-        // otherwise will use dataContext name by default (eg. sites.main)
-        //displayGroup: "mainDisplay", 
-        component: Display, //required
-        path: function(){ //required if routing
-          return !!this.siteList.length ? '/testPath/'+this.siteList[0].id: '/empty';
-        },
-        // // sets default transitions if page transitions are not set 
-        // transIn: ["transition.bounceUpIn", { delay:300, duration: 5000}], //required
-        // transOut: ["transition.bounceUpOut"], //required
-        // elements: { 
-        //   // transIn: [], 
-        //   transOut: ["transition.slideDownOut"], //default for any elements that do not specify a transition
-        //   refs: { // Must be a child of the Display
-        //     "aview":{ transIn: ["transition.flipXIn", {delay: 1000, display: ""}]}
-        //   }
-        // },
-        // collections: {
-        //   //transIn: [], 
-        //   transOut: ["transition.slideDownOut"],
-        //   refs: { // Must be a child of the Display
-        //     "items":{ transIn: ["transition.slideRightIn"]}  
-        //   }
-        // },
-        // listItem: {transIn: [], transOut: []},
-        pages: {
-          // transIn: ["transition.slideLeftIn"],
-          // transOut: ["transition.bounceUpOut"],
-            
-          // sites.main page1
-          page1: { // actual component. Can be a View
-            component: View, //required
-            path: function(){ // Optional: Adds to primary display path which is a required attribute
-              return !!this.siteList.length ? '/testPath/'+this.siteList[0].id: '/empty';
-            },
-            // //transIn: ["transition.slideLeftIn"],
-            // transOut: ["transition.bounceUpOut"],
-            // // elements: { // Must be a child of the Page
-            // //   transIn: [], transOut: [],
-            // //   refs: {
-            // //     "singleElement":{ transIn: [], transOut: []},
-            // //     "otherElement":{ transIn: [], transOut: []}
-            // //   }
-            // // },
-            collections: { // Must be a child of the Page
-              transIn: ["transition.slideRightIn"], transOut: [],
-              refs: {
-                "items": /* {} or void(0) to accept defaults */{ transIn: ["transition.slideUpIn", {delay: 100, stagger: 275, drag: true}], transOut: []}
-              }
-            },
-            listItem: {
-              transIn: ["transition.slideUpIn"], transOut: ["transition.slideUpOut"],
-              "personList": { transIn: ["transition.slideLeftIn"], transOut: ["transition.slideLeftOut"]}
-            }
-          },
-          // sites.main page1
-          page2: { // actual component. Can be a View
-            component: View2, //required
-            path: function(){ // Optional: Adds to primary display path which is a required attribute
-              return !!this.siteList.length ? '/testPath/' + this.siteList[0].id: '/empty';
-            },
-            // transIn: ["transition.slideLeftIn"],
-            // transOut: ["transition.bounceUpOut"],
-            // // elements: { // Must be a child of the Page
-            // //   transIn: [], transOut: [],
-            // //   refs: {
-            // //     "singleElement":{ transIn: [], transOut: []},
-            // //     "otherElement":{ transIn: [], transOut: []}
-            // //   }
-            // // },
-            // collections: { // Must be a child of the Page
-            //   // transIn: [], 
-            //   transOut: ["transition.slideDownOut"],
-            //   refs: {
-            //     "items":{ transIn: ["transition.slideUpIn", {delay: 100, stagger: 275, drag: true}]}
-            //   }
-            // },
-            // listItem: {transIn: [], transOut: []}
-          }          
+  return {
+    order: {
+      // rename the display context useful if you want to group displays
+      // otherwise it uses the dataContext name by default (i.e. sites.main)
+      displayGroup: "mainDisplay", 
+      component: Display, //required
+      // sets transitions if display default transitions are not set
+      transIn: ["transition.bounceUpIn", { delay:300, duration: 5000}], //required
+      transOut: ["transition.bounceUpOut"], //required
+      path: function(){ //required if routing
+        return !!this.siteList.length ? '/testPath/'+this.siteList[0].id: '/empty';
+      },
+      elements: { 
+        transIn: [],
+        //default for any elements that do not specify a transition
+        transOut: ["transition.slideDownOut"],
+        refs: { // Must be a child of the Display
+          "aview":{ transIn: ["transition.flipXIn", {delay: 1000, display: ""}]}
         }
       },
-      menu: {
-        component: View2,
-        path: '/people'
+      collections: {
+        //This is commented out to indicate that defaults are to kick in.
+        // transIn: [],
+        transOut: ["transition.slideDownOut"],
+        refs: { // Must be a child of the Display
+          "orderItems":{ transIn: ["transition.slideRightIn"]}  
+        }
+      },
+      <!-- listItem: {transIn: [], transOut: []}, -->
+      pages: {
+        transIn: ["transition.slideLeftIn"],
+        transOut: ["transition.bounceUpOut"],
+          
+        // this page will be referenced by mainDisplay.main page1
+        page1: {
+          component: View, //required
+          transIn: ["transition.slideLeftIn"],
+          transOut: ["transition.bounceUpOut"],
+          // Optional: Adds to primary display path which is a required attribute
+          path: function(){
+            return !!this.siteList.length ? '/testPath/'+ this.siteList[0].id: '/empty';
+          },
+          elements: { // Must be a child of the Page
+            transOut: ["transition.slideUpIn"],
+            refs: {
+              "singleElement": { transIn: [], transOut: []},
+              /* {} or void(0) to accept defaults */
+              "otherElement": {}
+            }
+          },
+          collections: { // Must be a child of the Page
+            transIn: ["transition.slideRightIn"],
+            transOut: [],
+            refs: {
+              "items": { 
+                transIn: ["transition.slideUpIn", {delay: 100, stagger: 275, drag: true}]
+              }
+            }
+          },
+          listItem: {
+            transIn: ["transition.slideUpIn"],
+            transOut: ["transition.slideUpOut"],
+            "personList": { 
+              transIn: ["transition.slideLeftIn"], 
+              transOut: ["transition.slideLeftOut"]
+            }
+          }
+        },
+        // this page will be referenced by mainDisplay.main page2
+        page2: {
+          component: View2, //required
+          transIn: ["transition.slideLeftIn"],
+          transOut: ["transition.bounceUpOut"],
+          elements: { // Must be a child of the Page
+            refs: {
+              "singleElement":{ transIn: [], transOut: []},
+              "otherElement":{ transIn: [], transOut: []}
+            }
+          },
+          collections: { // Must be a child of the Page
+            transIn: [], 
+            transOut: ["transition.slideDownOut"],
+            refs: {
+              "items":{
+                transIn: ["transition.slideUpIn", {delay: 100, stagger: 275, drag: true}]
+              }
+            }
+          },
+          listItem: {
+            transIn: [],
+            transOut: []
+          }
+        }          
       }
-    };
-  }</div></code></pre>
-
+    },
+    menu: {
+      component: View2,
+      path: '/people'
+    }
+  };
+}</div></code></pre>
+<p>Ok. Lets break down the "order" display object. </p>
 <h4 class="content-subhead">Displays and Pages</h4>
 
 
