@@ -32,13 +32,15 @@
             <a class="pure-menu-heading" href="../index.html"><span class="fa fa-arrow-left"></span>Astarisx</a>
 
             <ul>
-                <li class="group-header"><a data-scroll href="#tutorial">Tutorial</a></li>
+                <li class="group-header"><a data-scroll href="#tutorial">Building a Simple CRM</a></li>
                 <li class="sub"><a data-scroll href="#projectsetup">Project Setup</a></li>
                 <li class="sub"><a data-scroll href="#applicationstructure">Application Structure</a></li>
-                <li class="sub"><a data-scroll href="#createmodels">Create Models</a></li>
-                <li class="sub"><a data-scroll href="#createviewmodel">Create ViewModel</a></li>
-                <li class="sub"><a data-scroll href="#exposedatacontexts">Expose Data Contexts</a></li>
-                <li class="sub"><a data-scroll href="#buildtheui">Build the UI</a></li>
+                <li class="group-header"><a data-scroll href="#basic">Basic Application</a></li>
+                <li class="sub"><a data-scroll href="#creatingthemodels">Creating the Models</a></li>
+                <li class="sub"><a data-scroll href="#creatingaviewmodel">Creating a ViewModel</a></li>
+                <li class="sub"><a data-scroll href="#constructingmodels">Constructing Models</a></li>
+                <li class="sub"><a data-scroll href="#exposingadatacontext">Exposing a Data Context</a></li>
+                <li class="sub"><a data-scroll href="#buildtheui">Building the UI</a></li>
                 <li class="sub"><a data-scroll href="#buildtheui">Enable Undo</a></li>
                 <li class="sub"><a data-scroll href="#buildtheui">MediaQuery Notifications</a></li>
                 <li class="sub"><a data-scroll href="#buildtheui">From React to Astarisx Views</a></li>
@@ -58,11 +60,12 @@
         </div>
 
         <div class="content">
-            <h2 class="content-subhead" id="tutorial">Simple CRM Application</h2>
-            <p>We are going to be build a simple CRM application. The application is a little contrived but will serve to demonstrate most of the concepts within Astarisx. We"ll start by building a basic version of the application and slowly build upon that version, adding functionality as we go, until we have a fully functioning CRM. It is assumed that you are familar with React.</p>
+            <h2 class="content-subhead" id="tutorial">Building a Simple CRM</h2>
+            <p>We are going to be build a simple CRM application. The application is a little contrived but will serve to demonstrate most of the concepts within Astarisx. We"ll start by building a basic version of the application which we will build upon, adding functionality as we go, until we have a our simple CRM. It is assumed that you are familar with React.</p>
             <p>You will need <a href="http://nodejs.org/">Node.js</a> and <a href="http://gulpjs.com/">gulp</a> installed if you would like to follow along with this tutorial. The completed application should look like this.</p>
             <img class="pure-img" src="../img/ScreenShot_Example.png">
             <p>The completed source code for this tutorial can be found on <a href="">GitHub (To be set)</a></p>
+            
 
             <h3 class="content-subhead" id="projectsetup">Project Setup</h3>
             <p>After ensuring you have Node and gulp installed, run the following command in a terminal.</p>
@@ -100,9 +103,7 @@ module.exports = UI;</div></code></pre>
 
     <p>This is where we are reference the ControllerViewModel (i.e. <code class="wrap">var cvm = require("../viewModels/cvm")</code>. It is passed into the <code>initializeAppContext</code>, within the <code>componentWillMount</code>, and will initialize the Application Data Context. An important thing to note, is that we mixin <code class="wrap">Astarisx.mixin.ui</code>. This turns the React component into an Astarisx UI Container. It will attach a special property called <code>appContext</code> to the component"s state object. We will be referencing <code>appContext</code> alot.</p>
 
-            <p>OK, let"s continue.</p>
-
-            <p>Rename the <code>astarisx-starterkit</code> directory to <code>astarisx-tutorial</code>. Navigate into the <code>astarisx-tutorial</code> and run <code>npm install</code>.</p>
+    <p>Now rename the <code>astarisx-starterkit</code> directory to <code>astarisx-tutorial</code>. Navigate into the <code>astarisx-tutorial</code> and run <code>npm install</code>.</p>
             <pre><code><div class="code-block">npm install</div></code></pre>
             <p>This will download and install the required components to build your app. You will notice that a <code>node_modules</code> directory was created. This is where our modules live. Once that is done, run the following command.</p>
             <pre><code><div class="code-block">gulp serve</div></code></pre>
@@ -116,7 +117,7 @@ module.exports = UI;</div></code></pre>
                     <li>Persons ViewModel</li>
                     <li>persons Data Context</li>
                 </ul>
-                With the following demo data.
+                We'll be using the following demo data.
                 <pre><code><div class="code-block">/* Demo Data */
 [{
     id: "1",
@@ -147,8 +148,12 @@ module.exports = UI;</div></code></pre>
 }]</div></code></pre>
 
             </p>
+            <p>OK, let"s get started.</p>
+            <h2 class="content-subhead" id="basic">Basic Application</h2>
+
             
-            <h3 class="content-subhead" id="createmodels">Create Models</h3>
+            
+            <h3 class="content-subhead" id="creatingthemodels">Creating the Models</h3>
             <p>In the <code>models</code> directory create a file called <code>person.js</code> and add the following code.
             <pre><code><div class="code-block">/* models/person.js */
 var Astarisx = require('astarisx');
@@ -204,12 +209,20 @@ var person = Astarisx.createModelClass({
     set: function(newValue){
       this.setState({'gender': newValue});
     }
+  },
+
+  hobbies: {
+    kind: 'array',
+    get: function(){
+      return this.$state.hobbies;
+    }
   }
 
 });
 
 module.exports = person;</div></code></pre>
-            We create a field with the same name for each of the fields in the source object. Apart from the <code>id</code> field, each field has a getter and setter. The getter returns whatever is stored in the <code>$state</code> object. The setter sets the value of the field using <code>setState</code> which triggers a state transition. The new value will be stored in <code>$state</code> once the state transition has completed. The reason that <code>id</code> does not have a setter is that we want to prevent anything from changing it's state. Also we don't have to define a field for every key in our source data. If we decided not to the value would not be lost, it would simply form part of the object's state (i.e. <code>this.$state</code>). 
+            We create a field with the same name for each of the fields in the source object. Apart from the <code>id</code> and <code>hobbies</code> fields, each field has a getter and setter. The getter returns whatever is stored in the <code>$state</code> object. The setter sets the value of the field using <code>setState</code> which triggers a state transition. The new value will be stored in <code>$state</code> once the state transition has completed. The reason that <code>id</code> does not have a setter is that we want to prevent anything from changing it's state. <code>hobbies</code> is an array, so we specify the <code>kind</code> attribute with the value array. Astarisx needs to know which fields are arrays becuase they require some extra attention. You don't need to worry about that, Astarisx takes care of it for you. It doesn't need a setter because all updates to arrays are done via method calls.</p>
+            <p>We don't have to define a field for every key in our source data. If we decided not to the value would not be lost, it would simply form part of the object's state (i.e. <code>this.$state</code>). 
             </p>
             <p>Next we create the <code>hobby</code> model.
             <pre><code><div class="code-block">/* models/hobby.js */
@@ -235,22 +248,27 @@ var hobby = Astarisx.createMClass({
 
 module.exports = hobby;</div></code></pre></p>
             
-            <h3 class="content-subhead" id="createviewmodel">Create ViewModel</h3>
-            <p>Now let's create a ViewModels that will reference the models created above. Create a file called <code>persons.js</code> in the <code>viewModels</code> directory. This file will define the personsViewModel, which will hold a collection of <code>person</code> model objects.
+            <h3 class="content-subhead" id="creatingaviewmodel">Creating a ViewModel</h3>
+            <p>Now let's create a ViewModel that will reference the models created above. Create a file called <code>persons.js</code> in the <code>viewModels</code> directory. This file will hold the personsViewModel, which will store a collection of <code>person</code> model objects.
             <pre><code><div class="code-block">var Astarisx = require('astarisx');
 var personsViewModel = Astarisx.createViewModelClass({
 });
 module.exports = personsViewModel;</div></code></pre>
 The above code creates an empty ViewModel. We need to fill it will <code>person</code> models. But first we should reference this module in the ControllerViewModel. Place the code below somewhere at the top of <code>cvm.js</code>.
 <pre><code><div class="code-block">var PersonViewModel = require('./persons');</div></code></pre>
-Requiring our PersonViewModel module let's gulp know that it needs to watch the <code>persons.js</code>. It will now be parsed and compiled and the browser will be updated whenever we make a change to it. So back to the <code>viewModels/persons.js</code>. We need a reference to <code>models/person.js</code>.
+Requiring our PersonViewModel module let's gulp know that it needs to watch the <code>persons.js</code>. It will now be parsed and compiled and the browser will update whenever we make a change to it. </p>
+
+
+
+<h3 class="content-subhead" id="constructingmodels">Constructing Models</h3>
+<p>So back to the ViewModel. Create a reference to your model by requiring <code>person.js</code>.
             <pre><code><div class="code-block">var Astarisx = require('astarisx');
 var personCtor = require('../models/person');
 
 var personsViewModel = Astarisx.createViewModelClass({
 });
 module.exports = personsViewModel;</div></code></pre>
-So we reference <code>person.js</code> and store it in a variable called <code>personCtor</code>, you could call it anything you like, but why have I referred to it as <code>personCtor</code>. Well the Astarisx objects that you create actually return object constructors. Astarisx automatically instantiates ViewModels and the ControllerViewModel for you, so you never have to worry about them. Models are not automatically instantiated because they require additional information at runtime, so we need to add a little boiler plate code. We use the Model constructor to create a function that we then use to instantiate a model. It looks like this
+We store the model reference in a variable called <code>personCtor</code>, you could call it anything you like, but why have I referred to it as <code>personCtor</code>. Astarisx objects actually return object constructors. Astarisx automatically instantiates ViewModels and the ControllerViewModel for you, so you never have to worry about them. Models are not automatically instantiated. The reason is that models need additional information. We use the Model constructor to create a function that we then use to instantiate a model at runtime, so we need to add a little boiler plate code. It looks like this
 <pre><code><div class="code-block">var Person = function(){
     return new personCtor().apply(this, arguments);
 };</div></code></pre>
@@ -293,7 +311,7 @@ We will add some code to the <code>personChangeHandler</code> later, but for now
   get: function(){ return this.$state.collection; },
 }
 </div></code></pre>
-<code>collection</code> will be readonly, so only needs a getter. We also assign a <code>kind</code> attribute with a value of <code>array</code> to indicate that the collection is an Array. We also define <code>dataContextWillInitialize</code>.
+<code>collection</code> is an Array, so we assign a <code>kind</code> attribute with a value of <code>array</code>. We also define <code>dataContextWillInitialize</code>.
 <pre><code><div class="code-block">dataContextWillInitialize: function(){
     var personsCollection = demoData.map(function(person){
       return new Person(person);
@@ -301,9 +319,15 @@ We will add some code to the <code>personChangeHandler</code> later, but for now
 
     this.setState({ collection: personsCollection });
 }</div></code></pre>
-This is where we initialize data for the ViewModel. You would normally be making an ajax call, within this function, to retrieve data from the server. We populate <code>personsCollection</code> with new model instances, then call <code>setState</code> to transition the <code>personsViewModel</code> to the next state.
+This is where we initialize data for the ViewModel. You would normally be making an ajax call, within this function, to retrieve data from the server. We populate <code>personsCollection</code> with new model instances, then call <code>setState</code> to transition the <code>personsViewModel</code> to the next state with <code>collection</code> holding the new models.
 </p>
-<p>Once that code has been added to your <code>personsViewModel</code>, switch over to the ControllerViewModel. We are going to setup and intialize the <code>persons</code> data contexts. Within the <code>cvm.js</code> file add a <code>dataContextWillInitialize</code> function to the ControllerViewModel descriptor. Within that function initialize all data contexts by calling <code class="wrap">this.initializeDataContext('*');</code>. Of course this has no affect because we haven't defined any data contexts. So let's do that. Add the following code to the descriptor.
+
+
+            <h3 class="content-subhead" id="exposingdatacontext">Exposing a Data Context</h3>
+
+<p>Switch over to the ControllerViewModel. We are going to setup and intialize the <code>persons</code> data context. The data context is what will be exposed to the View, once defined in the ControllerViewModel, the View will have visibility of it and will be able to access it's fields and mthods.</p>
+
+<p> Within the <code>cvm.js</code> file add a <code>dataContextWillInitialize</code> function to the ControllerViewModel descriptor. Within that function initialize all data contexts by calling <code class="wrap">this.initializeDataContext('*');</code>. Of course this has no affect because we haven't defined a data context as yet. So let's do that. Add the following code to the descriptor.
 
 <pre><code><div class="code-block">persons: {
     viewModel: personsViewModel,
@@ -311,7 +335,7 @@ This is where we initialize data for the ViewModel. You would normally be making
       return this.$state.persons;
     }
 }</div></code></pre>
-Your ControllerViewModel should now look like this.
+We create a field with the name <code>persons</code>. <code>persons</code> will be the name of the data context and what the View will see. We add a special attribute, called <code>viewModel</code>, to the field. This allows us to associate a ViewModel to the data context. We pass it a reference to our <code>personsViewModel</code>. Your ControllerViewModel should now look like this.
 
 <pre><code><div class="code-block">var Astarisx = require('astarisx');
 var personsViewModel = require('./persons');
@@ -334,43 +358,10 @@ When you run your application the ControllerViewModel's <code>dataContextWillIni
 <b><em>Because we haven't set up the View to display data as yet, you can't see anything. What I like to do is place this
 <pre><code><div class="code-block">console.log('Application State --> ', this.state.appContext);</div></code></pre> at the top of the <code>render</code> function in <code>ui.js</code>, then open the browser's javascript console and inspect the object. The object will have a key called 'persons', this is the data context that we exposed to the View from the ControllerViewModel.</em></b>
 
-<!-- <p>We create the hobbies ViewModel the same way we did the personsViewModel. The code is below.
-<pre><code><div class="code-block">var Astarisx = require('astarisx');
-
-var hobbyCtor = require('../models/hobby');
-
-var hobbiesDemoData = [{id: "1", hobby: "reading", personId: "1"},
- {id: "2", hobby: "golfing", personId: "1"},
- {id: "3", hobby: "cutting code", personId: "1"},
- {id: "4", hobby: "reading", personId: "2"},
- {id: "5", hobby: "watching YouTube", personId: "3"}];
-
-var hobbyChangeHandler = function(nextState, nextAppState, callback){
-    
-};
-
-var Hobby = function(){
-    return new hobbyCtor(hobbyChangeHandler).apply(this, arguments);
-};
-
-var hobbiesViewModel = Astarisx.createViewModelClass({
-  dataContextWillInitialize: function(){
-    var hobbiesCollection = hobbiesDemoData.map(function(hobby){
-      return new Hobby(hobby);
-    }.bind(this));
-    this.setState({ collection: hobbiesCollection });
-  },
-  collection: {
-    kind: 'array',
-    get: function(){ return this.$state.collection; },
-  },
-});
-
-module.exports = hobbiesViewModel;</div></code></pre>
-
-Ensure that you reflect the appropriate changes in the ControllerViewModel. -->
 </p>
 
+    <h3 class="content-subhead" id="buildingtheui">Building the UI</h3>
+    <p></p>
 
 
 
@@ -386,10 +377,6 @@ Ensure that you reflect the appropriate changes in the ControllerViewModel. -->
 
 
 
-
-            <h3 class="content-subhead" id="exposedatacontexts">Expose Data Contexts</h3>
-            
-            <h3 class="content-subhead" id="buildtheui">Build the UI</h3>
             <!-- <h2 class="content-subhead" id="#tips">Tips</h2>
             <h2 class="content-subhead" id="#videos">Videos</h2>
             <h2 class="content-subhead" id="#resources">Resources</h2> -->
