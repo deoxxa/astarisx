@@ -40,7 +40,7 @@
                 <li class="sub"><a data-scroll href="#creatingaviewmodel">Creating a ViewModel</a></li>
                 <li class="sub"><a data-scroll href="#constructingmodels">Constructing Models</a></li>
                 <li class="sub"><a data-scroll href="#exposingadatacontext">Exposing a Data Context</a></li>
-                <li class="sub"><a data-scroll href="#buildtheui">Building the UI</a></li>
+                <li class="sub"><a data-scroll href="#buildingtheui">Building the UI</a></li>
                 <li class="sub"><a data-scroll href="#buildtheui">Enable Undo</a></li>
                 <li class="sub"><a data-scroll href="#buildtheui">MediaQuery Notifications</a></li>
                 <li class="sub"><a data-scroll href="#buildtheui">From React to Astarisx Views</a></li>
@@ -61,10 +61,11 @@
 
         <div class="content">
             <h2 class="content-subhead" id="tutorial">Building a Simple CRM</h2>
-            <p>We are going to be build a simple CRM application. The application is a little contrived but will serve to demonstrate most of the concepts within Astarisx. We"ll start by building a basic version of the application which we will build upon, adding functionality as we go, until we have a our simple CRM. It is assumed that you are familar with React.</p>
-            <p>You will need <a href="http://nodejs.org/">Node.js</a> and <a href="http://gulpjs.com/">gulp</a> installed if you would like to follow along with this tutorial. The completed application should look like this.</p>
+            <p>We are going to be build a simple CRM application. The application is a little contrived but will serve to demonstrate most of the concepts within Astarisx. We"ll start by building a basic version and add functionality as we go until we have a our completed CRM. If you would like to follow along with this tutorial, you need <a href="http://nodejs.org/">Node.js</a> and <a href="http://gulpjs.com/">gulp</a> installed. It is assumed that you are familar with <a href="http://facebook.github.io/react/">React</a>.</p>
+            
+            <p>The application should end up looking something like this.</p>
             <img class="pure-img" src="../img/ScreenShot_Example.png">
-            <p>The completed source code for this tutorial can be found on <a href="">GitHub (To be set)</a></p>
+            <p>The source code of the completed application for this tutorial can be found on <a href="">GitHub (To be set)</a></p>
             
 
             <h3 class="content-subhead" id="projectsetup">Project Setup</h3>
@@ -120,31 +121,31 @@ module.exports = UI;</div></code></pre>
                 We'll be using the following demo data.
                 <pre><code><div class="code-block">/* Demo Data */
 [{
-    id: "1",
-    firstName: "Frank",
-    lastName: "Smith",
-    gender: "male",
-    dob: "1980-03-03",
-    job: "Dentist",
-    hobbies: [{id: "1", hobby: "reading"},
-        {id: "2", hobby: "golfing"},
-        {id: "3", hobby: "cutting code"}]
+    "id": "1",
+    "firstName": "Frank",
+    "lastName": "Smith",
+    "gender": "male",
+    "dob": "1980-03-03",
+    "job": "Dentist",
+    "hobbies": [{"id": "1", "hobby": "reading"},
+        {"id": "2", "hobby": "golfing"},
+        {"id": "3", "hobby": "cutting code"}]
 },{
-    id:"2",
-    firstName: "Lisa",
-    lastName: "Jones",
-    gender: "female",
-    dob: "1985-02-22",
-    job: "Accountant",
-    hobbies: [{id: "1", hobby: "reading"}]
+    "id":"2",
+    "firstName": "Lisa",
+    "lastName": "Jones",
+    "gender": "female",
+    "dob": "1985-02-22",
+    "job": "Accountant",
+    "hobbies": [{"id": "1", "hobby": "reading"}]
 },{
-    id: "3",
-    firstName: "John",
-    lastName: "Citizen",
-    gender: "male",
-    dob: "1975-12-11",
-    job: "Unemployed",
-    hobbies: [{id: "1", hobby: "watching YouTube"}]
+    "id": "3",
+    "firstName": "John",
+    "lastName": "Citizen",
+    "gender": "male",
+    "dob": "1975-12-11",
+    "job": "Unemployed",
+    "hobbies": [{"id": "1", "hobby": "watching YouTube"}]
 }]</div></code></pre>
 
             </p>
@@ -224,6 +225,18 @@ module.exports = person;</div></code></pre>
             We create a field with the same name for each of the fields in the source object. Apart from the <code>id</code> and <code>hobbies</code> fields, each field has a getter and setter. The getter returns whatever is stored in the <code>$state</code> object. The setter sets the value of the field using <code>setState</code> which triggers a state transition. The new value will be stored in <code>$state</code> once the state transition has completed. The reason that <code>id</code> does not have a setter is that we want to prevent anything from changing it's state. <code>hobbies</code> is an array, so we specify the <code>kind</code> attribute with the value array. Astarisx needs to know which fields are arrays becuase they require some extra attention. You don't need to worry about that, Astarisx takes care of it for you. It doesn't need a setter because all updates to arrays are done via method calls.</p>
             <p>We don't have to define a field for every key in our source data. If we decided not to the value would not be lost, it would simply form part of the object's state (i.e. <code>this.$state</code>). 
             </p>
+            <p>Before we move on, we need to update the <code>job</code> field. We would prefer that the <code>job</code> field was called <code>occupation</code>. To transform <code>job</code> to <code>occupation</code> we use the <code>aliasFor</code> attribute. The job field should now look like this.
+            <pre><code><div class="code-block">occupation: {
+  aliasFor: 'job',
+  get: function(){
+    return this.$state.occupation;
+  },
+  set: function(newValue){
+    this.setState({'occupation': newValue });
+  }
+}</div></code></pre>
+Whenever a Person model is referenced, you will use <code>occupation</code> like a regular model field, instead of <code>job</code>. When you persist this model back to the data store, Astarisx sends the <code>occupation</code> field as "occupation". If this is not what you would like, then you need to transform <code>occupation</code> back to <code>job</code> before it is sent to the server. Astarisx provides a convenience method called <code>transpose</code>, which replaces model fields with whatever name you like. Another approasch to transforming fileds is to use the <code>kind</code> attribute with a value of <code>pseudo</code>. We will use this approach in the Hobby model below.
+            </p>
             <p>Next we create the <code>hobby</code> model.
             <pre><code><div class="code-block">/* models/hobby.js */
 var Astarisx = require('astarisx');
@@ -246,7 +259,21 @@ var hobby = Astarisx.createMClass({
   }
 });
 
-module.exports = hobby;</div></code></pre></p>
+module.exports = hobby;</div></code></pre>
+The Hobby model has two fields, <code>id</code> and <code>hobby</code>. We would like to reference the <code>hobby</code> as <code>name</code> in the View, but when it gets saved to the data store we still want it to be stored as <code>hobby</code>. We can define a pseudo field to accomplish this. A pseudo field is a field that does not retain it's value. It must get it's value from so other source. In this instance we are going to use <code class="wrap">this.$state.hobby</code> as the source for the pseudo field <code>name</code>. Pseudo fields are non-enumerable and are not stored in an object's <code>$state</code> object, so won't form part of the payload when being sent to the server.
+<pre><code><div class="code-block">
+  name: {
+    kind: 'pseudo',
+    get: function(){
+      return this.$state.hobby;
+    },
+    set: function(newValue){
+      this.setState({'hobby': newValue });
+    }
+  }
+  
+</div></code></pre>
+ Add another field called <code>name</code> ensuring to include the <code>kind</code> attribute with a value of <code>pseudo</code>. Notice that the pseudo field <code>name</code> gets it's value from <code class="wrap">this.$state.hobby</code> and will set the <code>hobby</code> field. We still need the <code>hobby</code> field available for this to work. So the View will see both <code>hobby</code> and <code>name</code>, but the server will only see <code>hobby</code>. If you like you can remove the setter from the <code>hobby</code> field and this will still work, however all updates will need to be done via the <code>name</code> field.</p>
             
             <h3 class="content-subhead" id="creatingaviewmodel">Creating a ViewModel</h3>
             <p>Now let's create a ViewModel that will reference the models created above. Create a file called <code>persons.js</code> in the <code>viewModels</code> directory. This file will hold the personsViewModel, which will store a collection of <code>person</code> model objects.
@@ -303,9 +330,23 @@ var personsViewModel = Astarisx.createViewModelClass({
 module.exports = personsViewModel;</div></code></pre>
 We will add some code to the <code>personChangeHandler</code> later, but for now we just pass it into <code>personCtor</code>. What this does is associates <code>personChangeHandler</code> with the ViewModel's data context at the time it is instantiated. So everytime <code>new Person()</code> is called we grab the <code>personChangeHandler</code> with the current data context. It's not important to fully understand this concept at this point, it will become apparent as to what all this means as you use Astarisx, .
 </p>
-<p>OK, let's start populating our personsViewModel with some data. Place the demo data above into a variable called <code>demoData</code>. We are going to use this in the personsViewModel for simplicity.</p>
+<p>We will need to a Hobby model to the Person Model, as hobby is an array of objects in the source object. So add the following code to the top of<code>person.js</code> model.
+<pre><code><div class="code-block">var hobbyCtor = require('./hobby');
 
-<p>Create a field within the personsViewModel descriptor called <code>collection</code>. This is where we are going to store the person models instances. 
+var Hobby = function(){
+    return new hobbyCtor().apply(this, arguments);
+};</div></code></pre>
+Then within the <code>person</code> descriptor add a <code>getInitialState</code> that will be used to create the Hobby models whenever a Person model is instantiated.
+<pre><code><div class="code-block">getInitialState: function(){
+  var arr = this.$state.hobbies.map(function(hobby){
+    return new Hobby(hobby);
+  });
+  return { hobbies: arr };
+}</div></code></pre>
+When you create a Person object, you pass in the current state, that current state includes the 'hobbies' array, which we reference using <code class="wrap">this.$state.hobbies</code>. We iterate over that array and for each item, we instantiate a Hobby obect and store it in an array called <code>arr</code>. We then return an object that specifies that the <code>hobbies</code> field is to be initialized with the <code>arr</code> array. The <code>hobbies</code> field is an Astarisx array that now holds Astarisx model objects.</p>
+<p>OK, let's start populating our personsViewModel with some data. In the root project directory, create a directory called <code>data</code>. Within that directory create a file and cut and paste the demo data above into that file and save it as <code>demo.js</code>. This will act as our source data.</p>
+
+<p>Then back in the <code>personsViewModel</code> descriptor create a field called <code>collection</code>. This is where we are going to store the person model instances. 
 <pre><code><div class="code-block">collection: {
   kind: 'array',
   get: function(){ return this.$state.collection; },
@@ -313,13 +354,25 @@ We will add some code to the <code>personChangeHandler</code> later, but for now
 </div></code></pre>
 <code>collection</code> is an Array, so we assign a <code>kind</code> attribute with a value of <code>array</code>. We also define <code>dataContextWillInitialize</code>.
 <pre><code><div class="code-block">dataContextWillInitialize: function(){
-    var personsCollection = demoData.map(function(person){
-      return new Person(person);
-    }.bind(this));
-
-    this.setState({ collection: personsCollection });
+  var self = this;
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', './data/demo.json', true);
+  xhr.onload = function(e) {
+    if (this.status == 200) {
+      var persons = JSON.parse(this.response);
+      if(!!persons){
+        var personsCollection = persons.map(function(person){
+          return new Person(person);
+        });
+        self.setState({
+          collection: personsCollection
+        });
+      }
+    }
+  };
+  xhr.send();
 }</div></code></pre>
-This is where we initialize data for the ViewModel. You would normally be making an ajax call, within this function, to retrieve data from the server. We populate <code>personsCollection</code> with new model instances, then call <code>setState</code> to transition the <code>personsViewModel</code> to the next state with <code>collection</code> holding the new models.
+<code>dataContextWillInitialize</code> is where you make ajax calls and initialize data for the ViewModel. You do not make ajax calls in <code>getInitialState</code>. Once the server returns with our data, we populate <code>personsCollection</code> with new model instances, then call <code>setState</code> to transition the <code>personsViewModel</code> to the next state with <code>collection</code> holding the new models.
 </p>
 
 
@@ -361,7 +414,24 @@ When you run your application the ControllerViewModel's <code>dataContextWillIni
 </p>
 
     <h3 class="content-subhead" id="buildingtheui">Building the UI</h3>
-    <p></p>
+    <p>The first thing we need to do is reference Twitter's <a href="http://getbootstrap.com/">Bootstrap</a> library so that we can use the grid and css. Add this to your index.html head.
+    <pre><code><div class="code-block">&lt;link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"&gt;</div></code></pre>
+    It is assumed that you understand how to build React components, so the View code is not provided here in full but can be <a href="">downloaded from GitHub (to be set)</a>. Place the downloaded files into the <code>views</code> directory. They are simply React components. Later, we will convert them into Astarisx Views.
+    </p>
+    <p>
+    The UI is comprised of the following components.
+    <ul>
+        <li>UI - Astarisx UI Container</li>
+        <li>MenuBar</li>
+        <li>Nav - Person selector</li>
+        <li>Details - displays details and hobbies of a selected Person</li>
+        <li>PersonForm - displays details of a selected Person</li>
+        <li>PersonList - The List of People</li>
+        <li>PersonListItem</li>
+        <li>HobbyList - List of Person's hobbies</li>
+        <li>HobbyListItem</li>
+    </ul>
+    </p>
 
 
 
