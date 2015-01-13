@@ -414,16 +414,16 @@ When you run your application the ControllerViewModel's <code>dataContextWillIni
 </p>
 
     <h3 class="content-subhead" id="buildingtheui">Building the UI</h3>
+    <p>It is assumed that you understand how to build React components, so discussions on how to build React components or React features are glossed over.</p>
     <p>The first thing we need to do is reference Twitter's <a href="http://getbootstrap.com/">Bootstrap</a> library so that we can use the grid and css. Add this to your index.html head.
     <pre><code><div class="code-block">&lt;link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"&gt;</div></code></pre>
-    It is assumed that you understand how to build React components, so the View code is not provided here in full but can be <a href="">downloaded from GitHub (to be set)</a>. Place the downloaded files into the <code>views</code> directory. They are simply React components. Later, we will convert them into Astarisx Views.
     </p>
     <p>
     The UI is comprised of the following components.
     <ul>
         <li>UI - Astarisx UI Container</li>
         <li>MenuBar</li>
-        <li>Nav - Person selector</li>
+        <li>Navigation - Person selector</li>
         <li>Details - displays details and hobbies of a selected Person</li>
         <li>PersonForm - displays details of a selected Person</li>
         <li>PersonList - The List of People</li>
@@ -431,7 +431,113 @@ When you run your application the ControllerViewModel's <code>dataContextWillIni
         <li>HobbyList - List of Person's hobbies</li>
         <li>HobbyListItem</li>
     </ul>
+    Let's revisit <code>ui.js</code>. This is the component that will hold all of the application's components. We have already mixed in <code class="wrap">Astarisx.mixin.ui</code> and placed initialization code and  referenced our ControllerViewModel within the <code>componentWillMount</code> function. So we can start creating our Astarisx View components.
     </p>
+    <p>The first component we are going to create is the MenuBar. Create a file called <code>menuBar.js</code> in the <code>views</code> directory and add the following code and save it.
+    <pre><code><div class="code-block">var React = require('react');
+
+var Component = React.createClass({
+
+  displayName: 'MenuBar',
+  render: function(){
+    return (
+      &lt;nav className="navbar navbar-default" role="navigation"&gt;
+        &lt;div className="container-fluid"&gt;
+          &lt;div className="navbar-header"&gt;
+            &lt;button type="button"
+            className="navbar-toggle"
+            data-toggle="collapse"
+            data-target="#bs-example-navbar-collapse-1"&gt;
+              &lt;span className="sr-only"&gt;Toggle navigation&lt;/span&gt;
+              &lt;span className="icon-bar"&gt;&lt;/span&gt;
+              &lt;span className="icon-bar"&gt;&lt;/span&gt;
+              &lt;span className="icon-bar"&gt;&lt;/span&gt;
+            &lt;/button&gt;
+            &lt;a className="navbar-brand" href="#"&gt;
+              Astarisx CRM
+            &lt;/a&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/nav&gt;
+    );
+  }
+});
+
+module.exports = Component;</div></code></pre>
+Go over to <code>ui.js</code> and add the <code>menuBar</code> component.
+<pre><code><div class="code-block">var React = require('react');
+var Astarisx = require('astarisx');
+var cvm = require('../viewModels/cvm');
+
+var MenuBar = require('./menuBar');
+
+var UI = React.createClass({
+  mixins: [Astarisx.mixin.ui],
+  componentWillMount: function(){
+    this.initializeAppContext({ 
+      controllerViewModel: cvm
+    });
+  },
+
+  render: function(){
+    console.log('Application State --> ', this.state.appContext);
+    return (&lt;div&gt;
+      &lt;MenuBar /&gt;
+    &lt;/div&gt;);
+  }
+});
+module.exports = UI;</div></code></pre>
+A Menu Bar should appear at the top of the page.</p>
+<p>Quickly create the other component files in the <code>views</code> directory and place the following code in each of them, ensuring that you replace the <code>displayName</code> property with the name of the component.
+<pre><code><div class="code-block">var React = require('react');
+
+var Component = React.createClass({
+
+  displayName: 'MenuBar',
+  render: function(){
+
+    return (
+      &lt;div&gt;Placeholder&lt;/div&gt;
+    );
+  }
+});
+
+module.exports = Component;</div></code></pre>
+We will add to this code as we go. But for now open <code>ui.js</code> and add the Navigation and Details components. Your UI component should look something like this:
+<pre><code><div class="code-block">var React = require('react');
+var Astarisx = require('astarisx');
+var cvm = require('../viewModels/cvm');
+
+var MenuBar = require('./menuBar');
+var Nav = require('./navigation');
+var Details = require('./details');
+
+var UI = React.createClass({
+  mixins: [Astarisx.mixin.ui],
+  componentWillMount: function(){
+    this.initializeAppContext({ 
+      controllerViewModel: cvm
+    });
+  },
+
+  render: function(){
+    console.log('Application State --> ', this.state.appContext);
+    return (&lt;div&gt;
+      &lt;MenuBar /&gt;
+      &lt;div className="container"&gt;
+        &lt;div className="row"&gt;
+          &lt;div className="col-md-4"&gt;
+            &lt;Nav /&gt;
+          &lt;/div&gt;
+          &lt;div className="col-md-8"&gt;
+            &lt;Details /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div>);
+  }
+});
+module.exports = UI;</div></code></pre></p>
 
 
 
