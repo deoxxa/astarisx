@@ -421,15 +421,15 @@ When you run your application the ControllerViewModel's <code>dataContextWillIni
     <p>
     The UI is comprised of the following components.
     <ul>
-        <li>UI - Astarisx UI Container</li>
-        <li>MenuBar</li>
-        <li>Navigation - Person selector</li>
-        <li>Details - displays details and hobbies of a selected Person</li>
-        <li>PersonForm - displays details of a selected Person</li>
-        <li>PersonList - The List of People</li>
-        <li>PersonListItem</li>
-        <li>HobbyList - List of Person's hobbies</li>
-        <li>HobbyListItem</li>
+        <li>UI (ui.js) - Astarisx UI Container</li>
+        <li>MenuBar (menuBar.js)</li>
+        <li>Navigation (navigation.js) - Person selector</li>
+        <li>Details (details.js) - displays details and hobbies of a selected Person</li>
+        <li>PersonForm (personForm.js) - displays details of a selected Person</li>
+        <li>PersonList (personList.js) - The List of People</li>
+        <li>PersonListItem (PersonListItem.js)</li>
+        <li>HobbyList (hobbyList.js) - List of Person's hobbies</li>
+        <li>HobbyListItem (hobbyListItem.js)</li>
     </ul>
     Let's revisit <code>ui.js</code>. This is the component that will hold all of the application's components. We have already mixed in <code class="wrap">Astarisx.mixin.ui</code> and placed initialization code and  referenced our ControllerViewModel within the <code>componentWillMount</code> function. So we can start creating our Astarisx View components.
     </p>
@@ -537,9 +537,151 @@ var UI = React.createClass({
     &lt;/div>);
   }
 });
-module.exports = UI;</div></code></pre></p>
+module.exports = UI;</div></code></pre>
+Let's start adding some code to the Navigation component. The Navigation component will comprise a list of people, that we can click on that will help us navigate between people, and it will also have an input, that will allow us to add new people. Let's add the list first. Open <code>navigation.js</code> add a reference to the PersonList component called <code>PersonList</code> and update the render function with the following code.
+<pre><code><div class="code-block">render: function(){
+  return (
+    &lt;div&gt;&lt;PersonList /&gt;&lt;/div&gt;
+  );
+}</div></code></pre>
+That's it for now, we'll come back and add the input field later. Let's open <code>personListItem.js</code> and replace the render function with the code below.
+<pre><code><div class="code-block">render: function() {
+  var person = this.props.person;
+  return (
+    &lt;a className="list-group-item"
+      href="#"&gt;{person.firstName + " " + person.lastName}
+      &lt;span className="glyphicon glyphicon-trash pull-right"&gt;&lt;/span&gt;
+    &lt;/a&gt;
+  );
+}</div></code></pre>
+Now open <code>personList.js</code> and reference Astarisx and the PersonListItem component and add the following code
+<pre><code><div class="code-block">mixins: [Astarisx.mixin.view],
+render: function() {
+  var persons = this.state.appContext.persons;
+  var collection = persons.collection;
+  var list = collection.map(function(person){
+    return (
+      &lt;PersonListItem
+        key={person.id}
+        person={person} /&gt;
+    );
+  });
+  return (
+    &lt;div className="list-group"&gt;
+      {list}
+    &lt;/div&gt;
+  );
+}</div></code></pre>
+Let's take a moment and look at what's going on here. Within the PersonList component we reference Astarisx and mix in <code class="wrap">Astarisx.mixin.view</code>. The transforms PersonList from a regular React component into an Astarisx View. The PersonList component has become <b>a fully self contained component.</b> It does not require state to be passed via props, as all the state is held within the <code>appContext</code> object, which was appended to the component's state object when <code class="wrap">Astarisx.mixin.view</code> was mixed in. <code>appContext</code> has a reference to the <code>persons</code> data context that was exposed through the ControllerViewModel It will always hold the most current state and is the <b>Single Source of Truth</b> for your application's data.</p>
+<p>So within the render function we are able to access the entire Application's Data Context. For now, we're only interested in the <code>persons</code> data context, so we get a reference to it and iterate over the collection to populate our list.</p>
+<p>Let's update the Details component. The Details component, will display a form with a person's information and a list of hobbies using the Hobby List component. First we'll add the PersonForm.</p>
+<p>Open <code>details.js</code> and reference Astarisx, then mixin in the view as you did for the PersonList then replace the render function with the code below.
+<pre><code><div class="code-block">render: function() {
+  var persons = this.state.appContext.persons;
+  var current = persons.selectedPerson;
 
+  return (
+    &lt;div&gt;
+      &lt;form className="form-horizontal" role="form"&gt;
+        &lt;div className="form-group"&gt;
+            &lt;label className="col-md-2 control-label"&gt;Name&lt;/label&gt;
+            &lt;div className="col-md-3"&gt;
+              &lt;input className="form-control" type="text" 
+                value={current.fullName} /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div className="form-group"&gt;
+            &lt;label className="col-md-2 control-label"&gt;Occupation&lt;/label&gt;
+            &lt;div className="col-md-3"&gt;
+              &lt;input className="form-control" type="text"
+                value={current.occupation} /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div className="form-group"&gt;
+            &lt;label className="col-md-2 control-label"&gt;Gender&lt;/label&gt;
+            &lt;div className="col-md-3"&gt;
+              &lt;div className="radio"&gt;
+              &lt;label&gt;
+                &lt;input type="radio" 
+                  value="male"
+                  checked={current.gender === 'male'} /&gt;
+                Male
+              &lt;/label&gt;
+            &lt;/div&gt;
+            &lt;div className="radio"&gt;
+              &lt;label&gt;
+                &lt;input type="radio"
+                  value="female"
+                  checked={current.gender === 'female'} /&gt;
+                Female
+              &lt;/label&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div className="form-group"&gt;
+            &lt;label className="col-md-2 control-label"&gt;Birthday&lt;/label&gt;
+            &lt;div className="col-md-3"&gt;
+              &lt;input className="form-control" type="text"
+              placeholder="yyyy-mm-dd"
+              value={current.dob} /&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div className="form-group"&gt;
+            &lt;label className="col-md-2 control-label"&gt;Age&lt;/label&gt;
+            &lt;div className="col-md-3"&gt;
+              &lt;div&gt;
+                {current.age}
+              &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+    &lt;/div&gt;
+  );
+}</div></code></pre>
+Before we reference the PersonForm in our Details component we need to make some changes to our ViewModel and Model. You will notice that we reference a field on the <code>persons</code> data context called <code>selectedPerson</code>, we will need to add this to our <code>personsViewModel</code>. This field will hold the currently selected Person model. We also need to add two additional fields to our Person Model. The <code>fullName</code> field, which will display the person's full name and the <code>age</code> field, which is a calculated field based on the <code>dob</code> (data of bith) field.</p>
+<p>Open the <code>persons.js</code> file located in the <code>viewModels</code> directory and add the <code>selectedPerson</code> field.
+<pre><code><div class="code-block">selectedPerson: {
+  kind: 'instance',
+  get: function() {
+    return this.$state.selectedPerson;
+  }
+},</div></code></pre>
+We only need a getter, because we will be setting this field via a function. We have also used a new <code>kind</code> attribute called <code>instance</code>. This indicates to Astarisx that an Astarisx Model will be stored in this field. Add the following code function to select a person.
+<pre><code><div class="code-block">selectPerson: function(id){
+  var person;
 
+  for (var i = this.collection.length - 1; i >= 0; i--) {
+    if(this.collection[i].id === id){
+      person = new Person(this.collection[i]);
+      break;
+    }
+  }
+  this.setState({
+    selectedPerson: person
+  });
+}</div></code></pre>
+In the function above we loop through the persons collection and test to see if the passed in <code>id</code> matches any of our person id's. If we find a match we create a new Person and assign it to <code>person</code> and break out of the loop. If we don't find a match then the <code>person</code> remains <code>undefined</code>. We then take whatever is stored in <code>person</code> and pass it to <code>setState</code>. This will transition the <code>persons</code> data context to the next state and the <code>selectedPerson</code> field will then hold the new value.</p>
+<p><b>n.b. A very important point to note here is that the <code>selectedPerson</code> is not the same object as the one stored in the collection. We have stored a totally new object in <code>selectedPerson</code>. Any changes to <code>selectedPerson</code> or the equivalent person in the collection will not be reflected in the other. I show how everything is kept in sync when we discuss updating models.</b></p>
+<p>Let's update the View to utilize this code. We select persons using the PersonList component, so open <code>personList.js</code> and locate the PersonListItem component and add a prop called <code>person</code> and pass it <code>persons</code>. This will make the <code>persons</code> data context available to PersonsItemList. Open <code>personsItemList.js</code> and add the following code.
+<pre><code><div class="code-block">handleSelection: function(e){
+  e.preventDefault();
+  this.props.persons.selectPerson(this.props.person.id);
+}</div></code></pre> and update the render function with this
+<pre><code><div class="code-block">render: function() {
+  var person = this.props.person;
+  var persons = this.props.persons;
+  var selected = persons.selectedPerson && (person.id === persons.selectedPerson.id);
+  return (
+    &lt;a 
+      onClick={this.handleSelection}
+      className={selected ? "list-group-item active" : "list-group-item"} 
+      href="#"&gt;{person.firstName + " " + person.lastName}
+      &lt;span className="glyphicon glyphicon-trash pull-right"&gt;&lt;/span&gt;
+    &lt;/a&gt;
+  );
+}</div></code></pre>
+Select a person from the list and it should get highlighted.</p>
+<p><em>If you've been following along, now is a good time to inspect the browser's javascript console. If you still have the console.log code in the UI component, you'll notice that every time you select a person, a new object is sent to the console. This is how Astarisx works. Go ahead poke around the object and inspect the data context fields.</em></p>
 
 
 
