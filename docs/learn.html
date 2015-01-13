@@ -41,6 +41,7 @@
                 <li class="sub"><a data-scroll href="#constructingmodels">Constructing Models</a></li>
                 <li class="sub"><a data-scroll href="#exposingadatacontext">Exposing a Data Context</a></li>
                 <li class="sub"><a data-scroll href="#buildingtheui">Building the UI</a></li>
+                <li class="sub"><a data-scroll href="#updatingdata">Updating Data</a></li>
                 <li class="sub"><a data-scroll href="#buildtheui">Enable Undo</a></li>
                 <li class="sub"><a data-scroll href="#buildtheui">MediaQuery Notifications</a></li>
                 <li class="sub"><a data-scroll href="#buildtheui">From React to Astarisx Views</a></li>
@@ -309,18 +310,15 @@ var hobby = Astarisx.createMClass({
 
 module.exports = hobby;</div></code></pre>
 The Hobby model has two fields, <code>id</code> and <code>hobby</code>. We would like to reference the <code>hobby</code> as <code>name</code> in the View, but when it gets saved to the data store we still want it to be stored as <code>hobby</code>. We can define a pseudo field to accomplish this. A pseudo field is a field that does not retain it's value. It must get it's value from some other source. In this instance we are going to use <code class="wrap">this.$state.hobby</code> as the source for the pseudo field <code>name</code>. Pseudo fields are non-enumerable and are not stored in an object's <code>$state</code> object, so won't form part of the payload when being sent to the server.
-<pre><code><div class="code-block">
-  name: {
-    kind: 'pseudo',
-    get: function(){
-      return this.$state.hobby;
-    },
-    set: function(newValue){
-      this.setState({'hobby': newValue });
-    }
+<pre><code><div class="code-block">name: {
+  kind: 'pseudo',
+  get: function(){
+    return this.$state.hobby;
+  },
+  set: function(newValue){
+    this.setState({'hobby': newValue });
   }
-  
-</div></code></pre>
+}</div></code></pre>
  Add another field called <code>name</code> ensuring to include the <code>kind</code> attribute with a value of <code>pseudo</code>. Notice that the pseudo field <code>name</code> gets it's value from <code class="wrap">this.$state.hobby</code> and will set the <code>hobby</code> field. We still need the <code>hobby</code> field available for this to work. So the View will see both <code>hobby</code> and <code>name</code>, but the server will only see <code>hobby</code>. If you like you can remove the setter from the <code>hobby</code> field and this will still work, however all updates will need to be done via the <code>name</code> field.</p>
             
             <h3 class="content-subhead" id="creatingaviewmodel">Creating a ViewModel</h3>
@@ -628,63 +626,69 @@ Let's take a moment and look at what's going on here. Within the PersonList comp
   var persons = this.state.appContext.persons;
   var current = persons.selectedPerson;
 
-  return (
-    &lt;div&gt;
-      &lt;form className="form-horizontal" role="form"&gt;
-        &lt;div className="form-group"&gt;
-            &lt;label className="col-md-2 control-label"&gt;Name&lt;/label&gt;
-            &lt;div className="col-md-3"&gt;
-              &lt;input className="form-control" type="text" 
-                value={current.fullName} /&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div className="form-group"&gt;
-            &lt;label className="col-md-2 control-label"&gt;Occupation&lt;/label&gt;
-            &lt;div className="col-md-3"&gt;
-              &lt;input className="form-control" type="text"
-                value={current.occupation} /&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div className="form-group"&gt;
-            &lt;label className="col-md-2 control-label"&gt;Gender&lt;/label&gt;
-            &lt;div className="col-md-3"&gt;
-              &lt;div className="radio"&gt;
-              &lt;label&gt;
-                &lt;input type="radio" 
-                  value="male"
-                  checked={current.gender === 'male'} /&gt;
-                Male
-              &lt;/label&gt;
-            &lt;/div&gt;
-            &lt;div className="radio"&gt;
-              &lt;label&gt;
-                &lt;input type="radio"
-                  value="female"
-                  checked={current.gender === 'female'} /&gt;
-                Female
-              &lt;/label&gt;
+  var display;
+  if(!current){
+    display = &lt;div&gt;Select or add a person&lt;/div&gt;;
+  } else {
+    display = (
+      &lt;div&gt;
+        &lt;form className="form-horizontal" role="form"&gt;
+          &lt;div className="form-group"&gt;
+              &lt;label className="col-md-2 control-label"&gt;Name&lt;/label&gt;
+              &lt;div className="col-md-3"&gt;
+                &lt;input className="form-control" type="text" 
+                  value={current.fullName} /&gt;
             &lt;/div&gt;
           &lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div className="form-group"&gt;
-            &lt;label className="col-md-2 control-label"&gt;Birthday&lt;/label&gt;
-            &lt;div className="col-md-3"&gt;
-              &lt;input className="form-control" type="text"
-              placeholder="yyyy-mm-dd"
-              value={current.dob} /&gt;
+          &lt;div className="form-group"&gt;
+              &lt;label className="col-md-2 control-label"&gt;Occupation&lt;/label&gt;
+              &lt;div className="col-md-3"&gt;
+                &lt;input className="form-control" type="text"
+                  value={current.occupation} /&gt;
+            &lt;/div&gt;
           &lt;/div&gt;
-        &lt;/div&gt;
-        &lt;div className="form-group"&gt;
-            &lt;label className="col-md-2 control-label"&gt;Age&lt;/label&gt;
-            &lt;div className="col-md-3"&gt;
-              &lt;div&gt;
-                {current.age}
+          &lt;div className="form-group"&gt;
+              &lt;label className="col-md-2 control-label"&gt;Gender&lt;/label&gt;
+              &lt;div className="col-md-3"&gt;
+                &lt;div className="radio"&gt;
+                &lt;label&gt;
+                  &lt;input type="radio" 
+                    value="male"
+                    checked={current.gender === 'male'} /&gt;
+                  Male
+                &lt;/label&gt;
               &lt;/div&gt;
+              &lt;div className="radio"&gt;
+                &lt;label&gt;
+                  &lt;input type="radio"
+                    value="female"
+                    checked={current.gender === 'female'} /&gt;
+                  Female
+                &lt;/label&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
           &lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/form&gt;
-    &lt;/div&gt;
-  );
+          &lt;div className="form-group"&gt;
+              &lt;label className="col-md-2 control-label"&gt;Birthday&lt;/label&gt;
+              &lt;div className="col-md-3"&gt;
+                &lt;input className="form-control" type="text"
+                placeholder="yyyy-mm-dd"
+                value={current.dob} /&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+            &lt;div className="form-group"&gt;
+              &lt;label className="col-md-2 control-label"&gt;Age&lt;/label&gt;
+              &lt;div className="col-md-3"&gt;
+                &lt;div&gt;
+                  {current.age}
+                &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    );
+  }
+  return &lt;div&gt;{display}&lt;/div&gt;;
 }</div></code></pre>
 Before we reference the PersonForm in our Details component we need to make some changes to our ViewModel. You will notice that we reference a field on the <code>persons</code> data context called <code>selectedPerson</code>, we will need to add this to our <code>personsViewModel</code>. This field will hold the currently selected Person model.</p>
 <p>Open the <code>persons.js</code> file located in the <code>viewModels</code> directory and add the <code>selectedPerson</code> field.
@@ -697,16 +701,17 @@ Before we reference the PersonForm in our Details component we need to make some
 We only need a getter, because we will be setting this field via a function. We have also used a new <code>kind</code> attribute called <code>instance</code>. This indicates to Astarisx that an Astarisx Model will be stored in this field. Add the following code function to select a person.
 <pre><code><div class="code-block">selectPerson: function(id){
   var person;
-
-  for (var i = this.collection.length - 1; i >= 0; i--) {
-    if(this.collection[i].id === id){
-      person = new Person(this.collection[i]);
-      break;
+  if(this.selectedPerson === void(0) || this.selectedPerson.id !== id){     
+    for (var i = this.collection.length - 1; i >= 0; i--) {
+      if(this.collection[i].id === id){
+        person = new Person(this.collection[i]);
+        break;
+      }
     }
+    this.setState({
+      selectedPerson: person
+    });
   }
-  this.setState({
-    selectedPerson: person
-  });
 }</div></code></pre>
 In the function above we loop through the persons collection and test to see if the passed in <code>id</code> matches any of our person id's. If we find a match we create a new Person and assign it to <code>person</code> and break out of the loop. If we don't find a match then the <code>person</code> remains <code>undefined</code>. We then take whatever is stored in <code>person</code> and pass it to <code>setState</code>. This will transition the <code>persons</code> data context to the next state and the <code>selectedPerson</code> field will then hold the new value.</p>
 <p><b>n.b. A very important point to note here is that the <code>selectedPerson</code> is not the same object as the one stored in the collection. We have stored a totally new object in <code>selectedPerson</code>. Any changes to <code>selectedPerson</code> or the equivalent person in the collection will not be reflected in the other. I show how everything is kept in sync when we discuss updating models.</b></p>
@@ -729,8 +734,124 @@ In the function above we loop through the persons collection and test to see if 
 }</div></code></pre>
 Select a person from the list and it should get highlighted.</p>
 <p><em>If you've been following along, now is a good time to inspect the browser's javascript console. If you still have the console.log code in the UI component, you'll notice that every time you select a person, a new object is sent to the console. This is how Astarisx works. Go ahead poke around the object and inspect the data context fields.</em></p>
+<p>OK. That's all well and good but we want to see something. Go to your Details component and reference PersonForm and add it to your component. While you're there you might as well reference HobbyList and include that, because we are working on that next. Here's what Details looks like.
+<pre><code><div class="code-block">var React = require('react');
+var PersonForm = require('./personForm');
+var HobbyList = require('./hobbyList');
 
+var Details = React.createClass({
 
+  displayName: 'Details',
+  render: function() {
+    return (&lt;div&gt; 
+      &lt;PersonForm /&gt;
+      &lt;HobbyList /&gt;
+    &lt;/div&gt;);
+  }
+});
+
+module.exports = Details;</div></code></pre>
+Now we are going to add the ability to display and select hobbies. This is much the same as what we did to the PersonList so I will simply just give you the code for you to review. Add the following to <code>personsViewModel</code>, outside of the descriptor
+<pre><code><div class="code-block">var hobbyCtor = require('../models/hobby');
+
+var Hobby = function(){
+    return new hobbyCtor().apply(this, arguments);
+};</div></code></pre>
+And add/update the relevant code within the <code>personsViewModel</code> descriptor.
+<pre><code><div class="code-block">selectPerson: function(id){
+  var person;
+  if(this.selectedPerson === void(0) || this.selectedPerson.id !== id){     
+    for (var i = this.collection.length - 1; i >= 0; i--) {
+      if(this.collection[i].id === id){
+        person = new Person(this.collection[i]);
+        break;
+      }
+    }
+    this.setState({
+      selectedPerson: person,
+      selectedHobby: void(0)
+    });
+  }
+}, 
+selectedHobby: {
+  kind: 'instance',
+  get: function() { return this.$state.selectedHobby; }
+},
+
+selectHobby: function(id){
+  var person;
+  if(this.selectedPerson !== void(0)){    
+    for (var i = this.selectedPerson.hobbies.length - 1; i >= 0; i--) {
+      if(this.selectedPerson.hobbies[i].id === id){
+        hobby = new Hobby(this.selectedPerson.hobbies[i]);
+        break;
+      }
+    }
+    this.setState({
+      selectedHobby: hobby
+    });
+  }
+}</div></code></pre>
+And here is the HobbyList
+<pre><code><div class="code-block">var React = require('react');
+var Astarisx = require('astarisx');
+var HobbyListItem = require('./hobbyListItem');
+
+var HobbyList = React.createClass({
+
+  displayName: 'HobbyList',
+  mixins: [Astarisx.mixin.view],
+  render: function() {
+    var persons = this.state.appContext.persons;
+    var selectedPerson = persons.selectedPerson;
+    var hobbies = selectedPerson !== void(0) ? selectedPerson.hobbies : [];
+    var list = hobbies.map(function(hobby){
+      return (
+        &lt;HobbyListItem
+          key={hobby.id}
+          hobby={hobby}
+          persons={persons} /&gt;
+      );
+    });
+    return (
+      &lt;div className="list-group"&gt;
+        {list}
+      &lt;/div&gt;
+    );
+  }
+});
+
+module.exports = HobbyList;</div></code></pre>
+and HobbyListItem
+<pre><code><div class="code-block">var React = require('react');
+
+var HobbyListItem = React.createClass({
+
+  displayName: 'HobbyListItem',
+  handleSelection: function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    this.props.persons.selectHobby(this.props.hobby.id);
+  },
+  render: function() {
+    var hobby = this.props.hobby;
+    var persons = this.props.persons;
+    var selected = persons.selectedHobby && (hobby.id === persons.selectedHobby.id);
+    return (
+      &lt;a onClick={this.handleSelection}
+        className={selected ? "list-group-item active" : "list-group-item"} 
+        href="#"&gt;{hobby.name}
+        &lt;span className="glyphicon glyphicon-trash pull-right"&gt;&lt;/span&gt;
+      &lt;/a&gt;
+    );
+  }
+});
+
+module.exports = HobbyListItem;</div></code></pre>
+</p>
+<p>Wow. That was long. But we've got the foundation of the UI. Now we need to add the ability to update the information.</p>
+
+<h3 class="content-subhead" id="updatingdata">Updating Data</h3>
 
 
 
