@@ -225,7 +225,48 @@ module.exports = person;</div></code></pre>
             We create a field with the same name for each of the fields in the source object. Apart from the <code>id</code> and <code>hobbies</code> fields, each field has a getter and setter. The getter returns whatever is stored in the <code>$state</code> object. The setter sets the value of the field using <code>setState</code> which triggers a state transition. The new value will be stored in <code>$state</code> once the state transition has completed. The reason that <code>id</code> does not have a setter is that we want to prevent anything from changing it's state. <code>hobbies</code> is an array, so we specify the <code>kind</code> attribute with the value array. Astarisx needs to know which fields are arrays becuase they require some extra attention. You don't need to worry about that, Astarisx takes care of it for you. It doesn't need a setter because all updates to arrays are done via method calls.</p>
             <p>We don't have to define a field for every key in our source data. If we decided not to the value would not be lost, it would simply form part of the object's state (i.e. <code>this.$state</code>). 
             </p>
-            <p>Before we move on, we need to update the <code>job</code> field. We would prefer that the <code>job</code> field was called <code>occupation</code>. To transform <code>job</code> to <code>occupation</code> we use the <code>aliasFor</code> attribute. The job field should now look like this.
+            <p>Before we move on, we need to add two additional fields to our Person Model. A <code>fullName</code> field, which will display the person's full name and an <code>age</code> field, which is a calculated field based on the <code>dob</code> (data of bith) field. below is the code for the <code>fullName</code> field.
+            <pre><code><div class="code-block">fullName: {
+  kind: 'pseudo',
+  get: function(){
+    if(this.lastName === void(0)){
+      return this.firstName;
+    }
+    return this.firstName + ' ' + this.lastName;
+  },
+  set: function(newValue){
+    var nextState = {};
+    var nameArr = newValue.split(' ');
+    var isSpace = newValue.slice(-1)[0] === ' ';
+    var firstname = nameArr[0];
+    var lastname = nameArr.slice(1).join(' ');
+
+    nextState.firstName = firstname.length === 0 ? void(0) : firstname;
+    nextState.lastName = lastname.length === 0 && !isSpace ? void(0) : lastname;
+
+    this.setState(nextState);
+  }
+}</div></code></pre>
+The <code>fullName</code> field derives it's value from <code>firstName</code> and <code>lastName</code> and for this reason we use the <code>kind</code> attribute with a value of <code>pseudo</code>.  A pseudo field is a field that does not retain it's value, so it must get it's value from some other source. The getter concatenates <code>firstName</code> and <code>secondName</code> and returns the result. Whilst the setter analyzes the <code>newValue</code> and updates <code>firstName</code> and/or <code>lastName</code>.</p>
+<p>Pseudo fields are also useful for calculated fields. The <code>age</code> field is a calculated field based on the <code>dob</code> field and it's code is below.
+<pre><code><div class="code-block">age: {
+  kind: 'pseudo',
+  get: function(){
+    if(this.dob === void(0) || this.dob.length < 10){
+      return 'Enter your Birthday';
+    }
+    var DOB = new Date(this.dob);
+    var ageDate = new Date(Date.now() - DOB.getTime());
+    var age = Math.abs(ageDate.getFullYear() - 1970);
+    return isNaN(age) ? 'Enter your Birthday' : age + ' years old';
+  }
+}</div></code></pre></p>
+    
+
+
+
+
+    <p>We also need to update the <code>job</code> field. We would prefer that the <code>job</code> field was called <code>occupation</code>. To transform <code>job</code> to <code>occupation</code> we use the <code>aliasFor</code> attribute. The job field should now look like this.
             <pre><code><div class="code-block">occupation: {
   aliasFor: 'job',
   get: function(){
@@ -237,7 +278,14 @@ module.exports = person;</div></code></pre>
 }</div></code></pre>
 Whenever a Person model is referenced, you will use <code>occupation</code> like a regular model field, instead of <code>job</code>. When you persist this model back to the data store, Astarisx sends the <code>occupation</code> field as "occupation". If this is not what you would like, then you need to transform <code>occupation</code> back to <code>job</code> before it is sent to the server. Astarisx provides a convenience method called <code>transpose</code>, which replaces model fields with whatever name you like. Another approasch to transforming fileds is to use the <code>kind</code> attribute with a value of <code>pseudo</code>. We will use this approach in the Hobby model below.
             </p>
-            <p>Next we create the <code>hobby</code> model.
+
+
+  
+
+
+
+
+  <p>Next we create the <code>hobby</code> model.
             <pre><code><div class="code-block">/* models/hobby.js */
 var Astarisx = require('astarisx');
 
@@ -260,7 +308,7 @@ var hobby = Astarisx.createMClass({
 });
 
 module.exports = hobby;</div></code></pre>
-The Hobby model has two fields, <code>id</code> and <code>hobby</code>. We would like to reference the <code>hobby</code> as <code>name</code> in the View, but when it gets saved to the data store we still want it to be stored as <code>hobby</code>. We can define a pseudo field to accomplish this. A pseudo field is a field that does not retain it's value. It must get it's value from so other source. In this instance we are going to use <code class="wrap">this.$state.hobby</code> as the source for the pseudo field <code>name</code>. Pseudo fields are non-enumerable and are not stored in an object's <code>$state</code> object, so won't form part of the payload when being sent to the server.
+The Hobby model has two fields, <code>id</code> and <code>hobby</code>. We would like to reference the <code>hobby</code> as <code>name</code> in the View, but when it gets saved to the data store we still want it to be stored as <code>hobby</code>. We can define a pseudo field to accomplish this. A pseudo field is a field that does not retain it's value. It must get it's value from some other source. In this instance we are going to use <code class="wrap">this.$state.hobby</code> as the source for the pseudo field <code>name</code>. Pseudo fields are non-enumerable and are not stored in an object's <code>$state</code> object, so won't form part of the payload when being sent to the server.
 <pre><code><div class="code-block">
   name: {
     kind: 'pseudo',
@@ -549,7 +597,7 @@ That's it for now, we'll come back and add the input field later. Let's open <co
   var person = this.props.person;
   return (
     &lt;a className="list-group-item"
-      href="#"&gt;{person.firstName + " " + person.lastName}
+      href="#"&gt;{person.fullName}
       &lt;span className="glyphicon glyphicon-trash pull-right"&gt;&lt;/span&gt;
     &lt;/a&gt;
   );
@@ -638,7 +686,7 @@ Let's take a moment and look at what's going on here. Within the PersonList comp
     &lt;/div&gt;
   );
 }</div></code></pre>
-Before we reference the PersonForm in our Details component we need to make some changes to our ViewModel and Model. You will notice that we reference a field on the <code>persons</code> data context called <code>selectedPerson</code>, we will need to add this to our <code>personsViewModel</code>. This field will hold the currently selected Person model. We also need to add two additional fields to our Person Model. The <code>fullName</code> field, which will display the person's full name and the <code>age</code> field, which is a calculated field based on the <code>dob</code> (data of bith) field.</p>
+Before we reference the PersonForm in our Details component we need to make some changes to our ViewModel. You will notice that we reference a field on the <code>persons</code> data context called <code>selectedPerson</code>, we will need to add this to our <code>personsViewModel</code>. This field will hold the currently selected Person model.</p>
 <p>Open the <code>persons.js</code> file located in the <code>viewModels</code> directory and add the <code>selectedPerson</code> field.
 <pre><code><div class="code-block">selectedPerson: {
   kind: 'instance',
@@ -672,10 +720,9 @@ In the function above we loop through the persons collection and test to see if 
   var persons = this.props.persons;
   var selected = persons.selectedPerson && (person.id === persons.selectedPerson.id);
   return (
-    &lt;a 
-      onClick={this.handleSelection}
+    &lt;a onClick={this.handleSelection}
       className={selected ? "list-group-item active" : "list-group-item"} 
-      href="#"&gt;{person.firstName + " " + person.lastName}
+      href="#"&gt;{person.fullName}
       &lt;span className="glyphicon glyphicon-trash pull-right"&gt;&lt;/span&gt;
     &lt;/a&gt;
   );
