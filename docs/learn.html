@@ -42,11 +42,17 @@
                 <li class="sub"><a data-scroll href="#exposingadatacontext">Exposing a Data Context</a></li>
                 <li class="sub"><a data-scroll href="#buildingtheui">Building the UI</a></li>
                 <li class="sub"><a data-scroll href="#updatingmodeldata">Updating Model Data</a></li>
-                <li class="sub"><a data-scroll href="#buildtheui">Enable Undo</a></li>
-                <li class="group-header"><a data-scroll href="#enhancing">Enhancing the Application</a></li>
-                <li class="sub"><a data-scroll href="#buildtheui">pushState Routing</a></li>
-                <li class="sub"><a data-scroll href="#buildtheui">MediaQuery Notifications</a></li>
-                <li class="sub"><a data-scroll href="#buildtheui">Adding Transitions</a></li>
+                <li class="sub"><a data-scroll href="#addingmodels">Adding Models</a></li>
+                <li class="sub"><a data-scroll href="#deletingmodels">Deleting Models</a></li>
+                <li class="sub"><a data-scroll href="#enableundo">Enable Undo</a></li>
+                <li class="sub"><a data-scroll href="#movingstuffaround">Moving Stuff Around</a></li>
+                
+                <li class="group-header"><a data-scroll href="#enhancingtheapplication">Enhancing the Application</a></li>
+                <li class="sub"><a data-scroll href="#stilltocome">Adding Application State</a></li>
+                <li class="sub"><a data-scroll href="#stilltocome">pushState Routing</a></li>
+                <li class="sub"><a data-scroll href="#stilltocome">MediaQuery Notifications</a></li>
+                <li class="sub"><a data-scroll href="#stilltocome">Optimizing the View</a></li>
+                <li class="sub"><a data-scroll href="#stilltocome">Adding Transition Animations</a></li>
                 <!-- <li class="group-header"><a data-scroll href="#tips">Tips</a></li>
                 <li class="group-header"><a data-scroll href="#videos">Videos</a></li>
                 <li class="group-header"><a data-scroll href="#resources">Resources</a></li> -->
@@ -384,10 +390,14 @@ var Hobby = function(){
 };</div></code></pre>
 Then within the <code>person</code> descriptor add a <code>getInitialState</code> that will be used to create the Hobby models whenever a Person model is instantiated.
 <pre><code><div class="code-block">getInitialState: function(){
-  var arr = this.$state.hobbies.map(function(hobby){
+  var hobbies = this.$state.hobbies || [];
+  var arr = hobbies.map(function(hobby){
     return new Hobby(hobby);
   });
-  return { hobbies: arr };
+  return {
+    id: this.id || Date.now(),
+    hobbies: arr 
+  };
 }</div></code></pre>
 When you create a Person object, you pass in the current state, that current state includes the 'hobbies' array, which we reference using <code class="wrap">this.$state.hobbies</code>. We iterate over that array and for each item, we instantiate a Hobby obect and store it in an array called <code>arr</code>. We then return an object that specifies that the <code>hobbies</code> field is to be initialized with the <code>arr</code> array. The <code>hobbies</code> field is an Astarisx array that now holds Astarisx model objects.</p>
 <p>OK, let's start populating our personsViewModel with some data. In the root project directory, create a directory called <code>data</code>. Within that directory create a file and cut and paste the demo data above into that file and save it as <code>demo.js</code>. This will act as our source data.</p>
@@ -422,7 +432,7 @@ When you create a Person object, you pass in the current state, that current sta
 </p>
 
 
-            <h3 class="content-subhead" id="exposingdatacontext">Exposing a Data Context</h3>
+<h3 class="content-subhead" id="exposingadatacontext">Exposing a Data Context</h3>
 
 <p>Switch over to the ControllerViewModel. We are going to setup and intialize the <code>persons</code> data context. The data context is what will be exposed to the View, once defined in the ControllerViewModel, the View will have visibility of it and will be able to access it's fields and mthods.</p>
 
@@ -852,16 +862,277 @@ module.exports = HobbyListItem;</div></code></pre>
 <p>Wow. That was long. But we've got the foundation of the UI. Now we need to add the ability to update the information.</p>
 
 <h3 class="content-subhead" id="updatingmodeldata">Updating Model Data</h3>
-<p>React is great. But I found updating madel data painful. I had to ensure that my model data was high enough in the component hierarchy to service the right components and then I had to pass data back up the hierarchy chain to a function which updated that data. It all felt a little messy. Astarisx simplifies updating models. By having access to the Application Data Context from anywhere in your application, you can just update the model that you need to right from the component, and all the other components will reflect that change.</p>
+<p>React is great. But I found updating model data painful. I had to ensure that my model data was high enough in the component hierarchy to service the right components and then I had to pass data back up the hierarchy chain to a function which updated that data. It all felt a little messy. Astarisx simplifies updating models. By having access to the Application Data Context from anywhere in your application, you can just update any model from any component and all the other components will reflect that change.</p>
+<p>We are going to make the PersonForm editable. Open <code>personForm.js</code> and add an empty update function for each field. In each of the input fields add an <code>onChange</code> event and reference the relevant update function. Then in each of the update functions add code that looks like the code below.
+<pre><code><div class="code-base">updateName: function(e){
+  this.state.appContext.persons.selectedPerson.fullName = e.target.value;
+}</div></code></pre>
+Add the relevant code to each of the update functions. Within each function we reference the <code>selectedPerson</code> model and assign the new value to the relevant field. This will call the field setter on the model and trigger the a call to <code>setState</code>. If you were to try to update your model now, you would notice that nothing happens. This is because there is another piece the we must complete for it to update. If you recall, in the <a data-scroll href="#constructingmodels">Constructing Models</a> section, we needed to pass in a <code>modelChangeHandler</code> to the model constructor within the Person ViewModel. The <code>modelChangeHandler</code> is what is invoked when a Model calls <code>setState</code>. So we need to go to our PersonsViewModel and add the code that will transition our model and data context to the next state that includes the changes that we have made to our model.
+</p>
+<p>Open <code>persons.js</code> and locate <code>personChangeHandler</code> and add the following code.
+<pre><code><div class="code-block">var personChangeHandler = function(nextState, nextAppState, callback){
+  var coll = this.collection.map(function(person){
+    if(nextState.id === person.id){
+      return new Person(nextState);
+    }
+    return person;
+  });
+  this.setState({
+    collection: coll, 
+    selectedPerson: new Person(nextState)
+  });
+};</div></code></pre>
+When <code>setState</code> is called in our Person model, it will invoke <code>personChangeHandler</code>. One of the arguments passed in is <code>nextState</code> which holds the entire state of the Person model (i.e. the value stored in every field) with the update applied to the appropriate field. We pass <code>nextState</code> to <code>Person</code>, create a new Person with the new state and pass that back to the <code>coll</code> array. The <code>coll</code> array now holds the entire <code>persons</code> collection with the new modified Person. This gets passed to <code>setState</code> to transition the data context. We must also update <code>selectedPerson</code>, if not the UI will only reflect the change in the PersonList and not the PersonForm, as the PersonForm's data source is <code>selectedPerson</code>. So we create a new Person based on the next state and pass that to <code>selectedPerson</code> in <code>setState</code>. Now I didn't have to do it like this, we could have stored a reference to the newly created Person as we were looping through the collection, then pass that reference to <code>setState</code>, but I wanted to emphasize an important point. <b>The model that is stored in <code>collection</code> is not the same model that is stored in <code>selectedPerson</code> they are two different model objects that have the same state.</b> Anyway, after adding the above code your model will transition to the next state and the changes will be reflected in the UI for both the PersonForm and the PersonList.
+</p>
+<p><b>n.b. For this to work, the model to be updated needs to be associated with a field that has a <code>kind</code> attribute with a value of <code>instance</code> (i.e <code class="wrap">kind:'instance')</code>. The reason for this is that only fields of kind instance have a <code>modelChangeHandler</code> associated with them, which is key to this process.</b></p>
+
+<p>OK. Now let's add the ability to update a hobby. Go to your HobbyList and add an input above the "list-group"
+<pre><code><div class="code-block">&lt;input
+  className="form-control" 
+  type="text" 
+  value={selectedHobby ? selectedHobby.name : ''}
+  onChange={this.updateHobby} 
+  placeholder="Select hobby to update"/&gt;</div></code></pre>
+  You will need to reference <code>selectedHobby</code> on the <code>persons</code> data context and add an <code>updateHobby</code> function. Now, go back to the PersonViewModel. We need to add code that will transition the data context to the next state. This is similar to what we did for the Person model, except it is a little different because the Hobby model is not the primary model, as it is embedded in Person Model, so we need to ensure that the <code>selectedHobby</code> has a <code>modelChangeHandler</code> associated to it.</p> 
+  <p>In the Person ViewModel ensure that you have a reference to the Hobby Model and add the following code.
+
+  <pre><code><div class="code-block">var hobbyCtor = require('../models/hobby');
+
+var hobbyChangeHandler = function(nextState){
+};
+
+var Hobby = function(){
+    return new hobbyCtor(hobbyChangeHandler).apply(this, arguments);
+};</div></code></pre>
+Then change the <code>selectedHobby</code> field getter to the following.
+  <pre><code><div class="code-block">selectedHobby: {
+  kind: 'instance',
+  get: function() { return new Hobby(this.$state.selectedHobby); }
+}</div></code></pre>
+Everytime a hobby is selected, it returns a new Hobby associated with <code>hobbyChangeHandler</code>. Great but <code>hobbyChangeHandler</code> doesn't do anything. So lets add some code. Update <code>hobbyChangeHandler</code> to
+<pre><code><div class="code-block">var hobbyChangeHandler = function(nextState){
+  var hobbies = this.selectedPerson.hobbies.map(function(hobby){
+    if(nextState.id === hobby.id){
+      return nextState;
+    }
+    return hobby;
+  });
+  var newPerson = new Person(this.selectedPerson, {hobbies: hobbies});
+  var nextAppState = {};
+  nextAppState[this.$dataContext] = {selectedHobby: new Hobby(nextState)};
+  personChangeHandler.call(this, newPerson, nextAppState);
+};</div></code></pre>
+OK, so what is this code doing. Well firstly we loop through the currently selected person's hobbies and if we find a match with the <code>nextState</code> we return <code>nextState</code>. Notice that I am not creating a new Hobby like we did for the Person code above. That is because the hobbies collection gets instantiated by the Person Model, so I don't need to do it here. So then I create a new Person with the updated hobbies array. You will notice that the Person constructure gets two arguments. The reason is that the constructor will automatically merge the new state <code>{hobbies: hobbies}</code> with the existing state <code>this.selectedPerson</code> to creaet a new Person with the new state (i.e. updated hobby). The next bit of code requires a little explaining.</p>
+<p>I now have a new Person with the updated hobby. I need to transition the <code>persons</code> data context to the next state with that new Person. To do this I will need to update <code>selectedPerson</code> and <code>collection</code> otherwise the models will become out of sync. Now I could write a block of code to loop through the <code>collection</code> and update it with the new Person, which is exactly what <code>personChangeHandler</code> does or I could just use <code>personChangeHandler</code>. So I use <code>personChangeHandler</code>. To use <code>personChangeHandler</code> I need to ensure that it will use the correct context, so I invoke it using <code>call</code> and pass in <code>this</code>, then I pass it <code>newPerson</code>, which is the entire state of the new Person and it gets assigned to <code>nextState</code>. But what about <code>selectedHobby</code> that too needs to be updated. To update <code>selectedHobby</code> I pass a second argument to <code>personChangeHandler</code>. The second argument gets assigned to <code>nextAppState</code> as is passed straight to <code>setState</code> as the second argument. The format for <code>nextAppState</code> is a litte different. It expects an object that has a key that represents a data context name, <code>persons</code> in this instance, and then the fields that will need to be updated, which is <code>selectedHobby</code>. <code>setState</code> will take this object and merge the state and ensure that all the specified data contexts are updated accordingly. So ensure that you pass <code>nextAppState</code> as the second argument to <code>setState</code> in <code>personChangeHandler</code>. <em>As a side note, <code>setState</code>'s' <code>nextAppState</code> argument can take ControllerViewModel fields directly, there is no need to specify a data context for them, and it also takes directives. Please refer to the API.</em></p>
+
+<h3 class="content-subhead" id="addingmodels">Adding Models</h3>
+<p>Our CRM needs to cater to more than 3 people, so let's add the ability to add models. First we update the Person ViewModel and add an <code>addPerson</code> function to the descriptor with the following code.
+<pre><code><div class="code-block">addPerson: function(fullName){
+  var nextState = {};
+  var name;
+
+  if(fullName && fullName.length > 0){
+    name = fullName.split(' ');
+    nextState.selectedPerson = new Person({
+      firstName: name[0],
+      lastName: name.slice(1).join(' ')
+    });
+    nextState.collection = this.collection.slice(0);
+    nextState.collection = nextState.collection.concat(nextState.selectedPerson);
+    this.setState(nextState);
+  }
+}</div></code></pre>
+The function is pretty straight forward. We take an argument with the person's full name and assign it to <code>firstName</code> and <code>lastName</code>. We can't just assign a value to the <code>pseudo</code> field <code>fullName</code> during instantiation. Once the model has been created can we pass updates to the <code>fullName</code> field. So we update the Navigation component to include an input field to accept the new person's name. The code is below for your review.
+<pre><code><div class="code-block">var React = require('react');
+var PersonList = require('./personList');
+var Astarisx = require('astarisx');
+
+var Navigation = React.createClass({
+  mixins: [Astarisx.mixin.view],
+  displayName: 'Navigation',
+  addPerson: function(){
+    this.state.appContext.persons.addPerson(this.state.newValue);
+    this.setState({
+      newValue: ""
+    });
+  },
+  update: function(e){
+    this.setState({
+      newValue: e.target.value
+    });
+  },
+  getInitialState: function() {
+    return {
+      newValue: "" 
+    };
+  },
+  render: function(){
+    return (
+      &lt;div&gt;
+        &lt;div className="input-group"&gt;
+          &lt;input value={this.state.newValue}
+            onChange={this.update}
+            type="text" className="form-control" 
+            placeholder="Full Name"/&gt;
+          &lt;span className="input-group-btn"&gt;
+            &lt;button onClick={this.addPerson} 
+              className="btn btn-default" 
+              type="button"&gt;Add&lt;/button&gt;
+          &lt;/span&gt;
+        &lt;/div&gt;
+        &lt;PersonList /&gt;
+      &lt;/div&gt;
+    );    
+  }
+});
+
+module.exports = Navigation;</div></code></pre>
+And adding hobbies is very similar to adding persons, except that you add the add function to the Person model and not to the Persons ViewModel
+<pre><code><div class="code-block">addHobby: function(hobbyName){
+  var newHobbiesArr = this.hobbies.concat(new Hobby({hobby: hobbyName}));
+  this.setState({hobbies: newHobbiesArr});
+}</div></code></pre>
+and the HobbyList should look like this.
+<pre><code><div class="code-block">var React = require('react');
+var Astarisx = require('astarisx');
+var HobbyListItem = require('./hobbyListItem');
+
+var HobbyList = React.createClass({
+  updateHobby: function(e){
+    this.state.appContext.persons.selectedHobby.name = e.target.value;
+  },
+  displayName: 'HobbyList',
+  mixins: [Astarisx.mixin.view],
+  addHobby: function(){
+    this.state.appContext.persons.selectedPerson.addHobby(this.state.newValue);
+    this.setState({
+      newValue: ""
+    });
+  },
+  update: function(e){
+    this.setState({
+      newValue: e.target.value
+    });
+  },
+  getInitialState: function() {
+    return {
+      newValue: "" 
+    };
+  },
+  render: function() {
+    var persons = this.state.appContext.persons;
+    var selectedPerson = persons.selectedPerson;
+    var selectedHobby = persons.selectedHobby;
+    var hobbies = selectedPerson !== void(0) ? selectedPerson.hobbies : [];
+    var list = hobbies.map(function(hobby){
+      return (
+        &lt;HobbyListItem
+          key={hobby.id}
+          hobby={hobby}
+          persons={persons} /&gt;
+      );
+    });
+    return (&lt;div&gt;
+      &lt;div className="input-group"&gt;
+        &lt;input value={this.state.newValue}
+          onChange={this.update}
+          type="text" 
+          className="form-control" 
+          placeholder="What do you like doing in your spare time?"/&gt;
+        &lt;span className="input-group-btn"&gt;
+          &lt;button onClick={this.addHobby} 
+            className="btn btn-default"
+            type="button"&gt;Add&lt;/button&gt;
+        &lt;/span&gt;
+      &lt;/div&gt;
+      &lt;input className="form-control" type="text" 
+        value={selectedHobby ? selectedHobby.name : ''}
+          onChange={this.updateHobby}
+          placeholder="Select hobby to update"/&gt;
+      &lt;div className="list-group"&gt;
+        {list}
+      &lt;/div&gt;
+    &lt;/div&gt;);
+  }
+});
+
+module.exports = HobbyList;</div></code></pre>
+</p>
+<h3 class="content-subhead" id="deletingmodels">Deleting Models</h3>
+<p>Deleting models is nothing special and the approach used is a matter of preference. You could adopt an approach similar to that used for adding models except you're removing items from the array. It's up to you and I'll leave that as an excercise for you to complete.</p>
+<h3 class="content-subhead" id="enable undo">Enable Undo</h3>
+<p>Astarisx has built in support for Undo/Redo functionality. To enable it you pass an <code>enableUndo</code> option with a value of <code>true</code> during Application Data Context intialization. So if you go back to the UI component (<code>ui.js</code>) and update <code>componentWillMount</code> to
+<pre><code><div class="code-block">componentWillMount: function(){
+  this.initializeAppContext({ 
+    controllerViewModel: cvm,
+    enableUndo: true
+  });
+}</div></code></pre>
+This will give you some extra functions and properties that allow you to navigate back and forth through the state of your application. Let's add some undo and redo functionality. First add a reference to Astarisx and add the <code>Astarisx.mixin.view</code> mixin then update your MenuBar render function to include the two new buttons.
+<pre><code><div class="code-base">render: function(){
+
+  return (
+    &lt;nav className="navbar navbar-default" role="navigation"&gt;
+      &lt;div className="container-fluid"&gt;
+        &lt;div className="navbar-header"&gt;
+          &lt;button type="button"
+          className="navbar-toggle"
+          data-toggle="collapse"
+          data-target="#bs-example-navbar-collapse-1"&gt;
+            &lt;span className="sr-only"&gt;Toggle navigation&lt;/span&gt;
+            &lt;span className="icon-bar"&gt;&lt;/span&gt;
+            &lt;span className="icon-bar"&gt;&lt;/span&gt;
+            &lt;span className="icon-bar"&gt;&lt;/span&gt;
+          &lt;/button&gt;
+          &lt;a className="navbar-brand" href="#"&gt;
+            Astarisx CRM
+          &lt;/a&gt;
+        &lt;/div&gt;
+        {/* New Buttons*/}
+        &lt;div ref="menu" className="collapse navbar-collapse"&gt;
+          &lt;form className="navbar-form pull-right" role="search"&gt;
+            &lt;button onClick={this.undo}
+              disabled={!this.state.appContext.$canRevert}
+              className="btn btn-default btn-sm"&gt;
+            Undo
+            &lt;/button&gt;
+             &lt;button onClick={this.redo}
+              disabled={!this.state.appContext.$canAdvance}
+              className="btn btn-default btn-sm"&gt;
+            Redo
+            &lt;/button&gt;
+          &lt;/form&gt;
+        &lt;/div&gt;
+
+      &lt;/div&gt;
+    &lt;/nav&gt;
+  );
+}</div></code></pre>
+Then add a redo and undo function.
+<pre><code><div>undo: function(e){
+  e.preventDefault();
+  e.stopPropagation();
+  this.state.appContext.revert();
+},
+redo: function(e){
+  e.preventDefault();
+  e.stopPropagation();
+  this.state.appContext.advance();
+}</div></code></pre>
+You can analyze the code later. For now save your work and go and update some data. Every state change is captured. You are able to navigate back and forth through your application's state. Even deletes can be undone. However, there's an issue with the undo button. It is enabled even though you haven't changed anything. This is because Astarisx has actually gone through a state change during initialization and therefore does in fact have previous state. To fix this we need to pass a simple argument to the initial <code>setState</code> call. Go to the Persons ViewModel and locate <code>dataContextWillInitialize</code> and update <code>setState</code> by adding a second argument of <code>false</code>. This tells Astarisx to not retain the previous state for this particular state transition.
+<pre><code><div class="code-block">self.setState({
+  collection: personsCollection
+}, false);</div></code></pre></p>
 
 
+<h3 class="content-subhead" id="movingstuffaround">Moving Stuff Around</h3>
+<p>One of the major benefits of using Astarisx is that UI components are Highly Composable. They can be easily moved around within your application without breaking your code.</p>
+<p>Our CRM application has a little issue that I think we should address. When you start the application, you can see the inputs fields that belong to the HobbyList. They shouldn't be seen until a Person is selected. So let's move HobbyList to a more appropriate location.</p>
+<p>Open the Details component and delete all references to HobbyList. Then open the PersonForm and add a reference to HobbyList and add the component just below the closing <code>form</code> tag. Save your work and take a look at the CRM application. As you can see the input fields are no longer there and the application works as expected. We were able to shift the HobbyList component without breaking a thing.</p>
 
 
-
-
-
-
-
+<h2 class="content-subhead" id="enhancingtheapplication">Enhancing the Application</h2>
+<h3 class="content-subhead" id="stilltocome">Still to come.</h3>
 
             <!-- <h2 class="content-subhead" id="#tips">Tips</h2>
             <h2 class="content-subhead" id="#videos">Videos</h2>
