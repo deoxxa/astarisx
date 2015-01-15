@@ -11,7 +11,7 @@ Highly Composable Application Architecture for [React](http://facebook.github.io
 ## Why Astarisx?
 
 ### Be More Productive
-Astarisx was inspired by React. So it feels like React. There's no need to change your coding style to suit the framework, making it easy to comprehend and quick to learn. Astarisx helps seperate concerns with an approach that is intuitive and fluid. Astarisx was designed with maintainability in mind. As your application evolves, Astarisx reduces the complexity of applying incremental enhancements.
+Astarisx was inspired by <a href="http://facebook.github.io/react/">React</a>. So it feels like React. There's no need to change your coding style to suit the framework, making it easy to comprehend and quick to learn. It helps seperate concerns with an approach that is intuitive and fluid and was designed with maintainability in mind. Astarisx reduces the complexity of applying incremental enhancements as your application evolves.
 
 ### Highly Composable UI Components
 Astarisx View's are stateless and completely decoupled from their Owner Component, making them highly composable. Without changing a line of code, Astarisx Views can be moved anywhere within your application. A View can even be completely removed without breaking your application. Teams can work independently of one another with the confidence that their work will easily integrate into the larger application.
@@ -56,6 +56,8 @@ require(['./astarisx.min.js'], function (Astarisx) {
     // Do something with Astarisx
 });
 ```
+
+#### [Astarisx Website and Documentation](http://entrendipity.github.io/astarisx/)
 
 ## Author
 Frank Panetta  - [Follow @fattenap](https://twitter.com/intent/follow?screen_name=fattenap)
