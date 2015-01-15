@@ -11,6 +11,9 @@ h1 {
     height: auto;
 }
 
+.small {
+    font-size: small;
+}
 /*
 Add transition to containers so they can push in and out.
 */

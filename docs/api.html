@@ -307,12 +307,12 @@
             <p><b>Scope:</b> <em>ViewModel</em></p>
 
 <!-- getTransitions -->
-        <h2 class="section-divider" id="astarisxanimategettransitions">getTransitions (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+        <h2 class="section-divider" id="astarisxanimategettransitions">getTransitions <span class="small"><em>requires <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> mixin</em></span></h2>
             <pre><code><div class="code-block">Object function getTransitions()</div></code></pre>
             <p>Returns an Object that defines default Application Transition behaviors.</p>
         <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 <!-- getDisplays -->
-        <h2 class="section-divider" id="astarisxanimategetdisplays">getDisplays (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+        <h2 class="section-divider" id="astarisxanimategetdisplays">getDisplays <span class="small"><em>requires <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> mixin</em></span></h2>
             <pre><code><div class="code-block">Object function getDisplays()</div></code></pre>
             <p>Returns an Object that defines default Display, Page and Transition behaviors.</p>
         <p><b>Scope:</b> <em>ViewModel</em></p>
@@ -513,23 +513,23 @@
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
 <!-- animate -->
-        <h2 class="section-divider" id="astarisxanimateanimate">animate (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+        <h2 class="section-divider" id="astarisxanimateanimate">animate <span class="small"><em>requires <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> mixin</em></span></h2>
         <pre><code><div class="code-block"><span class="code-object">Promise</span> function animate([Velocity arguments])</div></code></pre>
         <p>Exposes <a href="http://julian.com/research/velocity/">Velocity</a> Accelerated Javascript animation library. Please see <a href="http://julian.com/research/velocity/">Velocity</a> on how to use the jQuery free version of their API. This function includes the Velocity UI Pack transitions and returns a <a href="http://www.html5rocks.com/en/tutorials/es6/promises/">Promise</a>.</p>
         <p>Note: The the first argument can be a either a DOM Node (this.getDOMNode()) or a component.</p>
         <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 <!-- show -->
-        <h2 class="section-divider" id="astarisxanimateshow">show (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+        <h2 class="section-divider" id="astarisxanimateshow">show <span class="small"><em>requires <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> mixin</em></span></h2>
         <pre><code><div class="code-block">void function show(String displayKey[, String pageName][, Function callback]);</div></code></pre>
         <p>Cue the next Display and/or Page to be transitioned in.</p>
         <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 <!-- display -->
-        <h2 class="section-divider" id="astarisxanimatedisplay">display (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+        <h2 class="section-divider" id="astarisxanimatedisplay">display <span class="small"><em>requires <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> mixin</em></span></h2>
         <pre><code><div class="code-block"><span class="code-object">Component</span> function display()</div></code></pre>
         <p>Returns an Astarisx component which is the next Display to be transitioned in.</p>
         <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 <!-- page -->
-        <h2 class="section-divider" id="astarisxanimatepage">page (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+        <h2 class="section-divider" id="astarisxanimatepage">page <span class="small"><em>requires <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> mixin</em></span></h2>
         <pre><code><div class="code-block"><span class="code-object">Component</span> function page()</div></code></pre>
         <p>Returns an Astarisx component which is the next Page to be transitioned in.</p>
         <p><b>Scope:</b> <em>ControllerViewModel</em></p>
@@ -539,7 +539,7 @@
         <p>Transitions in a list item.</p>
         <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 <!-- dropListItem -->
-        <h2 class="section-divider" id="astarisxanimatedroplistitem">dropListItem (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+        <h2 class="section-divider" id="astarisxanimatedroplistitem">dropListItem <span class="small"><em>requires <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> mixin</em></span></h2>
         <pre><code><div class="code-block"><span class="code-object">Promise</span> function dropListItem(Object this, [String listItemKey,][Velocity arguments])</div></code></pre>
         <p>Transitions out a list item.</p>
         <p><b>Scope:</b> <em>ControllerViewModel</em></p>
@@ -600,23 +600,23 @@
             <p><code>true</code> if all Model field's <code>validate</code> functions return <code>true</code>. Otherwise <code>false</code> or <code>undefined</code>.</p>
             <p><b>Scope:</b> <em>Model</em></p>
 <!-- $displayKey -->
-            <h2 class="section-divider" id="displaykey">$displayKey (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+            <h2 class="section-divider" id="displaykey">$displayKey <span class="small"><em>requires <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> mixin</em></span></h2>
             <p>The current displayKey name.</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
 <!-- $displayName -->
-            <h2 class="section-divider" id="displayname">$displayName (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+            <h2 class="section-divider" id="displayname">$displayName <span class="small"><em>requires <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> mixin</em></span></h2>
             <p>The current display name.</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
 
 <!-- $displayGroup -->
-            <h2 class="section-divider" id="displaygroup">$displayGroup (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+            <h2 class="section-divider" id="displaygroup">$displayGroup <span class="small"><em>requires <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> mixin</em></span></h2>
             <p>The current displayGroup name.</p>
         <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
     <!-- $pageName -->
-            <h2 class="section-divider" id="pagename">$pageName (<a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a>)</h2>
+            <h2 class="section-divider" id="pagename">$pageName <span class="small"><em>requires <a href="https://github.com/entrendipity/astarisx-animate">AstarisxAnimate</a> mixin</em></span></h2>
             <p>The current page name.</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>       
 
