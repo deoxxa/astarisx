@@ -4,6 +4,7 @@ var TU = React.addons.TestUtils;
 var expect = require('must');
 var Astarisx = require('../src/core');
 var StateManager = require('../src/stateManager');
+// var sinon = require('sinon');
 
 var calculateAge = function(dob){ // dob is a date
   if(dob.length < 10){
@@ -56,6 +57,7 @@ describe('persons dataContext model', function(){
       model.must.have.enumerable('firstName');
       model.must.have.enumerable('lastName');
       //this also tests 'aliasFor' job
+      model.must.not.have.keys(['job']);
       model.must.have.enumerable('occupation');
       model.must.have.enumerable('dob');
       model.must.have.enumerable('gender');
@@ -99,10 +101,40 @@ describe('persons dataContext model', function(){
     it('model is kind:"instance" and must have setState', function(done){
       app.state.appContext.persons.selectPerson('1', function(err, appContext){
         appContext.persons.selectedPerson.id.must.equal('1');
+        appContext.persons.selectedPerson.$dirty.must.be.false();
         appContext.persons.selectedPerson.setState.must.be.a.function();
         Object.isFrozen(appContext.persons.selectedPerson).must.be.true();
+        //Changes have not committed to app.state.appContext at this point
+        expect(app.state.appContext.persons.selectedPerson).be.undefined();
+        //Commit to app.state.appContext
+        this.setState();
+        //Changes should have committed to app.state.appContext after this.setState();
+        app.state.appContext.persons.selectedPerson.must.be.an.object();
         done();
       });
+    });
+    it('update selectedPerson firstName to "Fred" and $dirty state should be true', function(done){
+      //Just check that we are working with the object from previous test
+      app.state.appContext.persons.selectedPerson.id.must.equal('1');    
+      app.state.appContext.persons.selectedPerson.setState({firstName: "Fred"}, function(err, appContext){
+
+        appContext.persons.selectedPerson.fullName.must.be.equal("Fred Smith");
+        appContext.persons.selectedPerson.$dirty.must.be.equal(true);
+        //check collection
+        appContext.persons.collection[0].fullName.must.be.equal("Fred Smith");
+        appContext.persons.collection[0].$dirty.must.be.equal(true);
+        //Reset $dirty to false
+        appContext.persons.selectedPerson.setState({$dirty: false});
+        done();
+      });
+    });
+    it('selectedPerson $dirty state should be false', function(){
+      //Just check that we are working with the object from previous test
+      app.state.appContext.persons.selectedPerson.id.must.equal('1');
+      app.state.appContext.persons.selectedPerson.$dirty.must.be.equal(false);
+      //check collection
+      app.state.appContext.persons.collection[0].$dirty.must.be.equal(false);
+      
     });
   });
 
@@ -113,6 +145,7 @@ describe('persons dataContext model', function(){
       model.must.have.enumerable('primaryContact');
       model.must.have.enumerable('secondaryContact');
     });
+    
     it('validation prop $primaryContactValid === true', function(){
       model.must.have.ownProperty('$primaryContactValid', true);
     });
@@ -120,6 +153,7 @@ describe('persons dataContext model', function(){
     it('primaryContact $dirty must be false', function(){
       model.primaryContact.must.have.ownProperty('$dirty', false);
     });
+    
     it('secondaryContact $dirty must be false', function(){
       model.secondaryContact.must.have.ownProperty('$dirty', false);
     });
@@ -127,23 +161,50 @@ describe('persons dataContext model', function(){
     it('primaryContact must be frozen', function(){
       Object.isFrozen(model.primaryContact).must.be.true();
     });
+    
     it('secondaryContact must be frozen', function(){
       Object.isFrozen(model.secondaryContact).must.be.true();
     });
+    
     it('primaryContact must have enumerable key $owner with value "primaryContact"', function(){
       model.primaryContact.$state.must.have.enumerable('$owner');
       model.primaryContact.$state.$owner.must.equal("primaryContact");
     });
+    
     it('secondaryContact must have enumerable key $owner with value "secondaryContact"', function(){
       model.secondaryContact.$state.must.have.enumerable('$owner');
       model.secondaryContact.$state.$owner.must.equal("secondaryContact");
     });
+    
     it('primaryContact must have setState', function(){
       model.primaryContact.setState.must.be.a.function();
     });
+
     it('secondaryContact must have setState', function(){
       model.secondaryContact.setState.must.be.a.function();
     });
+
+    it('update embedded models', function(done){
+      //Check that we are working with the object from previous test
+      app.state.appContext.persons.selectedPerson.id.must.equal('1');
+      var selectedPerson = app.state.appContext.persons.selectedPerson;
+      var primaryContact = selectedPerson.primaryContact;
+      var primaryContact = selectedPerson.primaryContact;
+      
+      primaryContact.must.be.an.object();
+      primaryContact.name.must.equal('Pat');
+      primaryContact.setState({name: 'Patrick'}, function(err, appContext){
+        app.state.appContext.persons.selectedPerson.primaryContact.name.must.equal('Pat');
+        primaryContact.name.must.equal('Pat');
+        appContext.persons.selectedPerson.primaryContact.name.must.equal('Patrick');
+        this.name.must.equal('Patrick');
+        this.setState();
+        app.state.appContext.persons.selectedPerson.primaryContact.name.must.equal('Patrick');
+        done();
+      });
+
+    });
+
   });
 
 });

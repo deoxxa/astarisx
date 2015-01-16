@@ -51,8 +51,8 @@ var ViewModel = {
           for (fld = freezeFields.length - 1; fld >= 0; fld--) {
             if(freezeFields[fld].kind === 'instance'){
               if(isModel(viewModel[freezeFields[fld].fieldName])){
-                var tempCstor = viewModel[freezeFields[fld].fieldName].constructor;
-                tempSpec = tempCstor.getDescriptor();
+                var tempCtor = viewModel[freezeFields[fld].fieldName].constructor;
+                tempSpec = tempCtor.getDescriptor();
                 tempModel = Object.create(tempSpec.proto, tempSpec.descriptor);
 
                 Object.defineProperty(tempModel, '_stateChangeHandler', {
@@ -98,8 +98,8 @@ var ViewModel = {
                   modelNextState = extend(this.$state, clientFields, state);
                   
                   if(callback && (typeof callback === 'function')){
-                    //We need to create a model with the next state and bind it to the callback
-                    callback = callback.bind(new tempCstor(this._stateChangeHandler)(modelNextState));
+                    //Create a model with the next state and bind it to the callback
+                    callback = callback.bind(new tempCtor(this._stateChangeHandler)(modelNextState));
                   }
                   this._stateChangeHandler.call(viewModel, modelNextState, appState, callback);
                 };
@@ -108,8 +108,8 @@ var ViewModel = {
                   for (var i = tempSpec.freezeFields.length - 1; i >= 0; i--) {
                     if(tempSpec.freezeFields[i].kind === 'instance' 
                       && isModel(viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName])){
-                      var tempCstor2 = viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName].constructor;
-                      var tempSpec2 = tempCstor2.getDescriptor();
+                      var tempCtor2 = viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName].constructor;
+                      var tempSpec2 = tempCtor2.getDescriptor();
                       var tempModel2 = Object.create(tempSpec2.proto, tempSpec2.descriptor);
                       
                       Object.defineProperty(tempModel2, '_stateChangeHandler', {
@@ -154,13 +154,12 @@ var ViewModel = {
                             };
                           }
 
-                          thisState[fldName] = extend(this.$state, clientFields2, state);
-                          
+                          thisState[fldName] = extend(this.$state, clientFields2, state);                          
                           modelNextState2 = extend(tempModel, thisState);
 
                           if(callback && (typeof callback === 'function')){
-                            //We need to create a model with the next state and bind it to the callback
-                            callback = callback.bind(new tempCstor2(tempModel._stateChangeHandler)(modelNextState2));
+                            //Create a model with the next state and bind it to the callback
+                            callback = callback.bind(new tempCtor2(tempModel._stateChangeHandler)(thisState[fldName]));
                           }
                           tempModel._stateChangeHandler.call(viewModel, modelNextState2, appState, callback);
                         };

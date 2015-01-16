@@ -795,3 +795,4 @@ StateManager.prototype.dispose = function(){
 };
 
 module.exports = StateManager;
+

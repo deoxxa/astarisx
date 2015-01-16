@@ -1,3 +1,6 @@
+## 0.11.1
+- BugFix: correct 'this' context for embedded models
+
 ## 0.11.0
 ### Breaking
 - remove passing in `appContext` into `watchedStateChangeHandler` and `routeChangeHandler`

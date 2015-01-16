@@ -6,11 +6,12 @@ var personStateChangeHandler = function(nextState, nextAppState, callback){
     var persons = {};
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
-        persons.selectedPerson = new Person(nextState);
-        return persons.selectedPerson;
+        // persons.selectedPerson = new Person(nextState);
+        return new Person(nextState);
       }
       return person;
     });
+    persons.selectedPerson = new Person(nextState);
     this.setState(persons, nextAppState, callback);
 };
 
