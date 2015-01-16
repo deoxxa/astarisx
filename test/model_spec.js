@@ -4,7 +4,6 @@ var TU = React.addons.TestUtils;
 var expect = require('must');
 var Astarisx = require('../src/core');
 var StateManager = require('../src/stateManager');
-// var sinon = require('sinon');
 
 var calculateAge = function(dob){ // dob is a date
   if(dob.length < 10){
@@ -115,8 +114,9 @@ describe('persons dataContext model', function(){
     });
     it('update selectedPerson firstName to "Fred" and $dirty state should be true', function(done){
       //Just check that we are working with the object from previous test
-      app.state.appContext.persons.selectedPerson.id.must.equal('1');    
-      app.state.appContext.persons.selectedPerson.setState({firstName: "Fred"}, function(err, appContext){
+      var selectedPerson = app.state.appContext.persons.selectedPerson;
+      selectedPerson.id.must.equal('1');    
+      selectedPerson.setState({firstName: "Fred"}, function(err, appContext){
 
         appContext.persons.selectedPerson.fullName.must.be.equal("Fred Smith");
         appContext.persons.selectedPerson.$dirty.must.be.equal(true);
@@ -128,6 +128,7 @@ describe('persons dataContext model', function(){
         done();
       });
     });
+    
     it('selectedPerson $dirty state should be false', function(){
       //Just check that we are working with the object from previous test
       app.state.appContext.persons.selectedPerson.id.must.equal('1');
@@ -189,8 +190,7 @@ describe('persons dataContext model', function(){
       app.state.appContext.persons.selectedPerson.id.must.equal('1');
       var selectedPerson = app.state.appContext.persons.selectedPerson;
       var primaryContact = selectedPerson.primaryContact;
-      var primaryContact = selectedPerson.primaryContact;
-      
+      var secondaryContact = selectedPerson.secondaryContact;
       primaryContact.must.be.an.object();
       primaryContact.name.must.equal('Pat');
       primaryContact.setState({name: 'Patrick'}, function(err, appContext){
@@ -200,13 +200,59 @@ describe('persons dataContext model', function(){
         this.name.must.equal('Patrick');
         this.setState();
         app.state.appContext.persons.selectedPerson.primaryContact.name.must.equal('Patrick');
-        done();
+  
+        secondaryContact.must.be.an.object();
+        secondaryContact.name.must.equal('John');
+        secondaryContact.setState({name: 'Patricia'}, function(err, appContext){
+          app.state.appContext.persons.selectedPerson.primaryContact.name.must.equal('Patrick');
+          appContext.persons.selectedPerson.primaryContact.name.must.equal('Patrick');
+          this.name.must.equal('Patricia');
+          this.setState();
+          app.state.appContext.persons.selectedPerson.primaryContact.name.must.equal('Patrick');
+          app.state.appContext.persons.selectedPerson.secondaryContact.name.must.equal('Patricia');
+          done();
+        });
       });
+    });
 
+    it('embedded model validation', function(done){
+      var selectedPerson = app.state.appContext.persons.selectedPerson;
+      var primaryContact = selectedPerson.primaryContact;
+      var secondaryContact = selectedPerson.secondaryContact;
+      
+      selectedPerson.must.have.ownProperty('$primaryContactValid', true);
+      primaryContact.setState({name: ''}, function(err, appContext){
+        selectedPerson = appContext.persons.selectedPerson;
+        selectedPerson.$primaryContactValid.must.equal(false);
+        selectedPerson.$allValid.must.equal(false);
+        primaryContact = selectedPerson.primaryContact;
+
+        secondaryContact.setState({name: ''}, function(err, appContext){
+          selectedPerson = appContext.persons.selectedPerson;
+          selectedPerson.$secondaryContactValid.must.equal(false);
+          selectedPerson.$allValid.must.equal(false);
+          
+          primaryContact.setState({name: 'Pat'}, function(err, appContext){
+            selectedPerson = appContext.persons.selectedPerson;
+            selectedPerson.$primaryContactValid.must.equal(true);
+            selectedPerson.$secondaryContactValid.must.equal(false);
+            selectedPerson.$allValid.must.equal(false);
+            secondaryContact = selectedPerson.secondaryContact;
+            
+            secondaryContact.setState({name: 'John'}, function(err, appContext){
+              selectedPerson = appContext.persons.selectedPerson;
+              selectedPerson.$primaryContactValid.must.equal(true);
+              selectedPerson.$secondaryContactValid.must.equal(true);
+              selectedPerson.$allValid.must.equal(true);
+              this.setState();
+              done();
+            });
+          });
+        });
+      });
     });
 
   });
-
 });
 
 

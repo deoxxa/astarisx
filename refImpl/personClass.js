@@ -342,6 +342,11 @@ var PersonClass = Astarisx.createModelClass({
     kind: 'instance',
     get: function(){
       return new Contact(this.$state.secondaryContact, {$owner:"secondaryContact"});
+    },
+    validate: {
+      get: function(){
+        return this.secondaryContact.name.length > 0;
+      }
     }
   },
 
