@@ -512,11 +512,14 @@ describe('Initialize hobbies dataContexts with "_*" and "*" Object with mockVM d
     })
     it('hobbies context passed in args must be four', function(){
       app.state.appContext.hobbies.passedInArgs.must.have.length(4);
-      app.state.appContext.hobbies.passedInArgs.must.eql(["globalArg1", "globalArg2", "contextArg1", "contextArg2"]);
+      app.state.appContext.hobbies.passedInArgs.must.eql(["globalArg1", "globalArg2",
+        "contextArg1", "contextArg2"]);
     })
     it('mock context passed in args must be six', function(){
       app.state.appContext.mockVM.passedInArgs.must.have.length(6);
-      app.state.appContext.mockVM.passedInArgs.must.eql(["globalArg1", "globalArg2", "contextArg1", "contextArg2", "mockVMArg1", "mockVMArg2"]);
+      app.state.appContext.mockVM.passedInArgs.must.eql(["globalArg1",
+        "globalArg2", "contextArg1",
+        "contextArg2", "mockVMArg1", "mockVMArg2"]);
     })
     it('persons context initialized', function(){
       app.state.appContext.persons.initialized.must.be.true();

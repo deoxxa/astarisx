@@ -128,7 +128,7 @@ describe('persons dataContext model', function(){
         done();
       });
     });
-    
+
     it('selectedPerson $dirty state should be false', function(){
       //Just check that we are working with the object from previous test
       app.state.appContext.persons.selectedPerson.id.must.equal('1');
@@ -221,6 +221,7 @@ describe('persons dataContext model', function(){
       var secondaryContact = selectedPerson.secondaryContact;
       
       selectedPerson.must.have.ownProperty('$primaryContactValid', true);
+      
       primaryContact.setState({name: ''}, function(err, appContext){
         selectedPerson = appContext.persons.selectedPerson;
         selectedPerson.$primaryContactValid.must.equal(false);

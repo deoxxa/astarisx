@@ -302,6 +302,29 @@ var PersonsViewModel = Astarisx.createViewModelClass({  //short form => createVM
           {$pageNotFound: true }, callback);
       }
     },
+    
+    selectPersonForgetPrevState: function(id, remember, callback){
+      var selectedPerson;
+      var remember = remember === void(0) ? true : remember;
+
+      if(!id){
+          this.setState({selectedPerson: selectedPerson },
+            {$path: '/people' }, remember, callback);
+            return;
+      }
+      for (var i = this.collection.length - 1; i >= 0; i--) {
+        if(this.collection[i].id === id){
+          selectedPerson = new Person(this.collection[i]);
+          this.setState({ selectedPerson: selectedPerson },
+            {$path: '/person/' + selectedPerson.id }, remember, callback);
+          break;
+        }
+      }
+      if(!selectedPerson){
+        this.setState({selectedPerson: selectedPerson },
+          {$pageNotFound: true }, remember, callback);
+      }
+    },
 
     addPerson: function(value){
       var nextState = {};
