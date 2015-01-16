@@ -92,7 +92,6 @@ describe('initialize with enableUndo', function(){
                 appContext.$canRevert.must.be.equal(true);
                 appContext.$canAdvance.must.be.equal(true);
                 appContext.advance(function(err, appContext){
-                  console.log(appContext);
                   appContext.persons.selectedPerson.fullName.must.be.equal("Fred Flintstone");
                   appContext.$canRevert.must.be.equal(true);
                   appContext.$canAdvance.must.be.equal(false);
