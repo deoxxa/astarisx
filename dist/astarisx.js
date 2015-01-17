@@ -764,12 +764,26 @@ var ControllerViewModel = {
 
       //revert and advance should always be available to allow for adhoc undo.
       desc.proto.revert = function(callback){
-        this.setState(this.$previousState, !!this.$previousState ? this : void(0), true, callback, void(0), true);
+        var proxy;
+        if(callback !== void(0)){
+          proxy = function(err, appContext){
+            this.setState();
+            callback(err, appContext);
+          }.bind(this);
+        }
+        this.setState(this.$previousState, !!this.$previousState ? this : void(0), true, proxy, void(0), true);
       };
 
       desc.proto.advance = function(callback){
+        var proxy;
+        if(callback !== void(0)){
+          proxy = function(err, appContext){
+            this.setState();
+            callback(err, appContext);
+          }.bind(this);
+        }
         if(this.$canAdvance){
-          this.setState(this.$nextState, this.$nextState.$nextState, callback);
+          this.setState(this.$nextState, this.$nextState.$nextState, proxy);
         }
       };
 
@@ -1010,6 +1024,7 @@ var ControllerViewModel = {
 };
 
 module.exports = ControllerViewModel;
+
 },{"./utils":11}],7:[function(require,module,exports){
 var model = require('./model');
 var viewModel = require('./viewModel');
@@ -1608,6 +1623,7 @@ var Model = {
 };
 
 module.exports = Model;
+
 },{"./utils":11}],10:[function(require,module,exports){
 var page = require('page');
 var utils = require('./utils');
@@ -1798,7 +1814,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 
     //If reverting to previousState remove any processedState from the prior call
     //This occurs because of the callback batching process
-    processedState = revert ? void(0) : processedState;
+    processedState = revert ? {} : processedState;
 
 		//This covers setState with no args or with void(0) or with {} as argument
     if(arguments.length <= 2 || (typeof newState === 'function')){
@@ -1824,7 +1840,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 	          }
 					}
 	    	}
-	    	return;    		
+	    	return;
     	}
     }
 
@@ -1848,7 +1864,6 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 		newStateKeys = Object.keys(newState);
 
 		newAppState = newAppState || {};
-
 		//Check to see if appState is a ready made $state object. If so
 		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
@@ -1908,9 +1923,9 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
         return;
 			}
 		} else {
-
+			
 			if(hasStatic){
-				staticState = updateStatic(staticState, newState);
+				staticState = updateStatic(staticState, newState, newAppState);
 			}
 
 			if(!!newStateKeys.length){
@@ -2062,6 +2077,11 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 
 			if(stateMgr.appState.$canRevert && calledBack){
 				prevState = stateMgr.appState.$previousState;
+        if(hasStatic && stateMgr.appState.$canAdvance &&
+        	staticState._staticUpdated && staticState._onlyStatic){
+          redoState = stateMgr.appState.$nextState;
+        }
+
 			} else if(hasStatic && staticState._staticUpdated && staticState._onlyStatic){
         if(stateMgr.appState.$canRevert){
         	prevState = stateMgr.appState.$previousState;
@@ -2406,6 +2426,8 @@ StateManager.prototype.dispose = function(){
 };
 
 module.exports = StateManager;
+
+
 },{"./utils":11,"page":3}],11:[function(require,module,exports){
 var toString = Object.prototype.toString;
 var utils = {
@@ -2577,6 +2599,7 @@ var utils = {
 };
 
 module.exports = utils;
+
 },{}],12:[function(require,module,exports){
 var utils = require('./utils');
 var extend = utils.extend;
@@ -2631,8 +2654,8 @@ var ViewModel = {
           for (fld = freezeFields.length - 1; fld >= 0; fld--) {
             if(freezeFields[fld].kind === 'instance'){
               if(isModel(viewModel[freezeFields[fld].fieldName])){
-                var tempCstor = viewModel[freezeFields[fld].fieldName].constructor;
-                tempSpec = tempCstor.getDescriptor();
+                var tempCtor = viewModel[freezeFields[fld].fieldName].constructor;
+                tempSpec = tempCtor.getDescriptor();
                 tempModel = Object.create(tempSpec.proto, tempSpec.descriptor);
 
                 Object.defineProperty(tempModel, '_stateChangeHandler', {
@@ -2678,8 +2701,8 @@ var ViewModel = {
                   modelNextState = extend(this.$state, clientFields, state);
                   
                   if(callback && (typeof callback === 'function')){
-                    //We need to create a model with the next state and bind it to the callback
-                    callback = callback.bind(new tempCstor(this._stateChangeHandler)(modelNextState));
+                    //Create a model with the next state and bind it to the callback
+                    callback = callback.bind(new tempCtor(this._stateChangeHandler)(modelNextState));
                   }
                   this._stateChangeHandler.call(viewModel, modelNextState, appState, callback);
                 };
@@ -2688,8 +2711,8 @@ var ViewModel = {
                   for (var i = tempSpec.freezeFields.length - 1; i >= 0; i--) {
                     if(tempSpec.freezeFields[i].kind === 'instance' 
                       && isModel(viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName])){
-                      var tempCstor2 = viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName].constructor;
-                      var tempSpec2 = tempCstor2.getDescriptor();
+                      var tempCtor2 = viewModel[freezeFields[fld].fieldName][tempSpec.freezeFields[i].fieldName].constructor;
+                      var tempSpec2 = tempCtor2.getDescriptor();
                       var tempModel2 = Object.create(tempSpec2.proto, tempSpec2.descriptor);
                       
                       Object.defineProperty(tempModel2, '_stateChangeHandler', {
@@ -2734,13 +2757,12 @@ var ViewModel = {
                             };
                           }
 
-                          thisState[fldName] = extend(this.$state, clientFields2, state);
-                          
+                          thisState[fldName] = extend(this.$state, clientFields2, state);                          
                           modelNextState2 = extend(tempModel, thisState);
 
                           if(callback && (typeof callback === 'function')){
-                            //We need to create a model with the next state and bind it to the callback
-                            callback = callback.bind(new tempCstor2(tempModel._stateChangeHandler)(modelNextState2));
+                            //Create a model with the next state and bind it to the callback
+                            callback = callback.bind(new tempCtor2(tempModel._stateChangeHandler)(thisState[fldName]));
                           }
                           tempModel._stateChangeHandler.call(viewModel, modelNextState2, appState, callback);
                         };
@@ -2802,5 +2824,6 @@ var ViewModel = {
 };
 
 module.exports = ViewModel;
+
 },{"./utils":11}]},{},[1])(1)
 });

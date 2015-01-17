@@ -187,7 +187,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 
     //If reverting to previousState remove any processedState from the prior call
     //This occurs because of the callback batching process
-    processedState = revert ? void(0) : processedState;
+    processedState = revert ? {} : processedState;
 
 		//This covers setState with no args or with void(0) or with {} as argument
     if(arguments.length <= 2 || (typeof newState === 'function')){
@@ -213,7 +213,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 	          }
 					}
 	    	}
-	    	return;    		
+	    	return;
     	}
     }
 
@@ -237,7 +237,6 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 		newStateKeys = Object.keys(newState);
 
 		newAppState = newAppState || {};
-
 		//Check to see if appState is a ready made $state object. If so
 		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
@@ -297,9 +296,9 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
         return;
 			}
 		} else {
-
+			
 			if(hasStatic){
-				staticState = updateStatic(staticState, newState);
+				staticState = updateStatic(staticState, newState, newAppState);
 			}
 
 			if(!!newStateKeys.length){
@@ -451,6 +450,11 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 
 			if(stateMgr.appState.$canRevert && calledBack){
 				prevState = stateMgr.appState.$previousState;
+        if(hasStatic && stateMgr.appState.$canAdvance &&
+        	staticState._staticUpdated && staticState._onlyStatic){
+          redoState = stateMgr.appState.$nextState;
+        }
+
 			} else if(hasStatic && staticState._staticUpdated && staticState._onlyStatic){
         if(stateMgr.appState.$canRevert){
         	prevState = stateMgr.appState.$previousState;

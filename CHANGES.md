@@ -1,5 +1,6 @@
 ## 0.11.1
 - BugFix: correct 'this' context for embedded models
+- BugFix: kind:static field should perform as expected during revert() and advance()
 
 ## 0.11.0
 ### Breaking
