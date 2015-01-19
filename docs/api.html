@@ -98,7 +98,7 @@
                 <li class="sub"><a data-scroll href="#dataContext">$dataContext</a></li>
                 <li class="sub"><a data-scroll href="#canrevert">$canRevert</a></li>
                 <li class="sub"><a data-scroll href="#canadvance">$canAdvance</a></li>
-                <li class="sub"><a data-scroll href="#datacontextupdated">$dataContextUpdated</a></li>
+                <li class="sub"><a data-scroll href="#datacontextupdated">$state.$dataContextUpdated</a></li>
                 <li class="sub"><a data-scroll href="#dirty">$dirty</a></li>
                 <li class="sub"><a data-scroll href="#valid">$[field]Valid</a></li>
                 <li class="sub"><a data-scroll href="#allvalid">$allValid</a></li>
@@ -580,8 +580,8 @@
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
             
 <!-- $dataContextUpdated -->
-            <h2 class="section-divider" id="datacontextupdated">$dataContextUpdated</h2>
-            <p>Holds only the data contexts with the state that will be transitioned and is intended to be used within React’s <code>shouldComponentUpdate</code>. See <a href="https://github.com/entrendipity/astarisx/wiki/View#optimizing-the-view">Optimizing the View</a>.</p>
+            <h2 class="section-divider" id="datacontextupdated">$state.$dataContextUpdated</h2>
+            <p>Holds only the data contexts with the state that will be transitioned and is intended to be used within React’s <code>shouldComponentUpdate</code>. See <a href="/docs/guide.html#optimizingtheview">Optimizing the View</a>.</p>
             <p>n.b. This property is located in the <code>appContext.$state</code> object.</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
