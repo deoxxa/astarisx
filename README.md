@@ -4,6 +4,7 @@ Astarisx
 Highly Composable Application Architecture for [React](http://facebook.github.io/react/).
 
 [![Build Status]](https://travis-ci.org/entrendipity/astarisx)
+[![coveralls-url]](https://coveralls.io/r/entrendipity/astarisx)
 [![License]](https://github.com/entrendipity/astarisx/blob/master/LICENSE)
 
 #### [Astarisx Website and Documentation](http://entrendipity.github.io/astarisx/)
@@ -75,3 +76,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 [Build Status]: https://travis-ci.org/entrendipity/astarisx.svg?branch=master
 [License]: http://img.shields.io/npm/l/mochify.svg
+[coveralls-url]: https://coveralls.io/r/entrendipity/astarisx?branch=master
