@@ -47,6 +47,6 @@
     "test-wd": "mochify --wd",
     "test": "npm run test-phantom && npm run cover",
     "build": "node ./build.js",
-    "cover": "mochify --plugin [mochify-istanbul --exclude '**/+(test|node_modules|refImpl|dist|lib)/**/*' --report lcovonly --dir ./coverage] && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+    "cover": "mochify --plugin [ mochify-istanbul --exclude '**/+(test|node_modules|refImpl|dist|lib)/**/*' --report lcovonly --dir ./coverage ] && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   }
 }
