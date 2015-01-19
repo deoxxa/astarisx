@@ -1,6 +1,6 @@
 ## 0.11.1
 - BugFix: correct 'this' context for embedded models
-- BugFix: `kind:static` field should perform as expected during `revert()` and advance()
+- BugFix: `kind:static` field should perform as expected during `revert()` and `advance()`
 - BugFix: `revert()` with newAppState `kind:static` field update, applied wrong $previousState
 - BugFix: pass `$dataContextUpdated` to callbacks
 
