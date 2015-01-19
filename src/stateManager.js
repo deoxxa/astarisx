@@ -224,6 +224,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
     } else if(typeof newAppState === 'function'){
     	delay = remember;
 			callback = newAppState;
+			remember = true;
 			newAppState = {};
 		} else if (typeof newAppState === 'boolean'){
       remember = newAppState;
@@ -291,6 +292,9 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
             }
 					}
 				} catch(e) {
+					calledBack = false;
+					transientState = {};
+					processedState = {};					
 					callback(e);
 				}
         return;
@@ -457,7 +461,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 
 			} else if(hasStatic && staticState._staticUpdated && staticState._onlyStatic){
         if(stateMgr.appState.$canRevert){
-        	prevState = stateMgr.appState.$previousState;
+        	prevState = stateMgr.appState;
         }
         if(stateMgr.appState.$canAdvance){
         	redoState = stateMgr.appState.$nextState;
@@ -510,6 +514,9 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 			}
 		} catch(e) {
 			if(typeof callback === 'function'){
+				calledBack = false;
+				transientState = {};
+				processedState = {};
 				callback(e);
 				return;
 			}

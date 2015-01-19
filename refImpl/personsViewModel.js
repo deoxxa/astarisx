@@ -1,12 +1,12 @@
 var Astarisx = require('../src/core');
-var PersonClass = require('./personClass');
+var PersonCtor = require('./personClass');
 var DataService = require('./data');
 
 var personStateChangeHandler = function(nextState, nextAppState, callback){
     var persons = {};
     persons.collection = this.collection.map(function(person){
       if(person.id === nextState.id){
-        // persons.selectedPerson = new Person(nextState);
+        persons.selectedPerson = new Person(nextState);
         return new Person(nextState);
       }
       return person;
@@ -16,7 +16,7 @@ var personStateChangeHandler = function(nextState, nextAppState, callback){
 };
 
 var Person = function(){
-    return new PersonClass(personStateChangeHandler).apply(this, arguments);
+    return new PersonCtor(personStateChangeHandler).apply(this, arguments);
 };
 
 // var personRouteHandler = function(params, appContext, path, pathId, ctx){

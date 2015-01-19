@@ -9,8 +9,17 @@ var StateManager = require('../src/stateManager');
 //Only initialize persons dataContext
 var ControllerViewModel = Astarisx.createCVMClass({
   mixins:[require('../refImpl/mixinViewModels')],
+  getInitialState: function(){
+    return { staticField: 'initStaticVal' };
+  },
   dataContextWillInitialize: function(/* arguments passed in from new StateManager call*/){
     this.initializeDataContext("persons");
+  },
+  staticField: {
+    kind: 'static',
+    get: function(){
+      return this.$state.staticField;
+    }
   }
 });
 
@@ -23,7 +32,7 @@ var UI = React.createClass({
 
 var app = TU.renderIntoDocument(React.createElement(UI));
 
-describe('initialize with enableUndo', function(){
+describe('initialize appContext with enableUndo and kind:static field', function(){
   var stateMgr;
   var model;
   before(function() {
@@ -59,46 +68,52 @@ describe('initialize with enableUndo', function(){
     });
     
 
-    it('update selectedPerson 2x and traverse state', function(done){
+    it('update selectedPerson 2x and traverse state with kind:static field', function(done){
 
       var selectedPerson = app.state.appContext.persons.selectedPerson;
       selectedPerson.fullName.must.be.equal("Frank Smith");
-
+      
+      app.state.appContext.staticField.must.equal("initStaticVal");
       selectedPerson.setState({firstName: "Fred"}, function(err, appContext){
-        this.fullName.must.be.equal("Fred Smith");
-        appContext.must.have.ownProperty('$previousState');
-        appContext.$previousState.must.be.an.object();
-
+        this.setState();
+        this.fullName.must.equal("Fred Smith");
         appContext.$canRevert.must.be.equal(true);
         appContext.$canAdvance.must.be.equal(false);
-        //commit
-        this.setState();
-        this.setState({lastName: "Flintstone"}, function(err, appContext){
-          this.fullName.must.be.equal("Fred Flintstone");
+        appContext.staticField.must.equal("initStaticVal");
+
+        this.setState({lastName: "Flintstone"}, {staticField: 'updated'}, function(err, appContext){
+          this.setState();
+          selectedPerson = appContext.persons.selectedPerson;
+          selectedPerson.fullName.must.be.equal("Fred Flintstone");
+ 
+          appContext.staticField.must.equal("updated");
           appContext.$canRevert.must.be.equal(true);
           appContext.$canAdvance.must.be.equal(false);
-          appContext.must.have.ownProperty('$previousState');
-          appContext.$previousState.must.be.an.object();
           appContext.revert(function(err, appContext){
             appContext.persons.selectedPerson.fullName.must.be.equal("Fred Smith");
+            appContext.staticField.must.equal("updated");
             appContext.$canRevert.must.be.equal(true);
             appContext.$canAdvance.must.be.equal(true);
             appContext.revert(function(err, appContext){
               appContext.persons.selectedPerson.fullName.must.be.equal("Frank Smith");
+              appContext.staticField.must.equal("updated");
               appContext.$canRevert.must.be.equal(true);
               appContext.$canAdvance.must.be.equal(true);
               appContext.advance(function(err, appContext){
                 appContext.persons.selectedPerson.fullName.must.be.equal("Fred Smith");
+                appContext.staticField.must.equal("updated");
                 appContext.$canRevert.must.be.equal(true);
                 appContext.$canAdvance.must.be.equal(true);
                 appContext.advance(function(err, appContext){
                   appContext.persons.selectedPerson.fullName.must.be.equal("Fred Flintstone");
+                  appContext.staticField.must.equal("updated");
                   appContext.$canRevert.must.be.equal(true);
                   appContext.$canAdvance.must.be.equal(false);
                   appContext.revert(function(err, appContext){
+                    //reset fullName to Frank Smith. Tested in next text
                     appContext.revert();
+                    done();
                   });
-                  done();
                 });
               });
             });
