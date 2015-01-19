@@ -41,12 +41,12 @@
     "page": "^1.4.0"
   },
   "scripts": {
-    "all": "npm test && npm run build",
+    "all": "npm test-local && npm run build",
     "start": "mochify --watch",
-    "test-phantom": "mochify -R spec",
+    "test-local": "mochify -R spec",
     "test-wd": "mochify --wd",
     "test": "npm run test-phantom && npm run cover",
     "build": "node ./build.js",
-    "cover": "mochify --plugin [ mochify-istanbul --exclude '**/+(test|node_modules)/**/*' --report lcovonly --dir ./coverage] && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+    "cover": "mochify --plugin [mochify-istanbul --exclude '**/+(test|node_modules|refImpl|dist|lib)/**/*' --report lcovonly --dir ./coverage] && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   }
 }
