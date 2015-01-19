@@ -137,6 +137,27 @@ describe('persons dataContext model', function(){
       app.state.appContext.persons.collection[0].$dirty.must.be.equal(false);
       
     });
+
+    it('update selectedPerson _clientField to "aValue" and should retain value b/w transitions', function(done){
+      //Just check that we are working with the object from previous test
+      var selectedPerson = app.state.appContext.persons.selectedPerson;
+      selectedPerson.id.must.equal('1');    
+      selectedPerson.setState({_clientField: "aValue"}, function(err, appContext){
+
+        appContext.persons.selectedPerson._clientField.must.be.equal("aValue");
+        appContext.persons.selectedPerson.$dirty.must.be.equal(true);
+        //check collection
+        appContext.persons.collection[0]._clientField.must.be.equal("aValue");
+        appContext.persons.collection[0].$dirty.must.be.equal(true);
+        //Reset $dirty to false
+        appContext.persons.selectedPerson.setState({$dirty: false}, function(err, appContext){
+          appContext.persons.selectedPerson._clientField.must.be.equal("aValue");
+          appContext.persons.selectedPerson.$dirty.must.be.equal(false);
+          appContext.persons.collection[0].$dirty.must.be.equal(false);
+          done();
+        });
+      });
+    });
   });
 
 

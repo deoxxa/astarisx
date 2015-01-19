@@ -271,6 +271,12 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 
 			if(typeof callback === 'function'){
 				try {
+					//Pass in $dataContextUpdated to callback
+					if(willUndo){
+		        nextState = extend(nextState, {$dataContextUpdated: newState.$state.$dataContextUpdated});
+		      } else {
+		        nextState = extend(nextState, {$dataContextUpdated: processedState});
+		      }
 					stateMgr.appState = new ApplicationDataContext(nextState, prevState, redoState,
 					enableUndo, routingEnabled, nextState.$path !== stateMgr.appState.$path,
 					!external || nextState.$pageNotFound, remember);
@@ -479,7 +485,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 		pushStateChanged = nextState.$path !== stateMgr.appState.$path;
 
 		try {
-			//Add dataContextUpdated
+			//Add $dataContextUpdated to appState
       if(willUndo){
         nextState = extend(nextState, {$dataContextUpdated: newState.$state.$dataContextUpdated});
       } else {
