@@ -261,7 +261,7 @@
                         <b>value</b> = arguments to be passed to <code>dataContextWillInitialize</code> for the specified data context.
                         </p>
                         <p>There are 2 special key names that an <em>dataCtxInitObj</em> can have. They are an asterisk ("*") and an underscore followed by an asterisk ("_*"). The value for these keys specify the scope of the arguments.</p>
-            <p>See <a href="/docs/guide.html#initializingdatacontexts">Initializing Data Contexts</a> for an explaination on how to use this function.</p>
+            <p>See <a href="/astarisx/docs/guide.html#initializingdatacontexts">Initializing Data Contexts</a> for an explaination on how to use this function.</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
 <!-- Descriptor Specs -->
@@ -276,7 +276,7 @@
             <h2 class="section-divider" id="datacontextwillinitialize">dataContextWillInitialize</h2>
             <pre><code><div class="code-block">void function dataContextWillInitialize()</div></code></pre>
             <p>Called before the data context is intialized (i.e. before <code>getInitialState</code> is called) and after it has been bootstrapped. This is where ajax calls are made to retrieve data and set up the data context. <code>dataContextWillInitialize</code> will only be called once per data context.</p>
-            <p><code>dataContextWillInitialize</code> can receive arguments from <code><a data-scroll href="#initializeappcontext">intializeAppContext</a></code> or <code><a data-scroll href="#initializedatacontext">initializeDataContext</a></code>. See <a href="/docs/guide.html#initializingdatacontexts">Initializing Data Contexts</a>.</p>
+            <p><code>dataContextWillInitialize</code> can receive arguments from <code><a data-scroll href="#initializeappcontext">intializeAppContext</a></code> or <code><a data-scroll href="#initializedatacontext">initializeDataContext</a></code>. See <a href="/astarisx/docs/guide.html#initializingdatacontexts">Initializing Data Contexts</a>.</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
 <!-- _clientField -->
@@ -495,7 +495,7 @@
     <h5>delay</h5>
     <p><code>delay</code> is how long you would like to postpone a callback, in millisecond. It is only available if a <code>callback</code> is passed in and will not batch the state transition. <b>This argument is not available from Models.</b></p>
 
-<p>See <a href="/docs/guide.html#transitioningstate">Transitioning State with setState</a> for examples on how to use this function.</p>
+<p>See <a href="/astarisx/docs/guide.html#transitioningstate">Transitioning State with setState</a> for examples on how to use this function.</p>
             <p><b>Scope:</b> <em>ControllerViewModel (<code>nextAppState</code> not supported), ViewModel, Model (<code>remember</code> and <code>delay</code> are not supported)</em></p>
 
 <!-- revert -->
@@ -581,7 +581,7 @@
             
 <!-- $dataContextUpdated -->
             <h2 class="section-divider" id="datacontextupdated">$state.$dataContextUpdated</h2>
-            <p>Holds only the data contexts with the state that will be transitioned and is intended to be used within React’s <code>shouldComponentUpdate</code>. See <a href="/docs/guide.html#optimizingtheview">Optimizing the View</a>.</p>
+            <p>Holds only the data contexts with the state that will be transitioned and is intended to be used within React’s <code>shouldComponentUpdate</code>. See <a href="/astarisx/docs/guide.html#optimizingtheview">Optimizing the View</a>.</p>
             <p>n.b. This property is located in the <code>appContext.$state</code> object.</p>
             <p><b>Scope:</b> <em>ControllerViewModel</em></p>
 
