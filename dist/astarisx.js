@@ -1814,12 +1814,6 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
       stateChangeEvent,
       passiveStateChangeEvent;
 
-
-      // if('dummyProp' in newState){
-      // 	// var debug = true;
-      // 	console.log('FROM HERE...');
-      // }
-
     //If reverting to previousState remove any processedState from the prior call
     //This occurs because of the callback batching process
     processedState = revert ? {} : processedState;
@@ -1865,8 +1859,6 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 
 		newAppState = newAppState || {};
 		newAppStateKeysLen = Object.keys(newAppState).length;
-
-		// console.log('newAppStateKeysLen:',newAppStateKeysLen);
 
 		//This covers setState with no args or with void(0) or with {} as argument
     if(!!!newStateKeysLen && !!!newAppStateKeysLen){
@@ -2033,23 +2025,17 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 			}
 
 			transientStateKeysLen = transientStateKeys.length - 1;
-			// console.log('transientState ==> ', transientState);
-// console.log('nextState ==> ', nextState);
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
 				if(transientStateKeys[keyIdx] in domain){
 					nextState[transientStateKeys[keyIdx]] = extend(stateMgr.appState[transientStateKeys[keyIdx]], transientState[transientStateKeys[keyIdx]]);
 					nextState[transientStateKeys[keyIdx]] = new dataContexts[transientStateKeys[keyIdx]](nextState[transientStateKeys[keyIdx]]);
 				} else {
-					// console.log('it is!!!!!!!!!!!!!!!!!!!');
 					nextState[transientStateKeys[keyIdx]] = transientState[transientStateKeys[keyIdx]];
 				}
 			};
-								// console.log('nextState1 ==> ', nextState);
-			// console.log('processedState ==> ', processedState);
 			processedState = extend(processedState, nextState);
 			//Triggers
 			nextState = extend(stateMgr.appState, processedState);
-// console.log('nextState2 ==> ', nextState);
 
 			transientState = {};
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
@@ -2094,7 +2080,6 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 			};
 
 			if(!!Object.keys(transientState).length){
-				// console.log('poppopopopopopopopo');
 				appStateChangeHandler(void(0), {}, transientState, remember, callback, delay);
 				return;
 			}
@@ -2176,9 +2161,6 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
         nextState = extend(nextState, {$dataContextUpdated: processedState});
       }
 
-// console.log('processedState ==> ', processedState.persons.selectedPerson.fullName);
-      // console.log('nextState ==> ', nextState.persons.selectedPerson.fullName);
-
 			stateMgr.appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
 			!external || nextState.$pageNotFound, remember);	
@@ -2188,9 +2170,6 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 
 			if(typeof callback === 'function'){
 				if(delay !== void(0) && !isNaN(delay)){
-					// cons.log('yesssss');
-					// cons.log('nextState3 ==> ', nextState);
-					// cons.log(stateMgr.appState);
 					calledBack = false;
 					notifyViews(processedState.$notify);
 					transientState = {};
