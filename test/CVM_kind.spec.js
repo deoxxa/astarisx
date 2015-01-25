@@ -181,7 +181,14 @@ var ControllerViewModel = Astarisx.createCVMClass({
     get: function(){
       return 'pseudoField';
     }
-  }
+  },
+
+  // invalidKind: {
+  //   kind: 'invalid',
+  //   get: function(){
+  //     return 'invalidKind';
+  //   }
+  // }
 });
 
 var UI = React.createClass({

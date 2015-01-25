@@ -1796,6 +1796,8 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
       prevState = void(0),
       redoState = void(0),
       newStateKeys,
+      newStateKeysLen,
+      newAppStateKeysLen,
       keyIdx,
       transientStateKeysLen,
       transientStateKeys,
@@ -1812,58 +1814,101 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
       stateChangeEvent,
       passiveStateChangeEvent;
 
+
+      // if('dummyProp' in newState){
+      // 	// var debug = true;
+      // 	console.log('FROM HERE...');
+      // }
+
     //If reverting to previousState remove any processedState from the prior call
     //This occurs because of the callback batching process
     processedState = revert ? {} : processedState;
 
-		//This covers setState with no args or with void(0) or with {} as argument
-    if(arguments.length <= 2 || (typeof newState === 'function')){
-    	if(newState === void(0) || !!!Object.keys(newState).length || (typeof newState === 'function')){
-				calledBack = false;
-				notifyViews(processedState.$notify);
-				transientState = {};
-				processedState = {};
-				if (typeof newState === 'function'){ //must be callback
-					if(newAppState !== void(0) && !isNaN(newAppState)){
-						window.setTimeout(function(){
-						  if(caller === namespace){
-		            newState.call(stateMgr.appState, void(0), stateMgr.appState);
-		          } else {
-		            newState.call(stateMgr.appState[caller], void(0), stateMgr.appState);
-		          }
-			      }, newAppState);
-					} else {
-					  if(caller === namespace){
-	            newState.call(stateMgr.appState, void(0), stateMgr.appState);
-	          } else {
-	            newState.call(stateMgr.appState[caller], void(0), stateMgr.appState);
-	          }
-					}
-	    	}
-	    	return;
-    	}
-    }
-
     if(typeof remember === 'function'){
-    	delay = callback;
-      callback = remember;
-      remember = true;
-    } else if(typeof newAppState === 'function'){
-    	delay = remember;
-			callback = newAppState;
-			newAppState = {};
-		} else if (typeof newAppState === 'boolean'){
-      remember = newAppState;
-      newAppState = {};
+    	delay = void(0);
+    	if(callback !== void(0) && !isNaN(callback)){
+    		delay = callback.toFixed();
+    	};
+    	callback = remember;
+    	if(typeof newAppState === 'boolean'){
+    		remember = newAppState;
+    		newAppState = {};
+    	} else {
+    		remember = true;
+    	}
+    } else if (typeof newAppState === 'function'){
+    	delay = void(0);
+    	if(remember !== void(0) && !isNaN(remember)){
+    		delay = remember.toFixed();
+    	};
+    	callback = newAppState;
+    	newAppState = {};
+  		remember = true;
+    } else if (typeof newState === 'function'){
+    	delay = void(0);
+    	if(newAppState !== void(0) && !isNaN(newAppState)){
+    		delay = newAppState.toFixed();
+    	};
+    	remember = true;
+    	callback = newState;
+    	newState = {};
+    	newAppState = {};
     }
 
     if(remember === void(0)){
     	remember = true;
     }
+		
 		newState = newState || {};
 		newStateKeys = Object.keys(newState);
+		newStateKeysLen = newStateKeys.length;
 
 		newAppState = newAppState || {};
+		newAppStateKeysLen = Object.keys(newAppState).length;
+
+		// console.log('newAppStateKeysLen:',newAppStateKeysLen);
+
+		//This covers setState with no args or with void(0) or with {} as argument
+    if(!!!newStateKeysLen && !!!newAppStateKeysLen){
+    	if(typeof callback === 'function'){
+				
+				if(!remember){
+					stateMgr.appState = new ApplicationDataContext(stateMgr.appState.$state,
+						stateMgr.appState.$previousState, redoState,
+						enableUndo, routingEnabled, false, //nextState.$path !== stateMgr.appState.$path,
+						!external || nextState.$pageNotFound, remember);
+				}
+
+				if(delay !== void(0) && !isNaN(delay)){
+					calledBack = false;
+					notifyViews(processedState.$notify);
+					transientState = {};
+					processedState = {};
+
+					window.setTimeout(function(){
+					  if(caller === namespace){
+	            callback.call(stateMgr.appState, void(0), stateMgr.appState);
+	          } else {
+	            callback.call(stateMgr.appState[caller], void(0), stateMgr.appState);
+	          }
+		      }, delay);
+				} else {
+					calledBack = true;
+				  if(caller === namespace){
+            callback.call(stateMgr.appState, void(0), stateMgr.appState);
+          } else {
+            callback.call(stateMgr.appState[caller], void(0), stateMgr.appState);
+          }
+				}
+    	} else {
+    		calledBack = false;
+    		notifyViews(processedState.$notify);
+				transientState = {};
+				processedState = {};
+    	}
+    	return;
+    }
+
 		//Check to see if appState is a ready made $state object. If so
 		//pass it straight to the stateChangeHandler. If a callback was passed in
 		//it would be assigned to newState
@@ -1897,44 +1942,48 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 
 			if(typeof callback === 'function'){
 				try {
+					//Pass in $dataContextUpdated to callback
+		      nextState = extend(nextState, {$dataContextUpdated: newState.$state.$dataContextUpdated});
+
 					stateMgr.appState = new ApplicationDataContext(nextState, prevState, redoState,
 					enableUndo, routingEnabled, nextState.$path !== stateMgr.appState.$path,
 					!external || nextState.$pageNotFound, remember);
-
-	        calledBack = true;
+					
 	        if(delay !== void(0) && !isNaN(delay)){
+	        	calledBack = false;
+	        	notifyViews(processedState.$notify);
+						transientState = {};
+						processedState = {};
 						window.setTimeout(function(){
-						  if(caller === namespace){
-                callback.call(stateMgr.appState, void(0), stateMgr.appState);
-              } else {
-                callback.call(stateMgr.appState[caller], void(0), stateMgr.appState);
-              }
+               callback.call(stateMgr.appState, void(0), stateMgr.appState);
 			      }, delay);
 					} else {
-					  if(caller === namespace){
-              callback.call(stateMgr.appState, void(0), stateMgr.appState);
-            } else {
-              callback.call(stateMgr.appState[caller], void(0), stateMgr.appState);
-            }
+						calledBack = true;
+            callback.call(stateMgr.appState, void(0), stateMgr.appState);
 					}
 				} catch(e) {
+					calledBack = false;
+					transientState = {};
+					processedState = {};					
 					callback(e);
 				}
         return;
 			}
+		
 		} else {
 			
 			if(hasStatic){
 				staticState = updateStatic(staticState, newState, newAppState);
 			}
 
-			if(!!newStateKeys.length){
+			if(!!newStateKeysLen){
 				if(caller === namespace){
 					nextState = extend(newState);
 				} else {
 					nextState[caller] = extend(newState);
 				}
 			}
+
 			//If newAppState included the current caller dataContext then newAppState stomped on
 			//nextState. Below I merge the current caller state into one object then use that
 			//to extend the transientState 
@@ -1945,11 +1994,23 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 			} else {
 				transientState = extend(newAppState, nextState, transientState);
 			}
+
+
 			transientStateKeys = Object.keys(transientState);
 			if(transientStateKeys.length === 0){
 				if(typeof callback === 'function'){
-					calledBack = true;
+					if(!remember){
+						stateMgr.appState = new ApplicationDataContext(stateMgr.appState.$state,
+							stateMgr.appState.$previousState, redoState,
+							enableUndo, routingEnabled, false, //nextState.$path !== stateMgr.appState.$path,
+							!external || nextState.$pageNotFound, remember);
+					}
+
 					if(delay !== void(0) && !isNaN(delay)){
+						calledBack = false;
+						notifyViews(processedState.$notify);
+						transientState = {};
+						processedState = {};
 						window.setTimeout(function(){
 						  if(caller === namespace){
 		            callback.call(stateMgr.appState, void(0), stateMgr.appState);
@@ -1958,6 +2019,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 		          }
 			      }, delay);
 					} else {
+						calledBack = true;
 					  if(caller === namespace){
 	            callback.call(stateMgr.appState, void(0), stateMgr.appState);
 	          } else {
@@ -1971,20 +2033,23 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 			}
 
 			transientStateKeysLen = transientStateKeys.length - 1;
-
+			// console.log('transientState ==> ', transientState);
+// console.log('nextState ==> ', nextState);
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
 				if(transientStateKeys[keyIdx] in domain){
 					nextState[transientStateKeys[keyIdx]] = extend(stateMgr.appState[transientStateKeys[keyIdx]], transientState[transientStateKeys[keyIdx]]);
 					nextState[transientStateKeys[keyIdx]] = new dataContexts[transientStateKeys[keyIdx]](nextState[transientStateKeys[keyIdx]]);
 				} else {
+					// console.log('it is!!!!!!!!!!!!!!!!!!!');
 					nextState[transientStateKeys[keyIdx]] = transientState[transientStateKeys[keyIdx]];
 				}
 			};
-
+								// console.log('nextState1 ==> ', nextState);
+			// console.log('processedState ==> ', processedState);
 			processedState = extend(processedState, nextState);
-
 			//Triggers
 			nextState = extend(stateMgr.appState, processedState);
+// console.log('nextState2 ==> ', nextState);
 
 			transientState = {};
 			for (keyIdx = transientStateKeysLen; keyIdx >= 0; keyIdx--) {
@@ -2027,7 +2092,9 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 					}
 				}
 			};
+
 			if(!!Object.keys(transientState).length){
+				// console.log('poppopopopopopopopo');
 				appStateChangeHandler(void(0), {}, transientState, remember, callback, delay);
 				return;
 			}
@@ -2084,7 +2151,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 
 			} else if(hasStatic && staticState._staticUpdated && staticState._onlyStatic){
         if(stateMgr.appState.$canRevert){
-        	prevState = stateMgr.appState.$previousState;
+        	prevState = stateMgr.appState;
         }
         if(stateMgr.appState.$canAdvance){
         	redoState = stateMgr.appState.$nextState;
@@ -2102,12 +2169,15 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 		pushStateChanged = nextState.$path !== stateMgr.appState.$path;
 
 		try {
-			//Add dataContextUpdated
+			//Add $dataContextUpdated to appState
       if(willUndo){
         nextState = extend(nextState, {$dataContextUpdated: newState.$state.$dataContextUpdated});
       } else {
         nextState = extend(nextState, {$dataContextUpdated: processedState});
       }
+
+// console.log('processedState ==> ', processedState.persons.selectedPerson.fullName);
+      // console.log('nextState ==> ', nextState.persons.selectedPerson.fullName);
 
 			stateMgr.appState = new ApplicationDataContext(nextState, prevState, redoState,
 			enableUndo, routingEnabled, pushStateChanged,
@@ -2117,8 +2187,14 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 			Object.freeze(stateMgr.appState.$state);
 
 			if(typeof callback === 'function'){
-				calledBack = true;
 				if(delay !== void(0) && !isNaN(delay)){
+					// cons.log('yesssss');
+					// cons.log('nextState3 ==> ', nextState);
+					// cons.log(stateMgr.appState);
+					calledBack = false;
+					notifyViews(processedState.$notify);
+					transientState = {};
+					processedState = {};
 					window.setTimeout(function(){
 					  if(caller === namespace){
 	            callback.call(stateMgr.appState, void(0), stateMgr.appState);
@@ -2127,6 +2203,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 	          }
 		      }, delay);
 				} else {
+					calledBack = true;
 				  if(caller === namespace){
             callback.call(stateMgr.appState, void(0), stateMgr.appState);
           } else {
@@ -2137,6 +2214,9 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 			}
 		} catch(e) {
 			if(typeof callback === 'function'){
+				calledBack = false;
+				transientState = {};
+				processedState = {};
 				callback(e);
 				return;
 			}

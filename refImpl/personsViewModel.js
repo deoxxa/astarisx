@@ -25,7 +25,7 @@ var Person = function(){
 // };
 
 var PersonsViewModel = Astarisx.createViewModelClass({  //short form => createVMClass()
-
+  mixins:[require('./mixinFields')],
     /* This is where you make ajax calls. You do not put ajax calls in getInitialState */
     dataContextWillInitialize: function(){
       var nextState = {};
@@ -220,6 +220,11 @@ var PersonsViewModel = Astarisx.createViewModelClass({  //short form => createVM
     }
   },
 
+  testField: {
+    get: function(){
+      return this.$state.testField;
+    }
+  },
 
 
 

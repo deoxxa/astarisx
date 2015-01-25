@@ -13,7 +13,7 @@ var mixinViewModels = {
     get: function(){
       return this.$state.hobbies;
     }
-  } 
+  }
 };
 
 module.exports = mixinViewModels;

@@ -123,5 +123,10 @@ describe('persons dataContext', function(){
 
     });
 
+    it('viewModel must have enumerable dummyProp mixed in: setter only', function(){
+      viewModel.must.have.enumerable('dummyProp');
+      viewModel.must.have.nonenumerable('dummyPropVal');
+    });
+
   });
 });

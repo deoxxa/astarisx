@@ -42,11 +42,11 @@
   },
   "scripts": {
     "all": "npm test-local && npm run build",
-    "start": "mochify --watch",
-    "test-local": "mochify -R spec",
+    "start": "mochify -R spec --watch",
+    "phantom": "mochify -R spec --plugin [ mochify-istanbul --exclude '**/+(test|node_modules|refImpl|dist|lib)/**/*' --report lcovonly --dir ./coverage ] && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "test-local": "mochify -R spec --plugin [ mochify-istanbul --exclude '**/+(test|node_modules|refImpl|dist|lib)/**/*' --report html ]",
     "test-wd": "mochify --wd",
-    "test": "npm run test-phantom && npm run cover",
-    "build": "node ./build.js",
-    "cover": "mochify --plugin [ mochify-istanbul --exclude '**/+(test|node_modules|refImpl|dist|lib)/**/*' --report lcovonly --dir ./coverage ] && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
+    "test": "npm run phantom",
+    "build": "node ./build.js"
   }
 }
