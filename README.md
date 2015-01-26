@@ -1,7 +1,7 @@
 Astarisx
 =====
 
-Highly Composable Application Architecture for [React](http://facebook.github.io/react/).
+Highly Composable MVVM Application Architecture for [React](http://facebook.github.io/react/).
 
 [![Build Status]](https://travis-ci.org/entrendipity/astarisx)
 [![Coverage Status]](https://coveralls.io/r/entrendipity/astarisx?branch=master)
@@ -11,7 +11,7 @@ Highly Composable Application Architecture for [React](http://facebook.github.io
 
 ## Why Astarisx?
 
-### Be More Productive
+### More Productive
 Astarisx was inspired by <a href="http://facebook.github.io/react/">React</a>. So it feels like React. There's no need to change your coding style to suit the framework, making it easy to comprehend and quick to learn. It helps seperate concerns with an approach that is intuitive and fluid and was designed with maintainability in mind. Astarisx reduces the complexity of applying incremental enhancements as your application evolves.
 
 ### Highly Composable UI Components
