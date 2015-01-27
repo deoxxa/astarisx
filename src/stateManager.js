@@ -602,7 +602,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
   try {
   	ApplicationDataContext = controllerViewModel.call(this, appStateChangeHandler.bind(this, namespace));
   	stateMgr.appState = new ApplicationDataContext(void(0), void(0), void(0), enableUndo, routingEnabled);
-    stateMgr.appState.$state = stateMgr.appState.$state || {};
+    // stateMgr.appState.$state = stateMgr.appState.$state || {};
   } catch (e) { 
   	if (e instanceof TypeError) {
     	throw new TypeError('Please assign a ControllerViewModel to the "controllerViewModel" prop in React.renderComponent');
@@ -836,7 +836,7 @@ StateManager.prototype.dispose = function(){
   resetState = extend(this.appState, emptyState, resetState);
 	try {
   	this.appState = new ApplicationDataContext(resetState, void(0), void(0), false, false);
-    this.appState.$state = this.appState.$state || {};
+    // this.appState.$state = this.appState.$state || {};
   } catch (e) { 
   	if (e instanceof TypeError) {
     	throw new TypeError('Something went wrong');
