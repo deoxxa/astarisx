@@ -4,7 +4,7 @@ Astarisx
 Highly Composable MVVM Framework for [React](http://facebook.github.io/react/).
 
 [![Build Status]](https://travis-ci.org/entrendipity/astarisx)
-[![Coverage Status]](https://coveralls.io/r/entrendipity/astarisx)
+[![Coverage Status]](https://coveralls.io/r/entrendipity/astarisx?branch=master)
 [![License]](https://github.com/entrendipity/astarisx/blob/master/LICENSE)
 
 #### [Astarisx Website and Documentation](http://entrendipity.github.io/astarisx/)
