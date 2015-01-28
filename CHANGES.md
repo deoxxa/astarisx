@@ -3,6 +3,8 @@
 - BugFix: `kind:static` field should perform as expected during `revert()` and `advance()`
 - BugFix: `revert()` with newAppState `kind:static` field update, applied wrong `$previousState`
 - BugFix: pass `$dataContextUpdated` to callbacks
+- BugFix: `shouldComponentUpdate` now fires on initialization
+- BugFix: `{$notify: "*"}` and `{$notify: ["*", "other"]}` now only updates specified components. ("*" refers to UI component)
 
 ## 0.11.0
 ### Breaking

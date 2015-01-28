@@ -129,7 +129,11 @@ describe('persons dataContext', function(){
       Object.isFrozen(lvl1[2][1].lvl1Obj.lvl1ArrKey[0]).must.be.true();
 
     });
-
+    it('Model uninitializedArray should be initialized', function(){
+      model.must.have.enumerable('uninitializedArray');
+      model.uninitializedArray.must.be.an.array();
+      Object.isFrozen(model.uninitializedArray).must.be.true();
+    });
   });
 });
 

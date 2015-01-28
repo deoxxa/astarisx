@@ -1,6 +1,19 @@
 //mixinFields
 
 var mixinFields = {
+  getWatchedState: function() {
+    return {
+      'hobbies': {
+        alias: 'hobbiesContext',
+      },
+      'online': {
+        alias: 'imOnline'
+      }
+    };
+  },
+  addPerson: function(value){
+    
+  },
   dummyProp: {
     set: function(newValue){
       this.setState({dummyProp: newValue});

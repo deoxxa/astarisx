@@ -127,6 +127,11 @@ describe('persons dataContext', function(){
       viewModel.must.have.enumerable('dummyProp');
       viewModel.must.have.nonenumerable('dummyPropVal');
     });
-
+    
+    it('VM uninitializedArray should be initialized', function(){
+      viewModel.must.have.enumerable('uninitializedArray');
+      viewModel.uninitializedArray.must.be.an.array();
+      Object.isFrozen(viewModel.uninitializedArray).must.be.true();
+    });
   });
 });

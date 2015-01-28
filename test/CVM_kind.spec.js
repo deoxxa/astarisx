@@ -183,6 +183,13 @@ var ControllerViewModel = Astarisx.createCVMClass({
     }
   },
 
+  uninitializedArray: {
+    kind: 'array',
+    get: function(){
+      return this.$state.uninitializedArray;
+    }
+  },
+
   // invalidKind: {
   //   kind: 'invalid',
   //   get: function(){
@@ -298,6 +305,10 @@ describe('Application dataContext', function(){
       Object.isFrozen(lvl1[2][1].lvl1Obj.lvl1ArrKey[0]).must.be.true();
 
     });
-
+    it('CVM uninitializedArray should be initialized', function(){
+      CVM.must.have.enumerable('uninitializedArray');
+      CVM.uninitializedArray.must.be.an.array();
+      Object.isFrozen(CVM.uninitializedArray).must.be.true();
+    });
   });
 });

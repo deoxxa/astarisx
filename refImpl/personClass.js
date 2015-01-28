@@ -350,6 +350,13 @@ var PersonClass = Astarisx.createModelClass({
     }
   },
 
+  uninitializedArray: {
+    kind: 'array',
+    get: function(){
+      return this.$state.uninitializedArray;
+    }
+  },
+
   updateHobby: function(obj){
     var arr = this.hobbies.map(function(hobby){
       if(hobby.id === obj.id){

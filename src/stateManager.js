@@ -57,11 +57,13 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
   };
 
   notifyViews = function(notify){
-  	var temp;
+  	var temp, updateUI;
+		
 		if(stateMgr.hasListeners){
 			stateChangeEvent = new CustomEvent("stateChange", {
 				"detail": {
-					"appContext": stateMgr.appState
+					"appContext": stateMgr.appState,
+					"shouldUpdate": true
 				}
 			});
 			passiveStateChangeEvent = new CustomEvent("stateChange", {
@@ -71,12 +73,12 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 				}
 			});
 			
-			//Notify views of a state change. If a view is specified in
-			//$notify then update specified views. Otherwise only notify the other 
-			//views without rendering them.
+			//Notify views of a state change. If a view is specified in $notify
+			//then update specified views. Notify other without rendering them.
 		  if(notify){
 				if(isArray(notify)){
 		  		temp = {};
+		  		updateUI = !(notify.indexOf("*") === -1);
 		  		//notify specific views
           notify.forEach(function (viewKey) {
           	if(viewKey === "*"){
@@ -86,24 +88,23 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 					    		return true;
 					    	}
 				    	};
-							stateChangeHandler(stateMgr.appState);
           	} else if(viewKey in stateMgr.listeners) {
               stateMgr.listeners[viewKey].dispatchEvent(stateChangeEvent);
+            	temp[viewKey] = true;
             }
-            temp[viewKey] = true;
           });
+
 	        //notify other views but do not render component
-	        if(!('*' in temp)){
+	        if(!updateUI){
 	        	//Ensure UI IS NOT rendered
 	        	if(shouldComponentUpdateIsNull){
 				    	component.shouldComponentUpdate = function(){
 				    		return false;
 				    	}
 			    	};
-	        	stateChangeHandler(stateMgr.appState, false);
 	        }
 			    for(var k in stateMgr.listeners){
-			  		if(stateMgr.listeners.hasOwnProperty(k) && !(k in temp)){
+			  		if(stateMgr.listeners.hasOwnProperty(k) && !!!temp[k]){
 			  			stateMgr.listeners[k].dispatchEvent(passiveStateChangeEvent);
 			  		}
 			  	}
@@ -116,7 +117,6 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 				    		return true;
 				    	}
 			    	};
-						stateChangeHandler(stateMgr.appState);
 					} else {
 						//Ensure UI IS NOT rendered
 	        	if(shouldComponentUpdateIsNull){
@@ -124,7 +124,6 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 				    		return false;
 				    	}
 			    	};
-						stateChangeHandler(stateMgr.appState, false);
 					}
 					for(var k2 in stateMgr.listeners){
 			  		if(stateMgr.listeners.hasOwnProperty(k2)){
@@ -137,14 +136,13 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 			  	}
 				}
 			} else {
-				//Ensure UI IS rendered
+				// Notify all views
+				// Ensure UI IS rendered
 	      if(shouldComponentUpdateIsNull){
 		    	component.shouldComponentUpdate = function(){
 		    		return true;
 		    	}
 	    	};
-				// Notify all the views
-		    stateChangeHandler(stateMgr.appState);
 		    for(var k3 in stateMgr.listeners){
 		  		if(stateMgr.listeners.hasOwnProperty(k3)){
 		  			stateMgr.listeners[k3].dispatchEvent(stateChangeEvent);
@@ -154,14 +152,15 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 			stateChangeEvent = void(0);
 			passiveStateChangeEvent = void(0);
 		} else {
-			//Ensure UI IS rendered
+			// No listeners
+			// Ensure UI is rendered
 	    if(shouldComponentUpdateIsNull){
 	    	component.shouldComponentUpdate = function(){
 	    		return true;
 	    	}
     	};
-			stateChangeHandler(stateMgr.appState);
 		}
+		stateChangeHandler(stateMgr.appState);
   };
 
 	var appStateChangeHandler = function(caller, newState, newAppState, remember, callback, delay, revert) {
@@ -771,7 +770,7 @@ StateManager.prototype.currentState = function(){
 };
 
 StateManager.prototype.unmountView = function(component){
-	var viewKey = component.props.$viewKey || component._rootNodeID;
+	var viewKey = component.props.$viewKey || component._rootNodeID;	
 	if(this.listeners === null || this.listeners === void(0)){
 		this.handlers = null;
 		this.hasListeners = false;
@@ -787,18 +786,21 @@ StateManager.prototype.unmountView = function(component){
 
 StateManager.prototype.mountView = function(component){
 		var viewKey = component.props.$viewKey || component._rootNodeID;
-		var shouldUpdate;
+		var node = component.getDOMNode();
+		var shouldUpdate = true;
+
+		//Do not override shouldComponentUpdate if exists
+		if(component.shouldComponentUpdate === null){
+	    component.shouldComponentUpdate = function(){
+	    	var retVal = shouldUpdate;
+        shouldUpdate = false;
+	    	return retVal;
+	    }
+		}
 		this.handlers[viewKey] = function(e){
 			shouldUpdate = e.detail.shouldUpdate === void(0) ? true : e.detail.shouldUpdate;
 			component.setState({appContext: e.detail.appContext});
-			//Do not override shouldComponentUpdate if exists
-			if(component.shouldComponentUpdate === null){
-		    component.shouldComponentUpdate = function(){
-		    	return shouldUpdate;
-		    }
-			}
 		};
-		var node = component.getDOMNode();
 		// if node is null i.e. return 'null' from render(). then create a dummy element
 		// to attach the event listener to
 		this.listeners[viewKey] = !!node ? node : document.createElement("div");

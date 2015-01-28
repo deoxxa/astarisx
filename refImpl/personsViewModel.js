@@ -250,16 +250,16 @@ var PersonsViewModel = Astarisx.createViewModelClass({  //short form => createVM
     //   };
     // },
 
-    getWatchedState: function() {
-      return {
-        'hobbies': {
-          alias: 'hobbiesContext',
-        },
-        'online': {
-          alias: 'imOnline'
-        }
-      };
-    },
+    // getWatchedState: function() {
+    //   return {
+    //     'hobbies': {
+    //       alias: 'hobbiesContext',
+    //     },
+    //     'online': {
+    //       alias: 'imOnline'
+    //     }
+    //   };
+    // },
 
     imOnline: {
       kind:'pseudo',
@@ -284,6 +284,13 @@ var PersonsViewModel = Astarisx.createViewModelClass({  //short form => createVM
     collection: {
       kind: 'array',
       get: function(){ return this.$state.collection; },
+    },
+
+    uninitializedArray: {
+      kind: 'array',
+      get: function(){
+        return this.$state.uninitializedArray;
+      }
     },
 
     selectPerson: function(id, callback){

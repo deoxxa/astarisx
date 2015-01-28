@@ -78,9 +78,9 @@ describe('undo.spec.js -> enableUndo', function(){
       
       selectedPerson.setState({firstName: "Fred"}, function(err, appContext){
         this.setState();
+        this.fullName.must.equal("Fred Smith");
         appContext.$state.$dataContextUpdated.persons.selectedPerson.must.have.property('firstName','Fred');
         appContext.$state.$dataContextUpdated.persons.selectedPerson.must.have.property('lastName','Smith');
-        this.fullName.must.equal("Fred Smith");
         appContext.$canRevert.must.be.equal(true);
         appContext.$canAdvance.must.be.equal(false);
         appContext.staticField.must.equal("initStaticVal");
@@ -90,8 +90,8 @@ describe('undo.spec.js -> enableUndo', function(){
           appContext.$state.$dataContextUpdated.persons.selectedPerson.must.have.property('lastName','Flintstone');
           appContext.$state.$dataContextUpdated.must.have.property('staticField');
           this.setState();
-          selectedPerson = appContext.persons.selectedPerson;
-          selectedPerson.fullName.must.be.equal("Fred Flintstone");
+
+          this.fullName.must.be.equal("Fred Flintstone");
  
           appContext.staticField.must.equal("updated");
           appContext.$canRevert.must.be.equal(true);
@@ -147,48 +147,49 @@ describe('undo.spec.js -> enableUndo', function(){
       });
     });
 
-    // it('batch update selectedPerson 2x and traverse state with kind:static field', function(done){
+    it('batch update selectedPerson 2x and traverse state with kind:static field', function(done){
 
-    //   var selectedPerson = app.state.appContext.persons.selectedPerson;
-    //   selectedPerson.fullName.must.be.equal("Frank Smith");
-    //   selectedPerson.setState({firstName: "Fred"}, function(err, appContext){
-    //     this.fullName.must.be.equal("Fred Smith");
-    //     appContext.must.have.ownProperty('$previousState');
-    //     appContext.$previousState.must.be.an.object();
-    //     appContext.$canRevert.must.be.equal(true);
-    //     appContext.$canAdvance.must.be.equal(false);
-    //     this.setState({lastName: "Flintstone"}, {staticField: 'initStaticVal'}, function(err, appContext){
-    //       this.fullName.must.be.equal("Fred Flintstone");
-    //       appContext.must.have.ownProperty('$previousState');
-    //       appContext.$previousState.must.be.an.object();
+      var selectedPerson = app.state.appContext.persons.selectedPerson;
+      selectedPerson.fullName.must.be.equal("Frank Smith");
+      selectedPerson.setState({firstName: "Fred"}, function(err, appContext){
+        this.fullName.must.be.equal("Fred Smith");
+        selectedPerson.fullName.must.be.equal("Frank Smith");
+        appContext.must.have.ownProperty('$previousState');
+        appContext.$previousState.must.be.an.object();
+        appContext.$canRevert.must.be.equal(true);
+        appContext.$canAdvance.must.be.equal(false);
+        this.setState({lastName: "Flintstone"}, {staticField: 'initStaticVal'}, function(err, appContext){
+          this.fullName.must.be.equal("Fred Flintstone");
+          appContext.must.have.ownProperty('$previousState');
+          appContext.$previousState.must.be.an.object();
 
-    //       appContext.staticField.must.equal("initStaticVal");
-    //       appContext.$canRevert.must.be.equal(true);
-    //       appContext.$canAdvance.must.be.equal(false);
+          appContext.staticField.must.equal("initStaticVal");
+          appContext.$canRevert.must.be.equal(true);
+          appContext.$canAdvance.must.be.equal(false);
 
-    //       appContext.revert(function(err, appContext){
-    //         appContext.persons.selectedPerson.fullName.must.be.equal("Frank Smith");
-    //         appContext.must.have.ownProperty('$previousState');
-    //         appContext.$previousState.must.be.an.object();
+          appContext.revert(function(err, appContext){
+            appContext.persons.selectedPerson.fullName.must.be.equal("Frank Smith");
+            appContext.must.have.ownProperty('$previousState');
+            appContext.$previousState.must.be.an.object();
 
-    //         appContext.staticField.must.equal("initStaticVal");
-    //         appContext.$canRevert.must.be.equal(true);
-    //         appContext.$canAdvance.must.be.equal(true);
+            appContext.staticField.must.equal("initStaticVal");
+            appContext.$canRevert.must.be.equal(true);
+            appContext.$canAdvance.must.be.equal(true);
 
-    //         appContext.advance(function(err, appContext){
-    //           appContext.persons.selectedPerson.fullName.must.be.equal("Fred Flintstone");
-    //           appContext.must.have.ownProperty('$previousState');
-    //           appContext.$previousState.must.be.an.object();
+            appContext.advance(function(err, appContext){
+              appContext.persons.selectedPerson.fullName.must.be.equal("Fred Flintstone");
+              appContext.must.have.ownProperty('$previousState');
+              appContext.$previousState.must.be.an.object();
     
-    //           appContext.staticField.must.equal("initStaticVal");
-    //           appContext.$canRevert.must.be.equal(true);
-    //           appContext.$canAdvance.must.be.equal(false);
-    //           done();
-    //         });
-    //       });
-    //     });
-    //   });
-    // });
+              appContext.staticField.must.equal("initStaticVal");
+              appContext.$canRevert.must.be.equal(true);
+              appContext.$canAdvance.must.be.equal(false);
+              done();
+            });
+          });
+        });
+      });
+    });
 
   });
 });
