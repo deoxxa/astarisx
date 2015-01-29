@@ -239,8 +239,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 				if(!remember){
 					stateMgr.appState = new ApplicationDataContext(stateMgr.appState.$state,
 						stateMgr.appState.$previousState, redoState,
-						enableUndo, routingEnabled, false, //nextState.$path !== stateMgr.appState.$path,
-						!external || nextState.$pageNotFound, remember);
+						enableUndo, routingEnabled, false, !external || nextState.$pageNotFound, remember);
 				}
 
 				if(delay !== void(0) && !isNaN(delay)){
@@ -366,8 +365,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
 					if(!remember){
 						stateMgr.appState = new ApplicationDataContext(stateMgr.appState.$state,
 							stateMgr.appState.$previousState, redoState,
-							enableUndo, routingEnabled, false, //nextState.$path !== stateMgr.appState.$path,
-							!external || nextState.$pageNotFound, remember);
+							enableUndo, routingEnabled, false, !external || nextState.$pageNotFound, remember);
 					}
 
 					if(delay !== void(0) && !isNaN(delay)){
@@ -534,8 +532,7 @@ var StateManager = function(component, appCtx/*, initCtxArgs... */) {
       }
 
 			stateMgr.appState = new ApplicationDataContext(nextState, prevState, redoState,
-			enableUndo, routingEnabled, pushStateChanged,
-			!external || nextState.$pageNotFound, remember);	
+			enableUndo, routingEnabled, pushStateChanged, !external || nextState.$pageNotFound, remember);	
 
 			Object.freeze(stateMgr.appState);
 			Object.freeze(stateMgr.appState.$state);
