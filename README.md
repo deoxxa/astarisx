@@ -1,9 +1,9 @@
 Astarisx
 =====
 
-##Highly Composable MVVM Framework for [React](http://facebook.github.io/react/).
+##Highly Composable MVVM Framework for React.
 
-##### [Astarisx Website and Documentation](http://entrendipity.github.io/astarisx/)
+##### [Click here for the Astarisx Website and Documentation](http://entrendipity.github.io/astarisx/)
 
 [![Build Status]](https://travis-ci.org/entrendipity/astarisx)
 [![Coverage Status]](https://coveralls.io/r/entrendipity/astarisx?branch=master)
