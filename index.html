@@ -253,7 +253,7 @@ var UI = React.createClass({
       and initialize AppContext
     */
     this.initializeAppContext({ 
-      controllerViewModel: CVM
+      controllerViewModel: ControllerViewModel
     });
   },
   addTodo: function(e){
@@ -289,9 +289,9 @@ var UI = React.createClass({
       &lt;/fieldset&gt;
       {/* 
         No props are passed
-        to the List component
+        to the TodoList component
       */}
-      &lt;List /&gt;
+      &lt;TodoList /&gt;
     &lt;/form&gt;);
   }
 });</div></code></pre>
