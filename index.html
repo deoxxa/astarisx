@@ -174,11 +174,10 @@ var Todo = Astarisx.createModelClass({
                     </div>
                     <div id="viewModel">
 <pre><code><div class="code-block">/* ViewModel */
-var TodoClass = require("../models/todo");
+var TodoModel = require("../models/todo");
 
-// Model Constructor
 var Todo = function(){
-  return new TodoClass().apply(this, arguments);
+  return new TodoModel().apply(this, arguments);
 };
 
 var TodosViewModel = Astarisx.createViewModelClass({
@@ -231,11 +230,6 @@ var TodoList = React.createClass({
   //Make component an Astarisx view
   mixins: [Astarisx.mixin.view],
   render: function(){
-    /*
-      No props are passed in.
-      All state is stored
-      in this.state.appContext
-    */
     var todos = this.state.appContext.todos;
     var list = todos.todosList.map(function(todo){
       return &lt;li&gt;{todo.description}&lt;/li&gt;;
@@ -248,27 +242,15 @@ var UI = React.createClass({
   //Make component an Astarisx UI
   mixins: [Astarisx.mixin.ui],
   componentWillMount: function(){
-    /*
-      Reference the ControllerViewModel
-      and initialize AppContext
-    */
     this.initializeAppContext({ 
       controllerViewModel: ControllerViewModel
     });
   },
   addTodo: function(e){
     e.preventDefault();
-    //Invoke action on dataContext
     this.state.appContext.todos.addTodo();
   },
   updateDescription: function(e){
-    /*
-      Assign value to currentDescription
-      defined in the todos dataContext.
-      This would usually be a field
-      in a Model. We are doing this to
-      keep the demo simple.
-    */
     var todos = this.state.appContext.todos;
     todos.currentDescription = e.target.value;
   },
@@ -287,10 +269,6 @@ var UI = React.createClass({
         &lt;button
         onClick={this.addTodo}&gt;Add&lt;/button&gt;
       &lt;/fieldset&gt;
-      {/* 
-        No props are passed
-        to the TodoList component
-      */}
       &lt;TodoList /&gt;
     &lt;/form&gt;);
   }
