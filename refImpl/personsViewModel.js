@@ -250,16 +250,16 @@ var PersonsViewModel = Astarisx.createViewModelClass({  //short form => createVM
     //   };
     // },
 
-    // getWatchedState: function() {
-    //   return {
-    //     'hobbies': {
-    //       alias: 'hobbiesContext',
-    //     },
-    //     'online': {
-    //       alias: 'imOnline'
-    //     }
-    //   };
-    // },
+    getWatchedState: function() {
+      return {
+        'hobbies': {
+          alias: 'hobbiesContext',
+        },
+        'online': {
+          alias: 'imOnline'
+        }
+      };
+    },
 
     imOnline: {
       kind:'pseudo',
