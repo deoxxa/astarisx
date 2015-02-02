@@ -6,7 +6,6 @@ Astarisx
 ##### [Click here for the Astarisx Website and Documentation](http://entrendipity.github.io/astarisx/)
 
 [![Build Status]](https://travis-ci.org/entrendipity/astarisx)
-[![Coverage Status]](https://coveralls.io/r/entrendipity/astarisx?branch=master)
 [![License]](https://github.com/entrendipity/astarisx/blob/master/LICENSE)
 
 ### More Productive
