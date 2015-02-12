@@ -1062,7 +1062,7 @@ var MyApp = React.createClass({
     <span class="kw">if</span>(<span class="kw">this</span>.<span class="fu">collection</span>[i].<span class="fu">id</span> === id){
       selectedPerson = <span class="kw">new</span> <span class="fu">Person</span>(<span class="kw">this</span>.<span class="fu">collection</span>[i]);
       <span class="kw">this</span>.<span class="fu">setState</span>({ <span class="dt">selectedPerson</span>: selectedPerson },
-        { <span class="dt">path</span>: <span class="st">&#39;/person/&#39;</span> + <span class="ot">selectedPerson</span>.<span class="fu">id</span> });
+        { <span class="dt">$path</span>: <span class="st">&#39;/person/&#39;</span> + <span class="ot">selectedPerson</span>.<span class="fu">id</span> });
       <span class="kw">break</span>;
     }
   }
@@ -1098,7 +1098,7 @@ selectPerson: <span class="kw">function</span>(id, next){
     <span class="kw">if</span>(<span class="kw">this</span>.<span class="fu">collection</span>[i].<span class="fu">id</span> === id){
       selectedPerson = <span class="kw">new</span> <span class="fu">Person</span>(<span class="kw">this</span>.<span class="fu">collection</span>[i]);
       <span class="kw">this</span>.<span class="fu">setState</span>({ <span class="dt">selectedPerson</span>: selectedPerson },
-        {<span class="dt">path</span>: <span class="st">&#39;/person/&#39;</span> + <span class="ot">selectedPerson</span>.<span class="fu">id</span> }, next);
+        {<span class="dt">$path</span>: <span class="st">&#39;/person/&#39;</span> + <span class="ot">selectedPerson</span>.<span class="fu">id</span> }, next);
       <span class="kw">break</span>;
     }
   }
@@ -1126,7 +1126,7 @@ selectPerson: <span class="kw">function</span>(id, next){
         <span class="dt">current</span>: <span class="kw">new</span> <span class="fu">Hobby</span>(<span class="kw">this</span>.<span class="fu">hobbies</span>[i])
       },
       {
-        <span class="dt">path</span>: <span class="st">&#39;/person/&#39;</span>+ <span class="kw">this</span>.<span class="ot">$state</span>.<span class="ot">personsContext</span>.<span class="ot">selectedPerson</span>.<span class="fu">id</span> +
+        <span class="dt">$path</span>: <span class="st">&#39;/person/&#39;</span>+ <span class="kw">this</span>.<span class="ot">$state</span>.<span class="ot">personsContext</span>.<span class="ot">selectedPerson</span>.<span class="fu">id</span> +
         <span class="st">&#39;/hobby/&#39;</span>+<span class="kw">this</span>.<span class="fu">hobbies</span>[i].<span class="fu">id</span>
       });
       <span class="kw">break</span>;
